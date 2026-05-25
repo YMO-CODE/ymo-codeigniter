@@ -1,0 +1,14 @@
+{
+	"name": "ymo/booking",
+	"description": "Your Mechanic Online — booking engine on CodeIgniter 3",
+	"type": "project",
+	"license": "proprietary",
+	"require": {
+		"php": ">=7.2",
+		"phpmailer/phpmailer": "^6.9",
+		"dompdf/dompdf": "^2.0"
+	},
+	"config": {
+		"vendor-dir": "vendor"
+	}
+}

@@ -1,0 +1,7 @@
+# Block all direct access to the project root.
+# The web server's docroot must be set to /public/ — this file is a
+# defence-in-depth fallback in case the docroot is misconfigured.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(?!public/).*$ - [F,L]
+</IfModule>

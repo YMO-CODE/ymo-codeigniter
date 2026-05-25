@@ -1,0 +1,17 @@
+# YMO production cron — install on the VPS host (crontab -e as root or ymo user).
+# Replace /opt/ymo-codeigniter with your clone path.
+
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# Daily booking reminders + CRM tasks + campaigns (7:00 AM IST server time — adjust as needed)
+0 7 * * * cd /opt/ymo-codeigniter && docker compose -f docker-compose.yml -f deploy/docker-compose.vps.yml -f deploy/docker-compose.prod.yml exec -T app php public/index.php cli/cron run >> storage/logs/cron.log 2>&1
+
+# Weekly OTP purge (Sunday 3:00 AM)
+0 3 * * 0 cd /opt/ymo-codeigniter && docker compose -f docker-compose.yml -f deploy/docker-compose.vps.yml -f deploy/docker-compose.prod.yml exec -T app php public/index.php cli/cron purge_otp >> storage/logs/cron.log 2>&1
+
+# Daily backup (2:30 AM)
+30 2 * * * cd /opt/ymo-codeigniter && bash deploy/scripts/backup.sh >> storage/logs/backup.log 2>&1
+
+# Let's Encrypt renewal (twice daily — certbot package usually adds similar)
+0 3,15 * * * certbot renew --quiet --post-hook "systemctl reload nginx"

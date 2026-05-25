@@ -1,0 +1,774 @@
+/* =============================================================================
+   YMO Booking — shared theme
+   Mirrors the look of yourmechaniconline.com (dark hero, brand-green accent,
+   rounded buttons, sans-serif body, oversized headings). Bootstrap 5 is
+   loaded from CDN in the layout; this file overrides tokens + adds
+   custom components.
+   ============================================================================= */
+
+:root {
+    --ymo-primary:        #3a6f37;
+    --ymo-primary-dark:   #2c5429;
+    --ymo-primary-soft:   #e8f1e7;
+    --ymo-black:          #111418;
+    --ymo-grey-900:       #1d2026;
+    --ymo-grey-700:       #3a3f46;
+    --ymo-grey-500:       #6b7280;
+    --ymo-grey-300:       #d1d5db;
+    --ymo-grey-100:       #f3f4f6;
+    --ymo-bg-soft:        #f7f8fa;
+    --ymo-yellow:         #ffc107;
+
+    --bs-primary: var(--ymo-primary);
+    --bs-primary-rgb: 58, 111, 55;
+
+    --ymo-radius: 0.6rem;
+    --ymo-radius-lg: 1rem;
+    --ymo-shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+    --ymo-shadow:    0 8px 24px rgba(0,0,0,.08);
+
+    /* --- Material 3 elevation tiers (subtle on light surfaces) ---------- */
+    --md-elev-1: 0 1px 2px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.06);
+    --md-elev-2: 0 1px 2px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.08);
+    --md-elev-3: 0 4px 8px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.10);
+    --md-elev-4: 0 6px 10px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.10);
+    --md-elev-5: 0 8px 12px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.10);
+
+    /* MD3 state-layer opacities (on top of any colour) */
+    --md-state-hover: 0.08;
+    --md-state-focus: 0.12;
+    --md-state-press: 0.16;
+}
+
+html, body {
+    background: var(--ymo-bg-soft);
+    color: var(--ymo-black);
+    font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--ymo-primary); text-decoration: none; }
+a:hover { color: var(--ymo-primary-dark); text-decoration: underline; }
+
+h1, h2, h3, h4, h5, h6 { font-weight: 700; letter-spacing: -0.01em; }
+
+.btn-primary, .btn-primary:focus {
+    background: var(--ymo-primary);
+    border-color: var(--ymo-primary);
+}
+.btn-primary:hover, .btn-primary:active {
+    background: var(--ymo-primary-dark);
+    border-color: var(--ymo-primary-dark);
+}
+.btn-outline-primary {
+    color: var(--ymo-primary);
+    border-color: var(--ymo-primary);
+}
+.btn-outline-primary:hover {
+    background: var(--ymo-primary);
+    border-color: var(--ymo-primary);
+    color: #fff;
+}
+
+.btn { border-radius: var(--ymo-radius); font-weight: 600; }
+.btn-lg { padding: 0.75rem 1.5rem; }
+
+/* ---------------- Header / nav ---------------------------------------- */
+.ymo-topbar {
+    background: var(--ymo-black);
+    color: #fff;
+    font-size: 0.85rem;
+    padding: 0.4rem 0;
+}
+.ymo-topbar a { color: #fff; }
+.ymo-topbar a:hover { color: var(--ymo-yellow); }
+
+.ymo-navbar {
+    background: #fff;
+    box-shadow: var(--ymo-shadow-sm);
+    padding: 0.6rem 0;
+}
+.ymo-navbar .navbar-brand {
+    display: inline-flex;
+    align-items: center;
+    padding: 0;
+    margin-right: 1rem;
+}
+.ymo-navbar .navbar-brand .ymo-brand-logo {
+    height: 44px;
+    width: auto;
+    display: block;
+}
+@media (max-width: 575.98px) {
+    .ymo-navbar .navbar-brand .ymo-brand-logo { height: 36px; }
+}
+.ymo-navbar .nav-link {
+    color: var(--ymo-grey-900);
+    font-weight: 600;
+    padding: 0.4rem 0.9rem;
+}
+.ymo-navbar .nav-link:hover, .ymo-navbar .nav-link.active {
+    color: var(--ymo-primary);
+}
+
+/* Hamburger styling only below `lg`: our `display:inline-flex` must not beat
+   Bootstrap's `.navbar-expand-lg .navbar-toggler { display:none }` — ymo.css
+   loads after Bootstrap, so unconstrained toggler rules wrongly show it on desktop. */
+@media (max-width: 991.98px) {
+    .ymo-navbar .navbar-toggler {
+        border: 0;
+        padding: 0;
+        width: 44px;
+        height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        color: var(--ymo-grey-900);
+        transition: background 0.15s ease;
+    }
+    .ymo-navbar .navbar-toggler:focus { box-shadow: none; }
+    .ymo-navbar .navbar-toggler:hover,
+    .ymo-navbar .navbar-toggler:focus-visible { background: var(--ymo-grey-100); }
+    .ymo-navbar .navbar-toggler .mi { font-size: 28px; }
+}
+
+/* ---------------- Mobile navigation drawer (offcanvas) ---------------- */
+.ymo-drawer {
+    width: 320px;
+    max-width: 88vw;
+    background: #fff;
+    box-shadow: -8px 0 24px rgba(0,0,0,0.12);
+    display: flex;
+    flex-direction: column;
+    border: 0;
+}
+.ymo-drawer-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1.25rem;
+    border-bottom: 1px solid var(--ymo-grey-100);
+    flex-shrink: 0;
+}
+.ymo-drawer-head .ymo-brand-logo { height: 36px; width: auto; display: block; }
+.ymo-drawer-close {
+    background: transparent;
+    border: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ymo-grey-700);
+    transition: background 0.15s ease;
+}
+.ymo-drawer-close:hover, .ymo-drawer-close:focus-visible {
+    background: var(--ymo-grey-100);
+    color: var(--ymo-grey-900);
+}
+
+.ymo-drawer-user {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 1rem 1.25rem;
+    background: var(--ymo-primary-soft);
+    flex-shrink: 0;
+}
+.ymo-drawer-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--ymo-primary);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+.ymo-drawer-user-meta { line-height: 1.25; min-width: 0; }
+.ymo-drawer-user-meta strong {
+    display: block;
+    color: var(--ymo-black);
+    font-size: 0.95rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.ymo-drawer-user-meta small {
+    color: var(--ymo-grey-700);
+    font-size: 0.78rem;
+}
+
+/* Scrollable middle area lets header/footer stay pinned on short screens */
+.ymo-drawer-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem 0;
+}
+.ymo-drawer-section { padding: 0.25rem 0; }
+.ymo-drawer-section-label {
+    display: block;
+    padding: 0.6rem 1.25rem 0.25rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ymo-grey-500);
+}
+.ymo-drawer-link {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.85rem 1.25rem;
+    color: var(--ymo-grey-900);
+    font-weight: 500;
+    text-decoration: none;
+    border: 0;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+    transition: background 0.15s ease, color 0.15s ease;
+    border-left: 3px solid transparent;
+}
+.ymo-drawer-link:hover, .ymo-drawer-link:focus-visible {
+    background: rgba(58, 111, 55, 0.08);
+    color: var(--ymo-primary-dark);
+    text-decoration: none;
+}
+.ymo-drawer-link.is-active {
+    background: var(--ymo-primary-soft);
+    color: var(--ymo-primary-dark);
+    border-left-color: var(--ymo-primary);
+}
+.ymo-drawer-link .mi {
+    color: var(--ymo-grey-700);
+    font-size: 22px;
+    flex-shrink: 0;
+}
+.ymo-drawer-link:hover .mi,
+.ymo-drawer-link:focus-visible .mi,
+.ymo-drawer-link.is-active .mi { color: var(--ymo-primary); }
+
+.ymo-drawer-div {
+    border: 0;
+    border-top: 1px solid var(--ymo-grey-100);
+    margin: 0.5rem 0;
+}
+
+.ymo-drawer-foot {
+    flex-shrink: 0;
+    padding: 1rem 1.25rem 1.25rem;
+    border-top: 1px solid var(--ymo-grey-100);
+    background: #fff;
+}
+.ymo-drawer-foot .btn { border-radius: 999px; padding: 0.7rem 1.25rem; }
+.ymo-drawer-foot-secondary {
+    text-align: center;
+    margin-top: 0.6rem;
+    font-size: 0.85rem;
+    color: var(--ymo-grey-500);
+}
+.ymo-drawer-foot-secondary a { color: var(--ymo-grey-700); font-weight: 600; }
+.ymo-drawer-tagline {
+    text-align: center;
+    margin-top: 0.85rem;
+    font-size: 0.7rem;
+    color: var(--ymo-grey-500);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+/* The drawer is mobile-only; on lg+ the standard inline navbar takes over. */
+@media (min-width: 992px) {
+    .ymo-drawer { display: none !important; }
+}
+/* Bootstrap's offcanvas applies `overflow:hidden` to body when open; that's
+   fine. The scrim opacity is increased for stronger contrast against white. */
+.offcanvas-backdrop.show { opacity: 0.5; }
+
+/* ---------------- Hero ------------------------------------------------ */
+.ymo-hero {
+    background:
+        linear-gradient(135deg, rgba(17,20,24,0.72), rgba(17,20,24,0.55)),
+        url('/assets/img/hero-car.jpg') center/cover no-repeat,
+        var(--ymo-grey-900);
+    color: #fff;
+    padding: 4rem 0 3rem;
+}
+.ymo-hero h1 { font-size: clamp(2rem, 4vw, 3.4rem); }
+.ymo-hero .lead { font-size: 1.15rem; opacity: 0.85; }
+
+/* ---------------- Cards / packages ------------------------------------ */
+.ymo-card {
+    background: #fff;
+    border-radius: var(--ymo-radius-lg);
+    box-shadow: var(--ymo-shadow);
+    padding: 1.5rem;
+}
+.ymo-package-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+.ymo-package-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(0,0,0,.10);
+}
+.ymo-package-card .price {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--ymo-primary);
+}
+.ymo-package-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem 0;
+    flex: 1;
+}
+.ymo-package-card li {
+    padding-left: 1.4rem;
+    position: relative;
+    margin-bottom: 0.4rem;
+    color: var(--ymo-grey-700);
+}
+.ymo-package-card li:before {
+    content: "\2713";
+    position: absolute;
+    left: 0;
+    color: var(--ymo-primary);
+    font-weight: bold;
+}
+
+/* ---------------- Forms ----------------------------------------------- */
+.form-control, .form-select {
+    border-radius: var(--ymo-radius);
+    padding: 0.65rem 0.9rem;
+    border: 1px solid var(--ymo-grey-300);
+}
+.form-control:focus, .form-select:focus {
+    border-color: var(--ymo-primary);
+    box-shadow: 0 0 0 0.2rem rgba(58, 111, 55, 0.18);
+}
+.form-label { font-weight: 600; }
+
+/* ---------------- Material 3 outlined text field ---------------------- */
+/* Builds on Bootstrap's .form-floating, restyled to MD3's outlined look:
+   floating label sits on the border, primary-coloured on focus, with a
+   2px outline ring instead of Bootstrap's box-shadow halo. */
+.form-floating > .form-control,
+.form-floating > .form-select {
+    height: 56px;
+    padding: 1rem 0.9rem 0.4rem;
+    border-radius: var(--ymo-radius);
+    border: 1px solid var(--ymo-grey-300);
+    background: #fff;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.form-floating > textarea.form-control { height: auto; min-height: 96px; padding-top: 1.4rem; }
+.form-floating > .form-control:focus,
+.form-floating > .form-select:focus {
+    border-color: var(--ymo-primary);
+    box-shadow: inset 0 0 0 1px var(--ymo-primary);
+}
+.form-floating > label {
+    color: var(--ymo-grey-500);
+    padding: 1rem 0.9rem;
+    transition: color .15s ease;
+}
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label,
+.form-floating > .form-select ~ label {
+    background: #fff;
+    padding: 0 0.4rem;
+    margin: 0 0.5rem;
+    height: auto;
+    transform: scale(0.78) translateY(-0.95rem) translateX(0.15rem);
+    color: var(--ymo-grey-700);
+    border-radius: 4px;
+    width: auto;
+}
+.form-floating > .form-control:focus ~ label {
+    color: var(--ymo-primary);
+}
+/* Error variant — wrap the field group in .md-field--error for red styling */
+.md-field--error .form-floating > .form-control {
+    border-color: #b91c1c;
+}
+.md-field--error .form-floating > .form-control:focus {
+    box-shadow: inset 0 0 0 1px #b91c1c;
+}
+.md-field--error .form-floating > label {
+    color: #b91c1c;
+}
+.md-field-help {
+    font-size: 0.75rem;
+    color: var(--ymo-grey-500);
+    padding: 0.25rem 0.9rem 0;
+}
+.md-field-help.is-error { color: #b91c1c; }
+
+/* ---------------- Stepper -------------------------------------------- */
+.ymo-stepper {
+    display: flex;
+    gap: 1rem;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem;
+    flex-wrap: wrap;
+}
+.ymo-stepper li {
+    flex: 1;
+    min-width: 140px;
+    border-bottom: 3px solid var(--ymo-grey-300);
+    padding-bottom: 0.5rem;
+    color: var(--ymo-grey-500);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+.ymo-stepper li.is-active {
+    border-color: var(--ymo-primary);
+    color: var(--ymo-primary);
+}
+.ymo-stepper li.is-done {
+    border-color: #16a34a;
+    color: #16a34a;
+}
+
+/* ---------------- Status badges -------------------------------------- */
+.badge-status {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.badge-status.s-pending     { background:#fff3cd; color:#7a5b02; }
+.badge-status.s-confirmed   { background:#cfe2ff; color:#0a3d91; }
+.badge-status.s-in_progress { background:#e0e7ff; color:#3730a3; }
+.badge-status.s-completed   { background:#d1fae5; color:#065f46; }
+.badge-status.s-cancelled   { background:#fee2e2; color:#991b1b; }
+
+/* ---------------- Footer --------------------------------------------- */
+.ymo-footer {
+    background: #ffffff;
+    color: var(--ymo-grey-700);
+    padding: 3rem 0 1.5rem;
+    margin-top: 4rem;
+    border-top: 1px solid var(--ymo-grey-300);
+}
+.ymo-footer h6 { color: var(--ymo-black); margin-bottom: 1rem; font-weight: 700; }
+.ymo-footer a { color: var(--ymo-grey-700); }
+.ymo-footer a:hover { color: var(--ymo-primary); }
+.ymo-footer-logo {
+    height: 56px;
+    width: auto;
+}
+.ymo-footer .ymo-footer-bottom {
+    border-top: 1px solid var(--ymo-grey-300);
+    padding-top: 1rem;
+    margin-top: 2rem;
+    font-size: 0.85rem;
+    color: var(--ymo-grey-500);
+}
+
+/* ---------------- Flash / alerts ------------------------------------- */
+.ymo-flash { margin: 1rem 0; }
+
+/* ---------------- Admin layout extras -------------------------------- */
+.ymo-admin-shell {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 100vh;
+}
+.ymo-admin-side {
+    background: var(--ymo-grey-900);
+    color: #cbd5e1;
+    padding: 1.5rem 0;
+}
+.ymo-admin-brand {
+    display: block;
+    margin: 0 1.25rem 0.25rem;
+    padding: 0.85rem 1rem;
+    background: #fff;
+    border-radius: var(--ymo-radius);
+    text-align: center;
+    text-decoration: none;
+    border-left: 0 !important;
+}
+.ymo-admin-brand:hover { background: #fff; }
+.ymo-admin-brand img {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: 36px;
+    width: auto;
+}
+.ymo-admin-brand-tag {
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-align: center;
+    padding: 0.5rem 1.5rem 1.25rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 1rem;
+}
+.ymo-admin-side nav a {
+    display: block;
+    padding: 0.6rem 1.5rem;
+    color: #cbd5e1;
+    text-decoration: none;
+    font-weight: 500;
+    border-left: 3px solid transparent;
+}
+.ymo-admin-side nav a:hover, .ymo-admin-side nav a.active {
+    color: #fff;
+    background: rgba(255,255,255,0.05);
+    border-left-color: var(--ymo-primary);
+}
+.ymo-admin-nav-label {
+    padding: 0.25rem 1.5rem 0.35rem;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.45);
+    font-weight: 600;
+}
+.ymo-admin-main {
+    padding: 1.5rem 2rem;
+}
+@media (max-width: 768px) {
+    .ymo-admin-shell { grid-template-columns: 1fr; }
+    .ymo-admin-side { display: none; }
+}
+
+/* ---------------- Utility -------------------------------------------- */
+.ymo-muted { color: var(--ymo-grey-500); }
+.ymo-divider { border: 0; border-top: 1px solid var(--ymo-grey-300); margin: 1.5rem 0; }
+
+table.ymo-table { width: 100%; background:#fff; border-radius: var(--ymo-radius); overflow:hidden; box-shadow: var(--ymo-shadow-sm); }
+table.ymo-table thead th { background: var(--ymo-grey-100); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ymo-grey-700); padding: 0.75rem 1rem; }
+table.ymo-table tbody td  { padding: 0.85rem 1rem; border-top: 1px solid var(--ymo-grey-100); vertical-align: middle; }
+table.ymo-table tbody tr:hover { background: var(--ymo-grey-100); }
+
+/* CRM pipeline kanban */
+.ymo-pipeline {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    align-items: start;
+}
+.ymo-pipeline-col {
+    background: var(--ymo-grey-100);
+    border-radius: var(--ymo-radius);
+    padding: 0.75rem;
+    min-height: 120px;
+}
+.ymo-pipeline-col h6 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ymo-grey-700);
+    margin-bottom: 0.75rem;
+}
+.ymo-pipeline-card {
+    background: #fff;
+    border-radius: calc(var(--ymo-radius) - 2px);
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    box-shadow: var(--ymo-shadow-sm);
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+.ymo-pipeline-card:hover {
+    box-shadow: var(--ymo-shadow-md);
+    color: inherit;
+}
+.ymo-pipeline-card .name { font-weight: 600; font-size: 0.9rem; }
+.ymo-pipeline-card .meta { font-size: 0.78rem; color: var(--ymo-grey-500); }
+.badge-priority-high { background: #fee2e2; color: #991b1b; }
+.badge-stage { font-size: 0.72rem; text-transform: capitalize; }
+
+/* ============================================================================
+   Material 3 components
+   ========================================================================= */
+
+/* ---------------- Material Symbols icon ------------------------------- */
+.mi {
+    font-family: 'Material Symbols Rounded';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 20px;
+    display: inline-flex;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    font-feature-settings: 'liga';
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+}
+.mi.mi-fill   { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+.mi.mi-sm     { font-size: 18px; }
+.mi.mi-lg     { font-size: 28px; }
+.mi.mi-xl     { font-size: 40px; }
+.mi-leading   { margin-right: 0.4rem; }
+.mi-trailing  { margin-left: 0.4rem; }
+
+/* ---------------- Material card variants ------------------------------- */
+.md-card-outlined {
+    background: #fff;
+    border: 1px solid var(--ymo-grey-300);
+    border-radius: var(--ymo-radius-lg);
+    padding: 1.25rem;
+}
+.md-card-elevated {
+    background: #fff;
+    border-radius: var(--ymo-radius-lg);
+    box-shadow: var(--md-elev-1);
+    padding: 1.25rem;
+    transition: box-shadow .2s ease, transform .2s ease;
+}
+.md-card-elevated:hover { box-shadow: var(--md-elev-3); }
+.md-card-filled {
+    background: var(--ymo-primary-soft);
+    border-radius: var(--ymo-radius-lg);
+    padding: 1.25rem;
+}
+
+/* Use these to upgrade existing .ymo-package-card / .ymo-card without
+   touching every view. The package cards now use MD3 elevation tiers. */
+.ymo-package-card {
+    box-shadow: var(--md-elev-1);
+}
+.ymo-package-card:hover {
+    box-shadow: var(--md-elev-4);
+    transform: translateY(-3px);
+}
+
+/* ---------------- Floating Action Button (FAB) ----------------------- */
+.md-fab {
+    position: fixed;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    z-index: 1030;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--ymo-primary);
+    color: #fff;
+    border: 0;
+    border-radius: 16px;
+    padding: 0.95rem 1.25rem;
+    box-shadow: var(--md-elev-3);
+    font-weight: 600;
+    text-decoration: none;
+    transition: box-shadow .2s ease, transform .15s ease, background .15s ease;
+}
+.md-fab:hover {
+    background: var(--ymo-primary-dark);
+    color: #fff;
+    box-shadow: var(--md-elev-4);
+    text-decoration: none;
+}
+.md-fab:active { transform: scale(0.97); }
+.md-fab .mi { color: #fff; }
+.md-fab.md-fab--icon-only {
+    padding: 1rem;
+    border-radius: 50%;
+}
+
+/* ---------------- Snackbar ------------------------------------------- */
+.md-snackbar-host {
+    position: fixed;
+    left: 50%;
+    bottom: 1.25rem;
+    transform: translateX(-50%);
+    z-index: 1080;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    pointer-events: none;
+    width: min(92vw, 480px);
+}
+.md-snackbar {
+    pointer-events: auto;
+    background: var(--ymo-grey-900);
+    color: #fff;
+    border-radius: var(--ymo-radius);
+    box-shadow: var(--md-elev-4);
+    padding: 0.85rem 1rem 0.85rem 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.92rem;
+    line-height: 1.35;
+    animation: md-snackbar-in .25s ease;
+}
+.md-snackbar.is-leaving { animation: md-snackbar-out .2s ease forwards; }
+.md-snackbar .mi { color: rgba(255,255,255,0.85); }
+.md-snackbar.is-success .mi { color: #6ee7a4; }
+.md-snackbar.is-error   .mi { color: #fca5a5; }
+.md-snackbar.is-warning .mi { color: #fde68a; }
+.md-snackbar .md-snackbar-msg { flex: 1; }
+.md-snackbar .md-snackbar-close {
+    background: transparent;
+    border: 0;
+    color: rgba(255,255,255,0.85);
+    border-radius: 999px;
+    width: 28px; height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background .15s ease;
+}
+.md-snackbar .md-snackbar-close:hover { background: rgba(255,255,255,0.12); }
+@keyframes md-snackbar-in  {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes md-snackbar-out {
+    to { opacity: 0; transform: translateY(8px); }
+}
+
+/* ---------------- Ripple effect on .btn ------------------------------ */
+.btn { position: relative; overflow: hidden; }
+.md-ripple {
+    position: absolute;
+    border-radius: 50%;
+    transform: scale(0);
+    animation: md-ripple-anim .55s linear;
+    background: rgba(255, 255, 255, 0.45);
+    pointer-events: none;
+}
+.btn-outline-primary .md-ripple,
+.btn-light .md-ripple,
+.btn-link .md-ripple,
+.btn-outline-secondary .md-ripple {
+    background: rgba(58, 111, 55, 0.20);
+}
+@keyframes md-ripple-anim {
+    to { transform: scale(2.2); opacity: 0; }
+}
+
+/* ---------------- Status badge — icon-aware -------------------------- */
+.badge-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+.badge-status .mi { font-size: 14px; }

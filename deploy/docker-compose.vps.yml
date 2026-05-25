@@ -1,0 +1,12 @@
+# Production overlay — single VPS, TLS on host nginx/Caddy
+# Usage:
+#   docker compose -f docker-compose.yml -f deploy/docker-compose.vps.yml up -d --build
+#
+# Binds the Apache container to loopback only so only the host reverse proxy can reach it.
+# Also set restart policy. Remove or do not publish db:3306 in production (edit base compose or a private override).
+
+services:
+  app:
+    ports:
+      - "127.0.0.1:8080:80"
+    restart: unless-stopped

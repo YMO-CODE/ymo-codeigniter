@@ -1,0 +1,53 @@
+# Zero-friction local dev stack: PHP-Apache + MySQL.
+# Bring up:    docker compose up -d
+# Tear down:   docker compose down -v
+#
+# App will be at http://localhost:8080
+# MySQL at localhost:3307 (forwarded so you can hit it with a GUI client)
+
+services:
+  app:
+    build: .
+    container_name: ymo_app
+    working_dir: /var/www/html
+    volumes:
+      - ./public:/var/www/html
+      - ./application:/var/www/application
+      - ./system:/var/www/system
+      - ./storage:/var/www/storage
+      - ./vendor:/var/www/vendor
+    ports:
+      - "8080:80"
+    environment:
+      CI_ENV: development
+      YMO_DB_HOST: db
+      YMO_DB_NAME: ymo_booking
+      YMO_DB_USER: ymo_user
+      YMO_DB_PASS: ymo_pass
+      YMO_APP_URL: http://localhost:8080
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.0
+    container_name: ymo_db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: ymo_booking
+      MYSQL_USER: ymo_user
+      MYSQL_PASSWORD: ymo_pass
+    volumes:
+      - ymo_dbdata:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/02_seed.sql:ro
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uymo_user", "-pymo_pass"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  ymo_dbdata:

@@ -1,0 +1,11 @@
+Options -Indexes -ExecCGI
+
+# Disable PHP execution under uploads/ regardless of upload contents
+<FilesMatch "\.(php|phtml|php3|php4|php5|php7|phar|pl|py|jsp|asp|sh|cgi)$">
+    Require all denied
+</FilesMatch>
+
+# Only serve images
+<FilesMatch "\.(jpg|jpeg|png|webp|gif)$">
+    Require all granted
+</FilesMatch>
