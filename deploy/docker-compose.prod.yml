@@ -10,6 +10,19 @@ services:
     environment:
       CI_ENV: production
       YMO_DB_HOST: db
+      # !override base docker-compose.yml hardcoded dev credentials (ymo_pass).
+      YMO_DB_NAME: ${YMO_DB_NAME:-ymo_booking}
+      YMO_DB_USER: ${YMO_DB_USER:-ymo_user}
+      YMO_DB_PASS: ${YMO_DB_PASS:?Set YMO_DB_PASS in .env}
+      YMO_MAIL_HOST: ${YMO_MAIL_HOST:-}
+      YMO_MAIL_PORT: ${YMO_MAIL_PORT:-587}
+      YMO_MAIL_USER: ${YMO_MAIL_USER:-}
+      YMO_MAIL_PASS: ${YMO_MAIL_PASS:-}
+      YMO_MAIL_ENC: ${YMO_MAIL_ENC:-tls}
+      YMO_MAIL_FROM: ${YMO_MAIL_FROM:-}
+      YMO_MAIL_FROM_NAME: ${YMO_MAIL_FROM_NAME:-Your Mechanic Online}
+      YMO_SUPPORT_EMAIL: ${YMO_SUPPORT_EMAIL:-}
+      YMO_ADMIN_NOTIFY: ${YMO_ADMIN_NOTIFY:-}
     restart: unless-stopped
 
   db:
@@ -20,5 +33,8 @@ services:
       MYSQL_USER: ${YMO_DB_USER:-ymo_user}
       MYSQL_PASSWORD: ${YMO_DB_PASS:?Set YMO_DB_PASS in .env}
       MYSQL_ROOT_PASSWORD: ${YMO_DB_ROOT_PASS:-rootpass}
-    ports: []
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u${YMO_DB_USER:-ymo_user}", "-p${YMO_DB_PASS}"]
+    # !override: do not publish MySQL (base compose maps 3307:3306 for local dev).
+    ports: !override []
     restart: unless-stopped

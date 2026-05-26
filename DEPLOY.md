@@ -106,7 +106,7 @@ docker compose ... exec -T db mysql ... < database/seed.sql
 ### First admin
 
 ```bash
-docker compose ... exec app php public/index.php cli/install create_admin admin@yourmechaniconline.com "YMO Admin"
+docker compose ... exec app php index.php cli/install create_admin admin@yourmechaniconline.com "YMO Admin"
 ```
 
 ---
