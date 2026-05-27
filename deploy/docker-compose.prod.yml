@@ -14,15 +14,8 @@ services:
       YMO_DB_NAME: ${YMO_DB_NAME:-ymo_booking}
       YMO_DB_USER: ${YMO_DB_USER:-ymo_user}
       YMO_DB_PASS: ${YMO_DB_PASS:?Set YMO_DB_PASS in .env}
-      YMO_MAIL_HOST: ${YMO_MAIL_HOST:-}
-      YMO_MAIL_PORT: ${YMO_MAIL_PORT:-587}
-      YMO_MAIL_USER: ${YMO_MAIL_USER:-}
-      YMO_MAIL_PASS: ${YMO_MAIL_PASS:-}
-      YMO_MAIL_ENC: ${YMO_MAIL_ENC:-tls}
-      YMO_MAIL_FROM: ${YMO_MAIL_FROM:-}
-      YMO_MAIL_FROM_NAME: ${YMO_MAIL_FROM_NAME:-Your Mechanic Online}
-      YMO_SUPPORT_EMAIL: ${YMO_SUPPORT_EMAIL:-}
-      YMO_ADMIN_NOTIFY: ${YMO_ADMIN_NOTIFY:-}
+      # Mail/SMS/CRM: loaded from env_file (.env) only — do not set empty defaults here
+      # or they override env_file and break SMTP after recreate.
     restart: unless-stopped
 
   db:

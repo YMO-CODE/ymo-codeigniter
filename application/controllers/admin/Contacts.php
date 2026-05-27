@@ -91,6 +91,175 @@ class Contacts extends Crm_Controller
         );
     }
 
+    public function import()
+    {
+        $this->require_perm('contacts.edit');
+        $this->render('admin/contacts/import', array(
+            'title'   => 'Import contacts',
+            'preview' => NULL,
+        ));
+    }
+
+    public function import_template()
+    {
+        $this->require_perm('contacts.edit');
+        crm_csv_download('crm-contacts-import-template.csv',
+            array('name', 'mobile', 'email', 'company', 'notes', 'tags'),
+            array(
+                array('Rajesh Kumar', '9876543210', 'rajesh@example.com', '', 'Sample visit note', 'exhibition-wakad-2026'),
+            )
+        );
+    }
+
+    public function import_preview()
+    {
+        $this->require_perm('contacts.edit');
+        if (empty($_FILES['csv_file']['tmp_name'])) {
+            $this->flash('danger', 'Please choose a CSV file to upload.');
+            redirect(admin_url('contacts/import'));
+        }
+
+        $rows = $this->_parse_import_csv($_FILES['csv_file']['tmp_name']);
+        if (empty($rows)) {
+            $this->flash('danger', 'No valid rows found. Expected columns: name, mobile, email, company, notes, tags');
+            redirect(admin_url('contacts/import'));
+        }
+
+        $preview = array(
+            'total'     => count($rows),
+            'new'       => 0,
+            'duplicate' => 0,
+            'sample'    => array(),
+        );
+        foreach ($rows as $i => $row) {
+            $existing = $this->crm_contact_model->find_existing($row);
+            if ($existing) {
+                $preview['duplicate']++;
+            } else {
+                $preview['new']++;
+            }
+            if ($i < 15) {
+                $preview['sample'][] = array(
+                    'row'      => $row,
+                    'existing' => $existing,
+                );
+            }
+        }
+
+        $this->session->set_userdata('crm_import_rows', $rows);
+        $this->render('admin/contacts/import', array(
+            'title'   => 'Import contacts — preview',
+            'preview' => $preview,
+        ));
+    }
+
+    public function import_commit()
+    {
+        $this->require_perm('contacts.edit');
+        $rows = $this->session->userdata('crm_import_rows');
+        if (!is_array($rows) || empty($rows)) {
+            $this->flash('danger', 'Import session expired. Upload the CSV again.');
+            redirect(admin_url('contacts/import'));
+        }
+
+        $policy = $this->input->post('duplicate_policy');
+        if (!in_array($policy, array('skip', 'update', 'merge_notes'), TRUE)) {
+            $policy = 'merge_notes';
+        }
+
+        $stats = array('created' => 0, 'updated' => 0, 'merged' => 0, 'skipped' => 0, 'errors' => 0);
+        $this->db->trans_start();
+        foreach ($rows as $row) {
+            $result = $this->crm_contact_model->import_row($row, $policy);
+            if (!empty($result['action']) && isset($stats[$result['action']])) {
+                $stats[$result['action']]++;
+            } elseif ($result['action'] === 'error') {
+                $stats['errors']++;
+            }
+            if (!empty($row['tags']) && !empty($result['id']) && $result['action'] !== 'skipped') {
+                $this->_apply_import_tags((int) $result['id'], (string) $row['tags'], $policy);
+            }
+        }
+        $this->db->trans_complete();
+        if (!$this->db->trans_status()) {
+            $this->flash('danger', 'Import failed — no changes were saved. Try again.');
+            redirect(admin_url('contacts/import'));
+        }
+
+        $this->session->unset_userdata('crm_import_rows');
+        $this->audit->log('admin', $this->admin['id'], 'crm.contacts.import', 'crm_contact', 0, $stats);
+        $this->flash('success', sprintf(
+            'Import complete: %d created, %d merged, %d updated, %d skipped, %d errors.',
+            $stats['created'], $stats['merged'], $stats['updated'], $stats['skipped'], $stats['errors']
+        ));
+        redirect(admin_url('contacts'));
+    }
+
+    protected function _parse_import_csv($path)
+    {
+        $fh = fopen($path, 'r');
+        if (!$fh) {
+            return array();
+        }
+
+        $header = fgetcsv($fh);
+        if (!$header) {
+            fclose($fh);
+            return array();
+        }
+
+        $map = array();
+        foreach ($header as $i => $col) {
+            $key = strtolower(trim(preg_replace('/[^a-z0-9_]/', '', str_replace(' ', '_', $col))));
+            if ($key !== '') {
+                $map[$key] = $i;
+            }
+        }
+        if (!isset($map['name'])) {
+            fclose($fh);
+            return array();
+        }
+
+        $rows = array();
+        while (($line = fgetcsv($fh)) !== FALSE) {
+            $name = trim((string) ($line[$map['name']] ?? ''));
+            if ($name === '') {
+                continue;
+            }
+            $rows[] = array(
+                'name'    => $name,
+                'mobile'  => isset($map['mobile']) ? (string) ($line[$map['mobile']] ?? '') : '',
+                'email'   => isset($map['email']) ? (string) ($line[$map['email']] ?? '') : '',
+                'company' => isset($map['company']) ? (string) ($line[$map['company']] ?? '') : '',
+                'notes'   => isset($map['notes']) ? (string) ($line[$map['notes']] ?? '') : '',
+                'tags'    => isset($map['tags']) ? (string) ($line[$map['tags']] ?? '') : '',
+            );
+        }
+        fclose($fh);
+        return $rows;
+    }
+
+    protected function _apply_import_tags($contact_id, $tags_csv, $policy)
+    {
+        $names = array_filter(array_map('trim', explode(',', $tags_csv)));
+        if (empty($names)) {
+            return;
+        }
+        $tag_ids = array();
+        foreach ($names as $name) {
+            $tag_ids[] = $this->crm_tag_model->find_or_create($name);
+        }
+        if ($policy === 'update') {
+            $this->crm_tag_model->sync_contact_tags($contact_id, $tag_ids);
+            return;
+        }
+        $existing = $this->crm_tag_model->for_contact($contact_id);
+        foreach ($existing as $t) {
+            $tag_ids[] = (int) $t['id'];
+        }
+        $this->crm_tag_model->sync_contact_tags($contact_id, array_values(array_unique($tag_ids)));
+    }
+
     protected function _form($contact)
     {
         $tag_ids = array();

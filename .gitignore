@@ -17,3 +17,6 @@ Thumbs.db
 node_modules/
 .idea/
 .vscode/
+/import/source/*.xlsx
+/import/staging/*.csv
+/import/staging/*.json

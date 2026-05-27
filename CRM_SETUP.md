@@ -25,6 +25,7 @@ This document lists everything **you must do manually** after the CRM code is in
 13. [Training & handover](#13-training--handover)
 14. [Not automated (known gaps)](#14-not-automated-known-gaps)
 15. [Booking service invoices](#15-booking-service-invoices)
+16. [Import legacy customer contacts (Excel → CSV)](#16-import-legacy-customer-contacts-excel--csv)
 
 ---
 
@@ -711,6 +712,7 @@ Use this before handing over to the client team.
 - [ ] Create / edit contact
 - [ ] Tags (create new tag inline)
 - [ ] Export contacts CSV
+- [ ] Import contacts CSV (Admin → Contacts → Import CSV)
 - [ ] View booking history when contact linked to booking user
 
 ### Campaigns
@@ -770,7 +772,7 @@ Use this before handing over to the client team.
 |-------------|---------------|------------|
 | Bulk **WhatsApp** campaigns | Inbound webhook only | Use provider’s broadcast tool; log activity manually in CRM |
 | **Push notifications** | Not implemented | Email/SMS task reminders only |
-| **Google Sheets** sync | Not implemented | CSV export from Reports / Contacts |
+| **Google Sheets** sync | Not implemented | CSV export / Import CSV on Contacts |
 | **Assign mechanic to specific booking** | Not in schema | Mechanics see all bookings with `bookings.view` |
 | **Email invite flow for new staff** | Admin sets password in Team UI | Share generated password securely |
 | **Auto follow-up rules** | Manual task creation | Sales creates tasks when closing calls |
@@ -903,4 +905,62 @@ docker compose exec app php public/index.php cli/cron crm
 
 ---
 
-*Last updated: includes Team & Roles RBAC (v2), booking service invoices with PDF + GST.*
+## 16. Import legacy customer contacts (Excel → CSV)
+
+Use this to load historical customer data from the YMO customer workbook into **CRM → Contacts**.
+
+### Step 1 — Merge Excel tabs into one CSV
+
+1. Copy the workbook to `import/source/YMO Customer data sheet.xlsx`.
+2. Install Python dependency once: `pip install openpyxl`
+3. Run from the project root:
+
+```powershell
+python import/scripts/merge_ymo_customer_excel.py "import/source/YMO Customer data sheet.xlsx"
+```
+
+Output:
+
+- `import/staging/contacts_master.csv` — one row per unique mobile (visit history merged into `notes`)
+- `import/staging/contacts_merge_report.json` — row counts and dedup stats
+
+Expected: ~450–500 contacts from the Pune + exhibition sheets.
+
+### Step 2 — Import via Admin UI
+
+1. Sign in as admin → **Contacts** → **Import CSV**.
+2. Upload `import/staging/contacts_master.csv`.
+3. Review the preview (new vs duplicate counts).
+4. Choose duplicate policy:
+   - **Merge notes** (recommended) — append visit lines, add tags, keep existing email/name when CSV is sparse
+   - **Skip** — leave existing contacts unchanged
+   - **Update** — overwrite contact fields and tags from CSV
+5. Click **Import now**.
+
+Contacts with a matching booking **user** (same mobile or email) are linked automatically (`user_id`).
+
+### Step 3 — Verify before production commit
+
+Spot-check these names in the preview table after upload:
+
+- Anoop, Sachin Chitnis (repeat visits merged into notes)
+- Rahul, Snehal (exhibition / Wakad leads)
+
+Expected dry-run on a fresh CRM: **~505 creates**, 0 duplicates. Re-import with **Merge notes** if you need to refresh visit history.
+
+The merge report (`import/staging/contacts_merge_report.json`) lists invalid phone samples and name-only contacts for manual review.
+
+### CSV format (any future import)
+
+| Column | Required | Notes |
+|--------|----------|-------|
+| name | Yes | |
+| mobile | No | 10-digit Indian mobile preferred |
+| email | No | |
+| company | No | |
+| notes | No | Multi-line visit history is OK |
+| tags | No | Comma-separated tag names |
+
+---
+
+*Last updated: includes Team & Roles RBAC (v2), booking service invoices with PDF + GST, contacts CSV import.*

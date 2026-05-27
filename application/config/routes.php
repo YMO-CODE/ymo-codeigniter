@@ -72,6 +72,10 @@ if (ymo_is_admin_host_request()) {
 
     $route['contacts']                         = 'admin/contacts/index';
     $route['contacts/new']                     = 'admin/contacts/create';
+    $route['contacts/import']                  = 'admin/contacts/import';
+    $route['contacts/import/template']         = 'admin/contacts/import_template';
+    $route['contacts/import/preview']          = 'admin/contacts/import_preview';
+    $route['contacts/import/commit']           = 'admin/contacts/import_commit';
     $route['contacts/export']                  = 'admin/contacts/export';
     $route['contacts/(:num)']                  = 'admin/contacts/view/$1';
     $route['contacts/(:num)/edit']             = 'admin/contacts/edit/$1';
@@ -143,6 +147,10 @@ if (ymo_is_admin_host_request()) {
     $route['admin/tasks/(:num)/skip']          = 'admin/tasks/skip/$1';
     $route['admin/contacts']                   = 'admin/contacts/index';
     $route['admin/contacts/new']               = 'admin/contacts/create';
+    $route['admin/contacts/import']            = 'admin/contacts/import';
+    $route['admin/contacts/import/template']   = 'admin/contacts/import_template';
+    $route['admin/contacts/import/preview']    = 'admin/contacts/import_preview';
+    $route['admin/contacts/import/commit']     = 'admin/contacts/import_commit';
     $route['admin/contacts/export']            = 'admin/contacts/export';
     $route['admin/contacts/(:num)']            = 'admin/contacts/view/$1';
     $route['admin/contacts/(:num)/edit']       = 'admin/contacts/edit/$1';
@@ -249,6 +257,10 @@ if (ymo_is_admin_host_request()) {
     $route['admin/tasks/(:num)/skip'] = 'admin/tasks/skip/$1';
     $route['admin/contacts'] = 'admin/contacts/index';
     $route['admin/contacts/new'] = 'admin/contacts/create';
+    $route['admin/contacts/import'] = 'admin/contacts/import';
+    $route['admin/contacts/import/template'] = 'admin/contacts/import_template';
+    $route['admin/contacts/import/preview'] = 'admin/contacts/import_preview';
+    $route['admin/contacts/import/commit'] = 'admin/contacts/import_commit';
     $route['admin/contacts/export'] = 'admin/contacts/export';
     $route['admin/contacts/(:num)'] = 'admin/contacts/view/$1';
     $route['admin/contacts/(:num)/edit'] = 'admin/contacts/edit/$1';

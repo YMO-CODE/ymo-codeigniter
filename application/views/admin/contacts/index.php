@@ -2,6 +2,9 @@
 <div class="d-flex justify-content-between mb-3 flex-wrap gap-2">
     <div>
         <a href="<?= admin_url('contacts/export'); ?>" class="btn btn-outline-secondary btn-sm">Export CSV</a>
+        <?php if ($can_edit): ?>
+            <a href="<?= admin_url('contacts/import'); ?>" class="btn btn-outline-primary btn-sm ms-1">Import CSV</a>
+        <?php endif; ?>
     </div>
     <?php if ($can_edit): ?>
         <a href="<?= admin_url('contacts/new'); ?>" class="btn btn-primary btn-sm"><span class="mi mi-sm mi-leading">add</span>New contact</a>
