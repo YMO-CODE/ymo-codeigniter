@@ -127,6 +127,14 @@ Restart app after `.env` URL changes:
 docker compose -f docker-compose.yml -f deploy/docker-compose.vps.yml -f deploy/docker-compose.prod.yml restart app
 ```
 
+After `git pull`, sync code into the running container (volume-mounted app — no rebuild needed):
+
+```bash
+bash deploy/scripts/sync-code.sh
+```
+
+If **Import CSV** is missing after pull, hard-refresh `https://admin.yourmechaniconline.com/contacts` or open `/contacts/import` directly while signed in as Administrator.
+
 ---
 
 ## 5. WordPress (GoDaddy)

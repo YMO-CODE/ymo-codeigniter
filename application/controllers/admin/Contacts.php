@@ -119,7 +119,7 @@ class Contacts extends Crm_Controller
             redirect(admin_url('contacts/import'));
         }
 
-        $rows = $this->_parse_import_csv($_FILES['csv_file']['tmp_name']);
+        $rows = crm_parse_contacts_csv($_FILES['csv_file']['tmp_name']);
         if (empty($rows)) {
             $this->flash('danger', 'No valid rows found. Expected columns: name, mobile, email, company, notes, tags');
             redirect(admin_url('contacts/import'));
@@ -193,50 +193,6 @@ class Contacts extends Crm_Controller
             $stats['created'], $stats['merged'], $stats['updated'], $stats['skipped'], $stats['errors']
         ));
         redirect(admin_url('contacts'));
-    }
-
-    protected function _parse_import_csv($path)
-    {
-        $fh = fopen($path, 'r');
-        if (!$fh) {
-            return array();
-        }
-
-        $header = fgetcsv($fh);
-        if (!$header) {
-            fclose($fh);
-            return array();
-        }
-
-        $map = array();
-        foreach ($header as $i => $col) {
-            $key = strtolower(trim(preg_replace('/[^a-z0-9_]/', '', str_replace(' ', '_', $col))));
-            if ($key !== '') {
-                $map[$key] = $i;
-            }
-        }
-        if (!isset($map['name'])) {
-            fclose($fh);
-            return array();
-        }
-
-        $rows = array();
-        while (($line = fgetcsv($fh)) !== FALSE) {
-            $name = trim((string) ($line[$map['name']] ?? ''));
-            if ($name === '') {
-                continue;
-            }
-            $rows[] = array(
-                'name'    => $name,
-                'mobile'  => isset($map['mobile']) ? (string) ($line[$map['mobile']] ?? '') : '',
-                'email'   => isset($map['email']) ? (string) ($line[$map['email']] ?? '') : '',
-                'company' => isset($map['company']) ? (string) ($line[$map['company']] ?? '') : '',
-                'notes'   => isset($map['notes']) ? (string) ($line[$map['notes']] ?? '') : '',
-                'tags'    => isset($map['tags']) ? (string) ($line[$map['tags']] ?? '') : '',
-            );
-        }
-        fclose($fh);
-        return $rows;
     }
 
     protected function _apply_import_tags($contact_id, $tags_csv, $policy)

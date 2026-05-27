@@ -108,3 +108,55 @@ if (!function_exists('crm_csv_download')) {
         exit;
     }
 }
+
+if (!function_exists('crm_parse_contacts_csv')) {
+    /**
+     * Parse a contacts import CSV file.
+     *
+     * @param string $path Absolute or relative path readable by PHP
+     * @return array[] Rows with keys: name, mobile, email, company, notes, tags
+     */
+    function crm_parse_contacts_csv($path)
+    {
+        $fh = fopen($path, 'r');
+        if (!$fh) {
+            return array();
+        }
+
+        $header = fgetcsv($fh);
+        if (!$header) {
+            fclose($fh);
+            return array();
+        }
+
+        $map = array();
+        foreach ($header as $i => $col) {
+            $key = strtolower(trim(preg_replace('/[^a-z0-9_]/', '', str_replace(' ', '_', $col))));
+            if ($key !== '') {
+                $map[$key] = $i;
+            }
+        }
+        if (!isset($map['name'])) {
+            fclose($fh);
+            return array();
+        }
+
+        $rows = array();
+        while (($line = fgetcsv($fh)) !== FALSE) {
+            $name = trim((string) ($line[$map['name']] ?? ''));
+            if ($name === '') {
+                continue;
+            }
+            $rows[] = array(
+                'name'    => $name,
+                'mobile'  => isset($map['mobile']) ? (string) ($line[$map['mobile']] ?? '') : '',
+                'email'   => isset($map['email']) ? (string) ($line[$map['email']] ?? '') : '',
+                'company' => isset($map['company']) ? (string) ($line[$map['company']] ?? '') : '',
+                'notes'   => isset($map['notes']) ? (string) ($line[$map['notes']] ?? '') : '',
+                'tags'    => isset($map['tags']) ? (string) ($line[$map['tags']] ?? '') : '',
+            );
+        }
+        fclose($fh);
+        return $rows;
+    }
+}

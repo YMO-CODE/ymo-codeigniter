@@ -13,6 +13,14 @@ if [[ ! -f .env ]]; then
   exit 1
 fi
 
+echo "==> Pulling latest application code..."
+if git status --porcelain 2>/dev/null | grep -qE '^.. deploy/docker-compose\.(prod|vps)\.yml$'; then
+  echo "    Resetting local compose overrides before pull..."
+  git checkout -- deploy/docker-compose.prod.yml deploy/docker-compose.vps.yml 2>/dev/null || true
+fi
+git fetch origin 2>/dev/null && git pull origin master 2>/dev/null || echo "    (git pull skipped — not a git repo or offline)"
+echo "    HEAD: $(git log -1 --oneline 2>/dev/null || echo 'unknown')"
+
 echo "==> Ensuring upload directories..."
 mkdir -p storage/logs \
   public/uploads/vehicles \

@@ -20,3 +20,4 @@ node_modules/
 /import/source/*.xlsx
 /import/staging/*.csv
 /import/staging/*.json
+/storage/import/*.csv
