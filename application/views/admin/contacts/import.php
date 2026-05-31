@@ -9,7 +9,7 @@
         <?php if (!$preview): ?>
         <div class="ymo-card mb-3">
             <p class="text-muted small mb-3">
-                Upload a CSV with columns: <strong>name</strong>, mobile, email, company, notes, tags.
+                Upload a CSV with columns: <strong>name</strong>, mobile, email, workshop, notes, tags.
                 Tags can be comma-separated in one cell. Use <strong>merge notes</strong> to append visit history without overwriting existing contacts.
                 <a href="<?= admin_url('contacts/import/template'); ?>">Download CSV template</a>
             </p>

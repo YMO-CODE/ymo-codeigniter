@@ -290,14 +290,14 @@ def main():
             "name": entry["name"],
             "mobile": entry["mobile"],
             "email": entry["email"],
-            "company": "",
+            "workshop": "",
             "notes": notes,
             "tags": tags,
         })
     rows_out.sort(key=lambda r: (r["name"].lower(), r["mobile"]))
 
     with OUT_CSV.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=["name", "mobile", "email", "company", "notes", "tags"])
+        w = csv.DictWriter(f, fieldnames=["name", "mobile", "email", "workshop", "notes", "tags"])
         w.writeheader()
         w.writerows(rows_out)
 

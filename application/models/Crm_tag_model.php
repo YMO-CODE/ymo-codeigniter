@@ -60,4 +60,14 @@ class Crm_tag_model extends CI_Model
             }
         }
     }
+
+    /** Add tags without removing existing ones. */
+    public function merge_contact_tags($contact_id, array $tag_ids)
+    {
+        $existing = $this->for_contact($contact_id);
+        foreach ($existing as $t) {
+            $tag_ids[] = (int) $t['id'];
+        }
+        $this->sync_contact_tags($contact_id, array_values(array_unique(array_filter($tag_ids))));
+    }
 }

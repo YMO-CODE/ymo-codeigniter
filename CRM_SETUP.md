@@ -957,7 +957,7 @@ The merge report (`import/staging/contacts_merge_report.json`) lists invalid pho
 | name | Yes | |
 | mobile | No | 10-digit Indian mobile preferred |
 | email | No | |
-| company | No | |
+| workshop | No | Service location (e.g. G1 Pune, Wakad). CSV column `company` also accepted. |
 | notes | No | Multi-line visit history is OK |
 | tags | No | Comma-separated tag names |
 

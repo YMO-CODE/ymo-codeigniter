@@ -24,12 +24,69 @@
         <div class="col-md-2"><button class="btn btn-primary w-100">Filter</button></div>
     </div>
 </form>
+
+<?php if ($can_edit): ?>
+<?= form_open(admin_url('contacts/bulk-edit'), array('id' => 'contacts-bulk-form')); ?>
+<div class="ymo-card mb-3 d-none" id="contacts-bulk-bar">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+        <strong><span id="contacts-bulk-count">0</span> selected</strong>
+        <button type="button" class="btn btn-sm btn-link" data-contacts-clear-selection>Clear selection</button>
+    </div>
+    <div class="row g-3 align-items-end">
+        <div class="col-md-4">
+            <label class="form-check small mb-2">
+                <input type="checkbox" name="apply_workshop" value="1" id="bulk_apply_workshop">
+                Update workshop
+            </label>
+            <input class="form-control form-control-sm" name="workshop" placeholder="e.g. G1 Pune, G2 Pune, Wakad">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label small mb-1">Tags</label>
+            <select name="tag_mode" class="form-select form-select-sm">
+                <option value="none">Do not change tags</option>
+                <option value="add">Add tags (keep existing)</option>
+                <option value="replace">Replace all tags</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label small mb-1">Tag names</label>
+            <div class="border rounded p-2 mb-2" style="max-height:120px;overflow-y:auto">
+                <?php foreach ($tags as $t): ?>
+                    <label class="form-check form-check-inline small me-2 mb-1">
+                        <input type="checkbox" name="tag_ids[]" value="<?= (int) $t['id']; ?>">
+                        <?= html_escape($t['name']); ?>
+                    </label>
+                <?php endforeach; ?>
+            </div>
+            <input class="form-control form-control-sm" name="new_tag" placeholder="Or new tag name">
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary btn-sm" data-confirm="Apply bulk changes to the selected contacts?">Apply to selected</button>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
 <div class="ymo-card p-0">
-    <table class="ymo-table mb-0">
-        <thead><tr><th>Name</th><th>Mobile</th><th>Email</th><th>Company</th><th></th></tr></thead>
+    <table class="ymo-table mb-0" id="contacts-table">
+        <thead>
+            <tr>
+                <?php if ($can_edit): ?>
+                    <th style="width:2.5rem"><input type="checkbox" id="contacts-select-all" aria-label="Select all on this page"></th>
+                <?php endif; ?>
+                <th>Name</th>
+                <th>Mobile</th>
+                <th>Email</th>
+                <th>Workshop</th>
+                <th></th>
+            </tr>
+        </thead>
         <tbody>
         <?php foreach ($rows as $c): ?>
             <tr>
+                <?php if ($can_edit): ?>
+                    <td><input type="checkbox" class="contact-row-check" name="contact_ids[]" value="<?= (int) $c['id']; ?>"></td>
+                <?php endif; ?>
                 <td><?= html_escape($c['name']); ?></td>
                 <td class="small"><?= html_escape($c['mobile']); ?></td>
                 <td class="small"><?= html_escape($c['email']); ?></td>
@@ -40,6 +97,10 @@
         </tbody>
     </table>
 </div>
+
+<?php if ($can_edit): ?>
+<?= form_close(); ?>
+<?php endif; ?>
 
 <?php if ($pages > 1): ?>
     <nav class="mt-3">

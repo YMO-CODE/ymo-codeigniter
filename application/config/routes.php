@@ -76,6 +76,7 @@ if (ymo_is_admin_host_request()) {
     $route['contacts/import/template']         = 'admin/contacts/import_template';
     $route['contacts/import/preview']          = 'admin/contacts/import_preview';
     $route['contacts/import/commit']           = 'admin/contacts/import_commit';
+    $route['contacts/bulk-edit']              = 'admin/contacts/bulk_edit';
     $route['contacts/export']                  = 'admin/contacts/export';
     $route['contacts/(:num)']                  = 'admin/contacts/view/$1';
     $route['contacts/(:num)/edit']             = 'admin/contacts/edit/$1';
@@ -151,6 +152,7 @@ if (ymo_is_admin_host_request()) {
     $route['admin/contacts/import/template']   = 'admin/contacts/import_template';
     $route['admin/contacts/import/preview']    = 'admin/contacts/import_preview';
     $route['admin/contacts/import/commit']     = 'admin/contacts/import_commit';
+    $route['admin/contacts/bulk-edit']         = 'admin/contacts/bulk_edit';
     $route['admin/contacts/export']            = 'admin/contacts/export';
     $route['admin/contacts/(:num)']            = 'admin/contacts/view/$1';
     $route['admin/contacts/(:num)/edit']       = 'admin/contacts/edit/$1';
@@ -261,6 +263,7 @@ if (ymo_is_admin_host_request()) {
     $route['admin/contacts/import/template'] = 'admin/contacts/import_template';
     $route['admin/contacts/import/preview'] = 'admin/contacts/import_preview';
     $route['admin/contacts/import/commit'] = 'admin/contacts/import_commit';
+    $route['admin/contacts/bulk-edit'] = 'admin/contacts/bulk_edit';
     $route['admin/contacts/export'] = 'admin/contacts/export';
     $route['admin/contacts/(:num)'] = 'admin/contacts/view/$1';
     $route['admin/contacts/(:num)/edit'] = 'admin/contacts/edit/$1';

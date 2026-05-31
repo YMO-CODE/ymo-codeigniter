@@ -97,4 +97,62 @@
             if (instance) { instance.hide(); }
         });
     });
+
+    // Contacts list — bulk select bar
+    (function () {
+        var table = document.getElementById('contacts-table');
+        if (!table) { return; }
+
+        var bulkBar = document.getElementById('contacts-bulk-bar');
+        var selectAll = document.getElementById('contacts-select-all');
+        var countEl = document.getElementById('contacts-bulk-count');
+        var rowChecks = function () {
+            return table.querySelectorAll('.contact-row-check');
+        };
+
+        var syncBulkBar = function () {
+            var checked = table.querySelectorAll('.contact-row-check:checked');
+            var n = checked.length;
+            if (countEl) { countEl.textContent = String(n); }
+            if (bulkBar) {
+                bulkBar.classList.toggle('d-none', n === 0);
+            }
+            if (selectAll) {
+                var all = rowChecks();
+                selectAll.checked = all.length > 0 && n === all.length;
+                selectAll.indeterminate = n > 0 && n < all.length;
+            }
+        };
+
+        table.addEventListener('change', function (e) {
+            if (e.target.classList.contains('contact-row-check') || e.target.id === 'contacts-select-all') {
+                if (e.target.id === 'contacts-select-all') {
+                    rowChecks().forEach(function (cb) { cb.checked = e.target.checked; });
+                }
+                syncBulkBar();
+            }
+        });
+
+        document.querySelectorAll('[data-contacts-clear-selection]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                rowChecks().forEach(function (cb) { cb.checked = false; });
+                if (selectAll) {
+                    selectAll.checked = false;
+                    selectAll.indeterminate = false;
+                }
+                syncBulkBar();
+            });
+        });
+
+        var bulkForm = document.getElementById('contacts-bulk-form');
+        if (bulkForm) {
+            bulkForm.addEventListener('submit', function (e) {
+                var n = table.querySelectorAll('.contact-row-check:checked').length;
+                if (n === 0) {
+                    e.preventDefault();
+                    window.alert('Select at least one contact.');
+                }
+            });
+        }
+    })();
 })();

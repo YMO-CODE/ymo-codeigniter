@@ -140,6 +140,9 @@ if (!function_exists('crm_parse_contacts_csv')) {
             fclose($fh);
             return array();
         }
+        if (isset($map['workshop'])) {
+            $map['company'] = $map['workshop'];
+        }
 
         $rows = array();
         while (($line = fgetcsv($fh)) !== FALSE) {

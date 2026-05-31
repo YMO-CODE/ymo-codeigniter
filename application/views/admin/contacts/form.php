@@ -1,6 +1,7 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 $is_edit = !empty($contact);
-$action = $is_edit ? admin_url('contacts/'.$contact['id'].'/edit') : admin_url('contacts/new');
+$action  = $is_edit ? admin_url('contacts/'.$contact['id'].'/edit') : admin_url('contacts/new');
+$cancel_url = $is_edit ? admin_url('contacts/'.$contact['id']) : admin_url('contacts');
 ?>
 <div class="row justify-content-center">
     <div class="col-lg-8">
@@ -12,7 +13,7 @@ $action = $is_edit ? admin_url('contacts/'.$contact['id'].'/edit') : admin_url('
                 <div class="col-md-6"><div class="form-floating"><input class="form-control" name="name" required value="<?= html_escape(set_value('name', $contact['name'] ?? '')); ?>"><label>Name *</label></div></div>
                 <div class="col-md-6"><div class="form-floating"><input class="form-control" name="mobile" value="<?= html_escape(set_value('mobile', $contact['mobile'] ?? '')); ?>"><label>Mobile</label></div></div>
                 <div class="col-md-6"><div class="form-floating"><input class="form-control" type="email" name="email" value="<?= html_escape(set_value('email', $contact['email'] ?? '')); ?>"><label>Email</label></div></div>
-                <div class="col-md-6"><div class="form-floating"><input class="form-control" name="company" value="<?= html_escape(set_value('company', $contact['company'] ?? '')); ?>"><label>Company</label></div></div>
+                <div class="col-md-6"><div class="form-floating"><input class="form-control" name="company" value="<?= html_escape(set_value('company', $contact['company'] ?? '')); ?>" placeholder=" "><label>Workshop</label></div></div>
                 <div class="col-12"><div class="form-floating"><textarea class="form-control" name="notes" style="height:100px"><?= html_escape(set_value('notes', $contact['notes'] ?? '')); ?></textarea><label>Notes</label></div></div>
                 <div class="col-12">
                     <label class="form-label small">Tags</label>
@@ -28,7 +29,10 @@ $action = $is_edit ? admin_url('contacts/'.$contact['id'].'/edit') : admin_url('
                     <label class="form-check small"><input type="checkbox" name="email_opt_out" value="1" <?= !empty($contact['email_opt_out']) ? 'checked' : ''; ?>> Email opt-out</label>
                     <label class="form-check small ms-3"><input type="checkbox" name="sms_opt_out" value="1" <?= !empty($contact['sms_opt_out']) ? 'checked' : ''; ?>> SMS opt-out</label>
                 </div>
-                <div class="col-12"><button class="btn btn-primary">Save</button></div>
+                <div class="col-12 d-flex flex-wrap gap-2">
+                    <button class="btn btn-primary" type="submit">Save</button>
+                    <a href="<?= $cancel_url; ?>" class="btn btn-outline-secondary">Cancel</a>
+                </div>
             </div>
             <?= form_close(); ?>
         </div>

@@ -5,7 +5,7 @@
         <div class="md-card-elevated">
             <h2 class="h4"><?= html_escape($contact['name']); ?></h2>
             <p class="ymo-muted small"><?= html_escape($contact['mobile']); ?> · <?= html_escape($contact['email']); ?></p>
-            <?php if ($contact['company']): ?><p><?= html_escape($contact['company']); ?></p><?php endif; ?>
+            <?php if ($contact['company']): ?><p class="small mb-1"><strong>Workshop:</strong> <?= html_escape($contact['company']); ?></p><?php endif; ?>
             <?php if ($tags): ?>
                 <p><?php foreach ($tags as $t): ?><span class="badge bg-light text-dark me-1"><?= html_escape($t['name']); ?></span><?php endforeach; ?></p>
             <?php endif; ?>

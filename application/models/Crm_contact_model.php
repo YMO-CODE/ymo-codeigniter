@@ -210,6 +210,35 @@ class Crm_contact_model extends CI_Model
         ));
     }
 
+    /** @param int[] $ids */
+    public function bulk_set_workshop(array $ids, $workshop)
+    {
+        $ids = array_values(array_filter(array_map('intval', $ids)));
+        if (empty($ids)) {
+            return 0;
+        }
+        $workshop = trim((string) $workshop) ?: NULL;
+        $this->db->where_in('id', $ids)->update(self::TABLE, array(
+            'company'    => $workshop,
+            'updated_at' => date('Y-m-d H:i:s'),
+        ));
+        return (int) $this->db->affected_rows();
+    }
+
+    /** @param int[] $ids */
+    public function find_many(array $ids)
+    {
+        $ids = array_values(array_filter(array_map('intval', $ids)));
+        if (empty($ids)) {
+            return array();
+        }
+        return $this->db
+            ->where_in('id', $ids)
+            ->where('deleted_at IS NULL', NULL, FALSE)
+            ->get(self::TABLE)
+            ->result_array();
+    }
+
     public function create_from_lead(array $lead)
     {
         return $this->create(array(

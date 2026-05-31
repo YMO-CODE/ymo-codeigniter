@@ -77,6 +77,82 @@ class Contacts extends Crm_Controller
         $this->_form($contact);
     }
 
+    public function bulk_edit()
+    {
+        $this->require_perm('contacts.edit');
+        if ($this->input->method() !== 'post') {
+            redirect(admin_url('contacts'));
+        }
+
+        $ids = array_values(array_unique(array_filter(array_map('intval', (array) $this->input->post('contact_ids')))));
+        if (empty($ids)) {
+            $this->flash('error', 'Select at least one contact.');
+            redirect(admin_url('contacts'));
+        }
+
+        $found = $this->crm_contact_model->find_many($ids);
+        if (count($found) !== count($ids)) {
+            $this->flash('error', 'Some selected contacts were not found.');
+            redirect(admin_url('contacts'));
+        }
+
+        $apply_workshop = $this->input->post('apply_workshop') === '1';
+        $tag_mode = $this->input->post('tag_mode');
+        if (!in_array($tag_mode, array('none', 'add', 'replace'), TRUE)) {
+            $tag_mode = 'none';
+        }
+
+        $tag_ids = array();
+        foreach ((array) $this->input->post('tag_ids') as $tid) {
+            $tid = (int) $tid;
+            if ($tid > 0) {
+                $tag_ids[] = $tid;
+            }
+        }
+        $new_tag = trim((string) $this->input->post('new_tag'));
+        if ($new_tag !== '') {
+            $tag_ids[] = $this->crm_tag_model->find_or_create($new_tag);
+        }
+        $tag_ids = array_values(array_unique($tag_ids));
+
+        if (!$apply_workshop && $tag_mode === 'none') {
+            $this->flash('error', 'Choose workshop and/or tags to update.');
+            redirect(admin_url('contacts'));
+        }
+        if ($tag_mode !== 'none' && empty($tag_ids)) {
+            $this->flash('error', 'Pick at least one tag or enter a new tag name.');
+            redirect(admin_url('contacts'));
+        }
+
+        $this->db->trans_start();
+        if ($apply_workshop) {
+            $this->crm_contact_model->bulk_set_workshop($ids, $this->input->post('workshop'));
+        }
+        if ($tag_mode !== 'none') {
+            foreach ($ids as $cid) {
+                if ($tag_mode === 'replace') {
+                    $this->crm_tag_model->sync_contact_tags($cid, $tag_ids);
+                } else {
+                    $this->crm_tag_model->merge_contact_tags($cid, $tag_ids);
+                }
+            }
+        }
+        $this->db->trans_complete();
+
+        if (!$this->db->trans_status()) {
+            $this->flash('error', 'Bulk update failed.');
+            redirect(admin_url('contacts'));
+        }
+
+        $this->audit->log('admin', $this->admin['id'], 'crm.contacts.bulk_edit', 'crm_contact', 0, array(
+            'count' => count($ids),
+            'workshop' => $apply_workshop,
+            'tag_mode' => $tag_mode,
+        ));
+        $this->flash('success', sprintf('Updated %d contact(s).', count($ids)));
+        redirect(admin_url('contacts'));
+    }
+
     public function export()
     {
         $this->require_perm('contacts.view');
@@ -86,7 +162,7 @@ class Contacts extends Crm_Controller
             $data[] = array($r['name'], $r['mobile'], $r['email'], $r['company'], $r['created_at']);
         }
         crm_csv_download('crm-contacts-'.date('Y-m-d').'.csv',
-            array('Name', 'Mobile', 'Email', 'Company', 'Created'),
+            array('Name', 'Mobile', 'Email', 'Workshop', 'Created'),
             $data
         );
     }
@@ -104,9 +180,9 @@ class Contacts extends Crm_Controller
     {
         $this->require_perm('contacts.edit');
         crm_csv_download('crm-contacts-import-template.csv',
-            array('name', 'mobile', 'email', 'company', 'notes', 'tags'),
+            array('name', 'mobile', 'email', 'workshop', 'notes', 'tags'),
             array(
-                array('Rajesh Kumar', '9876543210', 'rajesh@example.com', '', 'Sample visit note', 'exhibition-wakad-2026'),
+                array('Rajesh Kumar', '9876543210', 'rajesh@example.com', 'G1 Pune', 'Sample visit note', 'exhibition-wakad-2026'),
             )
         );
     }
@@ -128,7 +204,7 @@ class Contacts extends Crm_Controller
 
         $rows = crm_parse_contacts_csv($_FILES['csv_file']['tmp_name']);
         if (empty($rows)) {
-            $this->flash('error', 'No valid rows found. Expected columns: name, mobile, email, company, notes, tags');
+            $this->flash('error', 'No valid rows found. Expected columns: name, mobile, email, workshop, notes, tags');
             redirect(admin_url('contacts/import'));
         }
 
@@ -344,6 +420,7 @@ class Contacts extends Crm_Controller
     {
         $this->form_validation->set_rules('name', 'Name', 'trim|required|max_length[120]');
         $this->form_validation->set_rules('email', 'Email', 'trim|valid_email|max_length[180]');
+        $this->form_validation->set_rules('company', 'Workshop', 'trim|max_length[120]');
         if (!$this->form_validation->run()) {
             $this->_form($id ? $this->crm_contact_model->find($id) : NULL);
             return;
