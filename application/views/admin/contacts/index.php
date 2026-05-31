@@ -27,7 +27,7 @@
 
 <?php if ($can_edit): ?>
 <?= form_open(admin_url('contacts/bulk-edit'), array('id' => 'contacts-bulk-form')); ?>
-<div class="ymo-card mb-3 d-none" id="contacts-bulk-bar">
+<div class="ymo-card mb-3 contacts-bulk-bar" id="contacts-bulk-bar" hidden>
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
         <strong><span id="contacts-bulk-count">0</span> selected</strong>
         <button type="button" class="btn btn-sm btn-link" data-contacts-clear-selection>Clear selection</button>
@@ -100,6 +100,63 @@
 
 <?php if ($can_edit): ?>
 <?= form_close(); ?>
+<script>
+(function () {
+    var form = document.getElementById('contacts-bulk-form');
+    var table = document.getElementById('contacts-table');
+    var bulkBar = document.getElementById('contacts-bulk-bar');
+    if (!form || !table || !bulkBar) { return; }
+    form.dataset.bulkInit = '1';
+
+    var selectAll = document.getElementById('contacts-select-all');
+    var countEl = document.getElementById('contacts-bulk-count');
+
+    function rowChecks() {
+        return table.querySelectorAll('.contact-row-check');
+    }
+
+    function syncBulkBar() {
+        var checked = table.querySelectorAll('.contact-row-check:checked');
+        var n = checked.length;
+        if (countEl) { countEl.textContent = String(n); }
+        bulkBar.hidden = n === 0;
+        if (selectAll) {
+            var all = rowChecks();
+            selectAll.checked = all.length > 0 && n === all.length;
+            selectAll.indeterminate = n > 0 && n < all.length;
+        }
+    }
+
+    form.addEventListener('change', function (e) {
+        var t = e.target;
+        if (!t || t.type !== 'checkbox') { return; }
+        if (t.id === 'contacts-select-all') {
+            rowChecks().forEach(function (cb) { cb.checked = t.checked; });
+        } else if (!t.classList.contains('contact-row-check')) {
+            return;
+        }
+        syncBulkBar();
+    });
+
+    form.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-contacts-clear-selection]');
+        if (!btn) { return; }
+        rowChecks().forEach(function (cb) { cb.checked = false; });
+        if (selectAll) {
+            selectAll.checked = false;
+            selectAll.indeterminate = false;
+        }
+        syncBulkBar();
+    });
+
+    form.addEventListener('submit', function (e) {
+        if (table.querySelectorAll('.contact-row-check:checked').length === 0) {
+            e.preventDefault();
+            window.alert('Select at least one contact.');
+        }
+    });
+})();
+</script>
 <?php endif; ?>
 
 <?php if ($pages > 1): ?>

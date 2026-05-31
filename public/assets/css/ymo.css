@@ -310,6 +310,13 @@ h1, h2, h3, h4, h5, h6 { font-weight: 700; letter-spacing: -0.01em; }
     box-shadow: var(--ymo-shadow);
     padding: 1.5rem;
 }
+.contacts-bulk-bar {
+    border: 2px solid var(--ymo-primary);
+    background: #f8fbff;
+}
+.contacts-bulk-bar[hidden] {
+    display: none !important;
+}
 .ymo-package-card {
     display: flex;
     flex-direction: column;

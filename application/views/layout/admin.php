@@ -18,7 +18,7 @@ $page_title = isset($title) ? $title.' — Admin · '.$brand_name : 'Admin · '.
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="<?= base_url('assets/css/ymo.css'); ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/css/ymo.css?v='.(int) @filemtime(FCPATH.'assets/css/ymo.css')); ?>">
 </head>
 <body class="ymo-admin-body">
 <div class="ymo-admin-shell">
@@ -70,6 +70,6 @@ $page_title = isset($title) ? $title.' — Admin · '.$brand_name : 'Admin · '.
     </section>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="<?= base_url('assets/js/ymo.js'); ?>"></script>
+<script src="<?= base_url('assets/js/ymo.js?v='.(int) @filemtime(FCPATH.'assets/js/ymo.js')); ?>"></script>
 </body>
 </html>
