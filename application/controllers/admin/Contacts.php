@@ -114,14 +114,21 @@ class Contacts extends Crm_Controller
     public function import_preview()
     {
         $this->require_perm('contacts.edit');
-        if (empty($_FILES['csv_file']['tmp_name'])) {
-            $this->flash('danger', 'Please choose a CSV file to upload.');
+        @set_time_limit(300);
+
+        if ($this->input->method() !== 'post') {
+            redirect(admin_url('contacts/import'));
+        }
+
+        $upload_err = $this->_csv_upload_error();
+        if ($upload_err !== NULL) {
+            $this->flash('error', $upload_err);
             redirect(admin_url('contacts/import'));
         }
 
         $rows = crm_parse_contacts_csv($_FILES['csv_file']['tmp_name']);
         if (empty($rows)) {
-            $this->flash('danger', 'No valid rows found. Expected columns: name, mobile, email, company, notes, tags');
+            $this->flash('error', 'No valid rows found. Expected columns: name, mobile, email, company, notes, tags');
             redirect(admin_url('contacts/import'));
         }
 
@@ -147,7 +154,8 @@ class Contacts extends Crm_Controller
         }
 
         if (!$this->_store_pending_import($_FILES['csv_file']['tmp_name'])) {
-            $this->flash('danger', 'Could not save upload for import. Check storage/import/pending is writable.');
+            $pending = $this->_import_pending_dir();
+            $this->flash('error', 'Could not save upload. Ensure this folder is writable by the web server: '.$pending);
             redirect(admin_url('contacts/import'));
         }
 
@@ -160,16 +168,18 @@ class Contacts extends Crm_Controller
     public function import_commit()
     {
         $this->require_perm('contacts.edit');
+        @set_time_limit(600);
+
         $path = $this->_pending_import_path();
         if (!$path) {
-            $this->flash('danger', 'Import file expired or missing. Upload the CSV again.');
+            $this->flash('error', 'Import file expired or missing. Upload the CSV again.');
             redirect(admin_url('contacts/import'));
         }
 
         $rows = crm_parse_contacts_csv($path);
         if (empty($rows)) {
             $this->_clear_pending_import();
-            $this->flash('danger', 'Import file could not be read. Upload the CSV again.');
+            $this->flash('error', 'Import file could not be read. Upload the CSV again.');
             redirect(admin_url('contacts/import'));
         }
 
@@ -193,7 +203,7 @@ class Contacts extends Crm_Controller
         }
         $this->db->trans_complete();
         if (!$this->db->trans_status()) {
-            $this->flash('danger', 'Import failed — no changes were saved. Try again.');
+            $this->flash('error', 'Import failed — no changes were saved. Try again.');
             redirect(admin_url('contacts/import'));
         }
 
@@ -210,29 +220,61 @@ class Contacts extends Crm_Controller
     /** @return string Absolute path to pending import directory */
     protected function _import_pending_dir()
     {
-        $dir = realpath(APPPATH.'../storage/import');
-        if ($dir === FALSE) {
-            $dir = APPPATH.'../storage/import';
-            if (!is_dir($dir)) {
-                @mkdir($dir, 0755, TRUE);
+        $base = realpath(FCPATH.'../storage/import');
+        if ($base === FALSE) {
+            $base = FCPATH.'../storage/import';
+            if (!is_dir($base)) {
+                @mkdir($base, 0775, TRUE);
             }
+            $base = realpath($base) ?: rtrim($base, '/\\');
         }
-        $pending = $dir.'/pending';
+        $pending = $base.'/pending';
         if (!is_dir($pending)) {
-            @mkdir($pending, 0755, TRUE);
+            @mkdir($pending, 0775, TRUE);
         }
         return $pending;
+    }
+
+    /** @return string|null User-facing upload error message */
+    protected function _csv_upload_error()
+    {
+        if (empty($_FILES['csv_file']['name'])) {
+            if (empty($_POST) && !empty($_SERVER['CONTENT_LENGTH']) && (int) $_SERVER['CONTENT_LENGTH'] > 0) {
+                return 'Upload too large for server limits. Ask your host to raise post_max_size and upload_max_filesize, or use CLI import.';
+            }
+            return 'Please choose a CSV file to upload.';
+        }
+        $err = (int) ($_FILES['csv_file']['error'] ?? UPLOAD_ERR_NO_FILE);
+        if ($err === UPLOAD_ERR_OK && !empty($_FILES['csv_file']['tmp_name']) && is_uploaded_file($_FILES['csv_file']['tmp_name'])) {
+            return NULL;
+        }
+        $messages = array(
+            UPLOAD_ERR_INI_SIZE   => 'File exceeds upload_max_filesize in php.ini.',
+            UPLOAD_ERR_FORM_SIZE  => 'File exceeds the form size limit.',
+            UPLOAD_ERR_PARTIAL    => 'Upload interrupted — try again.',
+            UPLOAD_ERR_NO_FILE    => 'Please choose a CSV file to upload.',
+            UPLOAD_ERR_NO_TMP_DIR => 'Server missing temp folder for uploads.',
+            UPLOAD_ERR_CANT_WRITE => 'Server could not write the uploaded file.',
+            UPLOAD_ERR_EXTENSION  => 'Upload blocked by a PHP extension.',
+        );
+        return $messages[$err] ?? 'Upload failed (error code '.$err.').';
     }
 
     /** Copy uploaded CSV to disk; session stores filename only (avoids BLOB size limit). */
     protected function _store_pending_import($upload_tmp_path)
     {
         $this->_clear_pending_import();
-        $name = 'admin_'.(int) $this->admin['id'].'_'.bin2hex(random_bytes(8)).'.csv';
-        $dest = $this->_import_pending_dir().'/'.$name;
-        if (!@copy($upload_tmp_path, $dest)) {
+        if (!is_uploaded_file($upload_tmp_path)) {
             return FALSE;
         }
+        $name = 'admin_'.(int) $this->admin['id'].'_'.bin2hex(random_bytes(8)).'.csv';
+        $dest = $this->_import_pending_dir().'/'.$name;
+        if (!@move_uploaded_file($upload_tmp_path, $dest)) {
+            if (!@copy($upload_tmp_path, $dest)) {
+                return FALSE;
+            }
+        }
+        @chmod($dest, 0660);
         $this->session->set_userdata('crm_import_file', $name);
         return $dest;
     }

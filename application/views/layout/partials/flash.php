@@ -9,6 +9,7 @@ $ci = &get_instance();
 $flash_types = array(
     'success' => array('class' => 'is-success', 'icon' => 'check_circle'),
     'error'   => array('class' => 'is-error',   'icon' => 'error'),
+    'danger'  => array('class' => 'is-error',   'icon' => 'error'),
     'warning' => array('class' => 'is-warning', 'icon' => 'warning'),
     'info'    => array('class' => 'is-info',    'icon' => 'info'),
 );
