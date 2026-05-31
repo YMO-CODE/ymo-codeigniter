@@ -23,6 +23,7 @@ echo "    HEAD: $(git log -1 --oneline 2>/dev/null || echo 'unknown')"
 
 echo "==> Ensuring upload directories..."
 mkdir -p storage/logs \
+  storage/import/pending \
   public/uploads/vehicles \
   public/uploads/crm/resumes \
   public/uploads/invoices

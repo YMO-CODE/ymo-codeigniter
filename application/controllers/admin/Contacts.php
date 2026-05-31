@@ -146,7 +146,11 @@ class Contacts extends Crm_Controller
             }
         }
 
-        $this->session->set_userdata('crm_import_rows', $rows);
+        if (!$this->_store_pending_import($_FILES['csv_file']['tmp_name'])) {
+            $this->flash('danger', 'Could not save upload for import. Check storage/import/pending is writable.');
+            redirect(admin_url('contacts/import'));
+        }
+
         $this->render('admin/contacts/import', array(
             'title'   => 'Import contacts — preview',
             'preview' => $preview,
@@ -156,9 +160,16 @@ class Contacts extends Crm_Controller
     public function import_commit()
     {
         $this->require_perm('contacts.edit');
-        $rows = $this->session->userdata('crm_import_rows');
-        if (!is_array($rows) || empty($rows)) {
-            $this->flash('danger', 'Import session expired. Upload the CSV again.');
+        $path = $this->_pending_import_path();
+        if (!$path) {
+            $this->flash('danger', 'Import file expired or missing. Upload the CSV again.');
+            redirect(admin_url('contacts/import'));
+        }
+
+        $rows = crm_parse_contacts_csv($path);
+        if (empty($rows)) {
+            $this->_clear_pending_import();
+            $this->flash('danger', 'Import file could not be read. Upload the CSV again.');
             redirect(admin_url('contacts/import'));
         }
 
@@ -186,6 +197,7 @@ class Contacts extends Crm_Controller
             redirect(admin_url('contacts/import'));
         }
 
+        $this->_clear_pending_import();
         $this->session->unset_userdata('crm_import_rows');
         $this->audit->log('admin', $this->admin['id'], 'crm.contacts.import', 'crm_contact', 0, $stats);
         $this->flash('success', sprintf(
@@ -193,6 +205,60 @@ class Contacts extends Crm_Controller
             $stats['created'], $stats['merged'], $stats['updated'], $stats['skipped'], $stats['errors']
         ));
         redirect(admin_url('contacts'));
+    }
+
+    /** @return string Absolute path to pending import directory */
+    protected function _import_pending_dir()
+    {
+        $dir = realpath(APPPATH.'../storage/import');
+        if ($dir === FALSE) {
+            $dir = APPPATH.'../storage/import';
+            if (!is_dir($dir)) {
+                @mkdir($dir, 0755, TRUE);
+            }
+        }
+        $pending = $dir.'/pending';
+        if (!is_dir($pending)) {
+            @mkdir($pending, 0755, TRUE);
+        }
+        return $pending;
+    }
+
+    /** Copy uploaded CSV to disk; session stores filename only (avoids BLOB size limit). */
+    protected function _store_pending_import($upload_tmp_path)
+    {
+        $this->_clear_pending_import();
+        $name = 'admin_'.(int) $this->admin['id'].'_'.bin2hex(random_bytes(8)).'.csv';
+        $dest = $this->_import_pending_dir().'/'.$name;
+        if (!@copy($upload_tmp_path, $dest)) {
+            return FALSE;
+        }
+        $this->session->set_userdata('crm_import_file', $name);
+        return $dest;
+    }
+
+    /** @return string|null Readable path to pending CSV for this admin session */
+    protected function _pending_import_path()
+    {
+        $name = $this->session->userdata('crm_import_file');
+        if (!$name) {
+            return NULL;
+        }
+        $name = basename((string) $name);
+        $path = $this->_import_pending_dir().'/'.$name;
+        return is_readable($path) ? $path : NULL;
+    }
+
+    protected function _clear_pending_import()
+    {
+        $name = $this->session->userdata('crm_import_file');
+        if ($name) {
+            $path = $this->_import_pending_dir().'/'.basename((string) $name);
+            if (is_file($path)) {
+                @unlink($path);
+            }
+            $this->session->unset_userdata('crm_import_file');
+        }
     }
 
     protected function _apply_import_tags($contact_id, $tags_csv, $policy)

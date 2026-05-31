@@ -21,3 +21,5 @@ node_modules/
 /import/staging/*.csv
 /import/staging/*.json
 /storage/import/*.csv
+/storage/import/pending/*
+!/storage/import/pending/.gitkeep
