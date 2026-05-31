@@ -254,6 +254,7 @@ class Auth extends MY_Controller
         }
         unset($u['password_hash']);
         $this->session->set_userdata('user', $u);
+        ymo_stamp_deploy_session();
         $this->user = $u;
     }
 

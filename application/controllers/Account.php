@@ -36,6 +36,7 @@ class Account extends Customer_Controller
                 $fresh = $this->user_model->find($this->user['id']);
                 unset($fresh['password_hash']);
                 $this->session->set_userdata('user', $fresh);
+                ymo_stamp_deploy_session();
                 $this->flash('success', 'Profile updated.');
                 redirect(site_url('account/profile'));
             }

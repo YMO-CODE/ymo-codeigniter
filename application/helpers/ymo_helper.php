@@ -163,3 +163,87 @@ if (!function_exists('admin_nav_active')) {
         return ($norm === $section) || (strpos($norm, $section.'/') === 0);
     }
 }
+
+if (!function_exists('ymo_deploy_session_epoch_path')) {
+    /** @return string */
+    function ymo_deploy_session_epoch_path()
+    {
+        return rtrim(FCPATH, '/\\').'/../storage/.session_epoch';
+    }
+}
+
+if (!function_exists('ymo_deploy_session_epoch')) {
+    /**
+     * Current deploy epoch (git commit). NULL if never set (local dev).
+     *
+     * @return string|null
+     */
+    function ymo_deploy_session_epoch()
+    {
+        $path = ymo_deploy_session_epoch_path();
+        if (!is_readable($path)) {
+            return NULL;
+        }
+        $v = trim((string) file_get_contents($path));
+        return $v !== '' ? $v : NULL;
+    }
+}
+
+if (!function_exists('ymo_stamp_deploy_session')) {
+    /** Tag the current session with the active deploy epoch (call after login). */
+    function ymo_stamp_deploy_session()
+    {
+        $epoch = ymo_deploy_session_epoch();
+        if ($epoch === NULL) {
+            return;
+        }
+        $ci = &get_instance();
+        if ($ci->session) {
+            $ci->session->set_userdata('_deploy_epoch', $epoch);
+        }
+    }
+}
+
+if (!function_exists('ymo_enforce_deploy_session')) {
+    /**
+     * Sign out users whose session predates the latest deploy.
+     * Skips unauthenticated requests and auth pages (login/signup).
+     */
+    function ymo_enforce_deploy_session()
+    {
+        $epoch = ymo_deploy_session_epoch();
+        if ($epoch === NULL) {
+            return;
+        }
+
+        $ci = &get_instance();
+        if (!$ci->session) {
+            return;
+        }
+
+        $uri = strtolower(trim((string) $ci->uri->uri_string(), '/'));
+        $skip = array('login', 'logout', 'signup', 'signup/verify', 'admin/login', 'admin/logout');
+        if (in_array($uri, $skip, TRUE) || strpos($uri, 'signup/') === 0) {
+            return;
+        }
+
+        $has_user = !empty($ci->session->userdata('user'));
+        $has_admin = !empty($ci->session->userdata('admin'));
+        if (!$has_user && !$has_admin) {
+            return;
+        }
+
+        if ($ci->session->userdata('_deploy_epoch') === $epoch) {
+            return;
+        }
+
+        $was_admin = $has_admin;
+        $ci->session->unset_userdata(array('user', 'admin', '_deploy_epoch', 'crm_import_file'));
+        $ci->session->set_flashdata('info', 'You have been signed out because the app was updated. Please sign in again.');
+
+        if ($was_admin || (function_exists('ymo_is_admin_host') && ymo_is_admin_host())) {
+            redirect(admin_url('login'));
+        }
+        redirect(site_url('login'));
+    }
+}

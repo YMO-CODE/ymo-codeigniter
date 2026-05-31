@@ -40,6 +40,10 @@ echo "==> Restarting app (clear opcache)..."
 $COMPOSE restart app
 
 echo ""
+echo "==> Resetting sessions (post-deploy sign-out)..."
+bash "$ROOT/deploy/scripts/reset-sessions.sh"
+
+echo ""
 echo "Deploy sync complete (HEAD=$HEAD)."
 if [[ "$HEAD" != "$EXPECTED_COMMIT"* ]]; then
   echo "WARNING: expected commit starting with $EXPECTED_COMMIT — verify you pulled the import feature."

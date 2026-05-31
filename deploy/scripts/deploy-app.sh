@@ -45,6 +45,9 @@ for i in $(seq 1 45); do
   sleep 2
 done
 
+echo "==> Resetting sessions (post-deploy sign-out)..."
+bash "$ROOT/deploy/scripts/reset-sessions.sh"
+
 echo ""
 echo "App is listening on 127.0.0.1:8080 (nginx should proxy to this)."
 echo ""

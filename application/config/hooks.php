@@ -14,3 +14,11 @@ $hook['pre_controller'] = array(
     'filepath' => 'hooks',
     'params'   => array(),
 );
+
+$hook['pre_controller'][] = array(
+    'class'    => '',
+    'function' => 'ymo_hook_enforce_deploy_session',
+    'filename' => 'ymo_session_deploy.php',
+    'filepath' => 'hooks',
+    'params'   => array(),
+);

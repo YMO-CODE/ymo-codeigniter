@@ -31,6 +31,9 @@ $ci = &get_instance();
         <?php $err = $ci->session->flashdata('error'); if ($err): ?>
             <div class="alert alert-danger small"><?= html_escape($err); ?></div>
         <?php endif; ?>
+        <?php $info = $ci->session->flashdata('info'); if ($info): ?>
+            <div class="alert alert-info small"><?= html_escape($info); ?></div>
+        <?php endif; ?>
         <?php echo validation_errors('<div class="alert alert-danger small">', '</div>'); ?>
 
         <?= form_open(admin_url('login')); ?>

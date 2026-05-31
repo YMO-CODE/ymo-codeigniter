@@ -37,6 +37,7 @@ class Auth extends CI_Controller
                 } else {
                     unset($row['password_hash']);
                     $this->session->set_userdata('admin', $row);
+                    ymo_stamp_deploy_session();
                     $this->admin_model->record_login($row['id']);
                     redirect(admin_url('dashboard'));
                 }

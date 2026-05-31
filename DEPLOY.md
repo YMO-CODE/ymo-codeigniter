@@ -133,6 +133,14 @@ After `git pull`, sync code into the running container (volume-mounted app — n
 bash deploy/scripts/sync-code.sh
 ```
 
+This also **resets all sessions** (admin + customer sign-out) so stale/corrupted cookies are cleared after each deploy.
+
+Manual session reset only:
+
+```bash
+bash deploy/scripts/reset-sessions.sh
+```
+
 If **Import CSV** is missing after pull, hard-refresh `https://admin.yourmechaniconline.com/contacts` or open `/contacts/import` directly while signed in as Administrator.
 
 ---
