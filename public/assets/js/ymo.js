@@ -88,4 +88,13 @@
             try { el.setSelectionRange(caret, caret); } catch (e) {}
         });
     });
+
+    document.querySelectorAll('[data-admin-drawer-nav] a').forEach(function (link) {
+        link.addEventListener('click', function () {
+            var drawer = document.getElementById('ymoAdminDrawer');
+            if (!drawer || !window.bootstrap) { return; }
+            var instance = bootstrap.Offcanvas.getInstance(drawer);
+            if (instance) { instance.hide(); }
+        });
+    });
 })();

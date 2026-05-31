@@ -18,7 +18,7 @@ $body_class  = isset($page_class) ? $page_class : '';
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="description" content="Book car servicing online with <?= html_escape($brand_name); ?> — trusted car repair, AC service, denting & polishing at your doorstep.">
     <title><?= html_escape($page_title); ?></title>
 

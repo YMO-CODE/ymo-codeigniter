@@ -6,7 +6,7 @@ $ci = &get_instance();
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="robots" content="noindex,nofollow">
     <title>Admin sign-in — <?= html_escape($ci->config->item('ymo_brand_name')); ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">

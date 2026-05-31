@@ -483,6 +483,7 @@ h1, h2, h3, h4, h5, h6 { font-weight: 700; letter-spacing: -0.01em; }
 .ymo-flash { margin: 1rem 0; }
 
 /* ---------------- Admin layout extras -------------------------------- */
+.ymo-admin-body { overflow-x: hidden; }
 .ymo-admin-shell {
     display: grid;
     grid-template-columns: 240px 1fr;
@@ -522,15 +523,21 @@ h1, h2, h3, h4, h5, h6 { font-weight: 700; letter-spacing: -0.01em; }
     border-bottom: 1px solid rgba(255,255,255,0.08);
     margin-bottom: 1rem;
 }
-.ymo-admin-side nav a {
-    display: block;
-    padding: 0.6rem 1.5rem;
+.ymo-admin-side nav a,
+.ymo-admin-drawer-nav a {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
     color: #cbd5e1;
     text-decoration: none;
     font-weight: 500;
     border-left: 3px solid transparent;
+    min-height: 44px;
 }
-.ymo-admin-side nav a:hover, .ymo-admin-side nav a.active {
+.ymo-admin-side nav a:hover,
+.ymo-admin-side nav a.active,
+.ymo-admin-drawer-nav a:hover,
+.ymo-admin-drawer-nav a.active {
     color: #fff;
     background: rgba(255,255,255,0.05);
     border-left-color: var(--ymo-primary);
@@ -543,12 +550,170 @@ h1, h2, h3, h4, h5, h6 { font-weight: 700; letter-spacing: -0.01em; }
     color: rgba(255,255,255,0.45);
     font-weight: 600;
 }
+.ymo-admin-nav-div {
+    border: 0;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin: 0.75rem 1.5rem;
+    opacity: 1;
+}
+.ymo-admin-nav-logout {
+    padding: 0 1.5rem 0.5rem;
+    margin: 0;
+}
 .ymo-admin-main {
     padding: 1.5rem 2rem;
+    min-width: 0;
 }
-@media (max-width: 768px) {
+.ymo-admin-mobile-bar {
+    position: sticky;
+    top: 0;
+    z-index: 1025;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 1rem;
+    background: var(--ymo-grey-900);
+    color: #fff;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.ymo-admin-menu-btn {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.ymo-admin-menu-btn:hover,
+.ymo-admin-menu-btn:focus-visible {
+    background: rgba(255,255,255,0.14);
+}
+.ymo-admin-mobile-bar-meta {
+    min-width: 0;
+    line-height: 1.25;
+}
+.ymo-admin-mobile-bar-title {
+    display: block;
+    font-weight: 600;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.ymo-admin-mobile-bar-meta small {
+    color: rgba(255,255,255,0.65);
+    font-size: 0.75rem;
+}
+.ymo-admin-drawer {
+    width: min(320px, 88vw);
+    background: var(--ymo-grey-900);
+    color: #cbd5e1;
+    border: 0;
+}
+.ymo-admin-drawer-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.ymo-admin-drawer-brand {
+    display: inline-block;
+    padding: 0.35rem 0.65rem;
+    background: #fff;
+    border-radius: var(--ymo-radius);
+}
+.ymo-admin-drawer-brand img {
+    display: block;
+    height: 32px;
+    width: auto;
+}
+.ymo-admin-drawer .ymo-drawer-close {
+    color: rgba(255,255,255,0.85);
+}
+.ymo-admin-drawer .ymo-drawer-close:hover,
+.ymo-admin-drawer .ymo-drawer-close:focus-visible {
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+}
+.ymo-admin-drawer-tag {
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-align: center;
+    padding: 0.75rem 1rem 0.5rem;
+}
+.ymo-admin-drawer-nav {
+    overflow-y: auto;
+    padding-bottom: 1rem;
+    max-height: calc(100vh - 120px);
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 767.98px) {
     .ymo-admin-shell { grid-template-columns: 1fr; }
-    .ymo-admin-side { display: none; }
+    .ymo-admin-main { padding: 1rem; }
+}
+
+/* ---------------- Public main content -------------------------------- */
+.ymo-main {
+    padding: 1.25rem 0 2rem;
+    min-width: 0;
+}
+@media (max-width: 575.98px) {
+    .ymo-main { padding: 1rem 0 1.5rem; }
+    .ymo-hero { padding: 2.5rem 0 2rem; }
+    .ymo-hero h1 { font-size: clamp(1.65rem, 8vw, 2.25rem); }
+    .ymo-topbar .container > span:first-child { display: none; }
+    .ymo-topbar { font-size: 0.78rem; text-align: center; }
+    .ymo-topbar .container { justify-content: center !important; }
+    .ymo-footer { padding: 2rem 0 1.25rem; margin-top: 2.5rem; }
+    .md-fab {
+        right: 1rem;
+        bottom: max(1rem, env(safe-area-inset-bottom));
+    }
+}
+
+/* ---------------- Responsive tables & pagination --------------------- */
+.ymo-card.p-0,
+.ymo-table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+@media (max-width: 767.98px) {
+    table.ymo-table { min-width: 36rem; }
+    .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.15rem;
+    }
+    .pagination .page-link {
+        min-width: 40px;
+        min-height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .ymo-pipeline {
+        grid-template-columns: minmax(260px, 1fr);
+        overflow-x: auto;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(260px, 85vw);
+        padding-bottom: 0.5rem;
+        scroll-snap-type: x mandatory;
+    }
+    .ymo-pipeline-col { scroll-snap-align: start; }
+    .ymo-stepper li { min-width: 100%; flex: 1 1 100%; }
+    .btn, .form-control, .form-select {
+        min-height: 44px;
+    }
+    .btn-sm { min-height: 36px; }
 }
 
 /* ---------------- Utility -------------------------------------------- */
