@@ -44,14 +44,17 @@
 <?php if ($pages > 1): ?>
     <nav class="mt-3">
         <ul class="pagination">
-        <?php for ($i = 1; $i <= $pages; $i++):
+        <?php foreach (crm_pagination_items($page, $pages, 10) as $item):
+            if ($item === 'ellipsis'): ?>
+            <li class="page-item disabled"><span class="page-link">…</span></li>
+            <?php continue; endif;
             $qs = $_GET;
-            $qs['page'] = $i;
+            $qs['page'] = $item;
             ?>
-            <li class="page-item <?= $i === $page ? 'active' : ''; ?>">
-                <a class="page-link" href="<?= admin_url('contacts?'.http_build_query($qs)); ?>"><?= $i; ?></a>
+            <li class="page-item <?= (int) $item === $page ? 'active' : ''; ?>">
+                <a class="page-link" href="<?= admin_url('contacts?'.http_build_query($qs)); ?>"><?= (int) $item; ?></a>
             </li>
-        <?php endfor; ?>
+        <?php endforeach; ?>
         </ul>
     </nav>
 <?php endif; ?>

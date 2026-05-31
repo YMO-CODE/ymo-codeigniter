@@ -160,3 +160,49 @@ if (!function_exists('crm_parse_contacts_csv')) {
         return $rows;
     }
 }
+
+if (!function_exists('crm_pagination_items')) {
+    /**
+     * Build page numbers for admin pagination with ellipsis after the first block.
+     *
+     * @param int $current   Active page (1-based)
+     * @param int $total     Total pages
+     * @param int $first_block Number of initial pages to show before ellipsis
+     * @return array<int|string> Page numbers or 'ellipsis'
+     */
+    function crm_pagination_items($current, $total, $first_block = 10)
+    {
+        $current = max(1, (int) $current);
+        $total = max(1, (int) $total);
+        $first_block = max(1, (int) $first_block);
+
+        if ($total <= $first_block) {
+            return range(1, $total);
+        }
+
+        if ($current <= $first_block) {
+            $items = range(1, $first_block);
+            $items[] = 'ellipsis';
+            $items[] = $total;
+            return $items;
+        }
+
+        if ($current > $total - $first_block) {
+            $items = array(1, 'ellipsis');
+            for ($i = max(2, $total - $first_block + 1); $i <= $total; $i++) {
+                $items[] = $i;
+            }
+            return $items;
+        }
+
+        $items = array(1, 'ellipsis');
+        $start = max($first_block + 1, $current - 2);
+        $end = min($total - 1, $current + 2);
+        for ($i = $start; $i <= $end; $i++) {
+            $items[] = $i;
+        }
+        $items[] = 'ellipsis';
+        $items[] = $total;
+        return $items;
+    }
+}
