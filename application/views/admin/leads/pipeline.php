@@ -1,12 +1,5 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
-$stage_labels = array(
-    'new'        => 'New',
-    'contacted'  => 'Contacted',
-    'qualified'  => 'Qualified',
-    'proposal'   => 'Proposal',
-    'won'        => 'Won',
-    'lost'       => 'Lost',
-);
+$stage_labels = isset($stage_labels) ? $stage_labels : crm_lead_stages();
 ?>
 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
     <a href="<?= admin_url('leads'); ?>" class="small">
@@ -72,6 +65,9 @@ $stage_labels = array(
                     <div class="meta">
                         <?= html_escape($l['source_label']); ?>
                         <?php if ($l['assignee_name']): ?> · <?= html_escape($l['assignee_name']); ?><?php endif; ?>
+                        <?php if (!empty($l['next_follow_up_at'])): ?>
+                            <br><span class="text-warning">Due <?= html_escape(date('d M', strtotime($l['next_follow_up_at']))); ?></span>
+                        <?php endif; ?>
                     </div>
                 </a>
             <?php endforeach; ?>

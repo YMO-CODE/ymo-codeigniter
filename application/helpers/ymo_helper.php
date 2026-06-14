@@ -160,6 +160,15 @@ if (!function_exists('admin_nav_active')) {
             return $norm === '' || $norm === 'dashboard';
         }
 
+        if ($section === 'customers') {
+            return ($norm === 'customers' || strpos($norm, 'customers/') === 0)
+                || ($norm === 'contacts' || strpos($norm, 'contacts/') === 0);
+        }
+
+        if ($section === 'online-accounts') {
+            return ($norm === 'online-accounts' || strpos($norm, 'online-accounts/') === 0);
+        }
+
         return ($norm === $section) || (strpos($norm, $section.'/') === 0);
     }
 }

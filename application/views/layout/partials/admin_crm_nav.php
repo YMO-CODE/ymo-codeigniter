@@ -3,9 +3,6 @@
     <?php if (crm_can('tasks.view')): ?>
         <a href="<?= admin_url('tasks'); ?>" class="<?= admin_nav_active('tasks') ? 'active' : ''; ?>"><span class="mi mi-sm mi-leading">task_alt</span>Follow-ups</a>
     <?php endif; ?>
-    <?php if (crm_can('contacts.view')): ?>
-        <a href="<?= admin_url('contacts'); ?>" class="<?= admin_nav_active('contacts') ? 'active' : ''; ?>"><span class="mi mi-sm mi-leading">contacts</span>Contacts</a>
-    <?php endif; ?>
     <?php if (crm_can('campaigns.view')): ?>
         <a href="<?= admin_url('campaigns'); ?>" class="<?= admin_nav_active('campaigns') ? 'active' : ''; ?>"><span class="mi mi-sm mi-leading">campaign</span>Campaigns</a>
     <?php endif; ?>

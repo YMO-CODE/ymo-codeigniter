@@ -1,17 +1,23 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
-<a href="<?= admin_url('contacts'); ?>" class="small"><span class="mi mi-sm mi-leading">arrow_back</span>All contacts</a>
+<a href="<?= admin_url('customers'); ?>" class="small"><span class="mi mi-sm mi-leading">arrow_back</span>All customers</a>
 <div class="row g-3 mt-1">
     <div class="col-lg-8">
         <div class="md-card-elevated">
             <h2 class="h4"><?= html_escape($contact['name']); ?></h2>
             <p class="ymo-muted small"><?= html_escape($contact['mobile']); ?> · <?= html_escape($contact['email']); ?></p>
             <?php if ($contact['company']): ?><p class="small mb-1"><strong>Workshop:</strong> <?= html_escape($contact['company']); ?></p><?php endif; ?>
+            <?php if (!empty($contact['user_id'])): ?>
+                <p class="small mb-1">
+                    <strong>Online account:</strong>
+                    <a href="<?= admin_url('online-accounts/'.$contact['user_id']); ?>"><?= html_escape($contact['user_name'] ?? ('User #'.$contact['user_id'])); ?></a>
+                </p>
+            <?php endif; ?>
             <?php if ($tags): ?>
                 <p><?php foreach ($tags as $t): ?><span class="badge bg-light text-dark me-1"><?= html_escape($t['name']); ?></span><?php endforeach; ?></p>
             <?php endif; ?>
             <?php if ($contact['notes']): ?><p class="small"><?= nl2br(html_escape($contact['notes'])); ?></p><?php endif; ?>
             <?php if ($can_edit): ?>
-                <a href="<?= admin_url('contacts/'.$contact['id'].'/edit'); ?>" class="btn btn-sm btn-outline-primary">Edit</a>
+                <a href="<?= admin_url('customers/'.$contact['id'].'/edit'); ?>" class="btn btn-sm btn-outline-primary">Edit</a>
                 <a href="<?= admin_url('tasks/new?contact_id='.$contact['id']); ?>" class="btn btn-sm btn-outline-secondary">Schedule follow-up</a>
             <?php endif; ?>
         </div>
@@ -33,6 +39,23 @@
         <?php endif; ?>
     </div>
     <div class="col-lg-4">
+        <?php if ($can_edit): ?>
+        <div class="ymo-card mb-3">
+            <h6 class="mb-2">Link online account</h6>
+            <?= form_open(admin_url('customers/'.$contact['id'].'/link-user')); ?>
+                <select name="user_id" class="form-select form-select-sm mb-2">
+                    <option value="">Not linked</option>
+                    <?php foreach ($link_users as $u): ?>
+                        <option value="<?= (int) $u['id']; ?>" <?= (int) ($contact['user_id'] ?? 0) === (int) $u['id'] ? 'selected' : ''; ?>>
+                            <?= html_escape($u['name'].' · '.$u['mobile']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <button type="submit" class="btn btn-sm btn-outline-primary w-100">Save link</button>
+            <?= form_close(); ?>
+            <p class="small ymo-muted mt-2 mb-0">Matches by mobile/email when converting leads or importing CSV.</p>
+        </div>
+        <?php endif; ?>
         <div class="ymo-card">
             <h6>Follow-ups</h6>
             <?php if (empty($tasks)): ?><p class="ymo-muted small mb-0">None scheduled.</p><?php endif; ?>

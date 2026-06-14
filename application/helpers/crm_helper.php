@@ -164,6 +164,38 @@ if (!function_exists('crm_parse_contacts_csv')) {
     }
 }
 
+if (!function_exists('crm_lead_stages')) {
+    /** @return array<string,string> slug => label */
+    function crm_lead_stages()
+    {
+        return array(
+            'hot_lead'            => 'Hot Lead',
+            'warm_lead'           => 'Warm Lead',
+            'followup_next_week'  => 'Follow-up Next Week',
+            'followup_next_month' => 'Follow-up Next Month',
+            'later'               => 'Later',
+            'quote_sent'          => 'Quote Sent',
+            'lost'                => 'Lost',
+        );
+    }
+}
+
+if (!function_exists('crm_lead_manual_stages')) {
+    /** Stages staff can set manually (override auto date-driven stages). */
+    function crm_lead_manual_stages()
+    {
+        return array('warm_lead', 'quote_sent', 'lost');
+    }
+}
+
+if (!function_exists('crm_lead_stage_label')) {
+    function crm_lead_stage_label($slug)
+    {
+        $stages = crm_lead_stages();
+        return isset($stages[$slug]) ? $stages[$slug] : ucwords(str_replace('_', ' ', (string) $slug));
+    }
+}
+
 if (!function_exists('crm_pagination_items')) {
     /**
      * Build page numbers for admin pagination with ellipsis after the first block.

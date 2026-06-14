@@ -5,6 +5,87 @@ class Crm_lead_model extends CI_Model
 {
     const TABLE = 'crm_leads';
 
+    public function pipeline_stages()
+    {
+        return array_keys(crm_lead_stages());
+    }
+
+    /**
+     * Compute time-based stage from next_follow_up_at (open leads only).
+     */
+    public function compute_stage_from_followup($next_follow_up_at)
+    {
+        if (!$next_follow_up_at) {
+            return 'later';
+        }
+        $due = strtotime((string) $next_follow_up_at);
+        if ($due === FALSE) {
+            return 'later';
+        }
+        $today = strtotime(date('Y-m-d'));
+        $due_day = strtotime(date('Y-m-d', $due));
+        $days = (int) round(($due_day - $today) / 86400);
+
+        if ($days <= 0) {
+            return 'hot_lead';
+        }
+        if ($days <= 7) {
+            return 'followup_next_week';
+        }
+        if ($days <= 30) {
+            return 'followup_next_month';
+        }
+        return 'later';
+    }
+
+    /**
+     * Recalculate stage for one lead when not locked and status is open.
+     *
+     * @param array|int $lead Row or id
+     * @return string|null New stage if updated, null if unchanged
+     */
+    public function recalculate_stage($lead)
+    {
+        if (!is_array($lead)) {
+            $lead = $this->find((int) $lead);
+        }
+        if (!$lead || $lead['status'] !== 'open' || !empty($lead['stage_locked'])) {
+            return NULL;
+        }
+        if ($lead['stage'] === 'warm_lead') {
+            return NULL;
+        }
+        $new = $this->compute_stage_from_followup($lead['next_follow_up_at'] ?? NULL);
+        if ($new === $lead['stage']) {
+            return NULL;
+        }
+        $this->update((int) $lead['id'], array('stage' => $new));
+        return $new;
+    }
+
+    /** Batch recalc for all open, unlocked leads (cron). */
+    public function recalculate_open_stages($limit = 5000)
+    {
+        $rows = $this->db
+            ->select('id, stage, next_follow_up_at, stage_locked, status')
+            ->from(self::TABLE)
+            ->where('deleted_at IS NULL', NULL, FALSE)
+            ->where('status', 'open')
+            ->where('stage_locked', 0)
+            ->where('stage !=', 'warm_lead')
+            ->limit((int) $limit)
+            ->get()
+            ->result_array();
+
+        $updated = 0;
+        foreach ($rows as $lead) {
+            if ($this->recalculate_stage($lead) !== NULL) {
+                $updated++;
+            }
+        }
+        return $updated;
+    }
+
     public function find($id)
     {
         return $this->db
@@ -38,6 +119,8 @@ class Crm_lead_model extends CI_Model
             ->join('admin_users a', 'a.id = l.assigned_to', 'left')
             ->where('l.deleted_at IS NULL', NULL, FALSE)
             ->order_by('l.priority', 'DESC')
+            ->order_by('l.next_follow_up_at IS NULL', 'ASC', FALSE)
+            ->order_by('l.next_follow_up_at', 'ASC')
             ->order_by('l.created_at', 'DESC')
             ->limit((int) $limit, (int) $offset)
             ->get()
@@ -52,7 +135,7 @@ class Crm_lead_model extends CI_Model
 
     public function for_pipeline(array $filters = array())
     {
-        $stages = array('new', 'contacted', 'qualified', 'proposal', 'won', 'lost');
+        $stages = $this->pipeline_stages();
         $out = array();
         foreach ($stages as $stage) {
             $f = $filters;
@@ -65,6 +148,8 @@ class Crm_lead_model extends CI_Model
                 ->join('admin_users a', 'a.id = l.assigned_to', 'left')
                 ->where('l.deleted_at IS NULL', NULL, FALSE)
                 ->order_by('l.priority', 'DESC')
+                ->order_by('l.next_follow_up_at IS NULL', 'ASC', FALSE)
+                ->order_by('l.next_follow_up_at', 'ASC')
                 ->order_by('l.updated_at', 'DESC')
                 ->limit(50)
                 ->get()
@@ -75,7 +160,7 @@ class Crm_lead_model extends CI_Model
 
     public function stage_counts(array $filters = array())
     {
-        $stages = array('new', 'contacted', 'qualified', 'proposal', 'won', 'lost');
+        $stages = $this->pipeline_stages();
         $counts = array();
         foreach ($stages as $stage) {
             $f = $filters;
@@ -87,18 +172,63 @@ class Crm_lead_model extends CI_Model
         return $counts;
     }
 
+    /** Open hot leads (for dashboard). */
+    public function count_hot_open($assigned_to = NULL)
+    {
+        $this->db
+            ->from(self::TABLE)
+            ->where('deleted_at IS NULL', NULL, FALSE)
+            ->where('status', 'open')
+            ->where('stage', 'hot_lead');
+        if ($assigned_to) {
+            $this->db->where('assigned_to', (int) $assigned_to);
+        }
+        return (int) $this->db->count_all_results();
+    }
+
+    public function list_by_stage_bucket($stage, $limit = 10, $assigned_to = NULL)
+    {
+        $this->db
+            ->select('l.id, l.name, l.mobile, l.stage, l.next_follow_up_at, s.label AS source_label', FALSE)
+            ->from(self::TABLE.' l')
+            ->join('crm_lead_sources s', 's.id = l.source_id', 'left')
+            ->where('l.deleted_at IS NULL', NULL, FALSE)
+            ->where('l.status', 'open')
+            ->where('l.stage', $stage)
+            ->order_by('l.next_follow_up_at IS NULL', 'ASC', FALSE)
+            ->order_by('l.next_follow_up_at', 'ASC')
+            ->limit((int) $limit);
+        if ($assigned_to) {
+            $this->db->where('l.assigned_to', (int) $assigned_to);
+        }
+        return $this->db->get()->result_array();
+    }
+
     public function create(array $payload)
     {
+        $payload = $this->_normalize_followup_payload($payload);
         $payload['created_at'] = date('Y-m-d H:i:s');
         $payload['updated_at'] = date('Y-m-d H:i:s');
+        if (empty($payload['stage'])) {
+            $payload['stage'] = 'warm_lead';
+        }
         $this->db->insert(self::TABLE, $payload);
-        return (int) $this->db->insert_id();
+        $id = (int) $this->db->insert_id();
+        $this->recalculate_stage($this->find($id));
+        return $id;
     }
 
     public function update($id, array $payload)
     {
+        $payload = $this->_normalize_followup_payload($payload);
         $payload['updated_at'] = date('Y-m-d H:i:s');
         $this->db->where('id', (int) $id)->update(self::TABLE, $payload);
+        if (array_key_exists('next_follow_up_at', $payload) && empty($payload['stage_locked'])) {
+            $lead = $this->find($id);
+            if ($lead && $lead['status'] === 'open' && empty($lead['stage_locked']) && $lead['stage'] !== 'warm_lead') {
+                $this->recalculate_stage($lead);
+            }
+        }
     }
 
     public function assign($id, $admin_id)
@@ -106,9 +236,13 @@ class Crm_lead_model extends CI_Model
         $this->update($id, array('assigned_to' => $admin_id ? (int) $admin_id : NULL));
     }
 
-    public function update_stage($id, $stage)
+    public function update_stage($id, $stage, $lock = NULL)
     {
-        $this->update($id, array('stage' => $stage));
+        $patch = array('stage' => $stage);
+        if ($lock !== NULL) {
+            $patch['stage_locked'] = $lock ? 1 : 0;
+        }
+        $this->update($id, $patch);
     }
 
     public function update_status($id, $status)
@@ -128,7 +262,8 @@ class Crm_lead_model extends CI_Model
     {
         $patch = array(
             'status'               => 'converted',
-            'stage'                => 'won',
+            'stage'                => 'quote_sent',
+            'stage_locked'         => 1,
             'converted_contact_id' => (int) $contact_id,
             'updated_at'           => date('Y-m-d H:i:s'),
         );
@@ -178,6 +313,7 @@ class Crm_lead_model extends CI_Model
             'email'             => strtolower(trim((string) ($fields['email'] ?? ''))),
             'company'           => $fields['company'] ?? NULL,
             'message'           => $fields['message'] ?? NULL,
+            'stage'             => 'warm_lead',
             'external_lead_id'  => $external_id,
             'external_provider' => $provider,
             'payload_json'      => !empty($fields['raw']) ? json_encode($fields['raw']) : NULL,
@@ -201,6 +337,27 @@ class Crm_lead_model extends CI_Model
             ->result_array();
     }
 
+    protected function _normalize_followup_payload(array $payload)
+    {
+        if (array_key_exists('next_follow_up_at', $payload)) {
+            $v = trim((string) $payload['next_follow_up_at']);
+            if ($v === '') {
+                $payload['next_follow_up_at'] = NULL;
+            } else {
+                $ts = strtotime(str_replace('T', ' ', $v));
+                $payload['next_follow_up_at'] = $ts ? date('Y-m-d H:i:s', $ts) : NULL;
+            }
+            if (!empty($payload['next_follow_up_at']) && empty($payload['stage_locked'])) {
+                $manual = isset($payload['stage']) ? $payload['stage'] : NULL;
+                if (!in_array($manual, crm_lead_manual_stages(), TRUE)) {
+                    $payload['stage'] = $this->compute_stage_from_followup($payload['next_follow_up_at']);
+                    $payload['stage_locked'] = 0;
+                }
+            }
+        }
+        return $payload;
+    }
+
     protected function _apply_filters(array $filters)
     {
         if (!empty($filters['q'])) {
@@ -211,6 +368,12 @@ class Crm_lead_model extends CI_Model
                 ->or_like('l.email', $q)
                 ->or_like('l.company', $q)
                 ->group_end();
+        }
+        if (!empty($filters['source_slug'])) {
+            $sid = $this->source_id_by_slug($filters['source_slug']);
+            if ($sid > 0) {
+                $this->db->where('l.source_id', $sid);
+            }
         }
         if (!empty($filters['source_id'])) {
             $this->db->where('l.source_id', (int) $filters['source_id']);

@@ -19,13 +19,23 @@ class Contacts extends Crm_Controller
         $page    = max(1, (int) $this->input->get('page'));
         $offset  = ($page - 1) * $perPage;
         $filters = array(
-            'q'      => $this->input->get('q'),
-            'tag_id' => $this->input->get('tag_id'),
+            'q'       => $this->input->get('q'),
+            'tag_id'  => $this->input->get('tag_id'),
+            'segment' => $this->input->get('segment'),
         );
         $result = $this->crm_contact_model->paginate($filters, $perPage, $offset);
 
+        $segment = (string) ($filters['segment'] ?? '');
+        $segment_titles = array(
+            ''         => 'Customers',
+            'active'   => 'Active customers',
+            'due'      => 'Due for service',
+            'inactive' => 'Inactive customers',
+            'vip'      => 'VIP customers',
+        );
+
         $this->render('admin/contacts/index', array(
-            'title'   => 'CRM Contacts',
+            'title'   => $segment_titles[$segment] ?? 'Customers',
             'rows'    => $result['rows'],
             'total'   => $result['total'],
             'page'    => $page,
@@ -33,6 +43,7 @@ class Contacts extends Crm_Controller
             'filters' => $filters,
             'tags'    => $this->crm_tag_model->all(),
             'can_edit'=> crm_can('contacts.edit'),
+            'segments'=> array('' => 'All', 'active' => 'Active', 'due' => 'Due for service', 'inactive' => 'Inactive', 'vip' => 'VIP'),
         ));
     }
 
@@ -63,7 +74,25 @@ class Contacts extends Crm_Controller
             'bookings' => $bookings,
             'tasks'    => $this->crm_task_model->paginate(array('contact_id' => $id), 10, 0)['rows'],
             'can_edit' => crm_can('contacts.edit'),
+            'link_users' => $this->crm_contact_model->search_users_for_link(
+                $contact['mobile'] ?: $contact['email'] ?: $contact['name']
+            ),
         ));
+    }
+
+    public function link_user($id)
+    {
+        $this->require_perm('contacts.edit');
+        $contact = $this->crm_contact_model->find($id);
+        if (!$contact) { show_404(); }
+
+        $user_id = (int) $this->input->post('user_id');
+        $this->crm_contact_model->link_to_user($id, $user_id);
+        $this->audit->log('admin', $this->admin['id'], 'crm.customer.link_user', 'crm_contact', $id, array(
+            'user_id' => $user_id ?: NULL,
+        ));
+        $this->flash('success', $user_id ? 'Linked to online account.' : 'Online account link removed.');
+        redirect(admin_url('customers/'.$id));
     }
 
     public function edit($id)
@@ -81,19 +110,19 @@ class Contacts extends Crm_Controller
     {
         $this->require_perm('contacts.edit');
         if ($this->input->method() !== 'post') {
-            redirect(admin_url('contacts'));
+            redirect(admin_url('customers'));
         }
 
         $ids = array_values(array_unique(array_filter(array_map('intval', (array) $this->input->post('contact_ids')))));
         if (empty($ids)) {
             $this->flash('error', 'Select at least one contact.');
-            redirect(admin_url('contacts'));
+            redirect(admin_url('customers'));
         }
 
         $found = $this->crm_contact_model->find_many($ids);
         if (count($found) !== count($ids)) {
             $this->flash('error', 'Some selected contacts were not found.');
-            redirect(admin_url('contacts'));
+            redirect(admin_url('customers'));
         }
 
         $apply_workshop = $this->input->post('apply_workshop') === '1';
@@ -117,11 +146,11 @@ class Contacts extends Crm_Controller
 
         if (!$apply_workshop && $tag_mode === 'none') {
             $this->flash('error', 'Choose workshop and/or tags to update.');
-            redirect(admin_url('contacts'));
+            redirect(admin_url('customers'));
         }
         if ($tag_mode !== 'none' && empty($tag_ids)) {
             $this->flash('error', 'Pick at least one tag or enter a new tag name.');
-            redirect(admin_url('contacts'));
+            redirect(admin_url('customers'));
         }
 
         $this->db->trans_start();
@@ -141,7 +170,7 @@ class Contacts extends Crm_Controller
 
         if (!$this->db->trans_status()) {
             $this->flash('error', 'Bulk update failed.');
-            redirect(admin_url('contacts'));
+            redirect(admin_url('customers'));
         }
 
         $this->audit->log('admin', $this->admin['id'], 'crm.contacts.bulk_edit', 'crm_contact', 0, array(
@@ -150,7 +179,7 @@ class Contacts extends Crm_Controller
             'tag_mode' => $tag_mode,
         ));
         $this->flash('success', sprintf('Updated %d contact(s).', count($ids)));
-        redirect(admin_url('contacts'));
+        redirect(admin_url('customers'));
     }
 
     public function export()
@@ -171,7 +200,7 @@ class Contacts extends Crm_Controller
     {
         $this->require_perm('contacts.edit');
         $this->render('admin/contacts/import', array(
-            'title'   => 'Import contacts',
+            'title'   => 'Import customers',
             'preview' => NULL,
         ));
     }
@@ -193,19 +222,19 @@ class Contacts extends Crm_Controller
         @set_time_limit(300);
 
         if ($this->input->method() !== 'post') {
-            redirect(admin_url('contacts/import'));
+            redirect(admin_url('customers/import'));
         }
 
         $upload_err = $this->_csv_upload_error();
         if ($upload_err !== NULL) {
             $this->flash('error', $upload_err);
-            redirect(admin_url('contacts/import'));
+            redirect(admin_url('customers/import'));
         }
 
         $rows = crm_parse_contacts_csv($_FILES['csv_file']['tmp_name']);
         if (empty($rows)) {
             $this->flash('error', 'No valid rows found. Expected columns: name, mobile, email, workshop, notes, tags');
-            redirect(admin_url('contacts/import'));
+            redirect(admin_url('customers/import'));
         }
 
         $preview = array(
@@ -232,11 +261,11 @@ class Contacts extends Crm_Controller
         if (!$this->_store_pending_import($_FILES['csv_file']['tmp_name'])) {
             $pending = $this->_import_pending_dir();
             $this->flash('error', 'Could not save upload. Ensure this folder is writable by the web server: '.$pending);
-            redirect(admin_url('contacts/import'));
+            redirect(admin_url('customers/import'));
         }
 
         $this->render('admin/contacts/import', array(
-            'title'   => 'Import contacts — preview',
+            'title'   => 'Import customers — preview',
             'preview' => $preview,
         ));
     }
@@ -249,14 +278,14 @@ class Contacts extends Crm_Controller
         $path = $this->_pending_import_path();
         if (!$path) {
             $this->flash('error', 'Import file expired or missing. Upload the CSV again.');
-            redirect(admin_url('contacts/import'));
+            redirect(admin_url('customers/import'));
         }
 
         $rows = crm_parse_contacts_csv($path);
         if (empty($rows)) {
             $this->_clear_pending_import();
             $this->flash('error', 'Import file could not be read. Upload the CSV again.');
-            redirect(admin_url('contacts/import'));
+            redirect(admin_url('customers/import'));
         }
 
         $policy = $this->input->post('duplicate_policy');
@@ -280,7 +309,7 @@ class Contacts extends Crm_Controller
         $this->db->trans_complete();
         if (!$this->db->trans_status()) {
             $this->flash('error', 'Import failed — no changes were saved. Try again.');
-            redirect(admin_url('contacts/import'));
+            redirect(admin_url('customers/import'));
         }
 
         $this->_clear_pending_import();
@@ -290,7 +319,7 @@ class Contacts extends Crm_Controller
             'Import complete: %d created, %d merged, %d updated, %d skipped, %d errors.',
             $stats['created'], $stats['merged'], $stats['updated'], $stats['skipped'], $stats['errors']
         ));
-        redirect(admin_url('contacts'));
+        redirect(admin_url('customers'));
     }
 
     /** @return string Absolute path to pending import directory */
@@ -409,7 +438,7 @@ class Contacts extends Crm_Controller
             }
         }
         $this->render('admin/contacts/form', array(
-            'title'   => $contact ? 'Edit contact' : 'New contact',
+            'title'   => $contact ? 'Edit customer' : 'New customer',
             'contact' => $contact,
             'tags'    => $this->crm_tag_model->all(),
             'tag_ids' => $tag_ids,
@@ -451,6 +480,6 @@ class Contacts extends Crm_Controller
         $this->crm_tag_model->sync_contact_tags($id, $tag_ids);
 
         $this->flash('success', 'Contact saved.');
-        redirect(admin_url('contacts/'.$id));
+        redirect(admin_url('customers/'.$id));
     }
 }

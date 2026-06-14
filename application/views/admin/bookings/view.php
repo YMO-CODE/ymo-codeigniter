@@ -32,7 +32,7 @@ $status_icons = array(
                     <h6 class="text-muted small text-uppercase"><span class="mi mi-sm mi-leading">person</span>Customer</h6>
                     <p class="mb-0"><strong><?= html_escape($booking['user_name']); ?></strong></p>
                     <p class="ymo-muted small mb-0"><?= html_escape($booking['user_mobile']); ?> · <?= html_escape($booking['user_email']); ?></p>
-                    <a href="<?= admin_url('customers/'.$booking['user_id']); ?>" class="small">Customer profile <span class="mi mi-sm mi-trailing">arrow_forward</span></a>
+                    <a href="<?= admin_url('online-accounts/'.$booking['user_id']); ?>" class="small">Online account <span class="mi mi-sm mi-trailing">arrow_forward</span></a>
                 </div>
                 <div class="col-md-6">
                     <h6 class="text-muted small text-uppercase"><span class="mi mi-sm mi-leading">directions_car</span>Vehicle</h6>

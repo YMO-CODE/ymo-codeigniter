@@ -1,16 +1,36 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 <div class="d-flex justify-content-between mb-3 flex-wrap gap-2">
     <div>
-        <a href="<?= admin_url('contacts/export'); ?>" class="btn btn-outline-secondary btn-sm">Export CSV</a>
+        <a href="<?= admin_url('customers/export'); ?>" class="btn btn-outline-secondary btn-sm">Export CSV</a>
         <?php if ($can_edit): ?>
-            <a href="<?= admin_url('contacts/import'); ?>" class="btn btn-outline-primary btn-sm ms-1">Import CSV</a>
+            <a href="<?= admin_url('customers/import'); ?>" class="btn btn-outline-primary btn-sm ms-1">Import CSV</a>
         <?php endif; ?>
     </div>
     <?php if ($can_edit): ?>
-        <a href="<?= admin_url('contacts/new'); ?>" class="btn btn-primary btn-sm"><span class="mi mi-sm mi-leading">add</span>New contact</a>
+        <a href="<?= admin_url('customers/new'); ?>" class="btn btn-primary btn-sm"><span class="mi mi-sm mi-leading">add</span>New customer</a>
     <?php endif; ?>
 </div>
+
+<div class="d-flex flex-wrap gap-2 mb-3">
+    <?php foreach ($segments as $slug => $label):
+        $qs = $_GET;
+        if ($slug === '') {
+            unset($qs['segment']);
+        } else {
+            $qs['segment'] = $slug;
+        }
+        unset($qs['page']);
+        $active = (string) ($filters['segment'] ?? '') === (string) $slug;
+    ?>
+        <a href="<?= admin_url('customers?'.http_build_query($qs)); ?>"
+           class="btn btn-sm <?= $active ? 'btn-primary' : 'btn-outline-secondary'; ?>"><?= html_escape($label); ?></a>
+    <?php endforeach; ?>
+</div>
+
 <form class="ymo-card mb-3" method="get">
+    <?php if (!empty($filters['segment'])): ?>
+        <input type="hidden" name="segment" value="<?= html_escape($filters['segment']); ?>">
+    <?php endif; ?>
     <div class="row g-2">
         <div class="col-md-4"><input class="form-control" name="q" placeholder="Search…" value="<?= html_escape((string) $filters['q']); ?>"></div>
         <div class="col-md-3">
@@ -26,7 +46,7 @@
 </form>
 
 <?php if ($can_edit): ?>
-<?= form_open(admin_url('contacts/bulk-edit'), array('id' => 'contacts-bulk-form')); ?>
+<?= form_open(admin_url('customers/bulk-edit'), array('id' => 'contacts-bulk-form')); ?>
 <div class="ymo-card mb-3 contacts-bulk-bar" id="contacts-bulk-bar" hidden>
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
         <strong><span id="contacts-bulk-count">0</span> selected</strong>
@@ -61,7 +81,7 @@
             <input class="form-control form-control-sm" name="new_tag" placeholder="Or new tag name">
         </div>
         <div class="col-12">
-            <button type="submit" class="btn btn-primary btn-sm" data-confirm="Apply bulk changes to the selected contacts?">Apply to selected</button>
+            <button type="submit" class="btn btn-primary btn-sm" data-confirm="Apply bulk changes to the selected customers?">Apply to selected</button>
         </div>
     </div>
 </div>
@@ -91,7 +111,7 @@
                 <td class="small"><?= html_escape($c['mobile']); ?></td>
                 <td class="small"><?= html_escape($c['email']); ?></td>
                 <td class="small"><?= html_escape($c['company']); ?></td>
-                <td class="text-end"><a href="<?= admin_url('contacts/'.$c['id']); ?>" class="btn btn-sm btn-outline-primary">Open</a></td>
+                <td class="text-end"><a href="<?= admin_url('customers/'.$c['id']); ?>" class="btn btn-sm btn-outline-primary">Open</a></td>
             </tr>
         <?php endforeach; ?>
         </tbody>
@@ -107,17 +127,11 @@
     var bulkBar = document.getElementById('contacts-bulk-bar');
     if (!form || !table || !bulkBar) { return; }
     form.dataset.bulkInit = '1';
-
     var selectAll = document.getElementById('contacts-select-all');
     var countEl = document.getElementById('contacts-bulk-count');
-
-    function rowChecks() {
-        return table.querySelectorAll('.contact-row-check');
-    }
-
+    function rowChecks() { return table.querySelectorAll('.contact-row-check'); }
     function syncBulkBar() {
-        var checked = table.querySelectorAll('.contact-row-check:checked');
-        var n = checked.length;
+        var n = table.querySelectorAll('.contact-row-check:checked').length;
         if (countEl) { countEl.textContent = String(n); }
         bulkBar.hidden = n === 0;
         if (selectAll) {
@@ -126,33 +140,24 @@
             selectAll.indeterminate = n > 0 && n < all.length;
         }
     }
-
     form.addEventListener('change', function (e) {
         var t = e.target;
         if (!t || t.type !== 'checkbox') { return; }
         if (t.id === 'contacts-select-all') {
             rowChecks().forEach(function (cb) { cb.checked = t.checked; });
-        } else if (!t.classList.contains('contact-row-check')) {
-            return;
-        }
+        } else if (!t.classList.contains('contact-row-check')) { return; }
         syncBulkBar();
     });
-
     form.addEventListener('click', function (e) {
-        var btn = e.target.closest('[data-contacts-clear-selection]');
-        if (!btn) { return; }
+        if (!e.target.closest('[data-contacts-clear-selection]')) { return; }
         rowChecks().forEach(function (cb) { cb.checked = false; });
-        if (selectAll) {
-            selectAll.checked = false;
-            selectAll.indeterminate = false;
-        }
+        if (selectAll) { selectAll.checked = false; selectAll.indeterminate = false; }
         syncBulkBar();
     });
-
     form.addEventListener('submit', function (e) {
         if (table.querySelectorAll('.contact-row-check:checked').length === 0) {
             e.preventDefault();
-            window.alert('Select at least one contact.');
+            window.alert('Select at least one customer.');
         }
     });
 })();
@@ -170,11 +175,11 @@
             $qs['page'] = $item;
             ?>
             <li class="page-item <?= (int) $item === $page ? 'active' : ''; ?>">
-                <a class="page-link" href="<?= admin_url('contacts?'.http_build_query($qs)); ?>"><?= (int) $item; ?></a>
+                <a class="page-link" href="<?= admin_url('customers?'.http_build_query($qs)); ?>"><?= (int) $item; ?></a>
             </li>
         <?php endforeach; ?>
         </ul>
     </nav>
 <?php endif; ?>
 
-<p class="ymo-muted small mt-2"><?= (int) $total; ?> total contact<?= (int) $total === 1 ? '' : 's'; ?>.</p>
+<p class="ymo-muted small mt-2"><?= (int) $total; ?> total customer<?= (int) $total === 1 ? '' : 's'; ?>.</p>

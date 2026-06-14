@@ -123,6 +123,11 @@ class Cron extends CI_Controller
             } while ($n > 0 && !empty($remaining));
         }
 
+        if ($this->db->table_exists('crm_leads') && $this->db->field_exists('next_follow_up_at', 'crm_leads')) {
+            $this->load->model('crm_lead_model');
+            $out['lead_stages'] = $this->crm_lead_model->recalculate_open_stages();
+        }
+
         return $out;
     }
 

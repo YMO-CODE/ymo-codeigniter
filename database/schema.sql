@@ -329,7 +329,8 @@ INSERT IGNORE INTO `crm_lead_sources` (`id`, `slug`, `label`) VALUES
     (5, 'whatsapp', 'WhatsApp'),
     (6, 'manual', 'Manual entry'),
     (7, 'cold_call', 'Cold calling'),
-    (8, 'referral', 'Referral');
+    (8, 'referral', 'Referral'),
+    (9, 'offline_marketing', 'Offline Marketing');
 
 CREATE TABLE IF NOT EXISTS `crm_leads` (
     `id`                  BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -339,9 +340,11 @@ CREATE TABLE IF NOT EXISTS `crm_leads` (
     `email`               VARCHAR(180) NOT NULL DEFAULT '',
     `company`             VARCHAR(120) NULL,
     `message`             TEXT NULL,
-    `stage`               ENUM('new','contacted','qualified','proposal','won','lost') NOT NULL DEFAULT 'new',
+    `stage`               ENUM('hot_lead','warm_lead','followup_next_week','followup_next_month','later','quote_sent','lost') NOT NULL DEFAULT 'warm_lead',
     `status`              ENUM('open','converted','junk') NOT NULL DEFAULT 'open',
     `priority`            TINYINT NOT NULL DEFAULT 0,
+    `next_follow_up_at`   DATETIME NULL,
+    `stage_locked`        TINYINT(1) NOT NULL DEFAULT 0,
     `assigned_to`         INT UNSIGNED NULL,
     `converted_user_id`   BIGINT UNSIGNED NULL,
     `converted_contact_id` BIGINT UNSIGNED NULL,
@@ -356,6 +359,7 @@ CREATE TABLE IF NOT EXISTS `crm_leads` (
     KEY `idx_crm_leads_stage` (`stage`,`status`),
     KEY `idx_crm_leads_assigned` (`assigned_to`),
     KEY `idx_crm_leads_created` (`created_at`),
+    KEY `idx_crm_leads_followup` (`next_follow_up_at`, `status`),
     KEY `idx_crm_leads_ext` (`external_provider`,`external_lead_id`),
     CONSTRAINT `fk_crm_leads_source_s` FOREIGN KEY (`source_id`) REFERENCES `crm_lead_sources` (`id`) ON DELETE RESTRICT,
     CONSTRAINT `fk_crm_leads_assign_s` FOREIGN KEY (`assigned_to`) REFERENCES `admin_users` (`id`) ON DELETE SET NULL

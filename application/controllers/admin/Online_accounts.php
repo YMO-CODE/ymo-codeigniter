@@ -1,7 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Customers extends Admin_Controller
+/** Registered booking app users (online accounts). */
+class Online_accounts extends Admin_Controller
 {
     public function __construct()
     {
@@ -19,8 +20,8 @@ class Customers extends Admin_Controller
 
         $result = $this->user_model->paginate($perPage, $offset, $q);
 
-        $this->render('admin/customers/index', array(
-            'title' => 'Customers',
+        $this->render('admin/online_accounts/index', array(
+            'title' => 'Online accounts',
             'rows'  => $result['rows'],
             'total' => $result['total'],
             'page'  => $page,
@@ -36,7 +37,7 @@ class Customers extends Admin_Controller
         if (!$user) { show_404(); }
         unset($user['password_hash']);
 
-        $this->render('admin/customers/view', array(
+        $this->render('admin/online_accounts/view', array(
             'title'     => $user['name'],
             'user'      => $user,
             'bookings'  => $this->booking_model->for_user($id, 50, 0),

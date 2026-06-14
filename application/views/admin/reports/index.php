@@ -5,8 +5,10 @@
         <div class="col-md-3"><label class="small">To</label><input type="date" name="to" class="form-control" value="<?= html_escape($to); ?>"></div>
         <div class="col-md-2"><button class="btn btn-primary">Apply</button></div>
         <div class="col-md-4 text-end">
-            <a href="<?= admin_url('reports/export/leads'); ?>" class="btn btn-outline-secondary btn-sm">Export leads CSV</a>
-            <a href="<?= admin_url('contacts/export'); ?>" class="btn btn-outline-secondary btn-sm">Export contacts CSV</a>
+            <a href="<?= admin_url('reports/export/leads'); ?>" class="btn btn-outline-secondary btn-sm">Export leads</a>
+            <a href="<?= admin_url('customers/export'); ?>" class="btn btn-outline-secondary btn-sm">Export customers</a>
+            <a href="<?= admin_url('reports/export/revenue?from='.urlencode($from).'&to='.urlencode($to)); ?>" class="btn btn-outline-secondary btn-sm">Export revenue</a>
+            <a href="<?= admin_url('reports/export/service-due'); ?>" class="btn btn-outline-secondary btn-sm">Export service due</a>
         </div>
     </div>
 </form>
@@ -15,10 +17,47 @@
     <div class="col-md-3"><div class="md-card-elevated"><p class="ymo-muted small mb-1">Total leads</p><h3><?= (int) $conversion['total']; ?></h3></div></div>
     <div class="col-md-3"><div class="md-card-elevated"><p class="ymo-muted small mb-1">Converted</p><h3><?= (int) $conversion['converted']; ?></h3></div></div>
     <div class="col-md-3"><div class="md-card-elevated"><p class="ymo-muted small mb-1">Conversion rate</p><h3><?= html_escape($conversion['rate']); ?>%</h3></div></div>
-    <div class="col-md-3"><div class="md-card-elevated"><p class="ymo-muted small mb-1">Overdue tasks</p><h3 class="text-warning"><?= (int) $followups['overdue']; ?></h3></div></div>
+    <div class="col-md-3"><div class="md-card-elevated"><p class="ymo-muted small mb-1">Revenue (invoices)</p><h3>₹<?= number_format((float) ($revenue['total'] ?? 0), 0); ?></h3></div></div>
 </div>
 
-<div class="row g-3">
+<div class="row g-3 mb-3">
+    <div class="col-lg-6">
+        <div class="ymo-card">
+            <h6>Locality / workshop</h6>
+            <table class="ymo-table"><thead><tr><th>Workshop</th><th>Customers</th><th>Leads</th></tr></thead>
+            <tbody>
+            <?php foreach ($locality as $loc): ?>
+                <tr><td><?= html_escape($loc['locality']); ?></td><td><?= (int) $loc['customers']; ?></td><td><?= (int) $loc['leads']; ?></td></tr>
+            <?php endforeach; ?>
+            </tbody></table>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="ymo-card">
+            <h6>Revenue by workshop</h6>
+            <table class="ymo-table"><thead><tr><th>Workshop</th><th>Revenue</th><th>Invoices</th></tr></thead>
+            <tbody>
+            <?php foreach ($revenue['by_workshop'] as $r): ?>
+                <tr><td><?= html_escape($r['locality']); ?></td><td>₹<?= number_format((float) $r['revenue'], 0); ?></td><td><?= (int) $r['invoices']; ?></td></tr>
+            <?php endforeach; ?>
+            </tbody></table>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="ymo-card">
+            <h6>Service due customers</h6>
+            <table class="ymo-table"><thead><tr><th>Name</th><th>Workshop</th><th>Due</th></tr></thead>
+            <tbody>
+            <?php foreach ($service_due as $c): ?>
+                <tr>
+                    <td><a href="<?= admin_url('customers/'.$c['id']); ?>"><?= html_escape($c['name']); ?></a></td>
+                    <td class="small"><?= html_escape($c['company']); ?></td>
+                    <td class="small"><?= !empty($c['due_at']) ? html_escape(date('d M Y', strtotime($c['due_at']))) : '—'; ?></td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody></table>
+        </div>
+    </div>
     <div class="col-lg-6">
         <div class="ymo-card">
             <h6>Lead sources</h6>

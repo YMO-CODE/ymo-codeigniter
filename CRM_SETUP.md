@@ -963,4 +963,47 @@ The merge report (`import/staging/contacts_merge_report.json`) lists invalid pho
 
 ---
 
-*Last updated: includes Team & Roles RBAC (v2), booking service invoices with PDF + GST, contacts CSV import.*
+## 17. CRM final flow (v3)
+
+After deploying code, run the database migration on existing installs:
+
+```bash
+docker compose exec -T db mysql -u root -p"$MYSQL_ROOT_PASSWORD" ymo < database/crm_migration_v3_flow.sql
+```
+
+### Lead pipeline (7 stages)
+
+| Stage | Meaning |
+|-------|---------|
+| Hot Lead | Follow-up overdue or due today (auto from date) |
+| Warm Lead | Manual nurturing bucket |
+| Follow-up Next Week | Due within 7 days (auto) |
+| Follow-up Next Month | Due within 30 days (auto) |
+| Later | Due beyond 30 days or no date (auto) |
+| Quote Sent | Manual — locked |
+| Lost | Manual — locked |
+
+Set **Next follow-up** on a lead; daily cron recalculates time-based stages. Manual stages Quote sent / Lost use `stage_locked`.
+
+### Customers (master database)
+
+- **Customers** (`/customers`) = CRM master records (`crm_contacts`). Legacy `/contacts` URLs still work.
+- **Online accounts** (`/online-accounts`) = registered booking app users (`users` table).
+- Link customers to online accounts on the customer detail page or via import (mobile/email match).
+- Segments: **Active**, **Due for service**, **Inactive**, **VIP** (tag slug `vip`).
+
+### CRM navigation shortcuts
+
+Cold calling, Offline marketing, Instagram, and Referral open filtered lead lists by source.
+
+### Dashboard reminders
+
+**Today's CRM actions** shows: follow-ups due today, hot leads, week/month callbacks, and service-due customers.
+
+### Reports
+
+Reports adds **locality/workshop**, **revenue** (from booking invoices), and **service due** lists with CSV exports.
+
+---
+
+*Last updated: CRM final flow (v3), customers rename, expanded reports and dashboard reminders.*

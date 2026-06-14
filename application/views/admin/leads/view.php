@@ -20,8 +20,11 @@
                     </p>
                 </div>
                 <div class="text-end">
-                    <span class="badge bg-light text-dark badge-stage"><?= html_escape($lead['stage']); ?></span>
+                    <span class="badge bg-light text-dark badge-stage"><?= html_escape(crm_lead_stage_label($lead['stage'])); ?></span>
                     <span class="badge bg-secondary"><?= html_escape($lead['status']); ?></span>
+                    <?php if (!empty($lead['next_follow_up_at'])): ?>
+                        <p class="small ymo-muted mt-1 mb-0">Next follow-up: <?= html_escape(date('d M Y, h:i A', strtotime($lead['next_follow_up_at']))); ?></p>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -57,13 +60,14 @@
                 <?php endif; ?>
                 <?php if ($can_convert && !$contact && $lead['status'] !== 'converted'): ?>
                     <?= form_open(admin_url('leads/'.$lead['id'].'/convert'), array('class' => 'd-inline')); ?>
-                        <button type="submit" class="btn btn-sm btn-outline-success" onclick="return confirm('Convert this lead to a contact?');">
-                            <span class="mi mi-sm mi-leading">person_add</span>Convert to contact
+                        <button type="submit" class="btn btn-sm btn-outline-success" onclick="return confirm('Convert this lead to a customer?');">
+                            <span class="mi mi-sm mi-leading">person_add</span>Convert to customer
                         </button>
                     <?= form_close(); ?>
                 <?php endif; ?>
                 <?php if ($contact): ?>
-                    <span class="badge bg-success align-self-center">Contact #<?= (int) $contact['id']; ?></span>
+                    <span class="badge bg-success align-self-center">Customer #<?= (int) $contact['id']; ?></span>
+                    <a href="<?= admin_url('customers/'.$contact['id']); ?>" class="btn btn-sm btn-outline-success">View customer</a>
                 <?php endif; ?>
                 <?php if ($can_delete): ?>
                     <?= form_open(admin_url('leads/'.$lead['id'].'/archive'), array('class' => 'd-inline ms-auto')); ?>
@@ -116,9 +120,14 @@
             <h6 class="mb-3"><span class="mi mi-sm mi-leading">swap_horiz</span>Update stage</h6>
             <?= form_open(admin_url('leads/'.$lead['id'].'/stage')); ?>
                 <div class="mb-2">
+                    <label class="form-label small mb-1">Next follow-up</label>
+                    <input type="datetime-local" name="next_follow_up_at" class="form-control form-control-sm"
+                           value="<?= !empty($lead['next_follow_up_at']) ? html_escape(date('Y-m-d\TH:i', strtotime($lead['next_follow_up_at']))) : ''; ?>">
+                </div>
+                <div class="mb-2">
                     <select name="stage" class="form-select form-select-sm">
-                        <?php foreach (array('new','contacted','qualified','proposal','won','lost') as $st): ?>
-                            <option value="<?= $st; ?>" <?= $lead['stage'] === $st ? 'selected' : ''; ?>><?= ucfirst($st); ?></option>
+                        <?php foreach (crm_lead_stages() as $st => $label): ?>
+                            <option value="<?= $st; ?>" <?= $lead['stage'] === $st ? 'selected' : ''; ?>><?= html_escape($label); ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>

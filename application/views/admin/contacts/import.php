@@ -2,8 +2,8 @@
 <div class="row justify-content-center">
     <div class="col-lg-10">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 class="h4 mb-0">Import contacts from CSV</h2>
-            <a href="<?= admin_url('contacts'); ?>" class="btn btn-outline-secondary btn-sm">Back to contacts</a>
+            <h2 class="h4 mb-0">Import customers from CSV</h2>
+            <a href="<?= admin_url('customers'); ?>" class="btn btn-outline-secondary btn-sm">Back to customers</a>
         </div>
 
         <?php if (!$preview): ?>
@@ -11,9 +11,9 @@
             <p class="text-muted small mb-3">
                 Upload a CSV with columns: <strong>name</strong>, mobile, email, workshop, notes, tags.
                 Tags can be comma-separated in one cell. Use <strong>merge notes</strong> to append visit history without overwriting existing contacts.
-                <a href="<?= admin_url('contacts/import/template'); ?>">Download CSV template</a>
+                <a href="<?= admin_url('customers/import/template'); ?>">Download CSV template</a>
             </p>
-            <?= form_open_multipart(admin_url('contacts/import/preview')); ?>
+            <?= form_open_multipart(admin_url('customers/import/preview')); ?>
             <div class="mb-3">
                 <input type="file" name="csv_file" class="form-control" accept=".csv,text/csv" required>
             </div>
@@ -38,17 +38,17 @@
                 <div class="col-md-3"><div class="border rounded p-2 text-center"><div class="h4 mb-0 text-warning"><?= (int) $preview['duplicate']; ?></div><div class="small text-muted">Duplicates</div></div></div>
             </div>
 
-            <?= form_open(admin_url('contacts/import/commit')); ?>
+            <?= form_open(admin_url('customers/import/commit')); ?>
             <div class="mb-3">
-                <label class="form-label">When a contact already exists (same mobile or email)</label>
+                <label class="form-label">When a customer already exists (same mobile or email)</label>
                 <select name="duplicate_policy" class="form-select">
                     <option value="merge_notes" selected>Merge — append notes, keep existing fields, add tags</option>
                     <option value="skip">Skip duplicates</option>
                     <option value="update">Update — replace fields and tags from CSV</option>
                 </select>
             </div>
-            <button class="btn btn-primary" onclick="return confirm('Import <?= (int) $preview['total']; ?> contacts into CRM?');">Import now</button>
-            <a href="<?= admin_url('contacts/import'); ?>" class="btn btn-outline-secondary ms-2">Cancel</a>
+            <button class="btn btn-primary" onclick="return confirm('Import <?= (int) $preview['total']; ?> customers into CRM?');">Import now</button>
+            <a href="<?= admin_url('customers/import'); ?>" class="btn btn-outline-secondary ms-2">Cancel</a>
             <?= form_close(); ?>
         </div>
 

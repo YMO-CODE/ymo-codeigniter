@@ -67,9 +67,17 @@ $action  = $is_edit ? admin_url('leads/'.$lead['id'].'/edit') : admin_url('leads
                         <div class="form-floating">
                             <input class="form-control" id="ld_company" name="company" placeholder=" "
                                    value="<?= html_escape(set_value('company', $lead['company'] ?? '')); ?>">
-                            <label for="ld_company">Company</label>
+                            <label for="ld_company">Workshop</label>
                         </div>
                     </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input class="form-control" id="ld_followup" type="datetime-local" name="next_follow_up_at"
+                                   value="<?= html_escape(set_value('next_follow_up_at', !empty($lead['next_follow_up_at']) ? date('Y-m-d\TH:i', strtotime($lead['next_follow_up_at'])) : '')); ?>">
+                            <label for="ld_followup">Next follow-up</label>
+                        </div>
+                    </div>
+                    <p class="col-12 small ymo-muted mb-0">Follow-up date auto-updates pipeline stage (Hot / Next week / Next month / Later). Use manual stage for Warm, Quote sent, or Lost.</p>
                     <?php if (crm_can('leads.assign')): ?>
                     <div class="col-md-6">
                         <div class="form-floating">
@@ -89,13 +97,21 @@ $action  = $is_edit ? admin_url('leads/'.$lead['id'].'/edit') : admin_url('leads
                     <div class="col-md-4">
                         <div class="form-floating">
                             <select class="form-select" id="ld_stage" name="stage">
-                                <?php foreach (array('new','contacted','qualified','proposal','won','lost') as $st): ?>
-                                    <option value="<?= $st; ?>" <?= set_value('stage', $lead['stage'] ?? 'new') === $st ? 'selected' : ''; ?>>
-                                        <?= ucfirst($st); ?>
+                                <?php
+                                $manual = crm_lead_manual_stages();
+                                $all_stages = crm_lead_stages();
+                                foreach ($manual as $st):
+                                ?>
+                                    <option value="<?= $st; ?>" <?= set_value('stage', $lead['stage'] ?? 'warm_lead') === $st ? 'selected' : ''; ?>>
+                                        <?= html_escape($all_stages[$st]); ?>
                                     </option>
                                 <?php endforeach; ?>
+                                <option value="hot_lead" disabled <?= set_value('stage', $lead['stage'] ?? '') === 'hot_lead' ? 'selected' : ''; ?>>Hot Lead (auto from date)</option>
+                                <option value="followup_next_week" disabled>Follow-up Next Week (auto)</option>
+                                <option value="followup_next_month" disabled>Follow-up Next Month (auto)</option>
+                                <option value="later" disabled>Later (auto)</option>
                             </select>
-                            <label for="ld_stage">Stage</label>
+                            <label for="ld_stage">Manual stage</label>
                         </div>
                     </div>
                     <div class="col-md-4">

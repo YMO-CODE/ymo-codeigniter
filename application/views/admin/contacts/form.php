@@ -1,12 +1,12 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 $is_edit = !empty($contact);
-$action  = $is_edit ? admin_url('contacts/'.$contact['id'].'/edit') : admin_url('contacts/new');
-$cancel_url = $is_edit ? admin_url('contacts/'.$contact['id']) : admin_url('contacts');
+$action  = $is_edit ? admin_url('customers/'.$contact['id'].'/edit') : admin_url('customers/new');
+$cancel_url = $is_edit ? admin_url('customers/'.$contact['id']) : admin_url('customers');
 ?>
 <div class="row justify-content-center">
     <div class="col-lg-8">
         <div class="ymo-card">
-            <h2 class="h4 mb-4"><?= $is_edit ? 'Edit contact' : 'New contact'; ?></h2>
+            <h2 class="h4 mb-4"><?= $is_edit ? 'Edit customer' : 'New customer'; ?></h2>
             <?php echo validation_errors('<div class="alert alert-danger">', '</div>'); ?>
             <?= form_open($action); ?>
             <div class="row g-3">

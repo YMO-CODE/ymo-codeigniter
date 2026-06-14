@@ -6,7 +6,7 @@
 <a href="<?= admin_url('bookings'); ?>" class="<?= admin_nav_active('bookings') ? 'active' : ''; ?>"><span class="mi mi-sm mi-leading">event_note</span>Bookings</a>
 <?php endif; ?>
 <?php if (!function_exists('crm_can') || crm_can('customers.view')): ?>
-<a href="<?= admin_url('customers'); ?>" class="<?= admin_nav_active('customers') ? 'active' : ''; ?>"><span class="mi mi-sm mi-leading">groups</span>Customers</a>
+<a href="<?= admin_url('online-accounts'); ?>" class="<?= admin_nav_active('online-accounts') ? 'active' : ''; ?>"><span class="mi mi-sm mi-leading">person</span>Online accounts</a>
 <?php endif; ?>
 <?php if (!function_exists('crm_can') || crm_can('packages.view')): ?>
 <a href="<?= admin_url('packages'); ?>" class="<?= admin_nav_active('packages') ? 'active' : ''; ?>"><span class="mi mi-sm mi-leading">build</span>Packages</a>
@@ -14,8 +14,15 @@
 <?php if (function_exists('crm_can') && crm_can('leads.view')): ?>
 <hr class="ymo-admin-nav-div">
 <div class="ymo-admin-nav-label">CRM</div>
-<a href="<?= admin_url('leads'); ?>" class="<?= admin_nav_active('leads') && ymo_admin_nav_path_normalized() !== 'leads/pipeline' ? 'active' : ''; ?>"><span class="mi mi-sm mi-leading">person_search</span>Leads</a>
+<a href="<?= admin_url('leads'); ?>" class="<?= admin_nav_active('leads') && ymo_admin_nav_path_normalized() !== 'leads/pipeline' && empty($_GET['source']) ? 'active' : ''; ?>"><span class="mi mi-sm mi-leading">person_search</span>Leads</a>
 <a href="<?= admin_url('leads/pipeline'); ?>" class="<?= ymo_admin_nav_path_normalized() === 'leads/pipeline' ? 'active' : ''; ?>"><span class="mi mi-sm mi-leading">view_kanban</span>Pipeline</a>
+<?php if (crm_can('contacts.view')): ?>
+<a href="<?= admin_url('customers'); ?>" class="<?= admin_nav_active('customers') ? 'active' : ''; ?>"><span class="mi mi-sm mi-leading">groups</span>Customers</a>
+<?php endif; ?>
+<a href="<?= admin_url('leads?source=cold_call'); ?>" class="<?= !empty($_GET['source']) && $_GET['source'] === 'cold_call' ? 'active' : ''; ?>"><span class="mi mi-sm mi-leading">call</span>Cold calling</a>
+<a href="<?= admin_url('leads?source=offline_marketing'); ?>" class="<?= !empty($_GET['source']) && $_GET['source'] === 'offline_marketing' ? 'active' : ''; ?>"><span class="mi mi-sm mi-leading">storefront</span>Offline marketing</a>
+<a href="<?= admin_url('leads?source=instagram'); ?>" class="<?= !empty($_GET['source']) && $_GET['source'] === 'instagram' ? 'active' : ''; ?>"><span class="mi mi-sm mi-leading">photo_camera</span>Instagram leads</a>
+<a href="<?= admin_url('leads?source=referral'); ?>" class="<?= !empty($_GET['source']) && $_GET['source'] === 'referral' ? 'active' : ''; ?>"><span class="mi mi-sm mi-leading">share</span>Referral leads</a>
 <?php $this->load->view('layout/partials/admin_crm_nav'); ?>
 <?php endif; ?>
 <?php if (function_exists('crm_can') && (crm_can('team.view') || crm_can('roles.view'))): ?>

@@ -99,19 +99,6 @@
                 <span class="mi mi-sm mi-leading">tune</span>Reminder settings
             </a>
         </div>
-        <?php if (!empty($summary['crm']) && function_exists('crm_can') && crm_can('tasks.view')): ?>
-        <div class="md-card-elevated mt-3">
-            <p class="ymo-muted text-uppercase small mb-2">CRM snapshot</p>
-            <ul class="list-unstyled small mb-3">
-                <li>Open leads: <strong><?= (int) $summary['crm']['open_leads']; ?></strong></li>
-                <li>Follow-ups today: <strong><?= (int) $summary['crm']['tasks_today']; ?></strong></li>
-                <li class="<?= $summary['crm']['tasks_overdue'] > 0 ? 'text-warning' : ''; ?>">Overdue: <strong><?= (int) $summary['crm']['tasks_overdue']; ?></strong></li>
-            </ul>
-            <a href="<?= admin_url('tasks?due=overdue'); ?>" class="btn btn-outline-primary btn-sm me-1">Tasks</a>
-            <?php if (crm_can('reports.view')): ?>
-                <a href="<?= admin_url('reports'); ?>" class="btn btn-outline-secondary btn-sm">Reports</a>
-            <?php endif; ?>
-        </div>
-        <?php endif; ?>
+        <?php $this->load->view('admin/dashboard_crm_panel', array('summary' => $summary)); ?>
     </div>
 </div>

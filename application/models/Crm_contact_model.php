@@ -169,6 +169,50 @@ class Crm_contact_model extends CI_Model
         }
     }
 
+    public function link_user_if_exists($contact_id)
+    {
+        $contact = $this->find($contact_id);
+        if (!$contact) {
+            return FALSE;
+        }
+        $this->_link_user_if_exists($contact_id, $contact);
+        return (bool) $this->find($contact_id)['user_id'];
+    }
+
+    public function link_to_user($contact_id, $user_id)
+    {
+        $user_id = (int) $user_id;
+        if ($user_id <= 0) {
+            $this->update($contact_id, array('user_id' => NULL));
+            return;
+        }
+        $this->load->model('user_model');
+        if ($this->user_model->find($user_id)) {
+            $this->update($contact_id, array('user_id' => $user_id));
+        }
+    }
+
+    public function search_users_for_link($q, $limit = 20)
+    {
+        $q = trim((string) $q);
+        if ($q === '') {
+            return array();
+        }
+        $like = $this->db->escape_like_str($q);
+        return $this->db
+            ->select('id, name, mobile, email')
+            ->from('users')
+            ->group_start()
+                ->like('name', $like)
+                ->or_like('mobile', $like)
+                ->or_like('email', $like)
+            ->group_end()
+            ->order_by('name', 'ASC')
+            ->limit((int) $limit)
+            ->get()
+            ->result_array();
+    }
+
     public function paginate(array $filters, $limit, $offset)
     {
         $this->_apply_filters($filters);
@@ -241,7 +285,7 @@ class Crm_contact_model extends CI_Model
 
     public function create_from_lead(array $lead)
     {
-        return $this->create(array(
+        $id = $this->create(array(
             'name'                   => $lead['name'],
             'mobile'                 => $lead['mobile'],
             'email'                  => $lead['email'],
@@ -249,6 +293,46 @@ class Crm_contact_model extends CI_Model
             'notes'                  => $lead['message'],
             'converted_from_lead_id' => (int) $lead['id'],
         ));
+        $this->_link_user_if_exists($id, array(
+            'mobile' => $lead['mobile'],
+            'email'  => $lead['email'],
+        ));
+        return $id;
+    }
+
+    /** Customers due for service (linked user + pending next_service reminder). */
+    public function list_service_due($limit = 20)
+    {
+        return $this->db
+            ->select('c.id, c.name, c.mobile, c.company, MIN(r.scheduled_at) AS due_at', FALSE)
+            ->from(self::TABLE.' c')
+            ->join('bookings b', 'b.user_id = c.user_id', 'inner')
+            ->join('booking_reminders r', 'r.booking_id = b.id', 'inner')
+            ->where('c.deleted_at IS NULL', NULL, FALSE)
+            ->where('c.user_id IS NOT NULL', NULL, FALSE)
+            ->where('r.type', 'next_service')
+            ->where('r.status', 'pending')
+            ->group_by('c.id, c.name, c.mobile, c.company')
+            ->order_by('due_at', 'ASC')
+            ->limit((int) $limit)
+            ->get()
+            ->result_array();
+    }
+
+    public function count_service_due()
+    {
+        $row = $this->db
+            ->select('COUNT(DISTINCT c.id) AS n', FALSE)
+            ->from(self::TABLE.' c')
+            ->join('bookings b', 'b.user_id = c.user_id', 'inner')
+            ->join('booking_reminders r', 'r.booking_id = b.id', 'inner')
+            ->where('c.deleted_at IS NULL', NULL, FALSE)
+            ->where('c.user_id IS NOT NULL', NULL, FALSE)
+            ->where('r.type', 'next_service')
+            ->where('r.status', 'pending')
+            ->get()
+            ->row_array();
+        return (int) ($row['n'] ?? 0);
     }
 
     /** All contacts for CSV export. */
@@ -278,6 +362,72 @@ class Crm_contact_model extends CI_Model
         if (!empty($filters['tag_id'])) {
             $this->db->join('crm_contact_tags ct', 'ct.contact_id = c.id')
                 ->where('ct.tag_id', (int) $filters['tag_id']);
+        }
+        if (!empty($filters['segment'])) {
+            $this->_apply_segment($filters['segment']);
+        }
+    }
+
+    protected function _apply_segment($segment)
+    {
+        $months_active = (int) $this->config->item('crm_customer_active_months') ?: 12;
+        $months_service = (int) $this->config->item('crm_service_due_months') ?: 6;
+        $active_since = date('Y-m-d H:i:s', strtotime('-'.$months_active.' months'));
+        $service_since = date('Y-m-d H:i:s', strtotime('-'.$months_service.' months'));
+
+        if ($segment === 'vip') {
+            $this->db->join('crm_contact_tags ct_vip', 'ct_vip.contact_id = c.id')
+                ->join('crm_tags t_vip', 't_vip.id = ct_vip.tag_id')
+                ->where('t_vip.slug', 'vip');
+            return;
+        }
+
+        if ($segment === 'due') {
+            $this->db->where('c.user_id IS NOT NULL', NULL, FALSE);
+            $this->db->group_start()
+                ->where('EXISTS (
+                    SELECT 1 FROM booking_reminders r
+                    INNER JOIN bookings b ON b.id = r.booking_id
+                    WHERE b.user_id = c.user_id AND r.type = "next_service" AND r.status = "pending"
+                )', NULL, FALSE)
+                ->or_where('EXISTS (
+                    SELECT 1 FROM bookings b
+                    WHERE b.user_id = c.user_id AND b.status = "completed"
+                    AND b.completed_at IS NOT NULL AND b.completed_at < '.$this->db->escape($service_since).'
+                    AND NOT EXISTS (
+                        SELECT 1 FROM bookings b2
+                        WHERE b2.user_id = c.user_id AND b2.status = "completed"
+                        AND b2.completed_at >= '.$this->db->escape($service_since).'
+                    )
+                )', NULL, FALSE)
+                ->group_end();
+            return;
+        }
+
+        if ($segment === 'active') {
+            $this->db->group_start()
+                ->where('c.updated_at >=', $active_since)
+                ->or_where('EXISTS (
+                    SELECT 1 FROM bookings b
+                    WHERE b.user_id = c.user_id AND b.status = "completed"
+                    AND b.completed_at >= '.$this->db->escape($active_since).'
+                )', NULL, FALSE)
+                ->group_end();
+            return;
+        }
+
+        if ($segment === 'inactive') {
+            $this->db->where('c.updated_at <', $active_since);
+            $this->db->where('NOT EXISTS (
+                SELECT 1 FROM bookings b
+                WHERE b.user_id = c.user_id AND b.status = "completed"
+                AND b.completed_at >= '.$this->db->escape($active_since).'
+            )', NULL, FALSE);
+            $this->db->where('NOT EXISTS (
+                SELECT 1 FROM booking_reminders r
+                INNER JOIN bookings b ON b.id = r.booking_id
+                WHERE b.user_id = c.user_id AND r.type = "next_service" AND r.status = "pending"
+            )', NULL, FALSE);
         }
     }
 }

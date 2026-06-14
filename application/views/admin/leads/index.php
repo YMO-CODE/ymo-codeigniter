@@ -13,6 +13,9 @@
 </div>
 
 <form class="ymo-card mb-3" method="get" action="<?= admin_url('leads'); ?>">
+    <?php if (!empty($filters['source_slug'])): ?>
+        <input type="hidden" name="source" value="<?= html_escape($filters['source_slug']); ?>">
+    <?php endif; ?>
     <div class="row g-2 align-items-end">
         <div class="col-md-3">
             <div class="form-floating">
@@ -38,8 +41,8 @@
             <div class="form-floating">
                 <select id="ld_stage" name="stage" class="form-select">
                     <option value="">All stages</option>
-                    <?php foreach (array('new','contacted','qualified','proposal','won','lost') as $st): ?>
-                        <option value="<?= $st; ?>" <?= $filters['stage'] === $st ? 'selected' : ''; ?>><?= ucfirst($st); ?></option>
+                    <?php foreach ($stage_labels as $st => $label): ?>
+                        <option value="<?= html_escape($st); ?>" <?= $filters['stage'] === $st ? 'selected' : ''; ?>><?= html_escape($label); ?></option>
                     <?php endforeach; ?>
                 </select>
                 <label for="ld_stage">Stage</label>
@@ -109,8 +112,11 @@
                 </td>
                 <td class="small"><?= html_escape($l['source_label']); ?></td>
                 <td>
-                    <span class="badge bg-light text-dark badge-stage"><?= html_escape($l['stage']); ?></span>
+                    <span class="badge bg-light text-dark badge-stage"><?= html_escape(crm_lead_stage_label($l['stage'])); ?></span>
                     <span class="ymo-muted small"><?= html_escape($l['status']); ?></span>
+                    <?php if (!empty($l['next_follow_up_at'])): ?>
+                        <br><span class="small ymo-muted">Follow-up <?= html_escape(date('d M Y', strtotime($l['next_follow_up_at']))); ?></span>
+                    <?php endif; ?>
                 </td>
                 <td class="small"><?= $l['assignee_name'] ? html_escape($l['assignee_name']) : '<span class="ymo-muted">—</span>'; ?></td>
                 <td class="small"><?= html_escape(date('d M Y', strtotime($l['created_at']))); ?></td>

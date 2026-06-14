@@ -31,8 +31,20 @@ if (ymo_is_admin_host_request()) {
     $route['bookings/(:num)/invoice/(:num)/edit'] = 'admin/bookings/edit_invoice/$1/$2';
     $route['bookings/(:num)/invoice/(:num)/pdf'] = 'admin/bookings/download_invoice/$1/$2';
 
-    $route['customers']                       = 'admin/customers/index';
-    $route['customers/(:num)']                = 'admin/customers/view/$1';
+    $route['online-accounts']                 = 'admin/online_accounts/index';
+    $route['online-accounts/(:num)']          = 'admin/online_accounts/view/$1';
+
+    $route['customers']                       = 'admin/contacts/index';
+    $route['customers/new']                   = 'admin/contacts/create';
+    $route['customers/import']                = 'admin/contacts/import';
+    $route['customers/import/template']       = 'admin/contacts/import_template';
+    $route['customers/import/preview']        = 'admin/contacts/import_preview';
+    $route['customers/import/commit']         = 'admin/contacts/import_commit';
+    $route['customers/bulk-edit']             = 'admin/contacts/bulk_edit';
+    $route['customers/export']                = 'admin/contacts/export';
+    $route['customers/(:num)/link-user']      = 'admin/contacts/link_user/$1';
+    $route['customers/(:num)/edit']           = 'admin/contacts/edit/$1';
+    $route['customers/(:num)']                = 'admin/contacts/view/$1';
 
     $route['packages']                        = 'admin/packages/index';
     $route['packages/new']                    = 'admin/packages/create';
@@ -97,6 +109,8 @@ if (ymo_is_admin_host_request()) {
 
     $route['reports']                          = 'admin/reports/index';
     $route['reports/export/leads']             = 'admin/reports/export_leads';
+    $route['reports/export/service-due']       = 'admin/reports/export_service_due';
+    $route['reports/export/revenue']           = 'admin/reports/export_revenue';
 
     $route['api/webhooks/meta']                = 'api/webhooks/meta';
     $route['api/webhooks/website']             = 'api/webhooks/website';
@@ -114,8 +128,19 @@ if (ymo_is_admin_host_request()) {
     $route['admin/bookings/(:num)/invoice'] = 'admin/bookings/create_invoice/$1';
     $route['admin/bookings/(:num)/invoice/(:num)/edit'] = 'admin/bookings/edit_invoice/$1/$2';
     $route['admin/bookings/(:num)/invoice/(:num)/pdf'] = 'admin/bookings/download_invoice/$1/$2';
-    $route['admin/customers']                 = 'admin/customers/index';
-    $route['admin/customers/(:num)']          = 'admin/customers/view/$1';
+    $route['admin/online-accounts']           = 'admin/online_accounts/index';
+    $route['admin/online-accounts/(:num)']    = 'admin/online_accounts/view/$1';
+    $route['admin/customers']                 = 'admin/contacts/index';
+    $route['admin/customers/new']             = 'admin/contacts/create';
+    $route['admin/customers/import']          = 'admin/contacts/import';
+    $route['admin/customers/import/template'] = 'admin/contacts/import_template';
+    $route['admin/customers/import/preview']  = 'admin/contacts/import_preview';
+    $route['admin/customers/import/commit']   = 'admin/contacts/import_commit';
+    $route['admin/customers/bulk-edit']       = 'admin/contacts/bulk_edit';
+    $route['admin/customers/export']          = 'admin/contacts/export';
+    $route['admin/customers/(:num)/link-user']= 'admin/contacts/link_user/$1';
+    $route['admin/customers/(:num)/edit']     = 'admin/contacts/edit/$1';
+    $route['admin/customers/(:num)']          = 'admin/contacts/view/$1';
     $route['admin/packages']                  = 'admin/packages/index';
     $route['admin/packages/new']               = 'admin/packages/create';
     $route['admin/packages/(:num)/edit']      = 'admin/packages/edit/$1';
@@ -170,6 +195,8 @@ if (ymo_is_admin_host_request()) {
     $route['admin/recruitment/(:num)/schedule']= 'admin/recruitment/schedule_interview/$1';
     $route['admin/reports']                    = 'admin/reports/index';
     $route['admin/reports/export/leads']       = 'admin/reports/export_leads';
+    $route['admin/reports/export/service-due'] = 'admin/reports/export_service_due';
+    $route['admin/reports/export/revenue']     = 'admin/reports/export_revenue';
 
 } else {
 
@@ -225,8 +252,19 @@ if (ymo_is_admin_host_request()) {
     $route['admin/bookings/(:num)/invoice'] = 'admin/bookings/create_invoice/$1';
     $route['admin/bookings/(:num)/invoice/(:num)/edit'] = 'admin/bookings/edit_invoice/$1/$2';
     $route['admin/bookings/(:num)/invoice/(:num)/pdf'] = 'admin/bookings/download_invoice/$1/$2';
-    $route['admin/customers'] = 'admin/customers/index';
-    $route['admin/customers/(:num)'] = 'admin/customers/view/$1';
+    $route['admin/online-accounts'] = 'admin/online_accounts/index';
+    $route['admin/online-accounts/(:num)'] = 'admin/online_accounts/view/$1';
+    $route['admin/customers'] = 'admin/contacts/index';
+    $route['admin/customers/new'] = 'admin/contacts/create';
+    $route['admin/customers/import'] = 'admin/contacts/import';
+    $route['admin/customers/import/template'] = 'admin/contacts/import_template';
+    $route['admin/customers/import/preview'] = 'admin/contacts/import_preview';
+    $route['admin/customers/import/commit'] = 'admin/contacts/import_commit';
+    $route['admin/customers/bulk-edit'] = 'admin/contacts/bulk_edit';
+    $route['admin/customers/export'] = 'admin/contacts/export';
+    $route['admin/customers/(:num)/link-user'] = 'admin/contacts/link_user/$1';
+    $route['admin/customers/(:num)/edit'] = 'admin/contacts/edit/$1';
+    $route['admin/customers/(:num)'] = 'admin/contacts/view/$1';
     $route['admin/packages'] = 'admin/packages/index';
     $route['admin/packages/new'] = 'admin/packages/create';
     $route['admin/packages/(:num)/edit'] = 'admin/packages/edit/$1';
@@ -281,6 +319,8 @@ if (ymo_is_admin_host_request()) {
     $route['admin/recruitment/(:num)/schedule'] = 'admin/recruitment/schedule_interview/$1';
     $route['admin/reports'] = 'admin/reports/index';
     $route['admin/reports/export/leads'] = 'admin/reports/export_leads';
+    $route['admin/reports/export/service-due'] = 'admin/reports/export_service_due';
+    $route['admin/reports/export/revenue'] = 'admin/reports/export_revenue';
     $route['api/webhooks/meta'] = 'api/webhooks/meta';
     $route['api/webhooks/website'] = 'api/webhooks/website';
     $route['api/webhooks/whatsapp'] = 'api/webhooks/whatsapp';
