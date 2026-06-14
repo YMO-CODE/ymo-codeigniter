@@ -965,10 +965,33 @@ The merge report (`import/staging/contacts_merge_report.json`) lists invalid pho
 
 ## 17. CRM final flow (v3)
 
-After deploying code, run the database migration on existing installs:
+After deploying code, run the database migration on existing installs.
+
+**VPS (production compose + `.env` credentials):**
 
 ```bash
-docker compose exec -T db mysql -u root -p"$MYSQL_ROOT_PASSWORD" ymo < database/crm_migration_v3_flow.sql
+cd /opt/ymo-codeigniter
+COMPOSE="docker compose -f docker-compose.yml -f deploy/docker-compose.vps.yml -f deploy/docker-compose.prod.yml"
+
+# Use app DB user from .env (same as other CRM migrations — NOT shell $MYSQL_ROOT_PASSWORD)
+grep -E '^YMO_DB_(NAME|USER|PASS)=' .env
+
+$COMPOSE exec -T db mysql -u ymo_user -p"$(grep '^YMO_DB_PASS=' .env | cut -d= -f2-)" \
+  "$(grep '^YMO_DB_NAME=' .env | cut -d= -f2-)" < database/crm_migration_v3_flow.sql
+```
+
+**Local Docker (defaults from `docker-compose.yml`):**
+
+```bash
+docker compose exec -T db mysql -u ymo_user -pymo_pass ymo_booking < database/crm_migration_v3_flow.sql
+```
+
+Verify:
+
+```bash
+$COMPOSE exec -T db mysql -u ymo_user -p"$(grep '^YMO_DB_PASS=' .env | cut -d= -f2-)" \
+  "$(grep '^YMO_DB_NAME=' .env | cut -d= -f2-)" \
+  -e "SHOW COLUMNS FROM crm_leads LIKE 'next_follow_up_at';"
 ```
 
 ### Lead pipeline (7 stages)
