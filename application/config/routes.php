@@ -72,6 +72,7 @@ if (ymo_is_admin_host_request()) {
     $route['leads/(:num)/edit']                = 'admin/leads/edit/$1';
     $route['leads/(:num)/assign']              = 'admin/leads/assign/$1';
     $route['leads/(:num)/activity']            = 'admin/leads/add_activity/$1';
+    $route['leads/(:num)/send-chat']           = 'admin/leads/send_chat/$1';
     $route['leads/(:num)/stage']               = 'admin/leads/update_stage/$1';
     $route['leads/(:num)/archive']             = 'admin/leads/archive/$1';
     $route['leads/(:num)/convert']             = 'admin/leads/convert/$1';
@@ -163,6 +164,7 @@ if (ymo_is_admin_host_request()) {
     $route['admin/leads/(:num)/edit']          = 'admin/leads/edit/$1';
     $route['admin/leads/(:num)/assign']        = 'admin/leads/assign/$1';
     $route['admin/leads/(:num)/activity']      = 'admin/leads/add_activity/$1';
+    $route['admin/leads/(:num)/send-chat']     = 'admin/leads/send_chat/$1';
     $route['admin/leads/(:num)/stage']         = 'admin/leads/update_stage/$1';
     $route['admin/leads/(:num)/archive']       = 'admin/leads/archive/$1';
     $route['admin/leads/(:num)/convert']       = 'admin/leads/convert/$1';
@@ -287,6 +289,7 @@ if (ymo_is_admin_host_request()) {
     $route['admin/leads/(:num)/edit'] = 'admin/leads/edit/$1';
     $route['admin/leads/(:num)/assign'] = 'admin/leads/assign/$1';
     $route['admin/leads/(:num)/activity'] = 'admin/leads/add_activity/$1';
+    $route['admin/leads/(:num)/send-chat'] = 'admin/leads/send_chat/$1';
     $route['admin/leads/(:num)/stage'] = 'admin/leads/update_stage/$1';
     $route['admin/leads/(:num)/archive'] = 'admin/leads/archive/$1';
     $route['admin/leads/(:num)/convert'] = 'admin/leads/convert/$1';

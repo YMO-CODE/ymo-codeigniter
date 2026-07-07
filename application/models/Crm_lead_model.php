@@ -324,6 +324,68 @@ class Crm_lead_model extends CI_Model
         return (int) $this->db->insert_id();
     }
 
+    /**
+     * Ingest chat/DM: one lead per sender; further messages append activity.
+     *
+     * @param string $activity_type crm_lead_activities.type (whatsapp, webhook, …)
+     */
+    public function ingest_chat_message($source_slug, array $fields, $sender_id, $message_id, $provider, $activity_type = 'webhook', $channel = NULL)
+    {
+        $this->load->model('crm_lead_activity_model');
+        if ($message_id && $this->crm_lead_activity_model->exists_for_external_message($provider, $message_id)) {
+            $row = $this->db
+                ->where('external_provider', $provider)
+                ->where('external_lead_id', $sender_id)
+                ->where('deleted_at IS NULL', NULL, FALSE)
+                ->get(self::TABLE)
+                ->row_array();
+            return $row ? (int) $row['id'] : 0;
+        }
+
+        $existing = $this->db
+            ->where('external_provider', $provider)
+            ->where('external_lead_id', $sender_id)
+            ->where('deleted_at IS NULL', NULL, FALSE)
+            ->get(self::TABLE)
+            ->row_array();
+
+        $text = (string) ($fields['text'] ?? '');
+        if ($text === '' && !empty($fields['message'])) {
+            $text = function_exists('crm_chat_strip_legacy_prefix')
+                ? crm_chat_strip_legacy_prefix($fields['message'])
+                : (string) $fields['message'];
+        }
+
+        $meta = array(
+            'direction'  => 'inbound',
+            'channel'    => $channel ?: ($provider === 'whatsapp' ? 'whatsapp' : 'instagram'),
+            'provider'   => $provider,
+            'message_id' => $message_id,
+            'sender_id'  => $sender_id,
+            'text'       => $text,
+        );
+        $body = $text;
+
+        if ($existing) {
+            if ($body !== '') {
+                $this->crm_lead_activity_model->add(
+                    (int) $existing['id'],
+                    NULL,
+                    $activity_type,
+                    $body,
+                    $meta
+                );
+            }
+            return (int) $existing['id'];
+        }
+
+        $lead_id = $this->ingest($source_slug, $fields, $sender_id, $provider);
+        if ($lead_id && $body !== '') {
+            $this->crm_lead_activity_model->add($lead_id, NULL, $activity_type, $body, $meta);
+        }
+        return $lead_id;
+    }
+
     public function export_all(array $filters = array())
     {
         $this->_apply_filters($filters);

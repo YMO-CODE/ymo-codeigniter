@@ -944,3 +944,34 @@ table.ymo-table tbody tr:hover { background: var(--ymo-grey-100); }
     gap: 0.3rem;
 }
 .badge-status .mi { font-size: 14px; }
+
+/* ---------------- CRM lead chat thread -------------------------------- */
+.ymo-chat-thread {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    max-height: 360px;
+    overflow-y: auto;
+    padding: 0.25rem 0;
+}
+.ymo-chat-bubble {
+    max-width: 85%;
+    padding: 0.55rem 0.75rem;
+    border-radius: var(--ymo-radius);
+    font-size: 0.875rem;
+}
+.ymo-chat-in {
+    align-self: flex-start;
+    background: var(--ymo-grey-100);
+    border: 1px solid var(--ymo-grey-300);
+}
+.ymo-chat-out {
+    align-self: flex-end;
+    background: var(--ymo-primary-soft);
+    border: 1px solid rgba(58, 111, 55, 0.25);
+}
+.ymo-chat-meta {
+    margin-top: 0.25rem;
+    color: var(--ymo-grey-500);
+    font-size: 0.75rem;
+}

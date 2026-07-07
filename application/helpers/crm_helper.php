@@ -196,6 +196,317 @@ if (!function_exists('crm_lead_stage_label')) {
     }
 }
 
+if (!function_exists('crm_is_meta_whatsapp_cloud_payload')) {
+    /**
+     * True when JSON is Meta WhatsApp Cloud API webhook (not flat third-party JSON).
+     */
+    function crm_is_meta_whatsapp_cloud_payload(array $data)
+    {
+        if (empty($data['entry']) || !is_array($data['entry'])) {
+            return FALSE;
+        }
+        foreach ($data['entry'] as $entry) {
+            foreach ($entry['changes'] ?? array() as $change) {
+                if (($change['field'] ?? '') === 'messages') {
+                    return TRUE;
+                }
+            }
+        }
+        return FALSE;
+    }
+}
+
+if (!function_exists('crm_normalize_whatsapp_payloads')) {
+    /**
+     * Normalize flat JSON or Meta Cloud API WhatsApp webhook into CRM message rows.
+     *
+     * @return array<int,array{from:string,name:string,text:string,message_id:string,raw:array}>
+     */
+    function crm_normalize_whatsapp_payloads(array $data)
+    {
+        $out = array();
+
+        if (!empty($data['entry']) && is_array($data['entry'])) {
+            foreach ($data['entry'] as $entry) {
+                foreach ($entry['changes'] ?? array() as $change) {
+                    if (($change['field'] ?? '') !== 'messages') {
+                        continue;
+                    }
+                    $val = $change['value'] ?? array();
+                    $contacts = array();
+                    foreach ($val['contacts'] ?? array() as $c) {
+                        $wa = (string) ($c['wa_id'] ?? '');
+                        if ($wa !== '') {
+                            $contacts[$wa] = (string) ($c['profile']['name'] ?? '');
+                        }
+                    }
+                    foreach ($val['messages'] ?? array() as $msg) {
+                        if (($msg['type'] ?? 'text') !== 'text') {
+                            continue;
+                        }
+                        $from = (string) ($msg['from'] ?? '');
+                        $text = (string) ($msg['text']['body'] ?? '');
+                        if ($from === '' || $text === '') {
+                            continue;
+                        }
+                        $out[] = array(
+                            'from'       => $from,
+                            'name'       => $contacts[$from] ?? ('WhatsApp '.$from),
+                            'text'       => $text,
+                            'message_id' => (string) ($msg['id'] ?? ''),
+                            'raw'        => $msg,
+                        );
+                    }
+                }
+            }
+            if ($out) {
+                return $out;
+            }
+        }
+
+        $from = (string) ($data['from'] ?? ($data['mobile'] ?? ($data['wa_id'] ?? '')));
+        $text = (string) ($data['text'] ?? ($data['message'] ?? ($data['body'] ?? '')));
+        if ($from !== '' && $text !== '') {
+            $out[] = array(
+                'from'       => $from,
+                'name'       => (string) ($data['name'] ?? ('WhatsApp '.$from)),
+                'text'       => $text,
+                'message_id' => (string) ($data['message_id'] ?? ''),
+                'raw'        => $data,
+            );
+        }
+
+        return $out;
+    }
+}
+
+if (!function_exists('crm_parse_meta_messaging_events')) {
+    /**
+     * Extract inbound Instagram/Messenger DM events from Meta webhook JSON.
+     *
+     * @return array<int,array{sender_id:string,name:string,text:string,message_id:string,channel:string,raw:array}>
+     */
+    function crm_parse_meta_messaging_events(array $data)
+    {
+        $out = array();
+
+        foreach ($data['entry'] ?? array() as $entry) {
+            foreach ($entry['messaging'] ?? array() as $event) {
+                $parsed = _crm_parse_meta_messaging_event($event, 'messaging');
+                if ($parsed) {
+                    $out[] = $parsed;
+                }
+            }
+            foreach ($entry['changes'] ?? array() as $change) {
+                if (($change['field'] ?? '') !== 'messages') {
+                    continue;
+                }
+                $val = $change['value'] ?? array();
+                $channel = (($val['messaging_product'] ?? '') === 'instagram') ? 'instagram' : 'messenger';
+                $contacts = array();
+                foreach ($val['contacts'] ?? array() as $c) {
+                    $id = (string) ($c['id'] ?? ($c['wa_id'] ?? ''));
+                    if ($id !== '') {
+                        $contacts[$id] = (string) ($c['profile']['name'] ?? '');
+                    }
+                }
+                foreach ($val['messages'] ?? array() as $msg) {
+                    if (($msg['type'] ?? 'text') !== 'text') {
+                        continue;
+                    }
+                    $sender = (string) ($msg['from'] ?? '');
+                    $text = (string) ($msg['text']['body'] ?? '');
+                    if ($sender === '' || $text === '') {
+                        continue;
+                    }
+                    $out[] = array(
+                        'sender_id'  => $sender,
+                        'name'       => $contacts[$sender] ?? ('Instagram '.$sender),
+                        'text'       => $text,
+                        'message_id' => (string) ($msg['id'] ?? ''),
+                        'channel'    => $channel,
+                        'raw'        => $msg,
+                    );
+                }
+            }
+        }
+
+        $object = strtolower((string) ($data['object'] ?? ''));
+        if ($object === 'instagram' && empty($out)) {
+            foreach ($data['entry'] ?? array() as $entry) {
+                foreach ($entry['messaging'] ?? array() as $event) {
+                    $parsed = _crm_parse_meta_messaging_event($event, 'instagram');
+                    if ($parsed) {
+                        $out[] = $parsed;
+                    }
+                }
+            }
+        }
+
+        return $out;
+    }
+}
+
+if (!function_exists('_crm_parse_meta_messaging_event')) {
+    /** @return array|null */
+    function _crm_parse_meta_messaging_event(array $event, $default_channel)
+    {
+        if (!empty($event['message']['is_echo'])) {
+            return NULL;
+        }
+        $message = $event['message'] ?? array();
+        $text = (string) ($message['text'] ?? '');
+        if ($text === '' && empty($message['attachments'])) {
+            return NULL;
+        }
+        if ($text === '' && !empty($message['attachments'])) {
+            $text = '[Attachment]';
+        }
+        $sender = (string) ($event['sender']['id'] ?? '');
+        if ($sender === '') {
+            return NULL;
+        }
+        return array(
+            'sender_id'  => $sender,
+            'name'       => 'Instagram '.$sender,
+            'text'       => $text,
+            'message_id' => (string) ($message['mid'] ?? ($message['id'] ?? '')),
+            'channel'    => $default_channel === 'instagram' ? 'instagram' : 'messenger',
+            'raw'        => $event,
+        );
+    }
+}
+
+if (!function_exists('crm_lead_chat_channel')) {
+    /** @return string|null whatsapp|instagram */
+    function crm_lead_chat_channel($lead)
+    {
+        if (!$lead || !is_array($lead)) {
+            return NULL;
+        }
+        $provider = (string) ($lead['external_provider'] ?? '');
+        $slug     = (string) ($lead['source_slug'] ?? '');
+
+        if ($provider === 'whatsapp' || ($slug === 'whatsapp' && !empty($lead['mobile']))) {
+            return 'whatsapp';
+        }
+        if ($provider === 'instagram_dm' && !empty($lead['external_lead_id'])) {
+            return 'instagram';
+        }
+        return NULL;
+    }
+}
+
+if (!function_exists('crm_lead_chat_recipient')) {
+    function crm_lead_chat_recipient($lead, $channel)
+    {
+        if ($channel === 'whatsapp') {
+            return preg_replace('/\D/', '', (string) ($lead['mobile'] ?? ''));
+        }
+        if ($channel === 'instagram') {
+            return (string) ($lead['external_lead_id'] ?? '');
+        }
+        return '';
+    }
+}
+
+if (!function_exists('crm_chat_strip_legacy_prefix')) {
+    function crm_chat_strip_legacy_prefix($body)
+    {
+        $body = trim((string) $body);
+        $prefixes = array(
+            'Inbound WhatsApp: ',
+            'Instagram DM: ',
+            'Messenger: ',
+        );
+        foreach ($prefixes as $prefix) {
+            if (stripos($body, $prefix) === 0) {
+                return trim(substr($body, strlen($prefix)));
+            }
+        }
+        return $body;
+    }
+}
+
+if (!function_exists('crm_chat_activity_meta')) {
+    /** @return array */
+    function crm_chat_activity_meta($activity)
+    {
+        if (empty($activity['meta_json'])) {
+            return array();
+        }
+        $meta = json_decode($activity['meta_json'], TRUE);
+        return is_array($meta) ? $meta : array();
+    }
+}
+
+if (!function_exists('crm_chat_activity_text')) {
+    function crm_chat_activity_text($activity)
+    {
+        $meta = crm_chat_activity_meta($activity);
+        if (!empty($meta['text'])) {
+            return (string) $meta['text'];
+        }
+        return crm_chat_strip_legacy_prefix($activity['body'] ?? '');
+    }
+}
+
+if (!function_exists('crm_lead_chat_messages')) {
+    /**
+     * Chat-thread rows from lead activities (inbound/outbound WhatsApp + Instagram DMs).
+     *
+     * @param array[] $activities
+     * @return array[]
+     */
+    function crm_lead_chat_messages(array $activities)
+    {
+        $out = array();
+        foreach ($activities as $a) {
+            $type = (string) ($a['type'] ?? '');
+            $meta = crm_chat_activity_meta($a);
+            $is_chat = ($type === 'whatsapp')
+                || ($type === 'webhook' && !empty($meta['direction']))
+                || ($type === 'webhook' && (
+                    stripos((string) ($a['body'] ?? ''), 'Instagram DM:') === 0
+                    || stripos((string) ($a['body'] ?? ''), 'Messenger:') === 0
+                ))
+                || stripos((string) ($a['body'] ?? ''), 'Inbound WhatsApp:') === 0;
+
+            if (!$is_chat) {
+                continue;
+            }
+
+            $direction = $meta['direction'] ?? NULL;
+            if (!$direction) {
+                $direction = !empty($a['admin_id']) ? 'outbound' : 'inbound';
+            }
+
+            $channel = $meta['channel'] ?? NULL;
+            if (!$channel && $type === 'whatsapp') {
+                $channel = 'whatsapp';
+            }
+            if (!$channel && stripos((string) ($a['body'] ?? ''), 'Instagram DM:') === 0) {
+                $channel = 'instagram';
+            }
+
+            $out[] = array(
+                'id'         => (int) ($a['id'] ?? 0),
+                'direction'  => $direction,
+                'channel'    => $channel,
+                'text'       => crm_chat_activity_text($a),
+                'admin_name' => $a['admin_name'] ?? NULL,
+                'created_at' => $a['created_at'] ?? '',
+            );
+        }
+
+        usort($out, function ($x, $y) {
+            return strcmp($x['created_at'], $y['created_at']);
+        });
+
+        return $out;
+    }
+}
+
 if (!function_exists('crm_pagination_items')) {
     /**
      * Build page numbers for admin pagination with ellipsis after the first block.

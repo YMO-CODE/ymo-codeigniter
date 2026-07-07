@@ -103,7 +103,7 @@
             </tbody></table>
             <p class="small ymo-muted mt-2 mb-0">
                 Webhook URLs (POST unless Meta verify GET):<br>
-                Meta: <code><?= html_escape(site_url('api/webhooks/meta')); ?></code><br>
+                Meta: <code><?= html_escape(site_url('api/webhooks/meta')); ?></code> — Lead Forms (<code>leadgen</code>) + Instagram DMs (<code>messages</code>)<br>
                 Website: <code><?= html_escape(site_url('api/webhooks/website')); ?></code> — header <code>X-CRM-Signature: sha256=…</code><br>
                 WhatsApp: <code><?= html_escape(site_url('api/webhooks/whatsapp')); ?></code>
             </p>

@@ -56,3 +56,11 @@ docker compose -f docker-compose.yml -f deploy/docker-compose.vps.yml -f deploy/
 ## Full checklist
 
 See [DEPLOY.md](../DEPLOY.md) and [CRM_SETUP.md](../CRM_SETUP.md).
+
+**CRM Meta/WhatsApp go-live on VPS:**
+
+```bash
+bash deploy/scripts/sync-code.sh          # pull latest code
+bash deploy/scripts/deploy-crm-config.sh  # secrets + verify + smoke tests
+# Then Meta Developer console — see deploy/scripts/META_CRM_CHECKLIST.md
+```

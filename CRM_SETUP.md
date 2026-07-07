@@ -394,7 +394,11 @@ YMO_ENCRYPTION_KEY=any-32-character-random-string!!
 | `CRM_WEBHOOK_SECRET` | HMAC for website/WhatsApp webhooks | Before §8 or §9 |
 | `CRM_META_VERIFY_TOKEN` | Meta webhook verify handshake | Before §7 |
 | `CRM_META_ACCESS_TOKEN` | Fetch full lead fields from Graph API | Before §7 (strongly recommended) |
+| `CRM_WHATSAPP_PHONE_NUMBER_ID` | WhatsApp outbound + Cloud API reference | Before §9 two-way chat |
+| `CRM_META_PAGE_ID` | Facebook Page ID (optional reference) | Optional |
 | `YMO_TPL_CRM_CAMPAIGN` | MSG91 DLT template for SMS campaigns | Before SMS campaigns (§5) |
+
+**VPS quick setup:** `bash deploy/scripts/deploy-crm-config.sh` then follow [deploy/scripts/META_CRM_CHECKLIST.md](deploy/scripts/META_CRM_CHECKLIST.md).
 
 **Docker note:** `docker-compose.yml` sets DB vars in `environment:` but **not** CRM vars. Add CRM keys to Compose `environment:` or load `.env` on the host.
 
@@ -533,6 +537,20 @@ Must be **HTTPS** in production. Use your public booking hostname (not the admin
 
 Without `CRM_META_ACCESS_TOKEN`, webhooks may arrive with only `leadgen_id` and empty name/mobile fields.
 
+### Instagram click-to-message / DM ads (same webhook URL)
+
+Click-to-message ads send **Instagram Direct messages**, not lead forms. The same endpoint handles both when you subscribe to **`messages`** (in addition to **`leadgen`**):
+
+1. In Meta Developer App → **Webhooks** → Page (and/or **Instagram** product):
+   - Subscribe field **`leadgen`** — Lead Form / Instant Form ads
+   - Subscribe field **`messages`** — click-to-message / DM ads
+2. Permissions typically required: `leads_retrieval`, `pages_messaging`, `instagram_manage_messages` (Meta app review may apply).
+3. `CRM_META_ACCESS_TOKEN` should be a Page token with messaging + leads permissions (used to fetch sender name and lead form fields).
+4. Run a click-to-message test ad → send a DM → **Admin → Leads** with source **Instagram Ads** and activity “Instagram DM: …”.
+5. Repeat messages from the same user append to the same lead (no duplicates).
+
+**Note:** Two-way Instagram chat inside the CRM is not implemented — only inbound lead capture + activity log.
+
 ---
 
 ## 8. Lead capture — website & landing pages
@@ -597,29 +615,56 @@ WordPress: add a small plugin, mu-plugin, or use a form plugin’s webhook featu
 ### Webhook URL
 
 ```
-POST https://booking.yourmechaniconline.com/api/webhooks/whatsapp
+GET/POST https://booking.yourmechaniconline.com/api/webhooks/whatsapp
 ```
 
-Optional HMAC: same `CRM_WEBHOOK_SECRET` + `X-CRM-Signature` header as §8.
+**Meta Cloud API:** use the same `CRM_META_VERIFY_TOKEN` as §7 for GET webhook verification. Meta Cloud payloads skip custom HMAC; flat JSON from third-party proxies still use `CRM_WEBHOOK_SECRET` + `X-CRM-Signature` (§8).
+
+Optional HMAC (flat JSON only): same `CRM_WEBHOOK_SECRET` + `X-CRM-Signature` header as §8.
 
 ### Step-by-step
 
 1. Choose a WhatsApp Business API provider (Meta Cloud API, Interakt, Wati, Gupshup, etc.).
 2. In their dashboard, set **incoming message webhook** to the URL above.
-3. Map their payload to JSON fields the CRM expects:
+3. **Meta Cloud API:** point the webhook directly at this URL — the CRM auto-parses the nested `entry/changes/messages` payload (no custom mapper needed).
+4. **Other providers:** map their payload to flat JSON if they cannot forward Meta format:
 
 ```json
 {
   "from": "919876543210",
   "name": "Customer Name",
-  "text": "Hi, I need a quote for Honda City service"
+  "text": "Hi, I need a quote for Honda City service",
+  "message_id": "optional-dedup-id"
 }
 ```
 
-4. Send a test message from your phone.
-5. Confirm lead appears under **Admin → Leads** with source **WhatsApp**.
+5. Send a test message from your phone.
+6. Confirm lead appears under **Admin → Leads** with source **WhatsApp**. Further messages from the same number append activity on the same lead.
 
 **Note:** Outbound bulk WhatsApp campaigns are **not** implemented — only inbound lead creation.
+
+### Two-way chat (reply from lead page)
+
+Admins can reply to **WhatsApp** and **Instagram DM** leads directly on the lead detail page when the lead came from an inbound chat webhook.
+
+**Required `.env` values:**
+
+```bash
+CRM_META_ACCESS_TOKEN=          # Page token with messaging permissions
+CRM_WHATSAPP_PHONE_NUMBER_ID=   # Required for WhatsApp outbound (Meta Cloud API)
+CRM_META_PAGE_ID=               # Optional reference (Facebook Page linked to Instagram)
+```
+
+**Meta permissions:** `whatsapp_business_messaging`, `instagram_manage_messages`, `pages_messaging` (app review may be required in production).
+
+**How it works:**
+1. Customer sends WhatsApp message or Instagram DM → webhook creates/updates lead.
+2. Open **Admin → Leads → [lead]** → **WhatsApp chat** or **Instagram chat** panel.
+3. Type reply → **Send** → message goes via Meta Graph API and appears in the thread.
+
+**Policy:** Meta only allows free-form replies within **24 hours** of the customer’s last message. Outside that window, the API returns an error — use **Log activity** to record offline follow-up.
+
+**Verify:** Send test inbound message → reply from lead page → confirm delivery on the customer’s phone/app.
 
 ---
 
@@ -735,9 +780,11 @@ Use this before handing over to the client team.
 ### Integrations
 
 - [ ] Meta webhook verification (GET challenge)
-- [ ] Meta test lead → appears in CRM
+- [ ] Meta test lead form → appears in CRM
+- [ ] Instagram click-to-message test DM → appears in CRM (source Instagram Ads)
 - [ ] Website form webhook with valid signature
 - [ ] WhatsApp inbound test → lead created
+- [ ] `bash deploy/scripts/smoke-webhooks.sh` returns ok JSON
 
 ### Service invoices
 
@@ -771,14 +818,16 @@ Use this before handing over to the client team.
 | Requirement | Current state | Workaround |
 |-------------|---------------|------------|
 | Bulk **WhatsApp** campaigns | Inbound webhook only | Use provider’s broadcast tool; log activity manually in CRM |
+| **Instagram DMs** (click-to-message ads) | Inbound via Meta `messages` webhook on `/api/webhooks/meta` | Subscribe `messages` field; see §7 |
 | **Push notifications** | Not implemented | Email/SMS task reminders only |
 | **Google Sheets** sync | Not implemented | CSV export / Import CSV on Contacts |
 | **Assign mechanic to specific booking** | Not in schema | Mechanics see all bookings with `bookings.view` |
 | **Email invite flow for new staff** | Admin sets password in Team UI | Share generated password securely |
 | **Auto follow-up rules** | Manual task creation | Sales creates tasks when closing calls |
 | **Sales executive dashboard** | Shared admin dashboard + CRM widget | Use Reports + Pipeline views |
-| **Link CRM contact ↔ booking user** | Manual / on conversion | Link `crm_contacts.user_id` via SQL if needed |
-| **Two-way WhatsApp chat** | Not implemented | Use WhatsApp Business app alongside CRM |
+| **Link CRM contact ↔ booking user** | Manual / on conversion | Link on customer detail page |
+| **Two-way WhatsApp chat** | Reply from lead page via Meta Cloud API | Requires `CRM_WHATSAPP_PHONE_NUMBER_ID`; 24h window applies |
+| **Two-way Instagram chat** | Reply from lead page via Meta Graph API | Requires `instagram_dm` thread on lead; 24h window applies |
 | **Live permission refresh** | Requires re-login | Sign out/in after role changes |
 | **Delete issued invoices** | Not implemented | Edit in place or keep for audit trail |
 | **Online payment on invoice** | Not implemented | Collect payment offline; invoice is informational |
@@ -993,6 +1042,14 @@ $COMPOSE exec -T db mysql -u ymo_user -p"$(grep '^YMO_DB_PASS=' .env | cut -d= -
   "$(grep '^YMO_DB_NAME=' .env | cut -d= -f2-)" \
   -e "SHOW COLUMNS FROM crm_leads LIKE 'next_follow_up_at';"
 ```
+
+**Automated UI/backend checklist (run on VPS after migration):**
+
+```bash
+$COMPOSE exec app php public/index.php cli/verify_crm v3
+```
+
+Exits 0 when nav, routes, stage logic, customer segments, dashboard snapshot, reports, and DB schema all pass.
 
 ### Lead pipeline (7 stages)
 

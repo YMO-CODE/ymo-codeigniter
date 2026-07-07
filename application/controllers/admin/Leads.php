@@ -129,10 +129,14 @@ class Leads extends Crm_Controller
 
         $contact = $this->crm_contact_model->find_by_lead($id);
 
+        $activities = $this->crm_lead_activity_model->for_lead($id);
+
         $this->render('admin/leads/view', array(
             'title'      => $lead['name'],
             'lead'       => $lead,
-            'activities' => $this->crm_lead_activity_model->for_lead($id),
+            'activities' => $activities,
+            'chat_messages' => crm_lead_chat_messages($activities),
+            'chat_channel'  => crm_lead_chat_channel($lead),
             'contact'    => $contact,
             'admins'     => $this->admin_model->list_active(),
             'can_edit'   => crm_can('leads.edit'),
@@ -188,6 +192,66 @@ class Leads extends Crm_Controller
         $this->crm_lead_model->update($id, array());
 
         $this->flash('success', 'Activity logged.');
+        redirect(admin_url('leads/'.$id));
+    }
+
+    public function send_chat($id)
+    {
+        $this->require_perm('leads.edit');
+        $lead = $this->crm_lead_model->find_detailed($id);
+        if (!$lead) { show_404(); }
+
+        $channel = crm_lead_chat_channel($lead);
+        if (!$channel) {
+            $this->flash('error', 'This lead is not linked to a WhatsApp or Instagram chat thread.');
+            redirect(admin_url('leads/'.$id));
+        }
+
+        $this->form_validation->set_rules('body', 'Message', 'trim|required|min_length[1]|max_length[4096]');
+        if (!$this->form_validation->run()) {
+            $this->flash('error', 'Enter a message to send.');
+            redirect(admin_url('leads/'.$id));
+        }
+
+        $text = trim((string) $this->input->post('body'));
+        $recipient = crm_lead_chat_recipient($lead, $channel);
+        if ($recipient === '') {
+            $this->flash('error', 'Missing chat recipient for this lead.');
+            redirect(admin_url('leads/'.$id));
+        }
+
+        $this->load->library('crm_messaging');
+        if ($channel === 'whatsapp') {
+            $result = $this->crm_messaging->send_whatsapp_text($recipient, $text);
+            $activity_type = 'whatsapp';
+        } else {
+            $result = $this->crm_messaging->send_instagram_text($recipient, $text);
+            $activity_type = 'webhook';
+        }
+
+        if (empty($result['ok'])) {
+            $err = $this->crm_messaging->last_error() ?: 'Message could not be sent.';
+            $this->flash('error', $err);
+            redirect(admin_url('leads/'.$id));
+        }
+
+        $meta = array(
+            'direction'  => 'outbound',
+            'channel'    => $channel,
+            'provider'   => $channel === 'whatsapp' ? 'whatsapp' : 'instagram_dm',
+            'message_id' => $result['message_id'] ?? NULL,
+            'sender_id'  => $recipient,
+            'text'       => $text,
+        );
+        $this->crm_lead_activity_model->add($id, $this->admin['id'], $activity_type, $text, $meta);
+        $this->crm_lead_model->update($id, array('updated_at' => date('Y-m-d H:i:s')));
+
+        $this->audit->log('admin', $this->admin['id'], 'crm.lead.chat_send', 'crm_lead', $id, array(
+            'channel'    => $channel,
+            'message_id' => $result['message_id'] ?? NULL,
+        ));
+
+        $this->flash('success', 'Message sent via '.($channel === 'whatsapp' ? 'WhatsApp' : 'Instagram').'.');
         redirect(admin_url('leads/'.$id));
     }
 

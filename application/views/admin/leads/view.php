@@ -79,6 +79,41 @@
             </div>
         </div>
 
+        <?php if (!empty($chat_channel) && $can_edit): ?>
+        <div class="md-card-elevated mt-3">
+            <h6 class="mb-2">
+                <span class="mi mi-sm mi-leading">chat</span>
+                <?= $chat_channel === 'whatsapp' ? 'WhatsApp chat' : 'Instagram chat'; ?>
+            </h6>
+            <p class="small ymo-muted mb-3">Replies work within Meta’s 24-hour messaging window after the customer’s last message.</p>
+            <div class="ymo-chat-thread mb-3">
+                <?php if (empty($chat_messages)): ?>
+                    <p class="ymo-muted small mb-0">No messages yet. When the customer messages you, the thread appears here.</p>
+                <?php else: ?>
+                    <?php foreach ($chat_messages as $msg): ?>
+                        <div class="ymo-chat-bubble <?= $msg['direction'] === 'outbound' ? 'ymo-chat-out' : 'ymo-chat-in'; ?>">
+                            <div class="ymo-chat-text"><?= nl2br(html_escape($msg['text'])); ?></div>
+                            <div class="ymo-chat-meta small">
+                                <?php if ($msg['direction'] === 'outbound' && !empty($msg['admin_name'])): ?>
+                                    <?= html_escape($msg['admin_name']); ?> ·
+                                <?php endif; ?>
+                                <?= html_escape(date('d M, h:i A', strtotime($msg['created_at']))); ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+            <?= form_open(admin_url('leads/'.$lead['id'].'/send-chat')); ?>
+                <div class="mb-2">
+                    <textarea name="body" class="form-control form-control-sm" rows="3" placeholder="Type your reply…" required maxlength="4096"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <span class="mi mi-sm mi-leading">send</span>Send
+                </button>
+            <?= form_close(); ?>
+        </div>
+        <?php endif; ?>
+
         <div class="md-card-elevated mt-3">
             <h6 class="mb-3"><span class="mi mi-sm mi-leading">history</span>Activity timeline</h6>
             <?php if (empty($activities)): ?>
@@ -91,7 +126,16 @@
                     'sms' => 'sms', 'whatsapp' => 'chat', 'status_change' => 'swap_horiz',
                     'system' => 'info', 'webhook' => 'webhook',
                 );
+                $chat_ids = array();
+                if (!empty($chat_messages)) {
+                    foreach ($chat_messages as $cm) {
+                        $chat_ids[] = (int) $cm['id'];
+                    }
+                }
                 foreach ($activities as $a):
+                    if (in_array((int) $a['id'], $chat_ids, TRUE)) {
+                        continue;
+                    }
                 ?>
                     <li class="border-bottom py-2">
                         <div class="d-flex gap-2">

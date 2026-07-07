@@ -30,4 +30,17 @@ class Crm_lead_activity_model extends CI_Model
         ));
         return (int) $this->db->insert_id();
     }
+
+    /** Skip duplicate webhook deliveries for the same external message id. */
+    public function exists_for_external_message($provider, $message_id)
+    {
+        if (!$message_id || !$provider) {
+            return FALSE;
+        }
+        return (bool) $this->db
+            ->where('meta_json LIKE', '%"message_id":"'.$this->db->escape_str($message_id).'"%', NULL, FALSE)
+            ->where('meta_json LIKE', '%"provider":"'.$this->db->escape_str($provider).'"%', NULL, FALSE)
+            ->limit(1)
+            ->count_all_results(self::TABLE);
+    }
 }
