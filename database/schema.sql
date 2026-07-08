@@ -113,6 +113,26 @@ CREATE TABLE IF NOT EXISTS `service_package_features` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------------
+-- Site offers (popup on WordPress + booking subdomain; admin-managed)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `site_offers` (
+    `id`         INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `title`      VARCHAR(160) NOT NULL,
+    `body`       TEXT NOT NULL,
+    `cta_label`  VARCHAR(80) NULL,
+    `cta_url`    VARCHAR(500) NULL,
+    `image_path` VARCHAR(255) NULL,
+    `starts_at`  DATETIME NULL,
+    `ends_at`    DATETIME NULL,
+    `is_active`  TINYINT(1) NOT NULL DEFAULT 1,
+    `sort_order` SMALLINT UNSIGNED NOT NULL DEFAULT 100,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_site_offers_active_window` (`is_active`, `sort_order`, `starts_at`, `ends_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------------
 -- Bookings
 -- `package_snapshot` stores the package state at booking time (JSON of name,
 -- price, features) so admin edits to packages don't rewrite history.
@@ -266,7 +286,9 @@ INSERT IGNORE INTO `crm_permissions` (`id`, `perm_key`, `label`) VALUES
     (23, 'team.view', 'View team members'),
     (24, 'team.manage', 'Create & edit team members'),
     (25, 'roles.view', 'View roles'),
-    (26, 'roles.manage', 'Create & edit roles & permissions');
+    (26, 'roles.manage', 'Create & edit roles & permissions'),
+    (27, 'offers.view', 'View site offers'),
+    (28, 'offers.edit', 'Edit site offers');
 
 INSERT IGNORE INTO `crm_role_permissions` (`role_id`, `permission_id`)
 SELECT 1, id FROM `crm_permissions`;

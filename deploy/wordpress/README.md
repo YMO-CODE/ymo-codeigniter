@@ -65,9 +65,22 @@ If the plugin cannot send HMAC headers, use **Option A** or enter leads manually
 - **Marketing** email: keep GoDaddy / WordPress mail as today.
 - **Transactional** (bookings, OTP, invoices): configured via `YMO_MAIL_*` on the VPS — see [CRM_SETUP.md](../CRM_SETUP.md).
 
-## 5. Checklist
+## 5. Site offers popup (optional)
+
+Promotional popups are managed in **Admin → Offers** on the VPS. They appear on the booking site automatically and on WordPress after you install the mu-plugin.
+
+1. Copy [`ymo-offers.php`](ymo-offers.php) to `wp-content/mu-plugins/ymo-offers.php` on GoDaddy.
+2. Edit the constants at the top if your booking URL differs (`YMO_OFFERS_API`, `YMO_OFFERS_ASSETS`).
+3. Create or activate an offer in **Admin → Offers** on `admin.yourmechaniconline.com`.
+4. Visit any WordPress page — the popup should appear within ~5 minutes (WordPress caches the API response for 5 min).
+5. Logged-in WP admins can bypass cache with `?ymo_offers_refresh=1` on any URL.
+
+Dismissals are stored in the visitor’s browser (`localStorage`). Editing an offer in admin changes `updated_at`, which shows the popup again to users who dismissed the old version.
+
+## 6. Checklist
 
 - [ ] All “Book now” CTAs point to `https://booking.…`
 - [ ] No admin URLs on public pages
 - [ ] Test booking flow from a WordPress button
 - [ ] (Optional) Test enquiry form → lead appears in admin CRM
+- [ ] (Optional) Install `ymo-offers.php` mu-plugin and test offer popup on WordPress + booking

@@ -11,6 +11,9 @@
 <?php if (!function_exists('crm_can') || crm_can('packages.view')): ?>
 <a href="<?= admin_url('packages'); ?>" class="<?= admin_nav_active('packages') ? 'active' : ''; ?>"><span class="mi mi-sm mi-leading">build</span>Packages</a>
 <?php endif; ?>
+<?php if (!function_exists('crm_can') || crm_can('offers.view')): ?>
+<a href="<?= admin_url('offers'); ?>" class="<?= admin_nav_active('offers') ? 'active' : ''; ?>"><span class="mi mi-sm mi-leading">campaign</span>Offers</a>
+<?php endif; ?>
 <?php if (function_exists('crm_can') && crm_can('leads.view')): ?>
 <hr class="ymo-admin-nav-div">
 <div class="ymo-admin-nav-label">CRM</div>

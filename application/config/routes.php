@@ -51,6 +51,11 @@ if (ymo_is_admin_host_request()) {
     $route['packages/(:num)/edit']           = 'admin/packages/edit/$1';
     $route['packages/(:num)/delete']         = 'admin/packages/delete/$1';
 
+    $route['offers']                          = 'admin/offers/index';
+    $route['offers/new']                      = 'admin/offers/create';
+    $route['offers/(:num)/edit']             = 'admin/offers/edit/$1';
+    $route['offers/(:num)/delete']           = 'admin/offers/delete/$1';
+
     $route['settings']                       = 'admin/settings/index';
 
     $route['team']                           = 'admin/team/index';
@@ -116,6 +121,7 @@ if (ymo_is_admin_host_request()) {
     $route['api/webhooks/meta']                = 'api/webhooks/meta';
     $route['api/webhooks/website']             = 'api/webhooks/website';
     $route['api/webhooks/whatsapp']            = 'api/webhooks/whatsapp';
+    $route['api/offers/active']                = 'api/offers/active';
 
     // Keep legacy prefixed paths resolving (helps old bookmarks/emails).
     $route['admin']                          = 'admin/dashboard';
@@ -146,6 +152,10 @@ if (ymo_is_admin_host_request()) {
     $route['admin/packages/new']               = 'admin/packages/create';
     $route['admin/packages/(:num)/edit']      = 'admin/packages/edit/$1';
     $route['admin/packages/(:num)/delete']    = 'admin/packages/delete/$1';
+    $route['admin/offers']                    = 'admin/offers/index';
+    $route['admin/offers/new']                = 'admin/offers/create';
+    $route['admin/offers/(:num)/edit']        = 'admin/offers/edit/$1';
+    $route['admin/offers/(:num)/delete']      = 'admin/offers/delete/$1';
     $route['admin/settings']                 = 'admin/settings/index';
     $route['admin/team']                     = 'admin/team/index';
     $route['admin/team/new']                 = 'admin/team/create';
@@ -271,6 +281,10 @@ if (ymo_is_admin_host_request()) {
     $route['admin/packages/new'] = 'admin/packages/create';
     $route['admin/packages/(:num)/edit'] = 'admin/packages/edit/$1';
     $route['admin/packages/(:num)/delete'] = 'admin/packages/delete/$1';
+    $route['admin/offers'] = 'admin/offers/index';
+    $route['admin/offers/new'] = 'admin/offers/create';
+    $route['admin/offers/(:num)/edit'] = 'admin/offers/edit/$1';
+    $route['admin/offers/(:num)/delete'] = 'admin/offers/delete/$1';
     $route['admin/settings'] = 'admin/settings/index';
     $route['admin/team'] = 'admin/team/index';
     $route['admin/team/new'] = 'admin/team/create';
@@ -327,4 +341,5 @@ if (ymo_is_admin_host_request()) {
     $route['api/webhooks/meta'] = 'api/webhooks/meta';
     $route['api/webhooks/website'] = 'api/webhooks/website';
     $route['api/webhooks/whatsapp'] = 'api/webhooks/whatsapp';
+    $route['api/offers/active'] = 'api/offers/active';
 }

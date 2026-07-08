@@ -83,6 +83,13 @@ $config['upload_image_max_w']   = 1280;
 $config['upload_allowed_types'] = 'jpg|jpeg|png|webp';
 $config['upload_vehicle_path']  = FCPATH.'uploads/vehicles/';
 $config['upload_vehicle_url']   = 'uploads/vehicles/';
+$config['offer_upload_path']    = FCPATH.'uploads/offers/';
+
+// CORS origins allowed to fetch GET /api/offers/active from the browser.
+$config['offer_cors_origins'] = array(
+    'https://yourmechaniconline.com',
+    'https://www.yourmechaniconline.com',
+);
 
 // --- Misc -------------------------------------------------------------------
 $config['booking_per_page']     = 15;
