@@ -1,39 +1,8 @@
 (function () {
     'use strict';
 
-    function dismissKey(offer) {
-        return 'ymo_offer_dismiss_' + offer.id + '_' + (offer.updated_at || '');
-    }
-
-    function isDismissed(offer) {
-        try {
-            return localStorage.getItem(dismissKey(offer)) === '1';
-        } catch (e) {
-            return false;
-        }
-    }
-
-    function markDismissed(offer) {
-        try {
-            localStorage.setItem(dismissKey(offer), '1');
-        } catch (e) {
-            /* ignore */
-        }
-    }
-
-    function escapeHtml(str) {
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
-    }
-
     function renderOffer(offer) {
         if (!offer || !offer.title) {
-            return;
-        }
-        if (isDismissed(offer)) {
             return;
         }
 
@@ -52,7 +21,6 @@
         closeBtn.setAttribute('aria-label', 'Close');
         closeBtn.innerHTML = '&times;';
         closeBtn.addEventListener('click', function () {
-            markDismissed(offer);
             overlay.remove();
         });
 
@@ -91,7 +59,6 @@
         overlay.appendChild(modal);
         overlay.addEventListener('click', function (ev) {
             if (ev.target === overlay) {
-                markDismissed(offer);
                 overlay.remove();
             }
         });
