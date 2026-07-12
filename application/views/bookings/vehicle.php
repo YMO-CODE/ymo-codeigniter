@@ -20,18 +20,44 @@
                         <span class="mi mi-leading">add</span>Add vehicle
                     </a>
                 </div>
-            <?php else: ?>
+            <?php else:
+                $active_bookings = isset($active_bookings) ? $active_bookings : array();
+                $all_blocked = count($vehicles) > 0;
+                foreach ($vehicles as $v) {
+                    if (empty($active_bookings[(int) $v['id']])) {
+                        $all_blocked = FALSE;
+                        break;
+                    }
+                }
+            ?>
+                <?php if ($all_blocked): ?>
+                    <div class="alert alert-warning">
+                        All your saved vehicles currently have an active service booking.
+                        Check <a href="<?= site_url('account/bookings'); ?>">My bookings</a> or call us for help.
+                    </div>
+                <?php endif; ?>
                 <?= form_open(site_url('booking/vehicle')); ?>
                     <?php echo validation_errors('<div class="alert alert-danger">', '</div>'); ?>
                     <div class="row g-3">
-                        <?php foreach ($vehicles as $v): ?>
+                        <?php foreach ($vehicles as $v):
+                            $vid = (int) $v['id'];
+                            $active = $active_bookings[$vid] ?? NULL;
+                            $blocked = !empty($active);
+                        ?>
                             <div class="col-md-6">
-                                <label class="md-card-outlined d-flex gap-3 align-items-start" style="cursor:pointer;">
-                                    <input type="radio" name="vehicle_id" value="<?= (int) $v['id']; ?>" required
-                                        <?= (!empty($draft['vehicle_id']) && (int) $draft['vehicle_id'] === (int) $v['id']) ? 'checked' : ''; ?>>
+                                <label class="md-card-outlined d-flex gap-3 align-items-start<?= $blocked ? ' opacity-75' : ''; ?>"
+                                       style="cursor:<?= $blocked ? 'not-allowed' : 'pointer'; ?>;">
+                                    <input type="radio" name="vehicle_id" value="<?= $vid; ?>"<?= $blocked ? '' : ' required'; ?>
+                                        <?= $blocked ? 'disabled' : ''; ?>
+                                        <?= (!$blocked && !empty($draft['vehicle_id']) && (int) $draft['vehicle_id'] === $vid) ? 'checked' : ''; ?>>
                                     <div>
                                         <strong><?= html_escape($v['make_name']); ?> <?= html_escape($v['variant']); ?></strong><br>
                                         <span class="ymo-muted font-monospace small"><?= html_escape($v['vehicle_number']); ?></span>
+                                        <?php if ($blocked): ?>
+                                            <br><span class="badge bg-warning-subtle text-dark mt-1">
+                                                In service — #<?= html_escape($active['reference']); ?>
+                                            </span>
+                                        <?php endif; ?>
                                     </div>
                                 </label>
                             </div>
@@ -41,7 +67,7 @@
                         <a href="<?= site_url('vehicles/new?next='.urlencode('booking/vehicle')); ?>" class="btn btn-outline-primary btn-sm">
                             <span class="mi mi-sm mi-leading">add</span>Add another
                         </a>
-                        <button class="btn btn-primary" type="submit">
+                        <button class="btn btn-primary" type="submit"<?= $all_blocked ? ' disabled' : ''; ?>>
                             Continue<span class="mi mi-trailing">arrow_forward</span>
                         </button>
                     </div>

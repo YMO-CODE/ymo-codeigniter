@@ -74,6 +74,8 @@ class Bookings extends MY_Controller
                 $vehicle = $this->vehicle_model->find_for_user($this->input->post('vehicle_id'), $this->user['id']);
                 if (!$vehicle) {
                     $this->flash('error', 'Pick a vehicle from the list.');
+                } elseif ($msg = $this->_vehicle_unavailable_message($vehicle['id'])) {
+                    $this->flash('error', $msg);
                 } else {
                     $this->_set_draft(array_merge($draft, array('vehicle_id' => (int) $vehicle['id'])));
                     redirect(site_url('booking/details'));
@@ -81,12 +83,16 @@ class Bookings extends MY_Controller
             }
         }
 
+        $vehicles = $this->vehicle_model->for_user($this->user['id']);
+        $vehicle_ids = array_column($vehicles, 'id');
+
         $this->render('bookings/vehicle', array(
-            'title'    => 'Pick your car',
-            'package'  => $this->package_model->find($draft['package_id']),
-            'vehicles' => $this->vehicle_model->for_user($this->user['id']),
-            'draft'    => $draft,
-            'step'     => 2,
+            'title'           => 'Pick your car',
+            'package'         => $this->package_model->find($draft['package_id']),
+            'vehicles'        => $vehicles,
+            'active_bookings' => $this->booking_model->map_active_for_vehicles($vehicle_ids),
+            'draft'           => $draft,
+            'step'            => 2,
         ));
     }
 
@@ -97,6 +103,10 @@ class Bookings extends MY_Controller
         $this->_require_customer();
         $draft = $this->_get_draft();
         if (empty($draft['package_id']) || empty($draft['vehicle_id'])) {
+            redirect(site_url('booking/vehicle'));
+        }
+        if ($msg = $this->_vehicle_unavailable_message($draft['vehicle_id'])) {
+            $this->flash('error', $msg);
             redirect(site_url('booking/vehicle'));
         }
 
@@ -142,6 +152,10 @@ class Bookings extends MY_Controller
         if (empty($draft['package_id']) || empty($draft['vehicle_id'])) {
             redirect(site_url('booking/vehicle'));
         }
+        if ($msg = $this->_vehicle_unavailable_message($draft['vehicle_id'])) {
+            $this->flash('error', $msg);
+            redirect(site_url('booking/vehicle'));
+        }
         $this->render('bookings/confirm', array(
             'title'   => 'Review &amp; confirm',
             'package' => $this->package_model->find($draft['package_id']),
@@ -168,6 +182,10 @@ class Bookings extends MY_Controller
         $vehicle = $this->vehicle_model->find_for_user($draft['vehicle_id'], $this->user['id']);
         if (!$package || !$vehicle) {
             show_404();
+        }
+        if ($msg = $this->_vehicle_unavailable_message($vehicle['id'])) {
+            $this->flash('error', $msg);
+            redirect(site_url('booking/vehicle'));
         }
 
         $booking_id = $this->booking_model->create(array(
@@ -212,6 +230,10 @@ class Bookings extends MY_Controller
         if (!$booking) {
             show_404();
         }
+        if ($msg = $this->_vehicle_unavailable_message($booking['vehicle_id'])) {
+            $this->flash('error', $msg);
+            redirect(site_url('account/bookings/'.$booking['id']));
+        }
 
         $this->_set_draft(array(
             'package_id' => (int) $booking['package_id'],
@@ -242,6 +264,20 @@ class Bookings extends MY_Controller
     protected function _set_draft(array $draft)
     {
         $this->session->set_userdata(self::DRAFT_KEY, $draft);
+    }
+
+    /**
+     * @return string|null Error message when vehicle has an open booking
+     */
+    protected function _vehicle_unavailable_message($vehicle_id)
+    {
+        $active = $this->booking_model->find_active_for_vehicle($vehicle_id, $this->user['id']);
+        if (!$active) {
+            return NULL;
+        }
+        $label = ucfirst(str_replace('_', ' ', $active['status']));
+        return 'This vehicle already has an active booking (#'.$active['reference'].' — '.$label.'). '
+            .'Please wait until it is completed or contact us if you need help.';
     }
 
     protected function _notify_user_on_create(array $booking)

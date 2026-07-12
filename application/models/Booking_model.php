@@ -5,6 +5,9 @@ class Booking_model extends CI_Model
 {
     const TABLE = 'bookings';
 
+    /** Statuses that block a new booking for the same vehicle. */
+    const ACTIVE_VEHICLE_STATUSES = array('pending', 'confirmed', 'in_progress');
+
     public function find($id)
     {
         return $this->db->get_where(self::TABLE, array('id' => (int) $id))->row_array();
@@ -49,6 +52,54 @@ class Booking_model extends CI_Model
     public function count_for_user($user_id)
     {
         return (int) $this->db->where('user_id', (int) $user_id)->count_all_results(self::TABLE);
+    }
+
+    /**
+     * Latest open booking for a vehicle (pending / confirmed / in progress).
+     *
+     * @return array|null
+     */
+    public function find_active_for_vehicle($vehicle_id, $user_id = NULL)
+    {
+        $this->db->where('vehicle_id', (int) $vehicle_id)
+            ->where_in('status', self::ACTIVE_VEHICLE_STATUSES);
+        if ($user_id !== NULL) {
+            $this->db->where('user_id', (int) $user_id);
+        }
+        return $this->db->order_by('created_at', 'DESC')
+            ->limit(1)
+            ->get(self::TABLE)
+            ->row_array();
+    }
+
+    /**
+     * Map vehicle_id => active booking row (most recent per vehicle).
+     *
+     * @param int[] $vehicle_ids
+     * @return array<int, array>
+     */
+    public function map_active_for_vehicles(array $vehicle_ids)
+    {
+        $ids = array_values(array_unique(array_filter(array_map('intval', $vehicle_ids))));
+        if (empty($ids)) {
+            return array();
+        }
+
+        $rows = $this->db->select('vehicle_id, reference, status, created_at')
+            ->where_in('vehicle_id', $ids)
+            ->where_in('status', self::ACTIVE_VEHICLE_STATUSES)
+            ->order_by('created_at', 'DESC')
+            ->get(self::TABLE)
+            ->result_array();
+
+        $map = array();
+        foreach ($rows as $row) {
+            $vid = (int) $row['vehicle_id'];
+            if (!isset($map[$vid])) {
+                $map[$vid] = $row;
+            }
+        }
+        return $map;
     }
 
     public function create(array $payload)
