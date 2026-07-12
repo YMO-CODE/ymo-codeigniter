@@ -4,13 +4,22 @@
         <div class="col-lg-7">
             <div class="ymo-card">
                 <h1 class="h3 mb-4"><span class="mi mi-leading">directions_car</span><?= html_escape($title); ?></h1>
+                <?php if (!$vehicle && !empty($next)): ?>
+                    <p class="ymo-muted small mb-3">Add your car details to continue booking.</p>
+                <?php endif; ?>
 
                 <?php echo validation_errors('<div class="alert alert-danger">', '</div>'); ?>
 
                 <?php
                 $action = $vehicle ? site_url('vehicles/'.$vehicle['id'].'/edit') : site_url('vehicles/new');
+                if (!$vehicle && !empty($next)) {
+                    $action .= '?next='.rawurlencode($next);
+                }
                 echo form_open_multipart($action);
                 ?>
+                    <?php if (!$vehicle && !empty($next)): ?>
+                        <input type="hidden" name="next" value="<?= html_escape($next); ?>">
+                    <?php endif; ?>
                     <div class="form-floating mb-3">
                         <select name="make_id" id="vh_make" class="form-select" required>
                             <option value="">— Select brand —</option>
@@ -47,7 +56,7 @@
                         <button class="btn btn-primary" type="submit">
                             <span class="mi mi-leading"><?= $vehicle ? 'save' : 'add'; ?></span><?= $vehicle ? 'Save changes' : 'Add vehicle'; ?>
                         </button>
-                        <a href="<?= site_url('vehicles'); ?>" class="btn btn-link">Cancel</a>
+                        <a href="<?= !empty($next) ? site_url($next === 'packages' ? 'packages' : ($next === 'booking/vehicle' ? 'booking/vehicle' : $next)) : site_url('vehicles'); ?>" class="btn btn-link">Cancel</a>
                     </div>
                 <?= form_close(); ?>
             </div>

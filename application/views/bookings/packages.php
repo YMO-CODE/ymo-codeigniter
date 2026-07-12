@@ -6,6 +6,18 @@
         <p class="ymo-muted">All packages include doorstep pick-up &amp; drop within serviceable areas.</p>
     </div>
 
+    <?php if (!empty($this->user) && empty($has_vehicles)): ?>
+        <div class="alert alert-info d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4">
+            <span>
+                <span class="mi mi-sm mi-leading">directions_car</span>
+                Add your vehicle once — then choose a package to book.
+            </span>
+            <a href="<?= site_url('vehicles/new?next=packages'); ?>" class="btn btn-primary btn-sm">
+                <span class="mi mi-sm mi-leading">add</span>Add vehicle
+            </a>
+        </div>
+    <?php endif; ?>
+
     <div class="row g-4">
         <?php foreach ($packages as $p): ?>
             <div class="col-md-6 col-lg-4">

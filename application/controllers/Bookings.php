@@ -29,9 +29,15 @@ class Bookings extends MY_Controller
 
     public function packages()
     {
+        $has_vehicles = TRUE;
+        if (!empty($this->user['id'])) {
+            $has_vehicles = !empty($this->vehicle_model->for_user($this->user['id']));
+        }
+
         $this->render('bookings/packages', array(
-            'title'    => 'Service packages',
-            'packages' => $this->package_model->list_active_with_features(),
+            'title'        => 'Service packages',
+            'packages'     => $this->package_model->list_active_with_features(),
+            'has_vehicles' => $has_vehicles,
         ));
     }
 
@@ -47,11 +53,16 @@ class Bookings extends MY_Controller
 
         if (empty($this->user) || empty($this->user['id'])) {
             $this->flash('info', 'Sign in to continue your booking.');
-            redirect(site_url('login?next='.urlencode('booking/vehicle')));
+            redirect(site_url('login?next='.urlencode('book/'.$slug)));
         }
         if (!ymo_user_is_verified($this->user)) {
             $this->flash('warning', 'Please verify your mobile to continue.');
             redirect(site_url('signup/verify'));
+        }
+
+        if (empty($this->vehicle_model->for_user($this->user['id']))) {
+            $this->flash('info', 'Add your vehicle first — then pick this package to continue.');
+            redirect(site_url('vehicles/new?next='.urlencode('book/'.$slug)));
         }
 
         redirect(site_url('booking/vehicle'));

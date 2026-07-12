@@ -24,23 +24,26 @@ class Vehicles extends Customer_Controller
 
     public function create()
     {
+        $next = $this->_sanitize_next($this->input->get_post('next'));
+
         if ($this->input->method() === 'post' && $this->_validate(NULL)) {
             $payload = $this->_collect_payload();
             $payload['user_id'] = $this->user['id'];
 
             $upload = $this->_upload_image();
             if ($upload === FALSE) {
-                return $this->_render_form();
+                return $this->_render_form(NULL, $next);
             }
             if (!empty($upload)) {
                 $payload['image_path'] = $upload;
             }
 
             $this->vehicle_model->create($payload);
-            $this->flash('success', 'Vehicle added.');
-            redirect(site_url('vehicles'));
+            $this->flash('success', 'Vehicle added. You can continue your booking.');
+            $this->_redirect_after_save($next);
+            return;
         }
-        $this->_render_form();
+        $this->_render_form(NULL, $next);
     }
 
     public function edit($id)
@@ -174,12 +177,47 @@ class Vehicles extends Customer_Controller
         $this->image_lib->clear();
     }
 
-    protected function _render_form($vehicle = NULL)
+    protected function _render_form($vehicle = NULL, $next = '')
     {
         $this->render('vehicles/form', array(
             'title'   => $vehicle ? 'Edit vehicle' : 'Add a vehicle',
             'vehicle' => $vehicle,
             'makes'   => $this->vehicle_model->makes(),
+            'next'    => $next,
         ));
+    }
+
+    /**
+     * Allowlisted return paths after adding a vehicle during booking.
+     *
+     * @return string
+     */
+    protected function _sanitize_next($next)
+    {
+        $next = trim((string) $next);
+        if ($next === 'packages' || $next === 'booking/vehicle') {
+            return $next;
+        }
+        if (preg_match('#^book/[a-z0-9\-]+$#', $next)) {
+            return $next;
+        }
+        return '';
+    }
+
+    protected function _redirect_after_save($next)
+    {
+        if ($next === 'packages') {
+            redirect(site_url('packages'));
+            return;
+        }
+        if ($next === 'booking/vehicle') {
+            redirect(site_url('booking/vehicle'));
+            return;
+        }
+        if ($next !== '' && preg_match('#^book/[a-z0-9\-]+$#', $next)) {
+            redirect(site_url($next));
+            return;
+        }
+        redirect(site_url('vehicles'));
     }
 }
