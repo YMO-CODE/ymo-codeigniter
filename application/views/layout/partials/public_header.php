@@ -47,6 +47,9 @@ $tel_href     = 'tel:'.preg_replace('/[^+\d]/', '', $phone);
 $home_url     = $booking_nav ? site_url('/') : ymo_public_nav_url('');
 $login_url    = ymo_booking_url('login');
 $book_url     = ymo_booking_url('packages');
+$account_url  = ymo_booking_url('account');
+$logout_url   = ymo_booking_url('logout');
+$bookings_url = ymo_booking_url('account/bookings');
 
 ?>
 <?php if (!empty($city_hint)): ?>
@@ -175,9 +178,20 @@ $book_url     = ymo_booking_url('packages');
                     </li>
                 </ul>
                 <ul class="navbar-nav ymo-nav-actions align-items-lg-center">
+                    <?php if ($user): ?>
+                    <li class="nav-item d-none d-lg-block">
+                        <a class="md-btn md-btn--text md-btn--sm" href="<?= html_escape($account_url); ?>">
+                            <span class="mi mi-leading">account_circle</span>Hi, <?= html_escape($first_name); ?>
+                        </a>
+                    </li>
+                    <li class="nav-item d-none d-lg-block">
+                        <a class="md-btn md-btn--text md-btn--sm" href="<?= html_escape($bookings_url); ?>">My bookings</a>
+                    </li>
+                    <?php else: ?>
                     <li class="nav-item d-none d-lg-block">
                         <a class="md-btn md-btn--text md-btn--sm" href="<?= html_escape($login_url); ?>">Sign in</a>
                     </li>
+                    <?php endif; ?>
                     <li class="nav-item">
                         <a class="md-btn md-btn--filled md-btn--sm" href="<?= html_escape($book_url); ?>">
                             <span class="mi mi-leading">event_available</span>Book now
@@ -200,8 +214,8 @@ $book_url     = ymo_booking_url('packages');
         </button>
     </header>
 
-    <?php if ($booking_nav): ?>
-        <a href="<?= site_url('account'); ?>" class="ymo-drawer-user text-decoration-none">
+    <?php if ($booking_nav || ($user && !$booking_nav)): ?>
+        <a href="<?= html_escape($booking_nav ? site_url('account') : $account_url); ?>" class="ymo-drawer-user text-decoration-none">
             <span class="ymo-drawer-avatar" aria-hidden="true"><?= html_escape($user_initial); ?></span>
             <span class="ymo-drawer-user-meta">
                 <strong><?= html_escape($user['name']); ?></strong>
@@ -300,15 +314,21 @@ $book_url     = ymo_booking_url('packages');
                 <a class="ymo-drawer-link <?= $drawer_active('account/profile'); ?>" href="<?= site_url('account/profile'); ?>">
                     <span class="mi" aria-hidden="true">manage_accounts</span>Profile
                 </a>
+            <?php elseif ($user): ?>
+                <a class="ymo-drawer-link" href="<?= html_escape($account_url); ?>">
+                    <span class="mi" aria-hidden="true">account_circle</span>My account
+                </a>
+                <a class="ymo-drawer-link" href="<?= html_escape($bookings_url); ?>">
+                    <span class="mi" aria-hidden="true">event_note</span>My bookings
+                </a>
             <?php endif; ?>
             <a class="ymo-drawer-link" href="<?= html_escape($tel_href); ?>">
                 <span class="mi" aria-hidden="true">call</span>Call us
                 <span class="ms-auto small ymo-muted"><?= html_escape($phone); ?></span>
             </a>
             <?php if ($booking_nav): ?>
-                <a class="ymo-drawer-link" href="<?= html_escape(ymo_marketing_url('')); ?>" target="_blank" rel="noopener">
+                <a class="ymo-drawer-link" href="<?= html_escape(ymo_marketing_url('')); ?>">
                     <span class="mi" aria-hidden="true">language</span>Main site
-                    <span class="ms-auto mi mi-sm" aria-hidden="true">open_in_new</span>
                 </a>
             <?php endif; ?>
         </nav>
@@ -331,7 +351,15 @@ $book_url     = ymo_booking_url('packages');
                 <span class="mi mi-leading">event_available</span>Book a service
             </a>
             <div class="ymo-drawer-foot-secondary">
-                Already a member? <a href="<?= html_escape($login_url); ?>">Sign in</a>
+                <?php if ($user): ?>
+                    <?= form_open($logout_url, array('class' => 'd-inline')); ?>
+                        <button type="submit" class="btn btn-link p-0 small">
+                            <span class="mi mi-sm mi-leading">logout</span>Sign out
+                        </button>
+                    <?= form_close(); ?>
+                <?php else: ?>
+                    Already a member? <a href="<?= html_escape($login_url); ?>">Sign in</a>
+                <?php endif; ?>
             </div>
         <?php endif; ?>
         <p class="ymo-drawer-tagline mb-0">&copy; <?= date('Y'); ?> <?= html_escape($brand); ?></p>

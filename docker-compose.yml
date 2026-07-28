@@ -28,6 +28,7 @@ services:
       YMO_PUBLIC_APP_URL: http://booking.yourmechaniconline.com:8080
       # Marketing site: use hosts file → www.yourmechaniconline.com:8080
       YMO_MARKETING_APP_URL: http://www.yourmechaniconline.com:8080
+      YMO_COOKIE_DOMAIN: .yourmechaniconline.com
     depends_on:
       db:
         condition: service_healthy

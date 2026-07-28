@@ -15,6 +15,7 @@ Replace GoDaddy WordPress at `@` / `www` with the CodeIgniter marketing site on 
   YMO_PUBLIC_APP_URL=https://booking.yourmechaniconline.com
   YMO_ADMIN_APP_URL=https://admin.yourmechaniconline.com
   YMO_TRUST_PROXY_HEADERS=1
+  YMO_COOKIE_DOMAIN=.yourmechaniconline.com
   CI_ENV=production
   ```
 - [ ] Booking + admin still work over HTTPS
