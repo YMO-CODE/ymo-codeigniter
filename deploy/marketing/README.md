@@ -2,6 +2,8 @@
 
 Replaces GoDaddy WordPress at `www.yourmechaniconline.com`. Booking and admin subdomains are unchanged.
 
+**Production cutover:** [CUTOVER.md](CUTOVER.md) (Phase 3 DNS + Phase 4 nginx/TLS).
+
 ## Env
 
 ```bash

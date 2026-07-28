@@ -35,6 +35,10 @@ sudo crontab -e   # paste from deploy/cron/ymo.crontab.example (adjust paths)
 
 See [GODADDY_DNS.md](GODADDY_DNS.md).
 
+**Marketing cutover (Phase 3):** [marketing/CUTOVER.md](marketing/CUTOVER.md)
+
+**Marketing TLS (Phase 4):** `sudo bash deploy/scripts/setup-nginx-marketing.sh yourmechaniconline.com www.yourmechaniconline.com`
+
 ## WordPress
 
 See [wordpress/README.md](wordpress/README.md).
