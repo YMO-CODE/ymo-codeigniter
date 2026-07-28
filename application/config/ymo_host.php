@@ -222,85 +222,35 @@ if (!function_exists('ymo_resolve_base_url')) {
     }
 }
 
-if (!function_exists('ymo_trust_proxy_headers')) {
-    /** @return bool */
-    function ymo_trust_proxy_headers()
-    {
-        if (!function_exists('getenv')) {
-            return FALSE;
-        }
-        $trust = getenv('YMO_TRUST_PROXY_HEADERS');
-        return $trust !== FALSE && trim((string) $trust) !== '' && strtolower(trim((string) $trust)) !== '0';
-    }
-}
-
-if (!function_exists('ymo_request_scheme')) {
-    /** @return string http|https */
-    function ymo_request_scheme()
-    {
-        if (!empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) !== 'off') {
-            return 'https';
-        }
-        if (ymo_trust_proxy_headers() && !empty($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
-            $proto = strtolower(trim(explode(',', (string) $_SERVER['HTTP_X_FORWARDED_PROTO'])[0]));
-            if ($proto === 'https') {
-                return 'https';
-            }
-        }
-        return 'http';
-    }
-}
-
-if (!function_exists('ymo_configured_url_looks_local')) {
-    /** @return bool */
-    function ymo_configured_url_looks_local($url)
+if (!function_exists('ymo_sanitize_external_app_url')) {
+    /**
+     * Canonical HTTPS origin for cross-subdomain links (booking, marketing).
+     * Strips local :8080 / http dev URLs when serving production pages.
+     *
+     * @param string|false $url
+     * @return string Origin without trailing slash, e.g. https://booking.example.com
+     */
+    function ymo_sanitize_external_app_url($url)
     {
         $url = trim((string) $url);
         if ($url === '') {
-            return TRUE;
+            return '';
         }
-        if (preg_match('#:8080(/|$)#', $url)) {
-            return TRUE;
-        }
+
         $host = ymo_host_part_from_full_url($url);
-        return in_array($host, array('localhost', '127.0.0.1'), TRUE);
-    }
-}
-
-if (!function_exists('ymo_resolve_base_url')) {
-    /**
-     * Resolve CodeIgniter base_url for the current request.
-     * Behind nginx + TLS, derive https://{host}/ from proxy headers so CSS/JS
-     * are not blocked as mixed content when .env still has a local :8080 URL.
-     *
-     * @param string|false $configured_url
-     * @return string
-     */
-    function ymo_resolve_base_url($configured_url)
-    {
-        $configured_url = trim((string) $configured_url);
-
-        if (PHP_SAPI === 'cli' || PHP_SAPI === 'phpdbg') {
-            return $configured_url !== '' ? rtrim($configured_url, '/').'/' : '';
-        }
-
-        $host = ymo_request_host_normalized();
         if ($host === '') {
-            return $configured_url !== '' ? rtrim($configured_url, '/').'/' : '';
+            return rtrim($url, '/');
         }
 
-        if (ymo_trust_proxy_headers()) {
-            return ymo_request_scheme().'://'.$host.'/';
+        if (PHP_SAPI !== 'cli' && PHP_SAPI !== 'phpdbg') {
+            if (ymo_configured_url_looks_local($url)) {
+                return 'https://'.$host;
+            }
+            if (defined('ENVIRONMENT') && ENVIRONMENT === 'production' && stripos($url, 'http://') === 0) {
+                return 'https://'.$host;
+            }
         }
 
-        if (ymo_configured_url_looks_local($configured_url) && ymo_request_scheme() === 'https') {
-            return 'https://'.$host.'/';
-        }
-
-        if ($configured_url !== '') {
-            return rtrim($configured_url, '/').'/';
-        }
-
-        return ymo_request_scheme().'://'.$host.'/';
+        return rtrim($url, '/');
     }
 }

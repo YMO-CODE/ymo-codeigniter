@@ -17,7 +17,7 @@ if (!function_exists('ymo_booking_url')) {
         if ($base === FALSE || trim((string) $base) === '') {
             return site_url(ltrim($path, '/'));
         }
-        $base = rtrim((string) $base, '/');
+        $base = ymo_sanitize_external_app_url($base);
         $path = ltrim((string) $path, '/');
         return $path === '' ? $base.'/' : $base.'/'.$path;
     }
@@ -40,7 +40,7 @@ if (!function_exists('ymo_marketing_url')) {
         if ($base === FALSE || trim((string) $base) === '') {
             return site_url(ltrim($path, '/'));
         }
-        $base = rtrim((string) $base, '/');
+        $base = ymo_sanitize_external_app_url($base);
         $path = ltrim((string) $path, '/');
         return $path === '' ? $base.'/' : $base.'/'.$path;
     }

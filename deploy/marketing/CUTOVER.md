@@ -9,7 +9,7 @@ Replace GoDaddy WordPress at `@` / `www` with the CodeIgniter marketing site on 
 ## Before you start
 
 - [ ] Phase 1 done: latest code on VPS (`deploy-app.sh` or `sync-code.sh`)
-- [ ] `.env` on VPS:
+- [ ] `.env` on VPS (no `:8080`, all HTTPS):
   ```bash
   YMO_MARKETING_APP_URL=https://www.yourmechaniconline.com
   YMO_PUBLIC_APP_URL=https://booking.yourmechaniconline.com
