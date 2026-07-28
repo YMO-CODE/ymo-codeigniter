@@ -27,7 +27,42 @@
             </a>
         </div>
     <?php else: ?>
-        <div class="md-card-elevated p-0">
+        <div class="ymo-booking-list d-md-none">
+            <?php foreach ($rows as $b): ?>
+                <article class="ymo-booking-card md-card-elevated">
+                    <div class="ymo-booking-card-head">
+                        <span class="font-monospace small text-muted"><?= html_escape($b['reference']); ?></span>
+                        <span class="badge-status s-<?= html_escape($b['status']); ?>">
+                            <span class="mi"><?= isset($status_icons[$b['status']]) ? $status_icons[$b['status']] : 'help'; ?></span>
+                            <?= html_escape(str_replace('_', ' ', $b['status'])); ?>
+                        </span>
+                    </div>
+                    <h2 class="ymo-booking-card-title h6 mb-1"><?= html_escape($b['package_name']); ?></h2>
+                    <p class="small mb-1">
+                        <?= html_escape($b['vehicle_make']); ?> <?= html_escape($b['vehicle_variant']); ?>
+                        <span class="ymo-muted font-monospace d-block"><?= html_escape($b['vehicle_number']); ?></span>
+                    </p>
+                    <p class="small ymo-muted mb-3">
+                        Booked <?= html_escape(date('d M Y', strtotime($b['created_at']))); ?>
+                        <?php if (!empty($b['preferred_date'])): ?>
+                            · Preferred <?= html_escape(date('d M', strtotime($b['preferred_date']))); ?>
+                        <?php endif; ?>
+                    </p>
+                    <div class="ymo-booking-card-actions">
+                        <a href="<?= site_url('account/bookings/'.$b['id']); ?>" class="btn btn-sm btn-outline-primary">
+                            View details
+                        </a>
+                        <?php if (in_array($b['status'], array('completed', 'cancelled'))): ?>
+                            <a href="<?= site_url('booking/rebook/'.$b['id']); ?>" class="btn btn-sm btn-link">
+                                <span class="mi mi-sm mi-leading">refresh</span>Re-book
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                </article>
+            <?php endforeach; ?>
+        </div>
+
+        <div class="md-card-elevated p-0 d-none d-md-block">
             <table class="ymo-table mb-0">
                 <thead>
                     <tr>

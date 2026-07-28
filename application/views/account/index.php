@@ -45,7 +45,25 @@
                     'cancelled'   => 'cancel',
                 );
                 ?>
-                <div class="md-card-elevated p-0">
+                <div class="ymo-booking-list d-md-none">
+                    <?php foreach ($recent as $b): ?>
+                        <article class="ymo-booking-card md-card-elevated">
+                            <div class="ymo-booking-card-head">
+                                <span class="font-monospace small text-muted"><?= html_escape($b['reference']); ?></span>
+                                <span class="badge-status s-<?= html_escape($b['status']); ?>">
+                                    <span class="mi"><?= isset($status_icons[$b['status']]) ? $status_icons[$b['status']] : 'help'; ?></span>
+                                    <?= html_escape(str_replace('_', ' ', $b['status'])); ?>
+                                </span>
+                            </div>
+                            <h2 class="ymo-booking-card-title h6 mb-1"><?= html_escape($b['package_name']); ?></h2>
+                            <p class="small ymo-muted mb-3 font-monospace"><?= html_escape($b['vehicle_number']); ?></p>
+                            <a href="<?= site_url('account/bookings/'.$b['id']); ?>" class="btn btn-sm btn-outline-primary">
+                                View details<span class="mi mi-sm mi-trailing">arrow_forward</span>
+                            </a>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+                <div class="md-card-elevated p-0 d-none d-md-block">
                     <table class="ymo-table mb-0">
                         <thead><tr><th>Ref</th><th>Service</th><th>Vehicle</th><th>Status</th><th></th></tr></thead>
                         <tbody>
