@@ -38,6 +38,10 @@ class Auth extends CI_Controller
                     unset($row['password_hash']);
                     $this->session->set_userdata('admin', $row);
                     ymo_stamp_deploy_session();
+                    $this->session->sess_regenerate(FALSE);
+                    if (function_exists('ymo_expire_host_only_auth_cookies')) {
+                        ymo_expire_host_only_auth_cookies();
+                    }
                     $this->admin_model->record_login($row['id']);
                     redirect(admin_url('dashboard'));
                 }

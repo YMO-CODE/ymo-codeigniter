@@ -339,3 +339,91 @@ if (!function_exists('ymo_resolve_cookie_secure')) {
         return ymo_request_scheme() === 'https';
     }
 }
+
+if (!function_exists('ymo_auth_cookie_names')) {
+    /** @return string[] */
+    function ymo_auth_cookie_names()
+    {
+        return array('ymo_session', 'ymo_csrf_cookie');
+    }
+}
+
+if (!function_exists('ymo_reconcile_duplicate_auth_cookies')) {
+    /**
+     * When both host-only and Domain= cookies exist, PHP may surface the empty
+     * host-only value. Prefer the last value from the raw Cookie header.
+     */
+    function ymo_reconcile_duplicate_auth_cookies()
+    {
+        $raw = isset($_SERVER['HTTP_COOKIE']) ? (string) $_SERVER['HTTP_COOKIE'] : '';
+        if ($raw === '') {
+            return;
+        }
+
+        foreach (ymo_auth_cookie_names() as $name) {
+            $values = array();
+            foreach (explode(';', $raw) as $part) {
+                $part = trim($part);
+                if (strpos($part, $name.'=') !== 0) {
+                    continue;
+                }
+                $value = trim(substr($part, strlen($name) + 1));
+                if ($value !== '') {
+                    $values[] = $value;
+                }
+            }
+
+            if (count($values) > 1) {
+                $_COOKIE[$name] = end($values);
+            } elseif (count($values) === 1) {
+                $_COOKIE[$name] = $values[0];
+            }
+        }
+    }
+}
+
+if (!function_exists('ymo_expire_host_only_auth_cookies')) {
+    /**
+     * Expire pre-migration host-only cookies so Domain= cookies win on the next request.
+     *
+     * @param string $shared_domain e.g. .yourmechaniconline.com
+     */
+    function ymo_expire_host_only_auth_cookies($shared_domain = '')
+    {
+        if ($shared_domain === '') {
+            $shared_domain = ymo_resolve_cookie_domain();
+        }
+        if ($shared_domain === '' || headers_sent()) {
+            return;
+        }
+
+        $secure = ymo_resolve_cookie_secure();
+        $expires = time() - 3600;
+
+        foreach (ymo_auth_cookie_names() as $name) {
+            if (is_php('7.3')) {
+                setcookie($name, '', array(
+                    'expires'  => $expires,
+                    'path'     => '/',
+                    'secure'   => $secure,
+                    'httponly' => TRUE,
+                    'samesite' => $name === 'ymo_csrf_cookie' ? 'Strict' : 'Lax',
+                ));
+                if (!$secure) {
+                    setcookie($name, '', array(
+                        'expires'  => $expires,
+                        'path'     => '/',
+                        'secure'   => FALSE,
+                        'httponly' => TRUE,
+                        'samesite' => $name === 'ymo_csrf_cookie' ? 'Strict' : 'Lax',
+                    ));
+                }
+            } else {
+                setcookie($name, '', $expires, '/', '', $secure, TRUE);
+                if (!$secure) {
+                    setcookie($name, '', $expires, '/', '', FALSE, TRUE);
+                }
+            }
+        }
+    }
+}

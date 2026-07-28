@@ -295,7 +295,14 @@ if (!function_exists('ymo_enforce_deploy_session')) {
             return;
         }
 
-        if ($ci->session->userdata('_deploy_epoch') === $epoch) {
+        $stored_epoch = $ci->session->userdata('_deploy_epoch');
+        if ($stored_epoch === $epoch) {
+            return;
+        }
+
+        // Fresh login may not have persisted the stamp yet; tag instead of signing out.
+        if ($stored_epoch === NULL || $stored_epoch === '') {
+            $ci->session->set_userdata('_deploy_epoch', $epoch);
             return;
         }
 
