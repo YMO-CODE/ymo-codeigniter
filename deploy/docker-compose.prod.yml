@@ -9,6 +9,8 @@ services:
       - .env
     environment:
       CI_ENV: production
+      YMO_COOKIE_DOMAIN: ${YMO_COOKIE_DOMAIN:-.yourmechaniconline.com}
+      YMO_TRUST_PROXY_HEADERS: ${YMO_TRUST_PROXY_HEADERS:-1}
       YMO_DB_HOST: db
       # !override base docker-compose.yml hardcoded dev credentials (ymo_pass).
       YMO_DB_NAME: ${YMO_DB_NAME:-ymo_booking}

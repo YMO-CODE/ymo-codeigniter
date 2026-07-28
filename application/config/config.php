@@ -424,16 +424,9 @@ $config['sess_regenerate_destroy'] = TRUE;
 |
 */
 $config['cookie_prefix']	= '';
-$__cookie_domain = getenv('YMO_COOKIE_DOMAIN');
-if ($__cookie_domain !== FALSE && trim((string) $__cookie_domain) !== '') {
-    $config['cookie_domain'] = trim((string) $__cookie_domain);
-} elseif (ENVIRONMENT === 'production') {
-    $config['cookie_domain'] = '.yourmechaniconline.com';
-} else {
-    $config['cookie_domain'] = '';
-}
+$config['cookie_domain']	= ymo_resolve_cookie_domain();
 $config['cookie_path']		= '/';
-$config['cookie_secure']	= (ENVIRONMENT === 'production');
+$config['cookie_secure']	= ymo_resolve_cookie_secure();
 $config['cookie_httponly'] 	= TRUE;
 $config['cookie_samesite'] 	= 'Lax';
 

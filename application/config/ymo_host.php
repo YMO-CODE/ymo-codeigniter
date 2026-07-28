@@ -254,3 +254,88 @@ if (!function_exists('ymo_sanitize_external_app_url')) {
         return rtrim($url, '/');
     }
 }
+
+if (!function_exists('ymo_env')) {
+    /**
+     * Read env var from getenv() or $_SERVER (Apache/Docker sometimes only expose the latter).
+     *
+     * @param string $key
+     * @param string|false $default
+     * @return string|false
+     */
+    function ymo_env($key, $default = FALSE)
+    {
+        if (function_exists('getenv')) {
+            $v = getenv($key);
+            if ($v !== FALSE && trim((string) $v) !== '') {
+                return (string) $v;
+            }
+        }
+        if (isset($_SERVER[$key]) && trim((string) $_SERVER[$key]) !== '') {
+            return trim((string) $_SERVER[$key]);
+        }
+        return $default;
+    }
+}
+
+if (!function_exists('ymo_shared_cookie_domain_for_host')) {
+    /**
+     * Parent domain for cross-subdomain session cookies, or '' when not applicable.
+     *
+     * @param string $host
+     * @return string e.g. .yourmechaniconline.com
+     */
+    function ymo_shared_cookie_domain_for_host($host)
+    {
+        $host = strtolower(trim((string) $host));
+        if ($host === '') {
+            return '';
+        }
+        $suffix = 'yourmechaniconline.com';
+        if ($host === $suffix || substr($host, -(strlen($suffix) + 1)) === '.'.$suffix) {
+            return '.'.$suffix;
+        }
+        return '';
+    }
+}
+
+if (!function_exists('ymo_resolve_cookie_domain')) {
+    /**
+     * Cookie Domain for shared sessions across booking / www / admin subdomains.
+     *
+     * @return string
+     */
+    function ymo_resolve_cookie_domain()
+    {
+        $configured = ymo_env('YMO_COOKIE_DOMAIN');
+        if ($configured !== FALSE && trim((string) $configured) !== '') {
+            return trim((string) $configured);
+        }
+
+        $from_host = ymo_shared_cookie_domain_for_host(ymo_request_host_normalized());
+        if ($from_host !== '') {
+            return $from_host;
+        }
+
+        if (defined('ENVIRONMENT') && ENVIRONMENT === 'production') {
+            return '.yourmechaniconline.com';
+        }
+
+        return '';
+    }
+}
+
+if (!function_exists('ymo_resolve_cookie_secure')) {
+    /**
+     * Secure cookies when served over HTTPS (including behind nginx TLS termination).
+     *
+     * @return bool
+     */
+    function ymo_resolve_cookie_secure()
+    {
+        if (defined('ENVIRONMENT') && ENVIRONMENT === 'production') {
+            return TRUE;
+        }
+        return ymo_request_scheme() === 'https';
+    }
+}
