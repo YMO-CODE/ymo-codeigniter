@@ -1,0 +1,29 @@
+{
+  "updated_slugs": [
+    "about-us",
+    "locations/indore",
+    "locations/pune",
+    "services",
+    "services/belts-and-hoses",
+    "services/car-air-conditioner-servicing-in-pune",
+    "services/car-brake-repair",
+    "services/car-denting-and-painting-3000",
+    "services/car-engine-services-in-pune",
+    "services/car-interior-cleaning-in-pune-\u20b92000",
+    "services/car-rubbing-and-polishing-in-pune-\u20b96500",
+    "services/complete-car-servicing",
+    "services/lube-oil-and-filters"
+  ],
+  "fetch_log": {
+    "services/belts-and-hoses": "live:services/belts-and-hoses/",
+    "services/car-air-conditioner-servicing-in-pune": "live:services/car-air-conditioner-servicing-in-pune/",
+    "services/car-brake-repair": "live:services/car-brake-repair/",
+    "services/car-denting-and-painting-3000": "live:services/car-denting-and-painting-3000/",
+    "services/car-engine-services-in-pune": "live:services/car-engine-services-in-pune/",
+    "services/car-interior-cleaning-in-pune-\u20b92000": "live:services/car-interior-cleaning-in-pune-%e2%82%b92000/",
+    "services/car-rubbing-and-polishing-in-pune-\u20b96500": "live:services/car-rubbing-and-polishing-in-pune-%e2%82%b96500/",
+    "services/complete-car-servicing": "live:services/complete-car-servicing/",
+    "services/lube-oil-and-filters": "live:services/lube-oil-and-filters/"
+  },
+  "service_cards_found": 11
+}

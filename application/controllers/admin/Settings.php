@@ -58,5 +58,6 @@ class Settings extends Admin_Controller
                 $this->db->insert('settings', array('setting_key' => $key, 'setting_value' => $value));
             }
         }
+        ymo_clear_settings_cache();
     }
 }

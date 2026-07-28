@@ -25,8 +25,15 @@ class Offers extends CI_Controller
             return $this->_json(array('ok' => TRUE, 'offers' => array()), 200, TRUE);
         }
 
-        $offers = $this->offer_model->list_active_public();
-        return $this->_json(array('ok' => TRUE, 'offers' => $offers), 200, TRUE);
+        $this->load->driver('cache', array('adapter' => 'file', 'backup' => 'dummy'));
+        $cache_key = 'offers_active_public';
+        $payload = $this->cache->get($cache_key);
+        if ($payload === FALSE || !is_array($payload)) {
+            $offers = $this->offer_model->list_active_public();
+            $payload = array('ok' => TRUE, 'offers' => $offers);
+            $this->cache->save($cache_key, $payload, 60);
+        }
+        return $this->_json($payload, 200, TRUE);
     }
 
     protected function _apply_cors()

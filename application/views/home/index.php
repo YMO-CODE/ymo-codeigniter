@@ -1,6 +1,6 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 
-<section class="ymo-hero">
+<section class="ymo-booking-hero">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-7">

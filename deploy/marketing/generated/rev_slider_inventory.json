@@ -1,0 +1,376 @@
+{
+  "pages_with_rev_slider": 31,
+  "unique_aliases": 25,
+  "pages": [
+    {
+      "path": "blog/best-oil-change-service-in-pune",
+      "link": "https://yourmechaniconline.com/blog/best-oil-change-service-in-pune/",
+      "aliases": [
+        "main"
+      ],
+      "primary": "main"
+    },
+    {
+      "path": "blog",
+      "link": "https://yourmechaniconline.com/blog/",
+      "aliases": [
+        "main"
+      ],
+      "primary": "main"
+    },
+    {
+      "path": "bestcar-services-indore-affordable-solutions",
+      "link": "https://yourmechaniconline.com/bestcar-services-indore-affordable-solutions/",
+      "aliases": [
+        "main-1"
+      ],
+      "primary": "main-1"
+    },
+    {
+      "path": "best-car-servicing-in-pune-ymo/top-mercedes-servicing-aundh",
+      "link": "https://yourmechaniconline.com/best-car-servicing-in-pune-ymo/top-mercedes-servicing-aundh/",
+      "aliases": [
+        "bmw-servicing-viman-nagar-1"
+      ],
+      "primary": "bmw-servicing-viman-nagar-1"
+    },
+    {
+      "path": "best-audi-servicing-in-aundh-pune",
+      "link": "https://yourmechaniconline.com/best-audi-servicing-in-aundh-pune/",
+      "aliases": [
+        "ymo-luxury-homepage-1"
+      ],
+      "primary": "ymo-luxury-homepage-1"
+    },
+    {
+      "path": "best-car-servicing-in-pune-ymo/the-best-mercedes-servicing-in-viman-nagar",
+      "link": "https://yourmechaniconline.com/best-car-servicing-in-pune-ymo/the-best-mercedes-servicing-in-viman-nagar/",
+      "aliases": [
+        "mercedes-servicing-in-hinjewadi-1"
+      ],
+      "primary": "mercedes-servicing-in-hinjewadi-1"
+    },
+    {
+      "path": "best-car-servicing-in-pune-ymo/top-mercedes-servicing-baner/the-best-audi-servicing-baner-pune/top-mercedes-servicing-in-bavdhan",
+      "link": "https://yourmechaniconline.com/best-car-servicing-in-pune-ymo/top-mercedes-servicing-baner/the-best-audi-servicing-baner-pune/top-mercedes-servicing-in-bavdhan/",
+      "aliases": [
+        "mercedes-servicing-in-baner-1"
+      ],
+      "primary": "mercedes-servicing-in-baner-1"
+    },
+    {
+      "path": "the-best-mercedes-servicing-in-wakad",
+      "link": "https://yourmechaniconline.com/the-best-mercedes-servicing-in-wakad/",
+      "aliases": [
+        "mercedes-servicing-in-bavdhan-1"
+      ],
+      "primary": "mercedes-servicing-in-bavdhan-1"
+    },
+    {
+      "path": "the-best-mercedes-servicing-in-hinjewadi",
+      "link": "https://yourmechaniconline.com/the-best-mercedes-servicing-in-hinjewadi/",
+      "aliases": [
+        "mercedes-servicing-in-wakad-1"
+      ],
+      "primary": "mercedes-servicing-in-wakad-1"
+    },
+    {
+      "path": "the-best-audi-servicing-in-bavdhan",
+      "link": "https://yourmechaniconline.com/the-best-audi-servicing-in-bavdhan/",
+      "aliases": [
+        "audi-servicing-baner-1"
+      ],
+      "primary": "audi-servicing-baner-1"
+    },
+    {
+      "path": "best-car-servicing-in-pune-ymo/the-best-audi-servicing-in-viman-nagar",
+      "link": "https://yourmechaniconline.com/best-car-servicing-in-pune-ymo/the-best-audi-servicing-in-viman-nagar/",
+      "aliases": [
+        "audi-servicing-hinjewadi-1"
+      ],
+      "primary": "audi-servicing-hinjewadi-1"
+    },
+    {
+      "path": "best-car-servicing-in-pune-ymo/top-mercedes-servicing-baner/the-best-audi-servicing-baner-pune",
+      "link": "https://yourmechaniconline.com/best-car-servicing-in-pune-ymo/top-mercedes-servicing-baner/the-best-audi-servicing-baner-pune/",
+      "aliases": [
+        "audi-servicing-aundh-1"
+      ],
+      "primary": "audi-servicing-aundh-1"
+    },
+    {
+      "path": "the-best-audi-servicing-in-wakad",
+      "link": "https://yourmechaniconline.com/the-best-audi-servicing-in-wakad/",
+      "aliases": [
+        "audi-servicing-bavdhan-1"
+      ],
+      "primary": "audi-servicing-bavdhan-1"
+    },
+    {
+      "path": "the-best-audi-servicing-in-hinjewadi",
+      "link": "https://yourmechaniconline.com/the-best-audi-servicing-in-hinjewadi/",
+      "aliases": [
+        "audi-servicing-bavdhan-1"
+      ],
+      "primary": "audi-servicing-bavdhan-1"
+    },
+    {
+      "path": "bmw-servicing-in-viman-nagar",
+      "link": "https://yourmechaniconline.com/bmw-servicing-in-viman-nagar/",
+      "aliases": [
+        "bmw-servicing-baner-1"
+      ],
+      "primary": "bmw-servicing-baner-1"
+    },
+    {
+      "path": "the-best-bmw-servicing-in-wakad",
+      "link": "https://yourmechaniconline.com/the-best-bmw-servicing-in-wakad/",
+      "aliases": [
+        "bmw-servicing-bavdhan-1"
+      ],
+      "primary": "bmw-servicing-bavdhan-1"
+    },
+    {
+      "path": "bmw-servicing-in-bavdhan",
+      "link": "https://yourmechaniconline.com/bmw-servicing-in-bavdhan/",
+      "aliases": [
+        "bmw-servicing-hinjewadi-1"
+      ],
+      "primary": "bmw-servicing-hinjewadi-1"
+    },
+    {
+      "path": "best-bmw-servicing-in-aundh-luxury-car-care",
+      "link": "https://yourmechaniconline.com/best-bmw-servicing-in-aundh-luxury-car-care/",
+      "aliases": [
+        "audi-servicing-wakad-1"
+      ],
+      "primary": "audi-servicing-wakad-1"
+    },
+    {
+      "path": "the-best-bmw-servicing-in-baner",
+      "link": "https://yourmechaniconline.com/the-best-bmw-servicing-in-baner/",
+      "aliases": [
+        "bmw-servicing-wakad-1"
+      ],
+      "primary": "bmw-servicing-wakad-1"
+    },
+    {
+      "path": "best-bmw-servicing-in-hinjewadi-luxury-car-care",
+      "link": "https://yourmechaniconline.com/best-bmw-servicing-in-hinjewadi-luxury-car-care/",
+      "aliases": [
+        "bmw-servicing-aundh-1"
+      ],
+      "primary": "bmw-servicing-aundh-1"
+    },
+    {
+      "path": "affordable-car-services-viman-nagar-pune",
+      "link": "https://yourmechaniconline.com/affordable-car-services-viman-nagar-pune/",
+      "aliases": [
+        "main-11"
+      ],
+      "primary": "main-11"
+    },
+    {
+      "path": "best-car-servicing-in-bavdhan-pune-expert-care",
+      "link": "https://yourmechaniconline.com/best-car-servicing-in-bavdhan-pune-expert-care/",
+      "aliases": [
+        "wakad-location-slider-1"
+      ],
+      "primary": "wakad-location-slider-1"
+    },
+    {
+      "path": "affordable-car-servicing-in-wakad-pune",
+      "link": "https://yourmechaniconline.com/affordable-car-servicing-in-wakad-pune/",
+      "aliases": [
+        "baner-location-slider-1"
+      ],
+      "primary": "baner-location-slider-1"
+    },
+    {
+      "path": "the-best-car-servicing-in-baner",
+      "link": "https://yourmechaniconline.com/the-best-car-servicing-in-baner/",
+      "aliases": [
+        "hinjewadi-location-slider-1"
+      ],
+      "primary": "hinjewadi-location-slider-1"
+    },
+    {
+      "path": "best-car-services-hinjewadi-pune",
+      "link": "https://yourmechaniconline.com/best-car-services-hinjewadi-pune/",
+      "aliases": [
+        "aundh-location-slider-1"
+      ],
+      "primary": "aundh-location-slider-1"
+    },
+    {
+      "path": "premium-luxury-car-service-pune",
+      "link": "https://yourmechaniconline.com/premium-luxury-car-service-pune/",
+      "aliases": [
+        "ymo-locations-slider-1"
+      ],
+      "primary": "ymo-locations-slider-1"
+    },
+    {
+      "path": "car-servicing-in-aundh",
+      "link": "https://yourmechaniconline.com/car-servicing-in-aundh/",
+      "aliases": [
+        "main-11"
+      ],
+      "primary": "main-11"
+    },
+    {
+      "path": "best-car-servicing-in-pune-ymo",
+      "link": "https://yourmechaniconline.com/best-car-servicing-in-pune-ymo/",
+      "aliases": [
+        "bavdhan-location-slider-1"
+      ],
+      "primary": "bavdhan-location-slider-1"
+    },
+    {
+      "path": "book-car-servicing-in-pune",
+      "link": "https://yourmechaniconline.com/book-car-servicing-in-pune/",
+      "aliases": [
+        "main"
+      ],
+      "primary": "main"
+    },
+    {
+      "path": "best-car-services-in-pune",
+      "link": "https://yourmechaniconline.com/best-car-services-in-pune/",
+      "aliases": [
+        "main"
+      ],
+      "primary": "main"
+    },
+    {
+      "path": "",
+      "link": "https://yourmechaniconline.com/",
+      "aliases": [
+        "main"
+      ],
+      "primary": "main"
+    }
+  ],
+  "alias_sources": {
+    "audi-servicing-aundh-1": "best-car-servicing-in-pune-ymo/top-mercedes-servicing-baner/the-best-audi-servicing-baner-pune",
+    "audi-servicing-baner-1": "the-best-audi-servicing-in-bavdhan",
+    "audi-servicing-bavdhan-1": "the-best-audi-servicing-in-wakad",
+    "audi-servicing-hinjewadi-1": "best-car-servicing-in-pune-ymo/the-best-audi-servicing-in-viman-nagar",
+    "audi-servicing-wakad-1": "best-bmw-servicing-in-aundh-luxury-car-care",
+    "aundh-location-slider-1": "best-car-services-hinjewadi-pune",
+    "baner-location-slider-1": "affordable-car-servicing-in-wakad-pune",
+    "bavdhan-location-slider-1": "best-car-servicing-in-pune-ymo",
+    "bmw-servicing-aundh-1": "best-bmw-servicing-in-hinjewadi-luxury-car-care",
+    "bmw-servicing-baner-1": "bmw-servicing-in-viman-nagar",
+    "bmw-servicing-bavdhan-1": "the-best-bmw-servicing-in-wakad",
+    "bmw-servicing-hinjewadi-1": "bmw-servicing-in-bavdhan",
+    "bmw-servicing-viman-nagar-1": "best-car-servicing-in-pune-ymo/top-mercedes-servicing-aundh",
+    "bmw-servicing-wakad-1": "the-best-bmw-servicing-in-baner",
+    "hinjewadi-location-slider-1": "the-best-car-servicing-in-baner",
+    "main": "",
+    "main-1": "bestcar-services-indore-affordable-solutions",
+    "main-11": "affordable-car-services-viman-nagar-pune",
+    "mercedes-servicing-in-baner-1": "best-car-servicing-in-pune-ymo/top-mercedes-servicing-baner/the-best-audi-servicing-baner-pune/top-mercedes-servicing-in-bavdhan",
+    "mercedes-servicing-in-bavdhan-1": "the-best-mercedes-servicing-in-wakad",
+    "mercedes-servicing-in-hinjewadi-1": "best-car-servicing-in-pune-ymo/the-best-mercedes-servicing-in-viman-nagar",
+    "mercedes-servicing-in-wakad-1": "the-best-mercedes-servicing-in-hinjewadi",
+    "wakad-location-slider-1": "best-car-servicing-in-bavdhan-pune-expert-care",
+    "ymo-locations-slider-1": "premium-luxury-car-service-pune",
+    "ymo-luxury-homepage-1": "best-audi-servicing-in-aundh-pune"
+  },
+  "sliders": {
+    "audi-servicing-aundh-1": [
+      "2022/03/974159.jpg"
+    ],
+    "audi-servicing-baner-1": [
+      "2022/03/974159.jpg"
+    ],
+    "audi-servicing-bavdhan-1": [
+      "2022/03/974159.jpg"
+    ],
+    "audi-servicing-hinjewadi-1": [
+      "2022/03/974159.jpg"
+    ],
+    "audi-servicing-wakad-1": [
+      "2022/03/wallpaperbetter.com_2737x1825-scaled.jpg"
+    ],
+    "aundh-location-slider-1": [
+      "revslider/main/image_01.jpg",
+      "revslider/main/image_021.jpg",
+      "revslider/main/image_03.jpg"
+    ],
+    "baner-location-slider-1": [
+      "revslider/main/image_01.jpg",
+      "revslider/main/image_021.jpg",
+      "revslider/main/image_03.jpg"
+    ],
+    "bavdhan-location-slider-1": [
+      "revslider/main/image_01.jpg",
+      "revslider/main/image_021.jpg",
+      "revslider/main/image_03.jpg"
+    ],
+    "bmw-servicing-aundh-1": [
+      "2022/03/wallpaperbetter.com_2737x1825-scaled.jpg"
+    ],
+    "bmw-servicing-baner-1": [
+      "2022/03/wallpaperbetter.com_2737x1825-scaled.jpg"
+    ],
+    "bmw-servicing-bavdhan-1": [
+      "2022/03/wallpaperbetter.com_2737x1825-scaled.jpg"
+    ],
+    "bmw-servicing-hinjewadi-1": [
+      "2022/03/wallpaperbetter.com_2737x1825-scaled.jpg"
+    ],
+    "bmw-servicing-viman-nagar-1": [
+      "2022/03/itl.cat_cla-45-amg-wallpaper_2168940.jpg"
+    ],
+    "bmw-servicing-wakad-1": [
+      "2022/03/wallpaperbetter.com_2737x1825-scaled.jpg"
+    ],
+    "hinjewadi-location-slider-1": [
+      "revslider/main/image_01.jpg",
+      "revslider/main/image_021.jpg",
+      "revslider/main/image_03.jpg"
+    ],
+    "main": [
+      "revslider/main/image_01.jpg",
+      "revslider/main/image_021.jpg",
+      "revslider/main/image_03.jpg"
+    ],
+    "main-1": [
+      "revslider/main/image_01.jpg",
+      "revslider/main/image_021.jpg",
+      "revslider/main/image_03.jpg"
+    ],
+    "main-11": [
+      "revslider/main/image_01.jpg",
+      "revslider/main/image_021.jpg",
+      "revslider/main/image_03.jpg"
+    ],
+    "mercedes-servicing-in-baner-1": [
+      "2022/03/itl.cat_cla-45-amg-wallpaper_2168940.jpg"
+    ],
+    "mercedes-servicing-in-bavdhan-1": [
+      "2022/03/itl.cat_cla-45-amg-wallpaper_2168940.jpg"
+    ],
+    "mercedes-servicing-in-hinjewadi-1": [
+      "2022/03/itl.cat_cla-45-amg-wallpaper_2168940.jpg"
+    ],
+    "mercedes-servicing-in-wakad-1": [
+      "2022/03/itl.cat_cla-45-amg-wallpaper_2168940.jpg"
+    ],
+    "wakad-location-slider-1": [
+      "revslider/main/image_01.jpg",
+      "revslider/main/image_021.jpg",
+      "revslider/main/image_03.jpg"
+    ],
+    "ymo-locations-slider-1": [
+      "2022/03/974159.jpg",
+      "2022/03/wallpaperbetter.com_2737x1825-scaled.jpg",
+      "2022/03/itl.cat_cla-45-amg-wallpaper_2168940.jpg"
+    ],
+    "ymo-luxury-homepage-1": [
+      "2022/03/974159.jpg"
+    ]
+  }
+}

@@ -17,7 +17,7 @@ $route['404_override']         = 'errors/show_404';
 // -----------------------------------------------------------------------
 if (ymo_is_admin_host_request()) {
 
-    $route['default_controller'] = 'admin/dashboard';
+    $route['default_controller'] = 'admin/dashboard/index';
 
     $route['login']   = 'admin/auth/login';
     $route['logout']  = 'admin/auth/logout';
@@ -209,6 +209,39 @@ if (ymo_is_admin_host_request()) {
     $route['admin/reports/export/leads']       = 'admin/reports/export_leads';
     $route['admin/reports/export/service-due'] = 'admin/reports/export_service_due';
     $route['admin/reports/export/revenue']     = 'admin/reports/export_revenue';
+
+} elseif (ymo_is_marketing_host_request()) {
+
+    // -------------------------------------------------------------------
+    // MARKETING HOST — www.yourmechaniconline.com (booking/admin unchanged)
+    // -------------------------------------------------------------------
+    // CI3 default_controller cannot resolve subdirectory/controller (it treats
+    // "marketing/home" as class Marketing + method home). Explicit empty-URI
+    // route is required for the homepage.
+    $route['404_override']         = 'marketing/legacy/go';
+    $route['default_controller']   = 'marketing/home/index';
+    $route['sitemap.xml']          = 'marketing/seo/sitemap';
+    $route['robots.txt']           = 'marketing/seo/robots';
+    $route['llms.txt']             = 'marketing/seo/llms';
+    $route['contact-us']           = 'marketing/contact/index';
+    $route['about-us']             = 'marketing/pages/show';
+
+    $marketing_pages_file = APPPATH.'config/marketing_pages_data.php';
+    if (is_file($marketing_pages_file)) {
+        $marketing_pages = require $marketing_pages_file;
+        if (is_array($marketing_pages)) {
+            foreach (array_keys($marketing_pages) as $slug) {
+                if ($slug === 'about-us') {
+                    continue;
+                }
+                $route[$slug] = 'marketing/pages/show';
+            }
+        }
+    }
+
+    // Legacy WP URLs (tag/*, category/*, old nested paths) → 301 via redirect map.
+    // Must be last — CI3 cannot use subdirectory 404_override reliably.
+    $route['(.+)'] = 'marketing/legacy/go';
 
 } else {
 

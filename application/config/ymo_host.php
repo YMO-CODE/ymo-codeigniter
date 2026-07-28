@@ -89,3 +89,52 @@ if (!function_exists('ymo_is_admin_host_request')) {
         return hash_equals($expect, $incoming);
     }
 }
+
+if (!function_exists('ymo_is_marketing_host_request')) {
+    /**
+     * Marketing site on www (+ apex before nginx 301). Never TRUE for booking/admin hosts.
+     *
+     * @return bool
+     */
+    function ymo_is_marketing_host_request()
+    {
+        if (ymo_is_admin_host_request()) {
+            return FALSE;
+        }
+        $incoming = ymo_request_host_normalized();
+        if ($incoming === '') {
+            return FALSE;
+        }
+        if (!function_exists('getenv')) {
+            return FALSE;
+        }
+        $public = getenv('YMO_PUBLIC_APP_URL');
+        if ($public === FALSE || trim((string) $public) === '') {
+            $public = getenv('YMO_APP_URL');
+        }
+        $booking_host = ymo_host_part_from_full_url($public);
+        if ($booking_host !== '' && hash_equals($booking_host, $incoming)) {
+            return FALSE;
+        }
+        $admin = getenv('YMO_ADMIN_APP_URL');
+        $admin_host = ymo_host_part_from_full_url($admin);
+        if ($admin_host !== '' && hash_equals($admin_host, $incoming)) {
+            return FALSE;
+        }
+        $marketing = getenv('YMO_MARKETING_APP_URL');
+        if ($marketing === FALSE || trim((string) $marketing) === '') {
+            return FALSE;
+        }
+        $www_host = ymo_host_part_from_full_url($marketing);
+        if ($www_host !== '' && hash_equals($www_host, $incoming)) {
+            return TRUE;
+        }
+        if ($www_host !== '' && strpos($www_host, 'www.') === 0) {
+            $apex = substr($www_host, 4);
+            if ($apex !== '' && hash_equals($apex, $incoming)) {
+                return TRUE;
+            }
+        }
+        return FALSE;
+    }
+}

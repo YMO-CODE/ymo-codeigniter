@@ -1,0 +1,61 @@
+{
+  "download_total": 7,
+  "downloaded": 6,
+  "downloads": [
+    {
+      "path": "2022/03/974159.jpg",
+      "ok": true,
+      "status": "downloaded"
+    },
+    {
+      "path": "2022/03/itl.cat_cla-45-amg-wallpaper_2168940.jpg",
+      "ok": true,
+      "status": "downloaded"
+    },
+    {
+      "path": "2022/03/wallpaperbetter.com_2737x1825-scaled.jpg",
+      "ok": true,
+      "status": "downloaded"
+    },
+    {
+      "path": "revslider/main/image_01.jpg",
+      "ok": true,
+      "status": "cached"
+    },
+    {
+      "path": "revslider/main/image_02.jpg",
+      "ok": false,
+      "status": "HTTP 404"
+    },
+    {
+      "path": "revslider/main/image_021.jpg",
+      "ok": true,
+      "status": "cached"
+    },
+    {
+      "path": "revslider/main/image_03.jpg",
+      "ok": true,
+      "status": "cached"
+    }
+  ],
+  "files": [
+    {
+      "file": "application\\config\\marketing_pages_data.php",
+      "changed": false,
+      "wp_urls_before": 0,
+      "wp_urls_after": 0
+    },
+    {
+      "file": "application\\config\\marketing_pages_option_a.php",
+      "changed": false,
+      "wp_urls_before": 0,
+      "wp_urls_after": 0
+    },
+    {
+      "file": "application\\config\\marketing_sliders.php",
+      "changed": false,
+      "wp_urls_before": 0,
+      "wp_urls_after": 0
+    }
+  ]
+}

@@ -61,7 +61,7 @@ if (!function_exists('ymo_load_db_settings')) {
             if (!$ci->db->table_exists('settings')) {
                 return;
             }
-            $rows = $ci->db->get('settings')->result_array();
+            $rows = ymo_get_cached_settings_rows($ci);
             foreach ($rows as $r) {
                 $key = $r['setting_key'];
                 $val = $r['setting_value'];
@@ -79,6 +79,47 @@ if (!function_exists('ymo_load_db_settings')) {
     }
 }
 
+if (!function_exists('ymo_get_cached_settings_rows')) {
+    /**
+     * Settings table rows, cached briefly to avoid a query on every request.
+     *
+     * @param CI_Controller $ci
+     * @return array
+     */
+    function ymo_get_cached_settings_rows($ci)
+    {
+        $cache_key = 'settings_rows';
+        $ci->load->driver('cache', array('adapter' => 'file', 'backup' => 'dummy'));
+        $rows = $ci->cache->get($cache_key);
+        if ($rows !== FALSE && is_array($rows)) {
+            return $rows;
+        }
+        $rows = $ci->db->get('settings')->result_array();
+        $ci->cache->save($cache_key, $rows, 120);
+        return $rows;
+    }
+}
+
+if (!function_exists('ymo_clear_settings_cache')) {
+    /** Drop cached settings after admin saves. */
+    function ymo_clear_settings_cache()
+    {
+        $ci = &get_instance();
+        $ci->load->driver('cache', array('adapter' => 'file', 'backup' => 'dummy'));
+        $ci->cache->delete('settings_rows');
+    }
+}
+
+if (!function_exists('ymo_clear_offers_cache')) {
+    /** Drop cached public offers payload after admin edits. */
+    function ymo_clear_offers_cache()
+    {
+        $ci = &get_instance();
+        $ci->load->driver('cache', array('adapter' => 'file', 'backup' => 'dummy'));
+        $ci->cache->delete('offers_active_public');
+    }
+}
+
 if (!function_exists('ymo_is_admin_host')) {
     /**
      * Is the current HTTP request served on the configured admin hostname?
@@ -89,6 +130,18 @@ if (!function_exists('ymo_is_admin_host')) {
     function ymo_is_admin_host()
     {
         return function_exists('ymo_is_admin_host_request') && ymo_is_admin_host_request();
+    }
+}
+
+if (!function_exists('ymo_is_marketing_host')) {
+    /**
+     * Is the current HTTP request served on the configured marketing hostname?
+     *
+     * @return bool
+     */
+    function ymo_is_marketing_host()
+    {
+        return function_exists('ymo_is_marketing_host_request') && ymo_is_marketing_host_request();
     }
 }
 

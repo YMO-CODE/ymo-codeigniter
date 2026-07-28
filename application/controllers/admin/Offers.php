@@ -34,6 +34,7 @@ class Offers extends Admin_Controller
                 $payload['image_path'] = $image;
             }
             $this->offer_model->create($payload);
+            ymo_clear_offers_cache();
             $this->flash('success', 'Offer added.');
             redirect(admin_url('offers'));
         }
@@ -75,6 +76,7 @@ class Offers extends Admin_Controller
                 }
             }
             $this->offer_model->update($id, $patch);
+            ymo_clear_offers_cache();
             $this->flash('success', 'Offer updated.');
             redirect(admin_url('offers'));
         }
@@ -92,6 +94,7 @@ class Offers extends Admin_Controller
             show_404();
         }
         $this->offer_model->delete($id);
+        ymo_clear_offers_cache();
         $this->flash('success', 'Offer removed.');
         redirect(admin_url('offers'));
     }

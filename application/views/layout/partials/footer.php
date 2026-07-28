@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 $ci    = &get_instance();
 $brand = $ci->config->item('ymo_brand_name');
-$mark  = $ci->config->item('ymo_marketing_url');
+$mark  = ymo_marketing_url('');
 $phone = $ci->config->item('ymo_support_phone');
 $mail  = $ci->config->item('ymo_support_email');
 ?>
@@ -10,9 +10,9 @@ $mail  = $ci->config->item('ymo_support_email');
     <div class="container">
         <div class="row gy-4">
             <div class="col-lg-4">
-                <img src="<?= base_url('assets/img/logo.png'); ?>" alt="<?= html_escape($brand); ?>" class="ymo-footer-logo mb-3">
+                <img src="<?= base_url('assets/img/logo.png'); ?>" alt="<?= html_escape($brand); ?>" class="ymo-footer-logo mb-3" width="140" height="52" loading="lazy" decoding="async">
                 <p class="small mb-2">
-                    Your trusted online car servicing platform — periodic service,
+                    Your trusted online car servicing platform - periodic service,
                     AC repair, denting &amp; polishing, doorstep pick-up &amp; drop.
                 </p>
                 <p class="small mb-0">
@@ -23,9 +23,10 @@ $mail  = $ci->config->item('ymo_support_email');
             <div class="col-6 col-lg-2">
                 <h6>Company</h6>
                 <ul class="list-unstyled small">
-                    <li><a href="<?= html_escape($mark); ?>">Main site</a></li>
-                    <li><a href="<?= html_escape($mark); ?>/about-us/">About</a></li>
-                    <li><a href="<?= html_escape($mark); ?>/contact-us/">Contact</a></li>
+                    <li><a href="<?= html_escape($mark); ?>">Home</a></li>
+                    <li><a href="<?= html_escape(ymo_marketing_url('about-us')); ?>">About</a></li>
+                    <li><a href="<?= html_escape(ymo_marketing_url('contact-us')); ?>">Contact</a></li>
+                    <li><a href="<?= html_escape(ymo_marketing_url('privacy-policy')); ?>">Privacy policy</a></li>
                 </ul>
             </div>
             <div class="col-6 col-lg-3">

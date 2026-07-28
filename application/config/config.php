@@ -33,6 +33,11 @@ if ($cli_bootstrap) {
         : (($public_candidate !== FALSE && trim((string) $public_candidate) !== '')
             ? rtrim((string) $public_candidate, '/').'/'
             : '');
+} elseif (ymo_is_marketing_host_request()) {
+    $marketing_candidate = getenv('YMO_MARKETING_APP_URL');
+    $config['base_url'] = ($marketing_candidate !== FALSE && trim((string) $marketing_candidate) !== '')
+        ? rtrim((string) $marketing_candidate, '/').'/'
+        : '';
 } else {
     $config['base_url'] = ($public_candidate !== FALSE && trim((string) $public_candidate) !== '')
         ? rtrim((string) $public_candidate, '/').'/'

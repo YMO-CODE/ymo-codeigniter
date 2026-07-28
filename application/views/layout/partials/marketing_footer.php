@@ -1,0 +1,43 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+$ci = &get_instance();
+$brand = $ci->config->item('ymo_brand_name');
+$phone = $ci->config->item('ymo_support_phone');
+$mail  = $ci->config->item('ymo_support_email');
+?>
+<footer class="ymo-footer">
+    <div class="container py-2">
+        <div class="row gy-4">
+            <div class="col-lg-4">
+                <img src="<?= base_url('assets/img/logo.png'); ?>" alt="<?= html_escape($brand); ?>" class="ymo-footer-logo mb-3" width="140" height="52" loading="lazy" decoding="async">
+                <p class="md-body-md mb-0">Periodic service, AC repair, denting &amp; polishing - book online in minutes.</p>
+            </div>
+            <div class="col-6 col-lg-2">
+                <h6>Company</h6>
+                <ul class="list-unstyled md-body-md mb-0">
+                    <li class="mb-2"><a href="<?= site_url('about-us'); ?>">About</a></li>
+                    <li class="mb-2"><a href="<?= site_url('contact-us'); ?>">Contact</a></li>
+                    <li><a href="<?= site_url('privacy-policy'); ?>">Privacy policy</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-lg-3">
+                <h6>Book online</h6>
+                <ul class="list-unstyled md-body-md mb-0">
+                    <li class="mb-2"><a href="<?= html_escape(ymo_booking_url('packages')); ?>">Packages</a></li>
+                    <li><a href="<?= html_escape(ymo_booking_url('signup')); ?>">Sign up</a></li>
+                </ul>
+            </div>
+            <div class="col-12 col-lg-3">
+                <h6>Need a hand?</h6>
+                <p class="md-body-md mb-0">
+                    <a href="tel:<?= html_escape(preg_replace('/[^+\d]/', '', $phone)); ?>"><?= html_escape($phone); ?></a><br>
+                    <a href="mailto:<?= html_escape($mail); ?>"><?= html_escape($mail); ?></a>
+                </p>
+            </div>
+        </div>
+        <div class="ymo-footer-bottom d-flex justify-content-between flex-wrap gap-2 mt-4 pt-3">
+            <span class="md-body-md mb-0">&copy; <?= date('Y'); ?> <?= html_escape($brand); ?>. All rights reserved.</span>
+            <a href="<?= html_escape(ymo_booking_url('packages')); ?>" class="md-btn md-btn--tonal md-btn--sm">Book a service</a>
+        </div>
+    </div>
+</footer>

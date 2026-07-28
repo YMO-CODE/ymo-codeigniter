@@ -112,6 +112,31 @@ class Admin_Controller extends CI_Controller
 }
 
 /**
+ * Public marketing site (www host). No customer auth; links out to booking subdomain.
+ */
+class Marketing_Controller extends MY_Controller
+{
+    /** @var array SEO + content defaults for the active page */
+    protected $page_meta = array();
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->load->helper('marketing');
+    }
+
+    protected function render_marketing($view, array $data = array())
+    {
+        $data = array_merge($this->page_meta, $data);
+        if (empty($data['canonical_path'])) {
+            $data['canonical_path'] = trim($this->uri->uri_string(), '/');
+        }
+        $data['content'] = $this->load->view($view, $data, TRUE);
+        $this->load->view('layout/marketing', $data);
+    }
+}
+
+/**
  * Base controller for CRM admin modules. Ensures CRM tables exist.
  */
 class Crm_Controller extends Admin_Controller

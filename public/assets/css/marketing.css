@@ -1,0 +1,873 @@
+/* =============================================================================
+   Marketing site — Material Design 3 layer (Bootstrap 5 + ymo.css md-* components)
+   ============================================================================= */
+
+.ymo-marketing .ymo-main {
+    background: var(--md-sys-color-surface-dim);
+}
+
+.ymo-marketing .md-icon-primary {
+    color: var(--md-sys-color-primary);
+}
+
+.ymo-marketing .marketing-service-card {
+    padding: 1.5rem;
+    color: inherit;
+}
+
+.ymo-marketing .ymo-page-title {
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.ymo-marketing .md-card-elevated,
+.ymo-marketing .md-card-filled,
+.ymo-marketing .md-card-outlined {
+    padding: 1.5rem;
+}
+
+/* Migrated WP body content (.marketing-body)
+   Styles legacy markup from WordPress service/locality pages until HTML is
+   simplified in a later migration pass.
+   ============================================================================= */
+
+.ymo-marketing .ymo-service-catalog {
+    margin-bottom: 2rem;
+}
+
+.ymo-marketing .ymo-service-catalog .marketing-service-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.marketing-service-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--md-elev-3);
+}
+
+/* Typed marketing heroes — scoped to marketing layout only */
+.ymo-marketing {
+    --ymo-hero-gutter-x: 2.5rem;
+}
+
+.ymo-marketing .ymo-hero .container {
+    --bs-gutter-x: var(--ymo-hero-gutter-x);
+}
+
+.ymo-marketing .ymo-main:has(> .ymo-hero:first-child) {
+    padding-top: 0;
+}
+
+.ymo-marketing .ymo-hero {
+    position: relative;
+    overflow: hidden;
+    color: var(--ymo-grey-900);
+}
+
+.ymo-marketing .ymo-hero__inner {
+    position: relative;
+    z-index: 2;
+}
+
+.ymo-marketing .ymo-hero__title {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: var(--ymo-grey-900);
+}
+
+.ymo-marketing .ymo-hero__lead {
+    color: var(--ymo-grey-700);
+    max-width: 36rem;
+}
+
+.ymo-marketing .ymo-hero__proof {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.85rem;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.ymo-marketing .ymo-hero__proof-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--ymo-grey-600);
+}
+
+.ymo-marketing .ymo-hero__proof--light .ymo-hero__proof-rating {
+    color: var(--ymo-primary-dark);
+}
+
+.ymo-marketing .ymo-hero__proof--light .ymo-hero__proof-rating .mi {
+    color: #e6a817;
+    font-size: 1rem;
+}
+
+.ymo-marketing .ymo-hero__proof--dark .ymo-hero__proof-item {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.ymo-marketing .ymo-hero__proof--dark .ymo-hero__proof-rating .mi {
+    color: #f5c842;
+}
+
+.ymo-marketing .ymo-hero__proof-item + .ymo-hero__proof-item::before {
+    content: "·";
+    margin-right: 0.85rem;
+    opacity: 0.45;
+    font-weight: 400;
+}
+
+.ymo-marketing .ymo-hero__actions .md-btn {
+    min-height: 44px;
+}
+
+.ymo-marketing .ymo-hero__chips .md-chip--sm {
+    font-size: 0.8125rem;
+    padding: 0.25rem 0.65rem;
+}
+
+.ymo-marketing .ymo-hero__trust {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.ymo-marketing .ymo-hero__badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border-radius: var(--md-shape-corner-full);
+    background: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+}
+
+.ymo-marketing .ymo-hero__chips-label {
+    display: block;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ymo-grey-500);
+    margin-bottom: 0.5rem;
+}
+
+.ymo-marketing .ymo-hero__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.ymo-marketing .ymo-hero__phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--ymo-primary-dark);
+    text-decoration: none;
+    margin-bottom: 1rem;
+}
+
+.ymo-marketing .ymo-hero__phone:hover {
+    color: var(--ymo-primary);
+    text-decoration: underline;
+}
+
+.ymo-marketing .ymo-hero__phone .mi {
+    font-size: 1.125rem;
+}
+
+.ymo-marketing .ymo-hero__trust-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1rem;
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.88);
+}
+
+.ymo-marketing .ymo-hero__trust-strip span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.ymo-marketing .ymo-hero__trust-strip span::before {
+    content: "•";
+    opacity: 0.5;
+}
+
+.ymo-marketing .ymo-hero__trust-strip span:first-child::before {
+    content: none;
+}
+
+.ymo-marketing .ymo-hero--home {
+    min-height: clamp(320px, 42vw, 520px);
+    display: flex;
+    align-items: center;
+    background: var(--ymo-grey-900);
+    color: #fff;
+}
+
+.ymo-marketing .ymo-hero--home .ymo-hero__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ymo-marketing .ymo-hero--home .ymo-hero__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(135deg, rgba(17, 20, 24, 0.82), rgba(17, 20, 24, 0.55));
+}
+
+.ymo-marketing .ymo-hero--home::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 4rem;
+    z-index: 2;
+    background: linear-gradient(to bottom, transparent, var(--md-sys-color-surface-dim));
+    pointer-events: none;
+}
+
+.ymo-marketing .ymo-hero--home .ymo-hero__inner {
+    padding: clamp(3rem, 8vw, 5rem) 0 clamp(2.75rem, 6vw, 4.25rem);
+    width: 100%;
+}
+
+.ymo-marketing .ymo-hero--home .ymo-hero__title {
+    font-size: clamp(1.875rem, 3.5vw, 2.75rem);
+    color: #fff;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+}
+
+.ymo-marketing .ymo-hero--home .ymo-hero__lead {
+    color: rgba(255, 255, 255, 0.92);
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
+    opacity: 0.92;
+}
+
+.ymo-marketing .ymo-hero--home .ymo-hero__badge {
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+    backdrop-filter: blur(6px);
+}
+
+.ymo-marketing .ymo-hero--split,
+.ymo-marketing .ymo-hero--service {
+    background:
+        radial-gradient(ellipse 70% 50% at 5% 0%, rgba(58, 111, 55, 0.06), transparent 50%),
+        var(--md-sys-color-surface);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.ymo-marketing .ymo-hero--split .ymo-hero__inner,
+.ymo-marketing .ymo-hero--service .ymo-hero__inner {
+    padding: clamp(2rem, 5vw, 3.5rem) 0;
+}
+
+.ymo-marketing .ymo-hero__split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(1.5rem, 4vw, 3rem);
+    align-items: center;
+}
+
+.ymo-marketing .ymo-hero__panel {
+    padding: clamp(0.5rem, 2vw, 1rem) 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.ymo-marketing .ymo-hero__media {
+    border-radius: var(--md-shape-corner-large);
+    overflow: hidden;
+    box-shadow: var(--md-elev-2);
+    aspect-ratio: 4 / 3;
+    background: var(--ymo-grey-100);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    min-height: 280px;
+}
+
+.ymo-marketing .ymo-hero__photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Hero image carousel (luxury / RevSlider replacements) */
+.ymo-marketing .ymo-hero__media .ymo-hero-slider {
+    height: 100%;
+}
+
+.ymo-marketing .ymo-hero-slider .carousel-inner,
+.ymo-marketing .ymo-hero-slider .carousel-item {
+    height: 100%;
+}
+
+.ymo-marketing .ymo-hero-slider__indicators {
+    margin-bottom: 0.65rem;
+    gap: 0.35rem;
+}
+
+.ymo-marketing .ymo-hero-slider__indicators [data-bs-target] {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: none;
+    margin: 0;
+    background-color: rgba(255, 255, 255, 0.55);
+    opacity: 1;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.ymo-marketing .ymo-hero-slider__indicators .active {
+    background-color: #fff;
+    transform: scale(1.15);
+}
+
+.ymo-marketing .ymo-hero-slider__control {
+    width: 2.5rem;
+    opacity: 0.85;
+}
+
+.ymo-marketing .ymo-hero-slider__control-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--ymo-grey-900);
+    font-size: 1.35rem;
+    box-shadow: var(--md-elev-2);
+}
+
+.ymo-marketing .ymo-hero-slider__control:hover .ymo-hero-slider__control-icon {
+    background: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ymo-marketing .ymo-hero-slider[data-bs-ride="carousel"] {
+        --bs-carousel-interval: 0;
+    }
+
+    .ymo-marketing .ymo-hero-slider .carousel-item {
+        transition: none;
+    }
+}
+
+.ymo-marketing .ymo-hero__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--ymo-primary);
+    margin-bottom: 0.75rem;
+    padding: 0.25rem 0.65rem;
+    background: var(--md-sys-color-primary-container);
+    border-radius: var(--md-shape-corner-full);
+    width: fit-content;
+}
+
+.ymo-marketing .ymo-hero--split .ymo-hero__title,
+.ymo-marketing .ymo-hero--service .ymo-hero__title {
+    font-size: clamp(1.875rem, 3.2vw, 2.5rem);
+}
+
+.ymo-marketing .ymo-hero--minimal {
+    background: var(--md-sys-color-surface);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.ymo-marketing .ymo-hero--minimal .ymo-hero__inner {
+    padding: clamp(1.75rem, 4vw, 2.75rem) 0;
+    max-width: 42rem;
+}
+
+.ymo-marketing .ymo-hero--minimal .ymo-hero__title {
+    font-size: clamp(1.625rem, 2.8vw, 2rem);
+}
+
+@media (max-width: 991.98px) {
+    .ymo-marketing .ymo-hero__split {
+        grid-template-columns: 1fr;
+    }
+
+    .ymo-marketing .ymo-hero--split .ymo-hero__inner,
+    .ymo-marketing .ymo-hero--service .ymo-hero__inner {
+        padding-top: 1rem;
+        padding-bottom: 1.5rem;
+    }
+
+    .ymo-marketing .ymo-hero--minimal .ymo-hero__inner {
+        padding-top: 1.25rem;
+        padding-bottom: 1.25rem;
+    }
+
+    .ymo-marketing .ymo-hero__split {
+        gap: 1rem;
+    }
+
+    .ymo-marketing .ymo-hero__panel {
+        padding-top: 0.5rem;
+        padding-bottom: 0;
+    }
+
+    .ymo-marketing .ymo-hero__media {
+        order: -1;
+        max-height: 260px;
+        aspect-ratio: 16 / 9;
+        min-height: 0;
+    }
+
+    .ymo-marketing .ymo-hero__actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .ymo-marketing .ymo-hero__actions .md-btn {
+        flex: 1 1 auto;
+        justify-content: center;
+        width: 100%;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .ymo-marketing {
+        --ymo-hero-gutter-x: 2.75rem;
+    }
+
+    .ymo-marketing .ymo-hero .container {
+        padding-left: max(calc(var(--ymo-hero-gutter-x) * 0.5), env(safe-area-inset-left));
+        padding-right: max(calc(var(--ymo-hero-gutter-x) * 0.5), env(safe-area-inset-right));
+    }
+
+    .ymo-marketing .ymo-hero--home .ymo-hero__inner {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+
+    .ymo-marketing .ymo-hero--split .ymo-hero__inner,
+    .ymo-marketing .ymo-hero--service .ymo-hero__inner {
+        padding-top: 0.875rem;
+        padding-bottom: 1.25rem;
+    }
+
+    .ymo-marketing .ymo-hero__title {
+        font-size: clamp(1.625rem, 7vw, 2rem);
+    }
+
+    .ymo-marketing .ymo-hero__lead {
+        font-size: 1rem;
+        line-height: 1.55;
+    }
+}
+
+.ymo-page-title {
+    margin-top: 0.25rem;
+}
+
+.marketing-body {
+    color: var(--md-sys-color-on-surface);
+    line-height: 1.65;
+    font-size: 1rem;
+}
+
+.marketing-body > *:first-child { margin-top: 0; }
+.marketing-body > *:last-child { margin-bottom: 0; }
+
+/* Site-standard content sections (luxury page, curated bodies) */
+.marketing-body .ymo-content-section {
+    margin-top: 2.5rem;
+}
+
+.marketing-body > .ymo-content-section:first-child {
+    margin-top: 0;
+}
+
+.marketing-body .ymo-content-section .md-headline-md {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+/* md-* typography must win over legacy WP heading rules in .marketing-body */
+.marketing-body .md-headline-md {
+    font-size: clamp(1.375rem, 2.5vw, 1.75rem);
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+}
+
+.marketing-body .md-title-md {
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: normal;
+    line-height: 1.35;
+}
+
+.marketing-body .md-card-elevated .md-title-md {
+    margin: 0.75rem 0 0;
+}
+
+.marketing-body .md-card-elevated .md-title-md.mb-2 {
+    margin-bottom: 0.5rem;
+}
+
+.marketing-body h2,
+.marketing-body h3,
+.marketing-body h4,
+.marketing-body .box-header {
+    color: var(--md-sys-color-on-surface);
+    font-weight: 700;
+    margin: 2rem 0 0.75rem;
+    line-height: 1.3;
+}
+
+.marketing-body h2,
+.marketing-body h2.box-header { font-size: 1.375rem; }
+.marketing-body h3,
+.marketing-body h3.box-header { font-size: 1.125rem; }
+.marketing-body h4,
+.marketing-body h4.box-header { font-size: 1.1rem; }
+
+.marketing-body p {
+    margin-bottom: 1rem;
+}
+
+.marketing-body img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--ymo-radius-lg);
+    margin: 1rem 0;
+    display: block;
+}
+
+.marketing-body .vc_single_image-wrapper img,
+.marketing-body .wpb_single_image img {
+    width: 100%;
+}
+
+/* Hide WP decorative chrome (not hero rows — those carry service images) */
+.marketing-body .hexagon,
+.marketing-body .service-icon,
+.marketing-body .icon.sl-small-check,
+.marketing-body .icon.sl-small-person,
+.marketing-body .icon.sl-small-signal-warning,
+.marketing-body .vc_row-full-width,
+.marketing-body .elementor,
+.marketing-body .announcement {
+    display: none !important;
+}
+
+/* WP full-width hero band — keep visible, fit container */
+.marketing-body [data-vc-full-width],
+.marketing-body .vc_row.full-width.vc_row-no-padding {
+    display: block !important;
+    width: 100%;
+    margin: 0 0 1.5rem;
+    padding: 0;
+}
+
+/* Service grid from WP services-list */
+.marketing-body .services-list,
+.marketing-body .services-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0;
+}
+
+.marketing-body .services-list > li,
+.marketing-body .services-list li.vc_row {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.marketing-body .services-list li.vc_row > ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+.marketing-body .services-list li.vc_row {
+    display: block;
+    width: 100%;
+}
+
+.marketing-body .services-list li.vc_row > ul > li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.marketing-body .service-content {
+    background: var(--md-sys-color-surface);
+    border-radius: var(--md-shape-corner-large);
+    box-shadow: var(--md-elev-1);
+    padding: 1.25rem;
+    height: 100%;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.marketing-body .service-content:hover {
+    box-shadow: var(--md-elev-3);
+    transform: translateY(-2px);
+}
+
+.marketing-body .service-content h4 {
+    margin-top: 0;
+    font-size: 1rem;
+}
+
+.marketing-body .service-content p {
+    font-size: 0.92rem;
+    color: var(--ymo-grey-700);
+    margin-bottom: 0;
+}
+
+.marketing-body .service-content a {
+    text-decoration: none;
+    color: var(--ymo-black);
+}
+.marketing-body .service-content a:hover {
+    color: var(--ymo-primary);
+}
+
+/* Feature / benefit blocks */
+.marketing-body .feature-item {
+    background: var(--md-sys-color-primary-container);
+    border-radius: var(--md-shape-corner-medium);
+    padding: 1.15rem 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.marketing-body .feature-item h5 {
+    margin: 0 0 0.35rem;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.marketing-body .feature-item p {
+    margin: 0;
+    font-size: 0.92rem;
+    color: var(--ymo-grey-700);
+}
+
+.marketing-body .feature-item-big {
+    background: #fff;
+    box-shadow: var(--md-elev-1);
+}
+
+/* Legacy WP service-blocks used nested Bootstrap cols (col-md-4 inside col-md-4) */
+.marketing-body .service-blocks [class*="col-md-"],
+.marketing-body .service-blocks .row {
+    width: 100%;
+    max-width: 100%;
+    flex: 0 0 100%;
+}
+
+.marketing-body .service-blocks .row {
+    display: block;
+    margin: 0;
+}
+
+/* Two-column WP rows */
+.marketing-body .vc_row.wpb_row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.marketing-body .vc_col-sm-6,
+.marketing-body .vc_col-sm-4,
+.marketing-body .wpb_column {
+    flex: 1 1 280px;
+    min-width: 0;
+}
+
+.marketing-body .vc_inner .wpb_column {
+    flex: 1 1 220px;
+}
+
+/* Bullet lists */
+.marketing-body ul.iconList,
+.marketing-body ul.list {
+    padding-left: 0;
+    margin: 0 0 1.25rem;
+    list-style: none;
+}
+
+.marketing-body ul.iconList li,
+.marketing-body li.template-bullet {
+    position: relative;
+    padding-left: 1.35rem;
+    margin-bottom: 0.45rem;
+    color: var(--ymo-grey-700);
+}
+
+.marketing-body ul.iconList li::before,
+.marketing-body li.template-bullet::before {
+    content: "\2713";
+    position: absolute;
+    left: 0;
+    color: var(--ymo-primary);
+    font-weight: 700;
+}
+
+/* FAQ accordion (static — no JS toggle) */
+.marketing-body ul.accordion,
+.ymo-content-section ul.accordion {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.marketing-body ul.accordion > li,
+.ymo-content-section ul.accordion > li {
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: var(--md-shape-corner-medium);
+    margin-bottom: 0.65rem;
+    overflow: hidden;
+    background: var(--md-sys-color-surface);
+    box-shadow: var(--md-elev-1);
+    list-style: none;
+}
+
+.marketing-body ul.accordion h3,
+.ymo-content-section ul.accordion h3 {
+    margin: 0;
+    padding: 1rem 1.15rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    background: var(--md-sys-color-surface-container);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    color: var(--md-sys-color-on-surface);
+}
+
+.marketing-body ul.accordion > li > p,
+.marketing-body ul.accordion .clearfix,
+.ymo-content-section ul.accordion > li > p,
+.ymo-content-section ul.accordion .clearfix {
+    padding: 0.85rem 1.15rem;
+}
+
+.marketing-body ul.accordion > li > p,
+.marketing-body ul.accordion .clearfix p,
+.ymo-content-section ul.accordion > li > p,
+.ymo-content-section ul.accordion .clearfix p {
+    margin: 0;
+    font-size: 0.92rem;
+    color: var(--ymo-grey-700);
+}
+
+.ymo-content-section ul.accordion .clearfix .list {
+    margin-bottom: 0;
+}
+
+.marketing-body .page-margin-top-section {
+    margin-top: 2.5rem;
+}
+
+.marketing-body .margin-top-34,
+.marketing-body .margin-top-20,
+.marketing-body .margin-top-40 {
+    margin-top: 1rem;
+}
+
+.marketing-body a.more,
+.marketing-body a.more span {
+    display: inline-block;
+    font-weight: 600;
+}
+
+@media (max-width: 575.98px) {
+    .marketing-body .services-list li.vc_row > ul {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* SEO — GEO quick-answer blocks */
+.ymo-quick-answer-block {
+    border-left: 4px solid var(--ymo-primary);
+}
+
+.marketing-body .ymo-quick-answer {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    padding: 1rem 1.25rem;
+    background: var(--ymo-surface-variant, #f5f5f5);
+    border-radius: var(--ymo-radius-md, 12px);
+    margin-bottom: 1.5rem;
+}
+
+.marketing-body .ymo-nap-block a {
+    color: var(--ymo-primary);
+}
+
+.md-chip--filled {
+    background: var(--ymo-primary);
+    color: #fff;
+    border-color: var(--ymo-primary);
+}
+
+/* City hint banner (IP geo, homepage only) */
+.ymo-city-hint {
+    background: var(--ymo-primary-container, #e8f3e7);
+    border-bottom: 1px solid rgba(58, 111, 55, 0.12);
+    color: var(--ymo-on-surface, #1a1c18);
+}
+
+.ymo-city-hint-text {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+}
+
+.ymo-city-hint-icon {
+    color: var(--ymo-primary);
+}
+
+.ymo-city-hint-link {
+    color: var(--ymo-primary);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.ymo-city-hint-link:hover {
+    color: var(--ymo-primary-dark, #2d562b);
+}
+
+.ymo-city-hint-dismiss {
+    flex-shrink: 0;
+    color: var(--ymo-on-surface-variant, #444746);
+}
+
+.ymo-city-hint.is-dismissed {
+    display: none;
+}

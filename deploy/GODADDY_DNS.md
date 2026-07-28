@@ -1,6 +1,6 @@
 # GoDaddy DNS — WordPress + YMO subdomains
 
-Keep your **marketing WordPress site** on GoDaddy. Point only **`booking`** and **`admin`** subdomains at your VPS.
+Keep your **marketing site** on GoDaddy WordPress until cutover, then point **`@` and `www`** at your VPS (see [marketing/README.md](marketing/README.md)). Point only **`booking`** and **`admin`** subdomains at your VPS during initial setup.
 
 ## Before you start
 
@@ -46,12 +46,16 @@ curl -I https://admin.yourmechaniconline.com/login
 
 | Hostname | Where it lives |
 |----------|----------------|
-| `yourmechaniconline.com` | GoDaddy WordPress |
-| `www.yourmechaniconline.com` | GoDaddy WordPress |
+| `yourmechaniconline.com` | **VPS** (301 → www) after marketing cutover |
+| `www.yourmechaniconline.com` | **VPS** — marketing site (same app as booking) |
 | `booking.yourmechaniconline.com` | Your VPS |
 | `admin.yourmechaniconline.com` | Your VPS |
 
-Update WordPress “Book now” buttons to `https://booking.yourmechaniconline.com/` — see [wordpress/README.md](wordpress/README.md).
+**Migration:** Point `@` and `www` A records to the VPS IP (same as booking). Enable [nginx/marketing.conf](nginx/marketing.conf). Set `YMO_MARKETING_APP_URL=https://www.yourmechaniconline.com` in `.env`. See [marketing/README.md](marketing/README.md).
+
+Previously WordPress on GoDaddy — decommission after cutover is stable.
+
+Update marketing CTAs to `https://booking.yourmechaniconline.com/` — see [wordpress/README.md](wordpress/README.md) (legacy).
 
 ## Rollback
 

@@ -16,7 +16,7 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
  && docker-php-ext-install -j$(nproc) mysqli pdo_mysql gd intl opcache
 
 # Apache: enable mod_rewrite + allow .htaccess overrides under /var/www
-RUN a2enmod rewrite headers \
+RUN a2enmod rewrite headers deflate expires \
  && sed -ri 's!<Directory /var/www/>!<Directory /var/www/>\n    AllowOverride All!g' \
         /etc/apache2/apache2.conf
 

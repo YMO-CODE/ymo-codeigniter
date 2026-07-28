@@ -1,16 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-$ci = &get_instance();
-if (!$ci->db->table_exists('site_offers')) {
-    return;
-}
-$ci->load->model('offer_model');
-$active_offers = $ci->offer_model->list_active_public();
-if (empty($active_offers)) {
-    return;
-}
-$bootstrap = array('ok' => TRUE, 'offers' => $active_offers);
+$offers_css_v = (int) @filemtime(FCPATH.'assets/css/ymo-offers.css');
+$offers_js_v  = (int) @filemtime(FCPATH.'assets/js/ymo-offers.js');
 ?>
-<link rel="stylesheet" href="<?= base_url('assets/css/ymo-offers.css'); ?>">
-<script>window.YMO_OFFERS_BOOTSTRAP = <?= json_encode($bootstrap, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;</script>
-<script src="<?= base_url('assets/js/ymo-offers.js'); ?>" defer></script>
+<link rel="stylesheet" href="<?= base_url('assets/css/ymo-offers.css?v='.$offers_css_v); ?>">
+<script>window.YMO_OFFERS = { apiUrl: <?= json_encode(site_url('api/offers/active'), JSON_UNESCAPED_SLASHES); ?> };</script>
+<script src="<?= base_url('assets/js/ymo-offers.js?v='.$offers_js_v); ?>" defer></script>

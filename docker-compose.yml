@@ -24,7 +24,10 @@ services:
       YMO_DB_NAME: ymo_booking
       YMO_DB_USER: ymo_user
       YMO_DB_PASS: ymo_pass
-      YMO_APP_URL: http://localhost:8080
+      YMO_APP_URL: http://booking.yourmechaniconline.com:8080
+      YMO_PUBLIC_APP_URL: http://booking.yourmechaniconline.com:8080
+      # Marketing site: use hosts file → www.yourmechaniconline.com:8080
+      YMO_MARKETING_APP_URL: http://www.yourmechaniconline.com:8080
     depends_on:
       db:
         condition: service_healthy

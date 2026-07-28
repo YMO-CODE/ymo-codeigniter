@@ -71,6 +71,7 @@
                             <input type="checkbox" class="form-check-input" id="terms" name="terms" value="1" required>
                             <label class="form-check-label" for="terms">
                                 I agree to receive booking updates over SMS and email.
+                                See our <a href="<?= html_escape(ymo_marketing_url('privacy-policy')); ?>" target="_blank" rel="noopener">Privacy policy</a>.
                             </label>
                         </div>
                     </div>

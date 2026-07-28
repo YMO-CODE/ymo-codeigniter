@@ -153,4 +153,119 @@
             }
         });
     })();
+
+    // Migrated WP pages: activate lazy-loaded hero images
+    document.querySelectorAll('.marketing-body img[data-src]').forEach(function (img) {
+        img.src = img.getAttribute('data-src');
+        img.removeAttribute('data-src');
+    });
+
+    // Desktop marketing nav — open Services/Locations on hover (mobile uses drawer)
+    (function () {
+        var mq = window.matchMedia('(min-width: 992px)');
+        var closeDelay = 140;
+
+        function bindHoverNav() {
+            document.querySelectorAll('.ymo-navbar .ymo-nav-dropdown').forEach(function (item) {
+                if (item.dataset.hoverNavBound === '1') { return; }
+                item.dataset.hoverNavBound = '1';
+
+                var timer = null;
+
+                function open() {
+                    if (!mq.matches) { return; }
+                    clearTimeout(timer);
+                    item.classList.add('is-hover-open');
+                }
+
+                function scheduleClose() {
+                    if (!mq.matches) { return; }
+                    clearTimeout(timer);
+                    timer = setTimeout(function () {
+                        item.classList.remove('is-hover-open');
+                    }, closeDelay);
+                }
+
+                item.addEventListener('mouseenter', open);
+                item.addEventListener('mouseleave', scheduleClose);
+                item.addEventListener('focusin', open);
+                item.addEventListener('focusout', function (e) {
+                    if (!item.contains(e.relatedTarget)) {
+                        scheduleClose();
+                    }
+                });
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', bindHoverNav);
+        } else {
+            bindHoverNav();
+        }
+
+        mq.addEventListener('change', function () {
+            document.querySelectorAll('.ymo-navbar .ymo-nav-dropdown.is-hover-open').forEach(function (item) {
+                item.classList.remove('is-hover-open');
+            });
+        });
+    })();
+
+    // Mobile drawer — staggered menu reveal + hamburger feedback
+    (function () {
+        var drawer = document.getElementById('ymoDrawer');
+        if (!drawer) { return; }
+
+        var toggler = document.querySelector('[data-bs-target="#ymoDrawer"]');
+
+        drawer.addEventListener('show.bs.offcanvas', function () {
+            if (toggler) {
+                toggler.classList.add('is-active');
+                toggler.setAttribute('aria-expanded', 'true');
+            }
+            requestAnimationFrame(function () {
+                drawer.classList.add('is-revealed');
+            });
+        });
+
+        drawer.addEventListener('hide.bs.offcanvas', function () {
+            drawer.classList.remove('is-revealed');
+            if (toggler) {
+                toggler.classList.remove('is-active');
+                toggler.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        drawer.querySelectorAll('.ymo-drawer-link[href], .ymo-drawer-sub-link[href]').forEach(function (link) {
+            link.addEventListener('click', function () {
+                if (window.matchMedia('(max-width: 991.98px)').matches && typeof bootstrap !== 'undefined') {
+                    var instance = bootstrap.Offcanvas.getInstance(drawer);
+                    if (instance) {
+                        instance.hide();
+                    }
+                }
+            });
+        });
+    })();
+
+    // Homepage city hint — dismiss sets cookie, no server round-trip
+    (function () {
+        var banner = document.querySelector('.ymo-city-hint');
+        if (!banner) { return; }
+
+        var dismissBtn = banner.querySelector('[data-city-hint-dismiss]');
+        if (!dismissBtn) { return; }
+
+        var cookieName = 'ymo_city_hint_dismissed';
+        var cookieDays = 90;
+
+        var setDismissCookie = function () {
+            var maxAge = cookieDays * 24 * 60 * 60;
+            document.cookie = cookieName + '=1; path=/; max-age=' + maxAge + '; SameSite=Lax';
+        };
+
+        dismissBtn.addEventListener('click', function () {
+            setDismissCookie();
+            banner.classList.add('is-dismissed');
+        });
+    })();
 })();
