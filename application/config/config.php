@@ -23,25 +23,19 @@ $cli_bootstrap = (PHP_SAPI === 'cli' || PHP_SAPI === 'phpdbg');
 
 if ($cli_bootstrap) {
     /* Cron & CLI tooling use the public/booking canonical origin for URLs. */
-    $config['base_url'] = ($public_candidate !== FALSE && trim((string) $public_candidate) !== '')
-        ? rtrim((string) $public_candidate, '/').'/'
-        : '';
+    $config['base_url'] = ymo_resolve_base_url($public_candidate);
 } elseif (ymo_is_admin_host_request()) {
     $admin_candidate = getenv('YMO_ADMIN_APP_URL');
-    $config['base_url'] = ($admin_candidate !== FALSE && trim((string) $admin_candidate) !== '')
-        ? rtrim((string) $admin_candidate, '/').'/'
-        : (($public_candidate !== FALSE && trim((string) $public_candidate) !== '')
-            ? rtrim((string) $public_candidate, '/').'/'
-            : '');
+    $config['base_url'] = ymo_resolve_base_url(
+        ($admin_candidate !== FALSE && trim((string) $admin_candidate) !== '')
+            ? $admin_candidate
+            : $public_candidate
+    );
 } elseif (ymo_is_marketing_host_request()) {
     $marketing_candidate = getenv('YMO_MARKETING_APP_URL');
-    $config['base_url'] = ($marketing_candidate !== FALSE && trim((string) $marketing_candidate) !== '')
-        ? rtrim((string) $marketing_candidate, '/').'/'
-        : '';
+    $config['base_url'] = ymo_resolve_base_url($marketing_candidate);
 } else {
-    $config['base_url'] = ($public_candidate !== FALSE && trim((string) $public_candidate) !== '')
-        ? rtrim((string) $public_candidate, '/').'/'
-        : '';
+    $config['base_url'] = ymo_resolve_base_url($public_candidate);
 }
 
 /*
