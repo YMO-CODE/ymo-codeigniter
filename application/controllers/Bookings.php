@@ -124,22 +124,34 @@ class Bookings extends MY_Controller
         if ($this->input->method() === 'post') {
             $this->form_validation->set_rules('preferred_date', 'Preferred date', 'trim|callback__valid_future_date');
             $this->form_validation->set_rules('remarks',        'Remarks',        'trim|max_length[2000]');
+            $this->form_validation->set_rules('referral_code',  'Referral code',  'trim|max_length[12]|callback__valid_referral_code');
             if ($this->form_validation->run()) {
-                $this->_set_draft(array_merge($draft, array(
+                $patch = array(
                     'preferred_date' => $this->input->post('preferred_date') ?: NULL,
                     'remarks'        => trim($this->input->post('remarks')),
-                )));
+                );
+                $ref = strtoupper(trim((string) $this->input->post('referral_code')));
+                if ($ref !== '') {
+                    $patch['referral_code'] = $ref;
+                }
+                $merged = array_merge($draft, $patch);
+                if ($ref === '') {
+                    unset($merged['referral_code']);
+                }
+                $this->_set_draft($merged);
                 redirect(site_url('booking/confirm'));
             }
         }
 
         $this->render('bookings/details', array(
-            'title'    => 'Booking details',
-            'package'  => $this->package_model->find($draft['package_id']),
-            'vehicle'  => $this->vehicle_model->find_for_user($draft['vehicle_id'], $this->user['id']),
-            'draft'    => $draft,
-            'min_date' => date('Y-m-d'),
-            'step'     => 3,
+            'title'            => 'Booking details',
+            'package'          => $this->package_model->find($draft['package_id']),
+            'vehicle'          => $this->vehicle_model->find_for_user($draft['vehicle_id'], $this->user['id']),
+            'draft'            => $draft,
+            'min_date'         => date('Y-m-d'),
+            'step'             => 3,
+            'referral_enabled' => (bool) $this->config->item('referral_enabled'),
+            'referred_credit'  => (float) $this->config->item('referral_credit_referred'),
         ));
     }
 
@@ -149,6 +161,20 @@ class Bookings extends MY_Controller
         $ts = strtotime($value);
         if (!$ts || date('Y-m-d', $ts) < date('Y-m-d')) {
             $this->form_validation->set_message('_valid_future_date', 'Pick a date today or later.');
+            return FALSE;
+        }
+        return TRUE;
+    }
+
+    public function _valid_referral_code($value)
+    {
+        $value = trim((string) $value);
+        if ($value === '') {
+            return TRUE;
+        }
+        $this->load->library('referral_service');
+        if (!$this->referral_service->validate_for_booking($value, $this->user['id'])) {
+            $this->form_validation->set_message('_valid_referral_code', $this->referral_service->last_error());
             return FALSE;
         }
         return TRUE;
@@ -168,11 +194,12 @@ class Bookings extends MY_Controller
             redirect(site_url('booking/vehicle'));
         }
         $this->render('bookings/confirm', array(
-            'title'   => 'Review &amp; confirm',
-            'package' => $this->package_model->find($draft['package_id']),
-            'vehicle' => $this->vehicle_model->find_for_user($draft['vehicle_id'], $this->user['id']),
-            'draft'   => $draft,
-            'step'    => 4,
+            'title'           => 'Review &amp; confirm',
+            'package'         => $this->package_model->find($draft['package_id']),
+            'vehicle'         => $this->vehicle_model->find_for_user($draft['vehicle_id'], $this->user['id']),
+            'draft'           => $draft,
+            'step'            => 4,
+            'referred_credit' => (float) $this->config->item('referral_credit_referred'),
         ));
     }
 
@@ -208,6 +235,13 @@ class Bookings extends MY_Controller
             'preferred_date'   => isset($draft['preferred_date']) ? $draft['preferred_date'] : NULL,
             'status'           => 'pending',
         ));
+
+        if (!empty($draft['referral_code'])) {
+            $this->load->library('referral_service');
+            if (!$this->referral_service->attach_to_booking($booking_id, $draft['referral_code'], $this->user['id'])) {
+                log_message('error', '[referral] attach failed for booking '.$booking_id.': '.$this->referral_service->last_error());
+            }
+        }
 
         $this->session->unset_userdata(self::DRAFT_KEY);
 

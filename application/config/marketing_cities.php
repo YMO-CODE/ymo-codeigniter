@@ -59,7 +59,13 @@ return array(
             'regions' => array('Madhya Pradesh'),
         ),
         'hero_image' => '2022/03/974159.jpg',
-        'localities' => array(),
+        'localities' => array(
+            'vijay_nagar' => array('label' => 'Vijay Nagar', 'slug' => 'car-servicing-in-vijay-nagar-indore'),
+            'palasia'     => array('label' => 'Palasia', 'slug' => 'car-servicing-in-palasia-indore'),
+            'bhawarkua'   => array('label' => 'Bhawarkua', 'slug' => 'car-servicing-in-bhawarkua-indore'),
+            'ab_road'     => array('label' => 'AB Road', 'slug' => 'car-servicing-in-ab-road-indore'),
+            'nipania'     => array('label' => 'Nipania', 'slug' => 'car-servicing-in-nipania-indore'),
+        ),
         'neighborhoods' => array('Deoguradia', 'Vijay Nagar', 'Palasia', 'Bhawarkua', 'Rau', 'Scheme 54', 'AB Road', 'Nipania'),
         'quick_answer' => 'Your Mechanic Online is among the best car service providers in Indore, offering affordable denting, painting, AC repair, periodic servicing, and free pick-up/drop with transparent pricing.',
         'faq' => array(
@@ -86,7 +92,13 @@ return array(
             'cities' => array('Nashik', 'Nasik'),
         ),
         'hero_image' => 'revslider/main/image_021.jpg',
-        'localities' => array(),
+        'localities' => array(
+            'college_road' => array('label' => 'College Road', 'slug' => 'car-servicing-in-college-road-nashik'),
+            'nashik_road'  => array('label' => 'Nashik Road', 'slug' => 'car-servicing-in-nashik-road'),
+            'panchavati'   => array('label' => 'Panchavati', 'slug' => 'car-servicing-in-panchavati-nashik'),
+            'dwarka'       => array('label' => 'Dwarka', 'slug' => 'car-servicing-in-dwarka-nashik'),
+            'uday_nagar'   => array('label' => 'Uday Nagar', 'slug' => 'car-servicing-in-uday-nagar-nashik'),
+        ),
         'neighborhoods' => array('College Road', 'Nashik Road', 'Uday Nagar', 'Indira Nagar', 'Vidya Nagar', 'Ashwamegh Nagar', 'Ojhar', 'Panchavati', 'Satpur', 'Gangapur Road'),
         'quick_answer' => 'Your Mechanic Online provides expert car servicing and repairs in Nashik with trained mechanics, transparent pricing, and doorstep pick-up across College Road, Nashik Road, Uday Nagar, and surrounding areas.',
         'faq' => array(

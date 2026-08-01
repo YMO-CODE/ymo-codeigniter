@@ -13,4 +13,9 @@ return array(
     'cities'         => 3,
     'review_label'   => 'Google reviews',
     'show_in_hero'   => TRUE,
+    'show_in_header' => TRUE,
+    'same_as'        => array(
+        'https://www.instagram.com/yourmechaniconline/',
+        'https://www.linkedin.com/company/your-mechanic-online/',
+    ),
 );

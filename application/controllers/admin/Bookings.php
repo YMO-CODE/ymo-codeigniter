@@ -106,6 +106,14 @@ class Bookings extends Admin_Controller
                 'scheduled_at' => date('Y-m-d H:i:s', strtotime("+$review_days days")),
                 'status'       => 'pending',
             ));
+
+            $this->load->library('referral_service');
+            $this->referral_service->complete_for_booking((int) $id);
+        }
+
+        if ($new_status === 'cancelled' && $previous !== 'cancelled') {
+            $this->load->library('referral_service');
+            $this->referral_service->cancel_for_booking((int) $id);
         }
 
         // Customer notification on every status change after `pending`

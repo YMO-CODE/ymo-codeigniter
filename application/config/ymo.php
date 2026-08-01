@@ -68,7 +68,13 @@ $config['sms_templates'] = array(
 	'review_request'     => getenv('YMO_TPL_REVIEW')          ?: '',
 	'invoice_sent'       => getenv('YMO_TPL_INVOICE')         ?: '',
 	'crm_campaign'       => getenv('YMO_TPL_CRM_CAMPAIGN')    ?: '',
+	'referral_credit'    => getenv('YMO_TPL_REFERRAL')        ?: '',
 );
+
+// --- Referral programme -----------------------------------------------------
+$config['referral_enabled']         = getenv('YMO_REFERRAL_ENABLED') !== '0';
+$config['referral_credit_referrer'] = (float) (getenv('YMO_REFERRAL_CREDIT_REFERRER') ?: 500);
+$config['referral_credit_referred'] = (float) (getenv('YMO_REFERRAL_CREDIT_REFERRED') ?: 300);
 
 // --- Email (SMTP via PHPMailer) --------------------------------------------
 $config['mail_host']      = getenv('YMO_MAIL_HOST')     ?: 'smtp.gmail.com';

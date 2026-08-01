@@ -20,6 +20,15 @@ class User_model extends CI_Model
         return $this->db->get_where(self::TABLE, array('email' => $email))->row_array();
     }
 
+    public function find_by_referral_code($code)
+    {
+        $code = strtoupper(trim((string) $code));
+        if ($code === '') {
+            return NULL;
+        }
+        return $this->db->get_where(self::TABLE, array('referral_code' => $code))->row_array();
+    }
+
     public function find_by_login($identifier)
     {
         $this->db->where('mobile', $identifier);

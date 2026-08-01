@@ -335,6 +335,21 @@ if (is_file($city_file)) {
     }
 }
 
+if (function_exists('marketing_brand_pages')) {
+    $brand_pages = marketing_brand_pages();
+    if (is_array($brand_pages)) {
+        $pages = array_merge($pages, $brand_pages);
+    }
+}
+
+if (function_exists('marketing_brands_index_page')) {
+    $pages['brands'] = marketing_brands_index_page();
+}
+
+if (function_exists('marketing_seo_growth_pages')) {
+    $pages = array_merge($pages, marketing_seo_growth_pages());
+}
+
 $option_a_file = __DIR__.'/marketing_pages_option_a.php';
 if (is_file($option_a_file)) {
     $option_a = require $option_a_file;

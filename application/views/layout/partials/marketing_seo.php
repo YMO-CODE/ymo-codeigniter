@@ -14,6 +14,11 @@ $schema = marketing_schema_graph(array(
     'meta_description' => $description,
     'page_type'        => isset($page_type) ? $page_type : '',
     'city_slug'        => isset($city_slug) ? $city_slug : '',
+    'locality_slug'    => isset($locality_slug) ? $locality_slug : '',
+    'locality_label'   => isset($locality_label) ? $locality_label : '',
+    'brand_slug'       => isset($brand_slug) ? $brand_slug : '',
+    'brand_name'       => isset($brand_name) ? $brand_name : '',
+    'updated_at'       => isset($updated_at) ? $updated_at : '',
     'faq'              => isset($faq) ? $faq : array(),
 ));
 ?>

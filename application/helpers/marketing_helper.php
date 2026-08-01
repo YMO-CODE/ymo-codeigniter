@@ -109,6 +109,258 @@ if (!function_exists('marketing_pages_data')) {
     }
 }
 
+if (!function_exists('marketing_brands_config')) {
+    /** @return array<string,array> */
+    function marketing_brands_config()
+    {
+        static $brands = NULL;
+        if ($brands !== NULL) {
+            return $brands;
+        }
+        $file = APPPATH.'config/marketing_brands.php';
+        $brands = is_file($file) ? require $file : array();
+        return is_array($brands) ? $brands : array();
+    }
+}
+
+if (!function_exists('marketing_brand_faq')) {
+    /**
+     * @param array  $brand
+     * @param string $city_name
+     * @return array<int,array{q:string,a:string}>
+     */
+    function marketing_brand_faq(array $brand, $city_name)
+    {
+        $name = isset($brand['brand_name']) ? $brand['brand_name'] : 'your car';
+        return array(
+            array(
+                'q' => 'How much does '.$name.' car service cost in '.$city_name.'?',
+                'a' => $name.' periodic service in '.$city_name.' starts from ₹1,999 at YMO. We share an upfront estimate covering oil, filters, brakes, AC check, and wash before any work begins.',
+            ),
+            array(
+                'q' => 'Do you pick up my '.$name.' from my doorstep in '.$city_name.'?',
+                'a' => 'Yes. YMO provides free pick-up and drop across '.$city_name.'. Book online, we collect your '.$name.', service it at our workshop, and return it when done.',
+            ),
+            array(
+                'q' => 'Which '.$name.' models do you service?',
+                'a' => 'We service all '.$name.' models including '.marketing_brand_models_list($brand).'. Our technicians use brand-appropriate oil grades and diagnostic checks.',
+            ),
+            array(
+                'q' => 'Can YMO handle '.$name.' AC repair and denting in '.$city_name.'?',
+                'a' => 'Yes. Beyond periodic service, YMO offers AC gas recharge, compressor repair, denting, painting, and polishing for '.$name.' cars — with workshop equipment, not just a home visit.',
+            ),
+            array(
+                'q' => 'How often should I service my '.$name.'?',
+                'a' => 'Most '.$name.' owners should service every 10,000 km or 12 months, whichever comes first. Turbo, diesel, or high-mileage cars may need shorter intervals — we advise during inspection.',
+            ),
+        );
+    }
+}
+
+if (!function_exists('marketing_brand_models_list')) {
+    /** @param array $brand */
+    function marketing_brand_models_list(array $brand)
+    {
+        $models = isset($brand['common_models']) && is_array($brand['common_models'])
+            ? $brand['common_models']
+            : array();
+        if ($models === array()) {
+            return 'all popular models';
+        }
+        if (count($models) <= 3) {
+            return implode(', ', $models);
+        }
+        $tail = array_slice($models, -2);
+        $head = array_slice($models, 0, count($models) - 2);
+        return implode(', ', $head).', and '.implode(' & ', $tail);
+    }
+}
+
+if (!function_exists('marketing_brand_page_body')) {
+    /**
+     * @param array  $brand
+     * @param string $city_slug
+     * @param string $city_name
+     * @return string
+     */
+    function marketing_brand_page_body(array $brand, $city_slug, $city_name)
+    {
+        $name = isset($brand['brand_name']) ? $brand['brand_name'] : 'Car';
+        $intro = isset($brand['intro_copy']) ? $brand['intro_copy'] : '';
+        $includes = isset($brand['service_includes']) && is_array($brand['service_includes'])
+            ? $brand['service_includes'] : array();
+        $issues = isset($brand['common_issues']) && is_array($brand['common_issues'])
+            ? $brand['common_issues'] : array();
+        $hub = marketing_city_by_slug($city_slug);
+        $hub_path = ($hub && !empty($hub['hub_path'])) ? $hub['hub_path'] : 'locations/'.$city_slug;
+
+        $html = '<div class="ymo-content-section mb-5">';
+        $html .= '<h2 class="md-headline-md mb-3">'.$name.' car service in '.$city_name.'</h2>';
+        $html .= '<p class="md-body-md mb-3">'.html_escape($intro).' In '.$city_name.', YMO combines doorstep convenience with full workshop capability — so your '.$name.' gets more than a quick oil top-up at the kerb.</p>';
+        $html .= '<p class="md-body-md mb-0">Whether you drive a '.html_escape(marketing_brand_models_list($brand)).', our trained mechanics follow manufacturer-recommended schedules, use quality parts, and keep you updated on WhatsApp with photos during the job.</p>';
+        $html .= '</div>';
+
+        $html .= '<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">What\'s included in a '.$name.' service</h2><ul class="md-body-md">';
+        foreach ($includes as $item) {
+            $html .= '<li class="mb-2">'.html_escape($item).'</li>';
+        }
+        $html .= '</ul><p class="md-body-md mb-0">Complete '.$name.' servicing in '.$city_name.' starts from <strong>₹1,999</strong>. <a href="/services/complete-car-servicing-in-'.$city_slug.'">View complete servicing details</a> or browse our <a href="/services">full service catalogue</a>.</p></div>';
+
+        if ($issues !== array()) {
+            $html .= '<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">Common '.$name.' issues we fix</h2><div class="row g-4">';
+            foreach ($issues as $model => $issue) {
+                $html .= '<div class="col-md-6"><div class="md-card-elevated h-100 p-4"><h3 class="md-title-md mb-2">'.html_escape($model).'</h3><p class="md-body-md mb-0">'.html_escape($issue).'</p></div></div>';
+            }
+            $html .= '</div></div>';
+        }
+
+        $html .= '<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">Pricing for '.$name.' owners in '.$city_name.'</h2>';
+        $html .= '<div class="table-responsive"><table class="table md-body-md"><thead><tr><th>Service</th><th>From</th></tr></thead><tbody>';
+        $html .= '<tr><td>Periodic / complete car service</td><td>₹1,999</td></tr>';
+        $html .= '<tr><td>AC repair &amp; gas recharge</td><td>On inspection</td></tr>';
+        $html .= '<tr><td>Interior deep cleaning</td><td>₹2,500</td></tr>';
+        $html .= '<tr><td>Denting &amp; painting (per panel)</td><td>₹3,000</td></tr>';
+        $html .= '<tr><td>3-stage rubbing &amp; polishing</td><td>₹6,500</td></tr>';
+        $html .= '</tbody></table></div>';
+        $html .= '<p class="md-body-md mb-0">All prices are indicative — we confirm the exact estimate for your '.$name.' before starting work. <a href="/locations/'.$city_slug.'">See all areas we serve in '.$city_name.'</a>.</p></div>';
+
+        $html .= '<div class="ymo-content-section"><p class="md-body-md">Also explore <a href="/brands">all brands we service</a> · <a href="/'.html_escape($hub_path).'">Car servicing in '.$city_name.'</a> · <a href="/premium-luxury-car-service-pune">Luxury car service</a></p></div>';
+
+        return $html;
+    }
+}
+
+if (!function_exists('marketing_brand_pages')) {
+    /** @return array<string,array> */
+    function marketing_brand_pages()
+    {
+        static $pages = NULL;
+        if ($pages !== NULL) {
+            return $pages;
+        }
+        $pages = array();
+        $brands = marketing_brands_config();
+        $cities = array('pune', 'indore', 'nashik');
+        $today = date('Y-m-d');
+
+        foreach ($brands as $brand) {
+            if (empty($brand['active']) || empty($brand['slug'])) {
+                continue;
+            }
+            $slug = (string) $brand['slug'];
+            $name = isset($brand['brand_name']) ? $brand['brand_name'] : ucfirst($slug);
+
+            foreach ($cities as $city_slug) {
+                $city = marketing_city_by_slug($city_slug);
+                if (!$city) {
+                    continue;
+                }
+                $city_name = $city['name'];
+                $path = $slug.'-car-service-in-'.$city_slug;
+                $pages[$path] = array(
+                    'title'            => $name.' Car Service in '.$city_name.' | YMO',
+                    'meta_description' => 'Book '.$name.' car service in '.$city_name.' from ₹1,999. Expert mechanics, free pick-up & drop, AC repair, denting & periodic maintenance for '.marketing_brand_models_list($brand).'.',
+                    'h1'               => $name.' car service in '.$city_name,
+                    'intro'            => $name.' servicing in '.$city_name.' with trained mechanics, transparent pricing, and free doorstep pick-up.',
+                    'quick_answer'     => 'YMO offers '.$name.' car service in '.$city_name.' from ₹1,999 — periodic maintenance, AC repair, and body work with free pick-up and drop.',
+                    'body'             => marketing_brand_page_body($brand, $city_slug, $city_name),
+                    'page_type'        => 'brand',
+                    'city_slug'        => $city_slug,
+                    'brand_slug'       => $slug,
+                    'brand_name'       => $name,
+                    'faq'              => marketing_brand_faq($brand, $city_name),
+                    'og_image'         => '/assets/img/marketing/revslider/main/image_01.jpg',
+                    'updated_at'       => $today,
+                    'view'             => 'marketing/page',
+                );
+            }
+        }
+
+        return $pages;
+    }
+}
+
+if (!function_exists('marketing_brands_index_cards')) {
+    /** @return array<int,array{title:string,slug:string,cities:array}> */
+    function marketing_brands_index_cards()
+    {
+        $cards = array();
+        foreach (marketing_brands_config() as $brand) {
+            if (empty($brand['active']) || empty($brand['slug'])) {
+                continue;
+            }
+            $cards[] = array(
+                'title'  => isset($brand['brand_name']) ? $brand['brand_name'] : '',
+                'slug'   => (string) $brand['slug'],
+                'models' => marketing_brand_models_list($brand),
+                'cities' => array(
+                    'pune'   => $brand['slug'].'-car-service-in-pune',
+                    'indore' => $brand['slug'].'-car-service-in-indore',
+                    'nashik' => $brand['slug'].'-car-service-in-nashik',
+                ),
+            );
+        }
+        return $cards;
+    }
+}
+
+if (!function_exists('marketing_brands_index_page')) {
+    /** @return array */
+    function marketing_brands_index_page()
+    {
+        $cards = marketing_brands_index_cards();
+        $body = '<div class="ymo-content-section mb-5"><p class="md-body-lg mb-4">Your Mechanic Online services every major Indian car brand across Pune, Indore, and Nashik — with free pick-up, workshop-grade repairs, and transparent pricing from ₹1,999.</p></div>';
+        $body .= '<div class="row g-4">';
+        foreach ($cards as $card) {
+            $body .= '<div class="col-md-6 col-lg-4"><div class="md-card-elevated h-100 p-4">';
+            $body .= '<h2 class="md-title-md mb-2"><a href="/'.html_escape($card['cities']['pune']).'" class="text-decoration-none text-dark">'.html_escape($card['title']).'</a></h2>';
+            $body .= '<p class="md-body-md mb-3">Models: '.html_escape($card['models']).'</p>';
+            $body .= '<div class="d-flex flex-wrap gap-2">';
+            $body .= '<a href="/'.html_escape($card['cities']['pune']).'" class="md-chip md-chip--outlined">Pune</a>';
+            $body .= '<a href="/'.html_escape($card['cities']['indore']).'" class="md-chip md-chip--outlined">Indore</a>';
+            $body .= '<a href="/'.html_escape($card['cities']['nashik']).'" class="md-chip md-chip--outlined">Nashik</a>';
+            $body .= '</div></div></div>';
+        }
+        $body .= '</div>';
+
+        return array(
+            'title'            => 'Car Brands We Service | Your Mechanic Online',
+            'meta_description' => 'Maruti, Hyundai, Tata, Honda, Mahindra, Toyota, Kia, VW, Skoda & Renault car service in Pune, Indore & Nashik. Free pick-up from ₹1,999.',
+            'h1'               => 'Brands we service',
+            'intro'            => 'Expert car servicing for every major brand — periodic maintenance, AC, denting, and more.',
+            'quick_answer'     => 'YMO services Maruti Suzuki, Hyundai, Tata, Honda, Mahindra, Toyota, Kia, Volkswagen, Skoda, and Renault across Pune, Indore, and Nashik.',
+            'body'             => $body,
+            'page_type'        => 'hub',
+            'updated_at'       => date('Y-m-d'),
+            'og_image'         => '/assets/img/marketing/revslider/main/image_01.jpg',
+            'view'             => 'marketing/page',
+        );
+    }
+}
+
+if (!function_exists('marketing_site_trust_badge')) {
+    /** @return array{show:bool,text:string,rating:string,url:string} */
+    function marketing_site_trust_badge()
+    {
+        $cfg = marketing_trust_config();
+        if (empty($cfg['show_in_header'])) {
+            return array('show' => FALSE);
+        }
+        $rating = isset($cfg['google_rating']) ? (float) $cfg['google_rating'] : 0;
+        $reviews = isset($cfg['review_count']) ? (int) $cfg['review_count'] : 0;
+        if ($rating <= 0 || $reviews <= 0) {
+            return array('show' => FALSE);
+        }
+        $label = isset($cfg['review_label']) ? (string) $cfg['review_label'] : 'Google reviews';
+        return array(
+            'show'   => TRUE,
+            'rating' => number_format($rating, 1),
+            'text'   => number_format($rating, 1).'★ · '.number_format($reviews).'+ '.$label,
+            'url'    => !empty($cfg['gbp_share_url']) ? (string) $cfg['gbp_share_url'] : '',
+        );
+    }
+}
+
 if (!function_exists('marketing_redirect_rules')) {
     /** @return array{exact:array,prefix:array} */
     function marketing_redirect_rules()
@@ -1210,6 +1462,9 @@ if (!function_exists('marketing_page_priority')) {
         if ($type === 'service') {
             return '0.8';
         }
+        if ($type === 'brand') {
+            return '0.75';
+        }
         if ($type === 'locality') {
             return '0.7';
         }
@@ -1250,6 +1505,26 @@ if (!function_exists('marketing_breadcrumbs')) {
                         'url'   => marketing_canonical_url($city['hub_path']),
                     );
                 }
+            }
+            if (isset($page['locality_slug']) && $page['locality_slug'] !== '') {
+                $loc_label = ucwords(str_replace(array('-', '_'), ' ', $page['locality_slug']));
+                if (!empty($page['locality_label'])) {
+                    $loc_label = $page['locality_label'];
+                }
+                $crumbs[] = array('label' => $loc_label, 'url' => marketing_canonical_url($path));
+            } elseif (isset($page['h1'])) {
+                $crumbs[] = array('label' => $page['h1'], 'url' => marketing_canonical_url($path));
+            }
+            return $crumbs;
+        }
+        if (!empty($page['brand_slug']) && !empty($page['city_slug'])) {
+            $crumbs[] = array('label' => 'Brands', 'url' => marketing_canonical_url('brands'));
+            $city = marketing_city_by_slug($page['city_slug']);
+            if ($city) {
+                $crumbs[] = array(
+                    'label' => $city['name'],
+                    'url'   => marketing_canonical_url($city['hub_path']),
+                );
             }
             if (isset($page['h1'])) {
                 $crumbs[] = array('label' => $page['h1'], 'url' => marketing_canonical_url($path));
@@ -1298,6 +1573,21 @@ if (!function_exists('marketing_schema_graph')) {
             'areaServed'  => $area_served,
         );
 
+        $trust = marketing_trust_config();
+        if (!empty($trust['google_rating']) && !empty($trust['review_count'])) {
+            $graph[0]['aggregateRating'] = array(
+                '@type'       => 'AggregateRating',
+                'ratingValue' => (string) $trust['google_rating'],
+                'reviewCount' => (string) (int) $trust['review_count'],
+                'bestRating'  => '5',
+            );
+        }
+        if (!empty($trust['same_as']) && is_array($trust['same_as'])) {
+            $graph[0]['sameAs'] = array_values($trust['same_as']);
+        } elseif (!empty($trust['gbp_share_url'])) {
+            $graph[0]['sameAs'] = array($trust['gbp_share_url']);
+        }
+
         if ($path === '') {
             $graph[] = array(
                 '@type'       => 'WebSite',
@@ -1314,9 +1604,17 @@ if (!function_exists('marketing_schema_graph')) {
         }
 
         $city_slug = isset($page_meta['city_slug']) ? $page_meta['city_slug'] : '';
+        $locality_slug = isset($page_meta['locality_slug']) ? $page_meta['locality_slug'] : '';
         if ($city_slug !== '') {
             $city = marketing_city_by_slug($city_slug);
             if ($city) {
+                $area_name = array(array('@type' => 'City', 'name' => $city['name']));
+                if ($locality_slug !== '') {
+                    $loc_label = !empty($page_meta['locality_label'])
+                        ? $page_meta['locality_label']
+                        : ucwords(str_replace(array('-', '_'), ' ', $locality_slug));
+                    $area_name[] = array('@type' => 'Place', 'name' => $loc_label.', '.$city['name']);
+                }
                 $local = array(
                     '@type'     => array('AutoRepair', 'LocalBusiness'),
                     '@id'       => marketing_canonical_url($city['hub_path']).'#local',
@@ -1325,7 +1623,7 @@ if (!function_exists('marketing_schema_graph')) {
                     'telephone' => isset($city['phone']) ? $city['phone'] : $phone,
                     'email'     => isset($city['email']) ? $city['email'] : $email,
                     'address'   => isset($city['address']) ? $city['address'] : array(),
-                    'areaServed'=> array(array('@type' => 'City', 'name' => $city['name'])),
+                    'areaServed'=> $area_name,
                 );
                 if (!empty($city['geo'])) {
                     $local['geo'] = array(
@@ -1345,6 +1643,12 @@ if (!function_exists('marketing_schema_graph')) {
             $area_name = 'India';
             if ($city_slug !== '' && !empty($city['name'])) {
                 $area_name = $city['name'];
+                if ($locality_slug !== '') {
+                    $loc_label = !empty($page_meta['locality_label'])
+                        ? $page_meta['locality_label']
+                        : ucwords(str_replace(array('-', '_'), ' ', $locality_slug));
+                    $area_name = $loc_label.', '.$city['name'];
+                }
             }
             $graph[] = array(
                 '@type'       => 'Service',
@@ -1354,6 +1658,46 @@ if (!function_exists('marketing_schema_graph')) {
                 'provider'    => array('@id' => marketing_canonical_url('').'#organization'),
                 'areaServed'  => $area_name,
                 'url'         => $url,
+            );
+        }
+
+        if (isset($page_meta['page_type']) && $page_meta['page_type'] === 'brand') {
+            $area_name = 'India';
+            if ($city_slug !== '' && !empty($city['name'])) {
+                $area_name = $city['name'];
+            }
+            $brand_label = !empty($page_meta['brand_name']) ? $page_meta['brand_name'] : '';
+            $graph[] = array(
+                '@type'       => 'Service',
+                '@id'         => $url.'#service',
+                'name'        => isset($page_meta['h1']) ? $page_meta['h1'] : '',
+                'description' => isset($page_meta['meta_description']) ? $page_meta['meta_description'] : '',
+                'provider'    => array('@id' => marketing_canonical_url('').'#organization'),
+                'areaServed'  => $area_name,
+                'url'         => $url,
+                'serviceType' => $brand_label !== '' ? $brand_label.' car servicing' : 'Car servicing',
+            );
+        }
+
+        if (isset($page_meta['page_type']) && $page_meta['page_type'] === 'blog') {
+            $graph[] = array(
+                '@type'         => 'BlogPosting',
+                '@id'           => $url.'#article',
+                'headline'      => isset($page_meta['h1']) ? $page_meta['h1'] : '',
+                'description'   => isset($page_meta['meta_description']) ? $page_meta['meta_description'] : '',
+                'url'           => $url,
+                'datePublished' => !empty($page_meta['updated_at']) ? $page_meta['updated_at'] : date('Y-m-d'),
+                'dateModified'  => !empty($page_meta['updated_at']) ? $page_meta['updated_at'] : date('Y-m-d'),
+                'author'        => array(
+                    '@type' => 'Organization',
+                    'name'  => $brand,
+                    'url'   => marketing_canonical_url(''),
+                ),
+                'publisher'     => array(
+                    '@type' => 'Organization',
+                    'name'  => $brand,
+                    'url'   => marketing_canonical_url(''),
+                ),
             );
         }
 
@@ -1656,6 +2000,24 @@ if (!function_exists('marketing_home_city_strip')) {
             );
         }
         return $cities;
+    }
+}
+
+if (!function_exists('marketing_home_brand_cards')) {
+    /** @return array<int,array{title:string,slug:string}> */
+    function marketing_home_brand_cards()
+    {
+        $cards = array();
+        foreach (marketing_brands_config() as $brand) {
+            if (empty($brand['active']) || empty($brand['slug'])) {
+                continue;
+            }
+            $cards[] = array(
+                'title' => isset($brand['brand_name']) ? $brand['brand_name'] : '',
+                'slug'  => $brand['slug'].'-car-service-in-pune',
+            );
+        }
+        return $cards;
     }
 }
 

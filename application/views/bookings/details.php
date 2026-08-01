@@ -36,6 +36,18 @@
                         <label for="bk_remarks">Notes / remarks (e.g. things to check)</label>
                     </div>
 
+                    <?php if (!empty($referral_enabled)): ?>
+                        <div class="form-floating mb-1">
+                            <input type="text" class="form-control text-uppercase font-monospace" id="bk_referral"
+                                   name="referral_code" placeholder=" " maxlength="12" autocomplete="off"
+                                   value="<?= set_value('referral_code', isset($draft['referral_code']) ? $draft['referral_code'] : ''); ?>">
+                            <label for="bk_referral">Referral code (optional)</label>
+                        </div>
+                        <div class="md-field-help mb-3">
+                            Have a friend's code? Enter it for up to &#8377;<?= number_format((float) $referred_credit, 0); ?> credit after your first completed service.
+                        </div>
+                    <?php endif; ?>
+
                     <div class="d-flex justify-content-between">
                         <a href="<?= site_url('booking/vehicle'); ?>" class="btn btn-link"><span class="mi mi-sm mi-leading">arrow_back</span>Back</a>
                         <button class="btn btn-primary" type="submit">

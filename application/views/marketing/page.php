@@ -66,6 +66,20 @@ echo ymo_marketing_render_hero(
                     <?= $body; ?>
                 </div>
             <?php endif; ?>
+            <?php if (!empty($faq) && is_array($faq)): ?>
+                <div class="ymo-content-section mb-5">
+                    <h2 class="md-headline-md mb-3">Frequently asked questions</h2>
+                    <ul class="accordion margin-top-20">
+                        <?php foreach ($faq as $row): ?>
+                            <?php if (empty($row['q']) || empty($row['a'])) { continue; } ?>
+                            <li>
+                                <div><h3><?= html_escape($row['q']); ?></h3></div>
+                                <div class="clearfix"><p class="md-body-md mb-0"><?= html_escape($row['a']); ?></p></div>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endif; ?>
             <div class="md-card-filled p-4 my-4">
                 <p class="md-body-md mb-3">Book your service online - same trusted team, faster scheduling.</p>
                 <a href="<?= html_escape($booking_url); ?>" class="md-btn md-btn--filled">

@@ -18,6 +18,7 @@ class Home extends Marketing_Controller
             'booking_url'   => ymo_booking_url('packages'),
             'services'      => marketing_home_featured_services(),
             'city_strip'    => marketing_home_city_strip(),
+            'brand_cards'   => marketing_home_brand_cards(),
             'benefits'      => $this->benefits(),
             'city_hint'     => marketing_city_hint_banner(),
         ));

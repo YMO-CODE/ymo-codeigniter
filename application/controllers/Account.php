@@ -14,10 +14,20 @@ class Account extends Customer_Controller
 
     public function index()
     {
+        $this->load->library('referral_service');
+        $referral_code = $this->referral_service->ensure_user_code($this->user['id']);
+        $referral_stats = $this->referral_service->stats_for_user($this->user['id']);
+        $referrer_credit = (float) $this->config->item('referral_credit_referrer');
+        $referred_credit = (float) $this->config->item('referral_credit_referred');
+
         $recent = $this->booking_model->for_user($this->user['id'], 5);
         $this->render('account/index', array(
-            'title'  => 'My account',
-            'recent' => $recent,
+            'title'           => 'My account',
+            'recent'          => $recent,
+            'referral_code'   => $referral_code,
+            'referral_stats'  => $referral_stats,
+            'referrer_credit' => $referrer_credit,
+            'referred_credit' => $referred_credit,
         ));
     }
 

@@ -10,6 +10,21 @@ $hero_page = array(
 echo ymo_marketing_render_hero('', $hero_page, isset($booking_url) ? $booking_url : '');
 ?>
 
+<section class="container pt-4 pb-2">
+    <div class="ymo-home-luxury md-card-filled p-4 p-md-5 mb-0">
+        <div class="row g-4 align-items-center">
+            <div class="col-lg-8">
+                <span class="md-label-lg d-block mb-2">Premium &amp; luxury cars</span>
+                <h2 class="md-headline-md mb-2">Mercedes, BMW, Audi &amp; more</h2>
+                <p class="md-body-md mb-0">Workshop-grade luxury car servicing in Pune — specialist technicians, genuine-spec care, and free pick-up for premium brands.</p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a href="<?= site_url('premium-luxury-car-service-pune'); ?>" class="md-btn md-btn--filled">Luxury car service</a>
+            </div>
+        </div>
+    </div>
+</section>
+
 <section class="container py-5">
     <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
         <div>
@@ -45,6 +60,25 @@ echo ymo_marketing_render_hero('', $hero_page, isset($booking_url) ? $booking_ur
 </section>
 <?php endif; ?>
 
+<?php if (!empty($brand_cards)): ?>
+<section class="container pb-5">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
+        <div>
+            <h2 class="md-headline-md mb-1">Brands we service</h2>
+            <p class="md-body-md mb-0">Maruti, Hyundai, Tata, Honda, and more — across Pune, Indore &amp; Nashik.</p>
+        </div>
+        <a href="<?= site_url('brands'); ?>" class="md-btn md-btn--outlined md-btn--sm">All brands</a>
+    </div>
+    <div class="row g-3">
+        <?php foreach ($brand_cards as $brand): ?>
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="<?= site_url($brand['slug']); ?>" class="md-chip md-chip--outlined w-100 text-center text-decoration-none d-block"><?= html_escape($brand['title']); ?></a>
+            </div>
+        <?php endforeach; ?>
+    </div>
+</section>
+<?php endif; ?>
+
 <section class="container pb-5">
     <h2 class="md-headline-md mb-4">Why choose YMO?</h2>
     <div class="row g-4">
@@ -65,5 +99,6 @@ echo ymo_marketing_render_hero('', $hero_page, isset($booking_url) ? $booking_ur
         <h2 class="md-title-lg mb-2">Ready to book?</h2>
         <p class="md-body-md mb-3">Pick a package, add your car, confirm - we call you to schedule pick-up.</p>
         <a href="<?= html_escape($booking_url); ?>" class="md-btn md-btn--filled md-btn--lg">View packages &amp; book</a>
+        <p class="md-body-md mt-3 mb-0"><a href="<?= site_url('why-choose-ymo'); ?>">Why choose YMO over a doorstep mechanic?</a></p>
     </div>
 </section>

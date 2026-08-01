@@ -184,11 +184,32 @@ if (!function_exists('ymo_configured_url_looks_local')) {
     }
 }
 
+if (!function_exists('ymo_request_http_host')) {
+    /**
+     * Raw HTTP Host header including port (e.g. localhost:8080).
+     *
+     * @return string
+     */
+    function ymo_request_http_host()
+    {
+        if (PHP_SAPI === 'cli' || PHP_SAPI === 'phpdbg') {
+            return '';
+        }
+        $raw = isset($_SERVER['HTTP_HOST']) ? trim((string) $_SERVER['HTTP_HOST']) : '';
+        $raw = preg_replace('#^\[|\]$#', '', $raw);
+        return strtolower($raw);
+    }
+}
+
 if (!function_exists('ymo_resolve_base_url')) {
     /**
      * Resolve CodeIgniter base_url for the current request.
      * Behind nginx + TLS, derive https://{host}/ from proxy headers so CSS/JS
      * are not blocked as mixed content when .env still has a local :8080 URL.
+     *
+     * When the browser Host differs from the configured URL host (common in local
+     * dev: visit localhost:8080 while .env says booking.example.com:8080), use the
+     * actual request origin so assets load from the same host.
      *
      * @param string|false $configured_url
      * @return string
@@ -201,24 +222,30 @@ if (!function_exists('ymo_resolve_base_url')) {
             return $configured_url !== '' ? rtrim($configured_url, '/').'/' : '';
         }
 
+        $http_host = ymo_request_http_host();
         $host = ymo_request_host_normalized();
         if ($host === '') {
             return $configured_url !== '' ? rtrim($configured_url, '/').'/' : '';
         }
 
         if (ymo_trust_proxy_headers()) {
-            return ymo_request_scheme().'://'.$host.'/';
+            return ymo_request_scheme().'://'.$http_host.'/';
+        }
+
+        $configured_host = ymo_host_part_from_full_url($configured_url);
+        if ($configured_host !== '' && $http_host !== '' && !hash_equals($configured_host, $host)) {
+            return ymo_request_scheme().'://'.$http_host.'/';
         }
 
         if (ymo_configured_url_looks_local($configured_url) && ymo_request_scheme() === 'https') {
-            return 'https://'.$host.'/';
+            return 'https://'.$http_host.'/';
         }
 
         if ($configured_url !== '') {
             return rtrim($configured_url, '/').'/';
         }
 
-        return ymo_request_scheme().'://'.$host.'/';
+        return ymo_request_scheme().'://'.$http_host.'/';
     }
 }
 

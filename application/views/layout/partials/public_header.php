@@ -55,11 +55,28 @@ $bookings_url = ymo_booking_url('account/bookings');
 <?php if (!empty($city_hint)): ?>
     <?php $this->load->view('marketing/partials/city_hint_banner', array('city_hint' => $city_hint)); ?>
 <?php endif; ?>
+<?php $trust_badge = function_exists('marketing_site_trust_badge') ? marketing_site_trust_badge() : array('show' => FALSE); ?>
 <div class="ymo-topbar">
     <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <span class="d-flex align-items-center gap-1">
-            <span class="mi mi-sm d-none d-sm-inline" aria-hidden="true">verified</span>
-            Trusted car servicing experts at your doorstep
+        <span class="d-flex align-items-center gap-2 flex-wrap">
+            <?php if (!empty($trust_badge['show'])): ?>
+                <?php if (!empty($trust_badge['url'])): ?>
+                    <a href="<?= html_escape($trust_badge['url']); ?>" class="ymo-topbar-trust d-flex align-items-center gap-1 text-decoration-none" target="_blank" rel="noopener noreferrer">
+                        <span class="mi mi-sm" aria-hidden="true">star</span>
+                        <?= html_escape($trust_badge['text']); ?>
+                    </a>
+                <?php else: ?>
+                    <span class="ymo-topbar-trust d-flex align-items-center gap-1">
+                        <span class="mi mi-sm" aria-hidden="true">star</span>
+                        <?= html_escape($trust_badge['text']); ?>
+                    </span>
+                <?php endif; ?>
+                <span class="d-none d-md-inline opacity-50">|</span>
+            <?php endif; ?>
+            <span class="d-none d-md-inline d-flex align-items-center gap-1">
+                <span class="mi mi-sm" aria-hidden="true">verified</span>
+                Trusted car servicing experts at your doorstep
+            </span>
         </span>
         <span>
             <a href="<?= html_escape($tel_href); ?>"><?= html_escape($phone); ?></a>

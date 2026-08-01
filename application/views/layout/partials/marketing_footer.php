@@ -17,10 +17,20 @@ $mail  = $ci->config->item('ymo_support_email');
                 <ul class="list-unstyled md-body-md mb-0">
                     <li class="mb-2"><a href="<?= site_url('about-us'); ?>">About</a></li>
                     <li class="mb-2"><a href="<?= site_url('contact-us'); ?>">Contact</a></li>
+                    <li class="mb-2"><a href="<?= site_url('why-choose-ymo'); ?>">Why choose YMO</a></li>
                     <li><a href="<?= site_url('privacy-policy'); ?>">Privacy policy</a></li>
                 </ul>
             </div>
-            <div class="col-6 col-lg-3">
+            <div class="col-6 col-lg-2">
+                <h6>Cities &amp; brands</h6>
+                <ul class="list-unstyled md-body-md mb-0">
+                    <li class="mb-2"><a href="<?= site_url('locations/pune'); ?>">Pune</a></li>
+                    <li class="mb-2"><a href="<?= site_url('locations/indore'); ?>">Indore</a></li>
+                    <li class="mb-2"><a href="<?= site_url('locations/nashik'); ?>">Nashik</a></li>
+                    <li><a href="<?= site_url('brands'); ?>">All brands</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-lg-2">
                 <h6>Book online</h6>
                 <ul class="list-unstyled md-body-md mb-0">
                     <li class="mb-2"><a href="<?= html_escape(ymo_booking_url('packages')); ?>">Packages</a></li>

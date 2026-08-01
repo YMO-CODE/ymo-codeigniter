@@ -24,6 +24,14 @@
                         <dt class="col-sm-4 text-muted"><span class="mi mi-sm mi-leading">edit_note</span>Remarks</dt>
                         <dd class="col-sm-8"><?= nl2br(html_escape($draft['remarks'])); ?></dd>
                     <?php endif; ?>
+
+                    <?php if (!empty($draft['referral_code'])): ?>
+                        <dt class="col-sm-4 text-muted"><span class="mi mi-sm mi-leading">redeem</span>Referral code</dt>
+                        <dd class="col-sm-8">
+                            <span class="font-monospace"><?= html_escape($draft['referral_code']); ?></span>
+                            <div class="ymo-muted small">Up to &#8377;<?= number_format((float) $referred_credit, 0); ?> credit applies after service completion.</div>
+                        </dd>
+                    <?php endif; ?>
                 </dl>
 
                 <p class="ymo-muted small">
