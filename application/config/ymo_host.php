@@ -229,6 +229,18 @@ if (!function_exists('ymo_resolve_base_url')) {
         }
 
         if (ymo_trust_proxy_headers()) {
+            if ($configured_url !== '' && !ymo_configured_url_looks_local($configured_url)) {
+                $scheme = ymo_request_scheme();
+                $configured_host = ymo_host_part_from_full_url($configured_url);
+                if ($configured_host !== '' && $host !== ''
+                    && !in_array($host, array('localhost', '127.0.0.1'), TRUE)
+                    && hash_equals($configured_host, $host)) {
+                    return $scheme.'://'.$http_host.'/';
+                }
+                if ($configured_host !== '' && !ymo_configured_url_looks_local($configured_url)) {
+                    return rtrim($configured_url, '/').'/';
+                }
+            }
             return ymo_request_scheme().'://'.$http_host.'/';
         }
 

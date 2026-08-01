@@ -10,12 +10,16 @@ if (!function_exists('ymo_booking_url')) {
      */
     function ymo_booking_url($path = '')
     {
-        $base = getenv('YMO_PUBLIC_APP_URL');
+        $base = function_exists('ymo_env') ? ymo_env('YMO_PUBLIC_APP_URL') : getenv('YMO_PUBLIC_APP_URL');
         if ($base === FALSE || trim((string) $base) === '') {
-            $base = getenv('YMO_APP_URL');
+            $base = function_exists('ymo_env') ? ymo_env('YMO_APP_URL') : getenv('YMO_APP_URL');
         }
-        if ($base === FALSE || trim((string) $base) === '') {
-            return site_url(ltrim($path, '/'));
+        if ($base === FALSE || trim((string) $base) === '' || ymo_configured_url_looks_local($base)) {
+            if (defined('ENVIRONMENT') && ENVIRONMENT === 'production') {
+                $base = 'https://booking.yourmechaniconline.com';
+            } else {
+                return site_url(ltrim($path, '/'));
+            }
         }
         $base = ymo_sanitize_external_app_url($base);
         $path = ltrim((string) $path, '/');
