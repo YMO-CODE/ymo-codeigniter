@@ -1029,7 +1029,7 @@ if (!function_exists('marketing_hero_parse_price')) {
                 return (int) $svc['price_from'];
             }
         }
-        foreach (array('title', 'h1', 'intro', 'body') as $field) {
+        foreach (array('title', 'h1', 'intro', 'quick_answer', 'body') as $field) {
             if (empty($page[$field])) {
                 continue;
             }
@@ -1190,6 +1190,8 @@ if (!function_exists('marketing_hero_context')) {
             $hero_type = 'home';
         } elseif ($type === 'service') {
             $hero_type = 'service';
+        } elseif ($type === 'brand') {
+            $hero_type = 'brand';
         } elseif ($type === 'locality') {
             $hero_type = 'locality';
         } elseif ($type === 'hub' || $path === 'services' || strpos($path, 'locations/') === 0) {
@@ -1218,7 +1220,7 @@ if (!function_exists('marketing_hero_context')) {
         if ($price !== NULL) {
             $badges[] = 'From ₹'.number_format($price);
         }
-        if ($hero_type === 'service' || $hero_type === 'hub') {
+        if ($hero_type === 'service' || $hero_type === 'hub' || $hero_type === 'brand') {
             $badges[] = 'Same-day service';
         }
 
@@ -1262,6 +1264,11 @@ if (!function_exists('marketing_hero_context')) {
                 $eyebrow = trim($service_label).' · '.$city_name;
                 $eyebrow_icon = 'build';
             }
+        } elseif ($hero_type === 'brand') {
+            $brand_label = !empty($page['brand_name']) ? trim((string) $page['brand_name']) : 'Car brand';
+            $city_name = ($city && !empty($city['name'])) ? $city['name'] : 'Pune';
+            $eyebrow = $brand_label.' · '.$city_name;
+            $eyebrow_icon = 'directions_car';
         } elseif ($hero_type === 'locality' && $locality_label !== '') {
             $eyebrow = $locality_label;
             $eyebrow_icon = 'location_on';
@@ -1305,8 +1312,8 @@ if (!function_exists('marketing_hero_context')) {
             }
         }
 
-        $icon = 'build';
-        if (!empty($page['service_key'])) {
+        $icon = ($hero_type === 'brand') ? 'directions_car' : 'build';
+        if ($hero_type !== 'brand' && !empty($page['service_key'])) {
             $svc = marketing_service_by_key($page['service_key']);
             if ($svc && !empty($svc['icon'])) {
                 $icon = (string) $svc['icon'];
@@ -1337,6 +1344,12 @@ if (!function_exists('marketing_hero_context')) {
             $cta_secondary = array(
                 'href'  => ymo_public_nav_url('services'),
                 'label' => 'View all services',
+                'class' => 'md-btn md-btn--outlined md-btn--lg',
+            );
+        } elseif ($hero_type === 'brand' && $city) {
+            $cta_secondary = array(
+                'href'  => ymo_public_nav_url($city['hub_path']),
+                'label' => 'All services in '.$city['name'],
                 'class' => 'md-btn md-btn--outlined md-btn--lg',
             );
         } elseif ($hero_type === 'locality' && $city) {
@@ -1393,7 +1406,7 @@ if (!function_exists('marketing_hero_context')) {
             ? array('show' => FALSE)
             : marketing_hero_trust_proof($trust_variant);
 
-        $show_phone = in_array($hero_type, array('service', 'hub', 'locality'), TRUE);
+        $show_phone = in_array($hero_type, array('service', 'hub', 'locality', 'brand'), TRUE);
         $show_cta = ($hero_type !== 'minimal') || ($path === 'about-us');
 
         if ($hero_type === 'minimal' && $path === 'about-us') {

@@ -6,7 +6,7 @@ if (empty($hero) || !is_array($hero) || empty($hero['h1'])) {
 $type = isset($hero['type']) ? (string) $hero['type'] : 'minimal';
 if ($type === 'home') {
     $partial = 'marketing/partials/hero_home';
-} elseif ($type === 'service' || $type === 'hub' || $type === 'locality') {
+} elseif (in_array($type, array('service', 'hub', 'locality', 'brand'), TRUE)) {
     $partial = 'marketing/partials/hero_split';
 } else {
     $partial = 'marketing/partials/hero_minimal';

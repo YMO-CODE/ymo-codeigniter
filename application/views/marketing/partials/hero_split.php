@@ -3,7 +3,7 @@ $image = !empty($hero['image']) && is_array($hero['image']) ? $hero['image'] : N
 $slides = !empty($hero['slides']) && is_array($hero['slides']) ? $hero['slides'] : NULL;
 $type = isset($hero['type']) ? (string) $hero['type'] : 'hub';
 $modifiers = array('ymo-hero--split');
-if ($type === 'service') {
+if ($type === 'service' || $type === 'brand') {
     $modifiers[] = 'ymo-hero--service';
 } elseif ($type === 'locality') {
     $modifiers[] = 'ymo-hero--locality';
