@@ -251,9 +251,9 @@ if (!function_exists('ymo_deploy_session_epoch')) {
     }
 }
 
-if (!function_exists('ymo_stamp_deploy_session')) {
-    /** Tag the current session with the active deploy epoch (call after login). */
-    function ymo_stamp_deploy_session()
+if (!function_exists('ymo_stamp_admin_deploy_session')) {
+    /** Tag admin session with the active deploy epoch (call after admin login). */
+    function ymo_stamp_admin_deploy_session()
     {
         $epoch = ymo_deploy_session_epoch();
         if ($epoch === NULL) {
@@ -261,15 +261,23 @@ if (!function_exists('ymo_stamp_deploy_session')) {
         }
         $ci = &get_instance();
         if ($ci->session) {
-            $ci->session->set_userdata('_deploy_epoch', $epoch);
+            $ci->session->set_userdata('_admin_deploy_epoch', $epoch);
         }
+    }
+}
+
+if (!function_exists('ymo_stamp_deploy_session')) {
+    /** @deprecated Use ymo_stamp_admin_deploy_session() — customers are not invalidated on deploy. */
+    function ymo_stamp_deploy_session()
+    {
+        ymo_stamp_admin_deploy_session();
     }
 }
 
 if (!function_exists('ymo_enforce_deploy_session')) {
     /**
-     * Sign out users whose session predates the latest deploy.
-     * Skips unauthenticated requests and auth pages (login/signup).
+     * Sign out admin sessions that predate the latest deploy.
+     * Customer (booking) sessions are kept across deploys.
      */
     function ymo_enforce_deploy_session()
     {
@@ -289,30 +297,23 @@ if (!function_exists('ymo_enforce_deploy_session')) {
             return;
         }
 
-        $has_user = !empty($ci->session->userdata('user'));
-        $has_admin = !empty($ci->session->userdata('admin'));
-        if (!$has_user && !$has_admin) {
+        if (empty($ci->session->userdata('admin'))) {
             return;
         }
 
-        $stored_epoch = $ci->session->userdata('_deploy_epoch');
+        $stored_epoch = $ci->session->userdata('_admin_deploy_epoch');
         if ($stored_epoch === $epoch) {
             return;
         }
 
-        // Fresh login may not have persisted the stamp yet; tag instead of signing out.
-        if ($stored_epoch === NULL || $stored_epoch === '') {
-            $ci->session->set_userdata('_deploy_epoch', $epoch);
-            return;
-        }
-
-        $was_admin = $has_admin;
-        $ci->session->unset_userdata(array('user', 'admin', '_deploy_epoch', 'crm_import_file'));
+        $ci->session->unset_userdata(array('admin', 'crm_import_file', '_admin_deploy_epoch', '_deploy_epoch'));
         $ci->session->set_flashdata('info', 'You have been signed out because the app was updated. Please sign in again.');
 
-        if ($was_admin || (function_exists('ymo_is_admin_host') && ymo_is_admin_host())) {
+        $on_admin = (function_exists('ymo_is_admin_host_request') && ymo_is_admin_host_request())
+            || (function_exists('ymo_is_admin_host') && ymo_is_admin_host())
+            || strpos($uri, 'admin') === 0;
+        if ($on_admin) {
             redirect(admin_url('login'));
         }
-        redirect(site_url('login'));
     }
 }

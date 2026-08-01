@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * Invalidate stale sessions after a deploy (storage/.session_epoch bump).
+ * Invalidate stale admin sessions after a deploy (storage/.session_epoch bump).
  */
 function ymo_hook_enforce_deploy_session()
 {

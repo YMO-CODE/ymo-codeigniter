@@ -37,7 +37,7 @@ class Auth extends CI_Controller
                 } else {
                     unset($row['password_hash']);
                     $this->session->set_userdata('admin', $row);
-                    ymo_stamp_deploy_session();
+                    ymo_stamp_admin_deploy_session();
                     $this->session->sess_regenerate(FALSE);
                     if (function_exists('ymo_expire_host_only_auth_cookies')) {
                         ymo_expire_host_only_auth_cookies();
@@ -55,7 +55,7 @@ class Auth extends CI_Controller
 
     public function logout()
     {
-        $this->session->unset_userdata('admin');
+        $this->session->unset_userdata(array('admin', '_admin_deploy_epoch', '_deploy_epoch'));
         redirect(admin_url('login'));
     }
 }

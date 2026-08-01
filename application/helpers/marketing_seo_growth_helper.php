@@ -225,13 +225,13 @@ if (!function_exists('marketing_seo_growth_service_areas')) {
         );
         $pages = array();
         foreach ($defs as $d) {
-            $body = '<div class="ymo-content-section mb-5"><p class="md-body-md">'.$d[9].'</p></div>';
+            $body = '<div class="ymo-content-section mb-5"><p class="md-body-md">'.$d[8].'</p></div>';
             $pages[$d[0]] = array(
                 'title'            => $d[1],
                 'meta_description' => $d[2],
                 'h1'               => $d[3],
                 'intro'            => $d[3],
-                'quick_answer'     => strip_tags($d[9]),
+                'quick_answer'     => strip_tags($d[8]),
                 'body'             => $body,
                 'page_type'        => 'service',
                 'city_slug'        => $d[4],

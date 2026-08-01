@@ -45,7 +45,7 @@ for i in $(seq 1 45); do
   sleep 2
 done
 
-echo "==> Resetting sessions (post-deploy sign-out)..."
+echo "==> Resetting admin sessions (post-deploy sign-out)..."
 bash "$ROOT/deploy/scripts/reset-sessions.sh"
 
 echo ""

@@ -257,7 +257,6 @@ class Auth extends MY_Controller
         }
         unset($u['password_hash']);
         $this->session->set_userdata('user', $u);
-        ymo_stamp_deploy_session();
         // Force a domain-scoped session cookie and drop stale host-only cookies.
         $this->session->sess_regenerate(FALSE);
         if (function_exists('ymo_expire_host_only_auth_cookies')) {
