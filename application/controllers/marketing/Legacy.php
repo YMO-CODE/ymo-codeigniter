@@ -8,7 +8,8 @@ class Legacy extends Marketing_Controller
     {
         $path = marketing_normalize_path($this->uri->uri_string());
         $resolved = marketing_resolve_page_path($path);
-        if ($resolved['key'] !== '') {
+        if ($resolved['key'] !== '' && $resolved['redirect']
+            && $resolved['canonical'] !== '' && $resolved['canonical'] !== $path) {
             marketing_redirect_to($resolved['canonical'], 301);
         }
 

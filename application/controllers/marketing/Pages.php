@@ -12,7 +12,8 @@ class Pages extends Marketing_Controller
         }
 
         $resolved = marketing_resolve_page_path($this->uri->uri_string());
-        if ($resolved['redirect'] && $resolved['canonical'] !== '') {
+        if ($resolved['redirect'] && $resolved['canonical'] !== ''
+            && $resolved['canonical'] !== $request_path) {
             marketing_redirect_to($resolved['canonical'], 301);
         }
 

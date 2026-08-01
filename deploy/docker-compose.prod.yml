@@ -16,7 +16,6 @@ services:
       YMO_DB_NAME: ${YMO_DB_NAME:-ymo_booking}
       YMO_DB_USER: ${YMO_DB_USER:-ymo_user}
       YMO_DB_PASS: ${YMO_DB_PASS:?Set YMO_DB_PASS in .env}
-      # !override base compose localhost URLs — must come from .env on VPS.
       YMO_APP_URL: ${YMO_APP_URL:?Set YMO_APP_URL in .env}
       YMO_PUBLIC_APP_URL: ${YMO_PUBLIC_APP_URL:-${YMO_APP_URL}}
       YMO_MARKETING_APP_URL: ${YMO_MARKETING_APP_URL:?Set YMO_MARKETING_APP_URL in .env}
