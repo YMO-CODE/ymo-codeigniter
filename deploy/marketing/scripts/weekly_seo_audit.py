@@ -24,6 +24,7 @@ def main() -> int:
         print("Warning: no GSC CSV exports in deploy/marketing/gsc/")
     codes = [
         run("audit_gsc_pages.py"),
+        run("check_sitemap_live.py"),
         run("check_marketing_pages.py"),
         run("check_marketing_links.py"),
     ]
