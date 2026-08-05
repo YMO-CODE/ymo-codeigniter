@@ -11,6 +11,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  */
 class Quick_book extends MY_Controller
 {
+    /** Sentinel value for the customised-package dropdown option. */
+    const PACKAGE_CUSTOM = 'custom';
+
     /** @var string[] UTM query params persisted through form POST */
     protected static $UTM_KEYS = array('utm_source', 'utm_medium', 'utm_campaign', 'utm_content');
 
@@ -101,7 +104,8 @@ class Quick_book extends MY_Controller
             'trim|required|max_length[80]|in_list['.implode(',', $allowed_cities).']',
             array('in_list' => 'Please pick one of our serviceable cities.')
         );
-        $this->form_validation->set_rules('package_id', 'Service package', 'trim|required|integer|callback__valid_package');
+        $this->form_validation->set_rules('package_id', 'Service package', 'trim|required|callback__valid_package');
+        $this->form_validation->set_rules('custom_package', 'Custom service details', 'trim|max_length[500]|callback__valid_custom_package');
         $this->form_validation->set_rules('make_id',      'Car make',        'trim|required|integer|callback__valid_make');
         $this->form_validation->set_rules('variant',      'Car model',       'trim|required|min_length[2]|max_length[120]');
         $this->form_validation->set_rules('vehicle_number', 'Vehicle number', 'trim|max_length[20]|callback__valid_plate_optional');
@@ -112,9 +116,24 @@ class Quick_book extends MY_Controller
 
     public function _valid_package($value)
     {
+        if ($value === self::PACKAGE_CUSTOM) {
+            return TRUE;
+        }
         $pkg = $this->package_model->find((int) $value);
         if (!$pkg || empty($pkg['is_active'])) {
             $this->form_validation->set_message('_valid_package', 'Pick a valid service package.');
+            return FALSE;
+        }
+        return TRUE;
+    }
+
+    public function _valid_custom_package($value)
+    {
+        if ($this->input->post('package_id') !== self::PACKAGE_CUSTOM) {
+            return TRUE;
+        }
+        if (trim((string) $value) === '') {
+            $this->form_validation->set_message('_valid_custom_package', 'Describe the customised service you need.');
             return FALSE;
         }
         return TRUE;
@@ -162,9 +181,12 @@ class Quick_book extends MY_Controller
 
     protected function _collect_payload()
     {
-        $package_id = (int) $this->input->post('package_id');
-        $make_id    = (int) $this->input->post('make_id');
-        $package    = $this->package_model->find($package_id);
+        $package_id_raw = trim((string) $this->input->post('package_id'));
+        $is_custom      = ($package_id_raw === self::PACKAGE_CUSTOM);
+        $package_id     = $is_custom ? 0 : (int) $package_id_raw;
+        $make_id        = (int) $this->input->post('make_id');
+        $package        = $is_custom ? NULL : $this->package_model->find($package_id);
+        $custom_package = trim((string) $this->input->post('custom_package'));
         $make_name  = '';
         foreach ($this->vehicle_model->makes() as $m) {
             if ((int) $m['id'] === $make_id) {
@@ -184,9 +206,10 @@ class Quick_book extends MY_Controller
             'email'            => $email,
             'city'             => trim($this->input->post('city')),
             'area'             => trim($this->input->post('area')),
-            'package_id'       => $package_id,
-            'package_name'     => $package ? $package['name'] : '',
-            'package_slug'     => $package ? $package['slug'] : '',
+            'package_id'       => $is_custom ? NULL : $package_id,
+            'package_name'     => $is_custom ? 'Customised package' : ($package ? $package['name'] : ''),
+            'package_slug'     => $is_custom ? self::PACKAGE_CUSTOM : ($package ? $package['slug'] : ''),
+            'custom_package'   => $is_custom ? $custom_package : '',
             'make_id'          => $make_id,
             'make_name'        => $make_name,
             'variant'          => trim($this->input->post('variant')),
@@ -205,6 +228,9 @@ class Quick_book extends MY_Controller
             'Package: '.$payload['package_name'],
             'Vehicle: '.$payload['make_name'].' '.$payload['variant'],
         );
+        if (!empty($payload['custom_package'])) {
+            $lines[] = 'Custom service: '.$payload['custom_package'];
+        }
         if (!empty($payload['vehicle_number'])) {
             $lines[] = 'Vehicle number: '.$payload['vehicle_number'];
         }

@@ -85,10 +85,22 @@ $selected_package = set_value('package_id', $prefill_package_id ?: '');
                                             <?= html_escape($p['name']); ?> — &#8377;<?= number_format((float) $p['price']); ?>
                                         </option>
                                     <?php endforeach; ?>
+                                    <option value="custom" <?= set_select('package_id', 'custom', (string) $selected_package === 'custom'); ?>>
+                                        Customised package — tell us what you need
+                                    </option>
                                 </select>
                                 <label for="qb_package">Service package</label>
                             </div>
                             <?= form_error('package_id', $field_err_open, $field_err_close); ?>
+                        </div>
+                        <div class="col-md-12" id="qb_custom_wrap" style="display:none;">
+                            <div class="form-floating">
+                                <textarea class="form-control<?= form_error('custom_package') ? ' is-invalid' : ''; ?>" id="qb_custom_package" name="custom_package" placeholder=" "
+                                          style="min-height:88px"><?= set_value('custom_package'); ?></textarea>
+                                <label for="qb_custom_package">Describe the service you need</label>
+                            </div>
+                            <div class="md-field-help mb-0">e.g. AC gas refill, clutch repair, full body paint — we will quote over the phone.</div>
+                            <?= form_error('custom_package', $field_err_open, $field_err_close); ?>
                         </div>
                         <div class="col-md-6">
                             <div class="form-floating">
@@ -160,3 +172,18 @@ $selected_package = set_value('package_id', $prefill_package_id ?: '');
         </div>
     </div>
 </div>
+<script>
+(function () {
+    var sel = document.getElementById('qb_package');
+    var wrap = document.getElementById('qb_custom_wrap');
+    var input = document.getElementById('qb_custom_package');
+    if (!sel || !wrap || !input) { return; }
+    function sync() {
+        var custom = sel.value === 'custom';
+        wrap.style.display = custom ? '' : 'none';
+        input.required = custom;
+    }
+    sel.addEventListener('change', sync);
+    sync();
+})();
+</script>
