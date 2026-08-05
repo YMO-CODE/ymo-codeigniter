@@ -25,6 +25,7 @@ echo "==> Ensuring upload directories..."
 mkdir -p storage/logs \
   storage/import/pending \
   public/uploads/vehicles \
+  public/uploads/offers \
   public/uploads/crm/resumes \
   public/uploads/invoices
 chmod -R u+rwX,g+rwX storage public/uploads 2>/dev/null || true

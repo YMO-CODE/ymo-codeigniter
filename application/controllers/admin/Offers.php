@@ -136,8 +136,13 @@ class Offers extends Admin_Controller
         }
 
         $path = $this->config->item('offer_upload_path');
-        if (!is_dir($path)) {
-            @mkdir($path, 0755, TRUE);
+        if (!is_dir($path) && !@mkdir($path, 0755, TRUE)) {
+            $this->flash('error', 'Could not create uploads/offers folder on the server.');
+            return FALSE;
+        }
+        if (!is_writable($path)) {
+            $this->flash('error', 'The uploads/offers folder is not writable. Run deploy-app.sh or chmod the folder on the server.');
+            return FALSE;
         }
 
         $this->upload->initialize(array(

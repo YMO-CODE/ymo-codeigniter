@@ -1,8 +1,54 @@
 (function () {
     'use strict';
 
+    var STORAGE_KEY = 'ymo_offer_dismissed';
+
+    function dismissedIds() {
+        try {
+            var raw = sessionStorage.getItem(STORAGE_KEY);
+            if (!raw) {
+                return [];
+            }
+            var parsed = JSON.parse(raw);
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function isDismissed(offer) {
+        if (!offer) {
+            return false;
+        }
+        var id = offer.id != null ? String(offer.id) : '';
+        if (id === '') {
+            return sessionStorage.getItem(STORAGE_KEY) === '1';
+        }
+        return dismissedIds().indexOf(id) !== -1;
+    }
+
+    function markDismissed(offer) {
+        try {
+            var id = offer && offer.id != null ? String(offer.id) : '';
+            if (id === '') {
+                sessionStorage.setItem(STORAGE_KEY, '1');
+                return;
+            }
+            var ids = dismissedIds();
+            if (ids.indexOf(id) === -1) {
+                ids.push(id);
+            }
+            sessionStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
+        } catch (e) { /* private mode / blocked storage */ }
+    }
+
+    function dismissOverlay(overlay, offer) {
+        markDismissed(offer);
+        overlay.remove();
+    }
+
     function renderOffer(offer) {
-        if (!offer || !offer.title) {
+        if (!offer || !offer.title || isDismissed(offer)) {
             return;
         }
 
@@ -21,7 +67,7 @@
         closeBtn.setAttribute('aria-label', 'Close');
         closeBtn.innerHTML = '&times;';
         closeBtn.addEventListener('click', function () {
-            overlay.remove();
+            dismissOverlay(overlay, offer);
         });
 
         modal.appendChild(closeBtn);
@@ -53,13 +99,16 @@
             cta.textContent = offer.cta_label;
             cta.target = '_blank';
             cta.rel = 'noopener noreferrer';
+            cta.addEventListener('click', function () {
+                markDismissed(offer);
+            });
             modal.appendChild(cta);
         }
 
         overlay.appendChild(modal);
         overlay.addEventListener('click', function (ev) {
             if (ev.target === overlay) {
-                overlay.remove();
+                dismissOverlay(overlay, offer);
             }
         });
 
