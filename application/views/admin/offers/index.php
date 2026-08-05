@@ -52,7 +52,7 @@
                     <?php endif; ?>
                 </td>
                 <td class="text-end">
-                    <a href="<?= site_url(''); ?>" class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener">
+                    <a href="<?= html_escape(rtrim(ymo_booking_url(''), '/').'?ymo_offer_preview='.(int) $o['id']); ?>" class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener" title="Open booking site with this offer popup">
                         <span class="mi mi-sm mi-leading">open_in_new</span>Preview
                     </a>
                     <?php if (!empty($can_edit)): ?>

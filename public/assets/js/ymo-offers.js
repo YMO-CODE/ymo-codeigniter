@@ -3,6 +3,29 @@
 
     var STORAGE_KEY = 'ymo_offer_dismissed';
 
+    function getPreviewOfferId() {
+        try {
+            var params = new URLSearchParams(window.location.search);
+            var id = params.get('ymo_offer_preview');
+            return id && /^\d+$/.test(id) ? id : null;
+        } catch (e) {
+            var match = /[?&]ymo_offer_preview=(\d+)/.exec(window.location.search);
+            return match ? match[1] : null;
+        }
+    }
+
+    function isPreviewMode() {
+        return getPreviewOfferId() !== null;
+    }
+
+    function offerApiUrl(cfg) {
+        var previewId = getPreviewOfferId();
+        if (previewId && cfg.apiUrl) {
+            return cfg.apiUrl.replace(/\/active\/?$/, '/preview/' + previewId);
+        }
+        return cfg.apiUrl;
+    }
+
     function dismissedIds() {
         try {
             var raw = sessionStorage.getItem(STORAGE_KEY);
@@ -17,6 +40,9 @@
     }
 
     function isDismissed(offer) {
+        if (isPreviewMode()) {
+            return false;
+        }
         if (!offer) {
             return false;
         }
@@ -28,6 +54,9 @@
     }
 
     function markDismissed(offer) {
+        if (isPreviewMode()) {
+            return;
+        }
         try {
             var id = offer && offer.id != null ? String(offer.id) : '';
             if (id === '') {
@@ -136,10 +165,11 @@
 
     function bootstrapFromApi() {
         var cfg = window.YMO_OFFERS || {};
-        if (!cfg.apiUrl) {
+        var url = offerApiUrl(cfg);
+        if (!url) {
             return;
         }
-        fetch(cfg.apiUrl, { credentials: 'omit', mode: 'cors' })
+        fetch(url, { credentials: 'omit', mode: 'cors' })
             .then(function (res) { return res.json(); })
             .then(function (data) {
                 var offer = pickOffer(data);

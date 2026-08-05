@@ -122,6 +122,7 @@ if (ymo_is_admin_host_request()) {
     $route['api/webhooks/website']             = 'api/webhooks/website';
     $route['api/webhooks/whatsapp']            = 'api/webhooks/whatsapp';
     $route['api/offers/active']                = 'api/offers/active';
+    $route['api/offers/preview/(:num)']      = 'api/offers/preview/$1';
 
     // Keep legacy prefixed paths resolving (helps old bookmarks/emails).
     $route['admin']                          = 'admin/dashboard';
@@ -226,6 +227,7 @@ if (ymo_is_admin_host_request()) {
     $route['contact-us']           = 'marketing/contact/index';
     $route['about-us']             = 'marketing/pages/show';
     $route['api/offers/active']    = 'api/offers/active';
+    $route['api/offers/preview/(:num)'] = 'api/offers/preview/$1';
 
     $marketing_pages_file = APPPATH.'config/marketing_pages_data.php';
     if (is_file($marketing_pages_file)) {
@@ -387,4 +389,5 @@ if (ymo_is_admin_host_request()) {
     $route['api/webhooks/website'] = 'api/webhooks/website';
     $route['api/webhooks/whatsapp'] = 'api/webhooks/whatsapp';
     $route['api/offers/active'] = 'api/offers/active';
+    $route['api/offers/preview/(:num)'] = 'api/offers/preview/$1';
 }

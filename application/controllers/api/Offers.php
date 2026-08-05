@@ -36,6 +36,31 @@ class Offers extends CI_Controller
         return $this->_json($payload, 200, TRUE);
     }
 
+    /** GET /api/offers/preview/{id} — admin preview (any offer, including inactive). */
+    public function preview($id)
+    {
+        $this->_apply_cors();
+
+        if ($this->input->method() === 'options') {
+            return $this->output->set_status_header(204);
+        }
+
+        if (!$this->db->table_exists('site_offers')) {
+            return $this->_json(array('ok' => FALSE, 'error' => 'not_found'), 404, FALSE);
+        }
+
+        $offer = $this->offer_model->find($id);
+        if (!$offer) {
+            return $this->_json(array('ok' => FALSE, 'error' => 'not_found'), 404, FALSE);
+        }
+
+        header('Cache-Control: no-store');
+        return $this->_json(array(
+            'ok'     => TRUE,
+            'offers' => array($this->offer_model->to_public($offer)),
+        ), 200, FALSE);
+    }
+
     protected function _apply_cors()
     {
         $origin = $this->input->get_request_header('Origin', TRUE);

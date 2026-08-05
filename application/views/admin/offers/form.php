@@ -87,6 +87,11 @@ $default_cta = site_url('packages');
                 <span class="mi mi-leading">save</span>Save
             </button>
             <a href="<?= admin_url('offers'); ?>" class="btn btn-link">Cancel</a>
+            <?php if (!empty($offer['id'])): ?>
+            <a href="<?= html_escape(rtrim(ymo_booking_url(''), '/').'?ymo_offer_preview='.(int) $offer['id']); ?>" class="btn btn-outline-secondary" target="_blank" rel="noopener">
+                <span class="mi mi-leading">open_in_new</span>Preview popup
+            </a>
+            <?php endif; ?>
         </div>
     <?= form_close(); ?>
 </div>

@@ -23,6 +23,11 @@ $config['ymo_marketing_url']  = (($__m = getenv('YMO_MARKETING_APP_URL')) !== FA
     : 'https://www.yourmechaniconline.com';
 $config['ymo_app_url']        = getenv('YMO_APP_URL') ?: 'https://booking.yourmechaniconline.com';
 
+// LiveChat widget (customer-facing pages). Set YMO_LIVECHAT_LICENSE=0 to disable.
+$config['livechat_license']   = (int) (getenv('YMO_LIVECHAT_LICENSE') !== FALSE && getenv('YMO_LIVECHAT_LICENSE') !== ''
+    ? getenv('YMO_LIVECHAT_LICENSE')
+    : 19881722);
+
 // Cities where service is currently offered. Used to populate the signup
 // dropdown and to validate the chosen city. Add a new row here when expanding.
 $config['ymo_service_cities'] = array('Indore', 'Pune', 'Nashik');
