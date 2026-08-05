@@ -8,7 +8,7 @@ $selected_package = set_value('package_id', $prefill_package_id ?: '');
         <div class="col-lg-8">
             <div class="ymo-card">
                 <h1 class="h3 mb-1"><span class="mi mi-leading">event_available</span>Quick book</h1>
-                <p class="ymo-muted mb-4">No account needed — share your details and our team will call you to confirm your service.</p>
+                <p class="ymo-muted mb-4">No account needed - share your details and our team will call you to confirm your service.</p>
 
                 <?php if (validation_errors()): ?>
                     <div class="alert alert-danger mb-3" role="alert"><?= validation_errors('<div>', '</div>'); ?></div>
@@ -82,11 +82,11 @@ $selected_package = set_value('package_id', $prefill_package_id ?: '');
                                     <?php foreach ($packages as $p): ?>
                                         <option value="<?= (int) $p['id']; ?>"
                                             <?= set_select('package_id', $p['id'], (string) $selected_package === (string) $p['id']); ?>>
-                                            <?= html_escape($p['name']); ?> — &#8377;<?= number_format((float) $p['price']); ?>
+                                            <?= html_escape($p['name']); ?> - &#8377;<?= number_format((float) $p['price']); ?>
                                         </option>
                                     <?php endforeach; ?>
                                     <option value="custom" <?= set_select('package_id', 'custom', (string) $selected_package === 'custom'); ?>>
-                                        Customised package — tell us what you need
+                                        Customised package - tell us what you need
                                     </option>
                                 </select>
                                 <label for="qb_package">Service package</label>
@@ -99,7 +99,7 @@ $selected_package = set_value('package_id', $prefill_package_id ?: '');
                                           style="min-height:88px"><?= set_value('custom_package'); ?></textarea>
                                 <label for="qb_custom_package">Describe the service you need</label>
                             </div>
-                            <div class="md-field-help mb-0">e.g. AC gas refill, clutch repair, full body paint — we will quote over the phone.</div>
+                            <div class="md-field-help mb-0">e.g. AC gas refill, clutch repair, full body paint - we will quote over the phone.</div>
                             <?= form_error('custom_package', $field_err_open, $field_err_close); ?>
                         </div>
                         <div class="col-md-6">

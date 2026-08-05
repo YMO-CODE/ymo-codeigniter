@@ -17,7 +17,7 @@
                     </a>
                     <?php if (!$this->user): ?>
                         <a href="<?= site_url('quick-book'); ?>" class="btn btn-warning btn-lg text-dark">
-                            <span class="mi mi-leading">send</span>Quick book — no login
+                            <span class="mi mi-leading">send</span>Quick book - no login
                         </a>
                         <a href="<?= site_url('signup'); ?>" class="btn btn-outline-light btn-lg">
                             <span class="mi mi-leading">person_add</span>Sign up free
@@ -97,9 +97,9 @@
     <?php if (!$this->user): ?>
     <div class="md-card-filled text-center py-4 px-3 mt-5">
         <h2 class="h4 mb-2">Don't want to create an account?</h2>
-        <p class="ymo-muted mb-3">Fill in your details once — our team will call you to confirm your booking.</p>
+        <p class="ymo-muted mb-3">Fill in your details once - our team will call you to confirm your booking.</p>
         <a href="<?= site_url('quick-book'); ?>" class="btn btn-primary btn-lg">
-            <span class="mi mi-leading">send</span>Quick book — no login
+            <span class="mi mi-leading">send</span>Quick book - no login
         </a>
     </div>
     <?php endif; ?>

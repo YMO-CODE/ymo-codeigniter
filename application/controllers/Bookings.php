@@ -52,7 +52,7 @@ class Bookings extends MY_Controller
         $this->_set_draft(array('package_id' => (int) $package['id']));
 
         if (empty($this->user) || empty($this->user['id'])) {
-            $this->flash('info', 'Sign in to continue your booking — or use the quick book form if you prefer not to create an account.');
+            $this->flash('info', 'Sign in to continue your booking - or use the quick book form if you prefer not to create an account.');
             redirect(site_url('login?next='.urlencode('book/'.$slug)));
         }
         if (!ymo_user_is_verified($this->user)) {

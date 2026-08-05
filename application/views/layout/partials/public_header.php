@@ -379,7 +379,7 @@ $bookings_url = ymo_booking_url('account/bookings');
             </div>
         <?php else: ?>
             <a href="<?= html_escape($quick_book_url); ?>" class="md-btn md-btn--tonal w-100 mb-2">
-                <span class="mi mi-leading">send</span>Quick book — no login
+                <span class="mi mi-leading">send</span>Quick book - no login
             </a>
             <a href="<?= html_escape($book_url); ?>" class="md-btn md-btn--filled w-100">
                 <span class="mi mi-leading">event_available</span>Book a service

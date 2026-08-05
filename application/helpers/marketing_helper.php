@@ -1405,7 +1405,7 @@ if (!function_exists('marketing_hero_context')) {
             : 'md-btn md-btn--tonal md-btn--lg';
         $cta_quick_book = array(
             'href'  => ymo_booking_url('quick-book'),
-            'label' => 'Quick book — no login',
+            'label' => 'Quick book - no login',
             'icon'  => 'send',
             'class' => $quick_book_btn_class,
         );

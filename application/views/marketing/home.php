@@ -101,7 +101,7 @@ echo ymo_marketing_render_hero('', $hero_page, isset($booking_url) ? $booking_ur
         <div class="d-flex flex-wrap justify-content-center gap-2">
             <a href="<?= html_escape($booking_url); ?>" class="md-btn md-btn--filled md-btn--lg">View packages &amp; book</a>
             <a href="<?= html_escape(ymo_booking_url('quick-book')); ?>" class="md-btn md-btn--tonal md-btn--lg">
-                <span class="mi mi-leading">send</span>Quick book — no login
+                <span class="mi mi-leading">send</span>Quick book - no login
             </a>
         </div>
         <p class="md-body-md mt-3 mb-0"><a href="<?= site_url('why-choose-ymo'); ?>">Why choose YMO over a doorstep mechanic?</a></p>

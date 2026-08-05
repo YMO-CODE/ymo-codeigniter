@@ -84,7 +84,7 @@ class Quick_book extends MY_Controller
         $lead_id = $this->_store_lead($payload);
 
         if ($lead_id) {
-            $this->flash('success', 'Thanks — we received your request and will call you shortly.');
+            $this->flash('success', 'Thanks - we received your request and will call you shortly.');
         } else {
             log_message('error', 'Quick book form could not be saved to crm_leads.');
             $this->flash('error', 'We could not save your request right now. Please call us directly and we will help you.');

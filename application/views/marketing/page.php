@@ -87,7 +87,7 @@ echo ymo_marketing_render_hero(
                         <span class="mi mi-leading">event_available</span>Book now
                     </a>
                     <a href="<?= html_escape(ymo_booking_url('quick-book')); ?>" class="md-btn md-btn--tonal">
-                        <span class="mi mi-leading">send</span>Quick book — no login
+                        <span class="mi mi-leading">send</span>Quick book - no login
                     </a>
                 </div>
             </div>
