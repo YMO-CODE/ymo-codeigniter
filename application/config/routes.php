@@ -225,6 +225,7 @@ if (ymo_is_admin_host_request()) {
     $route['llms.txt']             = 'marketing/seo/llms';
     $route['contact-us']           = 'marketing/contact/index';
     $route['about-us']             = 'marketing/pages/show';
+    $route['api/offers/active']    = 'api/offers/active';
 
     $marketing_pages_file = APPPATH.'config/marketing_pages_data.php';
     if (is_file($marketing_pages_file)) {
