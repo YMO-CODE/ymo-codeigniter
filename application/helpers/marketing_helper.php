@@ -1041,6 +1041,111 @@ if (!function_exists('marketing_hero_parse_price')) {
     }
 }
 
+if (!function_exists('marketing_default_og_image')) {
+    /** Default share/search image when a page has no explicit og_image. */
+    function marketing_default_og_image()
+    {
+        return '/assets/img/marketing/revslider/main/image_01.jpg';
+    }
+}
+
+if (!function_exists('marketing_city_hero_og_image')) {
+    /** @param string $city_slug @return string */
+    function marketing_city_hero_og_image($city_slug)
+    {
+        $city = marketing_city_by_slug($city_slug);
+        if (!$city || empty($city['hero_image'])) {
+            return '';
+        }
+        $hero = (string) $city['hero_image'];
+        if (strpos($hero, '/assets/') === 0) {
+            return $hero;
+        }
+        return '/assets/img/marketing/'.ltrim($hero, '/');
+    }
+}
+
+if (!function_exists('marketing_service_og_image_by_path')) {
+    /**
+     * Match a marketing URL path to a service-catalog og_image.
+     *
+     * @param string $path
+     * @return string
+     */
+    function marketing_service_og_image_by_path($path)
+    {
+        $path = marketing_normalize_path($path);
+        if ($path === '' || strpos($path, 'services/') !== 0) {
+            return '';
+        }
+        $cfg = marketing_cities_config();
+        if (!isset($cfg['services']) || !is_array($cfg['services'])) {
+            return '';
+        }
+        foreach ($cfg['services'] as $svc) {
+            if (empty($svc['og_image'])) {
+                continue;
+            }
+            if (!empty($svc['pune_slug']) && $path === marketing_normalize_path($svc['pune_slug'])) {
+                return (string) $svc['og_image'];
+            }
+            if (!empty($svc['city_slug'])) {
+                foreach (array('pune', 'indore', 'nashik') as $city) {
+                    $candidate = str_replace('{city}', $city, (string) $svc['city_slug']);
+                    if ($path === marketing_normalize_path($candidate)) {
+                        return (string) $svc['og_image'];
+                    }
+                }
+            }
+            if (!empty($svc['pune_slug'])) {
+                $slug_tail = marketing_normalize_path($svc['pune_slug']);
+                if ($slug_tail !== '' && strpos($path, $slug_tail) !== FALSE) {
+                    return (string) $svc['og_image'];
+                }
+            }
+        }
+        return '';
+    }
+}
+
+if (!function_exists('marketing_resolve_og_image')) {
+    /**
+     * Resolve the best share/search image path for a marketing page.
+     *
+     * @param string $path
+     * @param array  $page
+     * @return string Absolute or site-relative /assets/... path
+     */
+    function marketing_resolve_og_image($path, array $page = array())
+    {
+        if (!empty($page['og_image'])) {
+            return (string) $page['og_image'];
+        }
+        if (!empty($page['service_key'])) {
+            $svc = marketing_service_by_key($page['service_key']);
+            if ($svc && !empty($svc['og_image'])) {
+                return (string) $svc['og_image'];
+            }
+        }
+        $from_path = marketing_service_og_image_by_path($path);
+        if ($from_path !== '') {
+            return $from_path;
+        }
+        $city_slug = !empty($page['city_slug']) ? (string) $page['city_slug'] : '';
+        if ($city_slug === '' && strpos((string) $path, 'locations/') === 0) {
+            $parts = explode('/', trim((string) $path, '/'));
+            $city_slug = isset($parts[1]) ? $parts[1] : '';
+        }
+        if ($city_slug !== '') {
+            $city_image = marketing_city_hero_og_image($city_slug);
+            if ($city_image !== '') {
+                return $city_image;
+            }
+        }
+        return marketing_default_og_image();
+    }
+}
+
 if (!function_exists('marketing_hero_resolve_image')) {
     /**
      * @param string $path
@@ -1052,39 +1157,7 @@ if (!function_exists('marketing_hero_resolve_image')) {
     function marketing_hero_resolve_image($path, array $page, $h1, $brand)
     {
         $alt = trim($h1).' - '.$brand;
-        $src = '';
-
-        if (!empty($page['og_image'])) {
-            $src = (string) $page['og_image'];
-        } elseif (!empty($page['service_key'])) {
-            $svc = marketing_service_by_key($page['service_key']);
-            if ($svc && !empty($svc['og_image'])) {
-                $src = (string) $svc['og_image'];
-            }
-        }
-
-        if ($src === '' && !empty($page['city_slug'])) {
-            $city = marketing_city_by_slug($page['city_slug']);
-            if ($city && !empty($city['hero_image'])) {
-                $src = (string) $city['hero_image'];
-            }
-        }
-
-        if ($src === '' && strpos((string) $path, 'locations/') === 0) {
-            $parts = explode('/', trim($path, '/'));
-            if (isset($parts[1])) {
-                $city = marketing_city_by_slug($parts[1]);
-                if ($city && !empty($city['hero_image'])) {
-                    $src = (string) $city['hero_image'];
-                }
-            }
-        }
-
-        if ($src === '') {
-            $src = 'revslider/main/image_01.jpg';
-        }
-
-        $url = marketing_hero_image_url($src);
+        $url = marketing_hero_image_url(marketing_resolve_og_image($path, $page));
         if ($url === '') {
             return NULL;
         }
@@ -1581,6 +1654,13 @@ if (!function_exists('marketing_schema_graph')) {
         $email = $ci->config->item('ymo_support_email');
         $path  = isset($page_meta['canonical_path']) ? $page_meta['canonical_path'] : '';
         $url   = marketing_canonical_url($path);
+        $og_path = !empty($page_meta['og_image'])
+            ? (string) $page_meta['og_image']
+            : marketing_resolve_og_image($path, $page_meta);
+        $og_url = marketing_hero_image_url($og_path);
+        $image_object = ($og_url !== '')
+            ? array('@type' => 'ImageObject', 'url' => $og_url)
+            : NULL;
         $graph = array();
 
         $area_served = array();
@@ -1600,6 +1680,9 @@ if (!function_exists('marketing_schema_graph')) {
             'email'       => $email,
             'areaServed'  => $area_served,
         );
+        if ($og_url !== '') {
+            $graph[0]['image'] = $og_url;
+        }
 
         $trust = marketing_trust_config();
         if (!empty($trust['google_rating']) && !empty($trust['review_count'])) {
@@ -1617,7 +1700,7 @@ if (!function_exists('marketing_schema_graph')) {
         }
 
         if ($path === '') {
-            $graph[] = array(
+            $website = array(
                 '@type'       => 'WebSite',
                 '@id'         => marketing_canonical_url('').'#website',
                 'url'         => marketing_canonical_url(''),
@@ -1629,6 +1712,10 @@ if (!function_exists('marketing_schema_graph')) {
                     'query-input' => 'required name=search_term_string',
                 ),
             );
+            if ($og_url !== '') {
+                $website['image'] = $og_url;
+            }
+            $graph[] = $website;
         }
 
         $city_slug = isset($page_meta['city_slug']) ? $page_meta['city_slug'] : '';
@@ -1663,6 +1750,9 @@ if (!function_exists('marketing_schema_graph')) {
                 if (!empty($city['gbp_url'])) {
                     $local['sameAs'] = array($city['gbp_url']);
                 }
+                if ($og_url !== '') {
+                    $local['image'] = $og_url;
+                }
                 $graph[] = $local;
             }
         }
@@ -1678,7 +1768,7 @@ if (!function_exists('marketing_schema_graph')) {
                     $area_name = $loc_label.', '.$city['name'];
                 }
             }
-            $graph[] = array(
+            $service_node = array(
                 '@type'       => 'Service',
                 '@id'         => $url.'#service',
                 'name'        => isset($page_meta['h1']) ? $page_meta['h1'] : '',
@@ -1687,6 +1777,10 @@ if (!function_exists('marketing_schema_graph')) {
                 'areaServed'  => $area_name,
                 'url'         => $url,
             );
+            if ($og_url !== '') {
+                $service_node['image'] = $og_url;
+            }
+            $graph[] = $service_node;
         }
 
         if (isset($page_meta['page_type']) && $page_meta['page_type'] === 'brand') {
@@ -1695,7 +1789,7 @@ if (!function_exists('marketing_schema_graph')) {
                 $area_name = $city['name'];
             }
             $brand_label = !empty($page_meta['brand_name']) ? $page_meta['brand_name'] : '';
-            $graph[] = array(
+            $brand_node = array(
                 '@type'       => 'Service',
                 '@id'         => $url.'#service',
                 'name'        => isset($page_meta['h1']) ? $page_meta['h1'] : '',
@@ -1705,10 +1799,14 @@ if (!function_exists('marketing_schema_graph')) {
                 'url'         => $url,
                 'serviceType' => $brand_label !== '' ? $brand_label.' car servicing' : 'Car servicing',
             );
+            if ($og_url !== '') {
+                $brand_node['image'] = $og_url;
+            }
+            $graph[] = $brand_node;
         }
 
         if (isset($page_meta['page_type']) && $page_meta['page_type'] === 'blog') {
-            $graph[] = array(
+            $article = array(
                 '@type'         => 'BlogPosting',
                 '@id'           => $url.'#article',
                 'headline'      => isset($page_meta['h1']) ? $page_meta['h1'] : '',
@@ -1727,6 +1825,27 @@ if (!function_exists('marketing_schema_graph')) {
                     'url'   => marketing_canonical_url(''),
                 ),
             );
+            if ($og_url !== '') {
+                $article['image'] = $og_url;
+            }
+            $graph[] = $article;
+        }
+
+        if ($path !== '') {
+            $web_page = array(
+                '@type'       => 'WebPage',
+                '@id'         => $url.'#webpage',
+                'url'         => $url,
+                'name'        => isset($page_meta['h1']) ? $page_meta['h1'] : '',
+                'description' => isset($page_meta['meta_description']) ? $page_meta['meta_description'] : '',
+                'isPartOf'    => array('@id' => marketing_canonical_url('').'#website'),
+                'about'       => array('@id' => marketing_canonical_url('').'#organization'),
+            );
+            if ($image_object !== NULL) {
+                $web_page['primaryImageOfPage'] = $image_object;
+                $web_page['image'] = $og_url;
+            }
+            $graph[] = $web_page;
         }
 
         $crumbs = marketing_breadcrumbs($path, $page_meta);

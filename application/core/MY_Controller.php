@@ -131,6 +131,12 @@ class Marketing_Controller extends MY_Controller
         if (empty($data['canonical_path'])) {
             $data['canonical_path'] = trim($this->uri->uri_string(), '/');
         }
+        $page_for_og = (isset($data['page']) && is_array($data['page'])) ? $data['page'] : $data;
+        $resolved_og = marketing_resolve_og_image($data['canonical_path'], $page_for_og);
+        $data['og_image'] = $resolved_og;
+        if (isset($data['page']) && is_array($data['page'])) {
+            $data['page']['og_image'] = $resolved_og;
+        }
         $data['content'] = $this->load->view($view, $data, TRUE);
         $this->load->view('layout/marketing', $data);
     }
