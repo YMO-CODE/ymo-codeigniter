@@ -29,7 +29,8 @@
             <?= form_close(); ?>
 
             <p class="text-center ymo-muted mt-4 mb-0 small">
-                New here? <a href="<?= site_url('signup'); ?>">Create an account</a>
+                New here? <a href="<?= site_url('signup'); ?>">Create an account</a><br>
+                No account? <a href="<?= site_url('quick-book'); ?>">Quick book without signing in</a>
             </p>
         </div>
     </div>

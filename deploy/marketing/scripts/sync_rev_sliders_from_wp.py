@@ -117,7 +117,7 @@ def best_slide_paths(html_text: str) -> list[str]:
 
     # RevSlider lazy slides first (most reliable)
     for url in IMG_ATTR.findall(html_text):
-        if "data-lazyload" in html_text:  # ensure we're in rs context — still collect all lazy attrs
+        if "data-lazyload" in html_text:  # ensure we're in rs context - still collect all lazy attrs
             pass
         consider(url)
 
@@ -232,7 +232,7 @@ def write_sliders_php(sliders: dict[str, dict]) -> str:
         "<?php\n"
         "defined('BASEPATH') OR exit('No direct script access allowed');\n\n"
         "/**\n"
-        " * Revolution Slider replacements — synced from live WordPress.\n"
+        " * Revolution Slider replacements - synced from live WordPress.\n"
         " * Regenerate: python deploy/marketing/scripts/sync_rev_sliders_from_wp.py\n"
         " */\n"
         "return array(\n"

@@ -24,10 +24,10 @@ if (!empty($booking['remarks'])) {
 }
 $body .= '</table>
 
-    <p style="margin:0 0 16px;">Our team will call you shortly to schedule pick-up. No payment is required online — pricing is confirmed before service.</p>
+    <p style="margin:0 0 16px;">Our team will call you shortly to schedule pick-up. No payment is required online - pricing is confirmed before service.</p>
     <p style="margin:0 0 4px;">
         <a href="'.htmlspecialchars(site_url('account/bookings')).'" style="background:#3a6f37;color:#fff;text-decoration:none;padding:10px 18px;border-radius:6px;display:inline-block;">View my bookings</a>
     </p>
 ';
-$subject = 'Booking confirmed — '.$booking['reference'];
+$subject = 'Booking confirmed - '.$booking['reference'];
 include __DIR__.'/_layout.php';

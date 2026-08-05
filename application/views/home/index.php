@@ -7,7 +7,7 @@
                 <p class="text-uppercase small fw-bold text-warning mb-2"><span class="mi mi-sm mi-leading">verified</span>Trusted car servicing</p>
                 <h1 class="mb-3">Book your car servicing online in under 2 minutes.</h1>
                 <p class="lead mb-4">
-                    Periodic service, AC repair, denting &amp; polishing — done by expert
+                    Periodic service, AC repair, denting &amp; polishing - done by expert
                     technicians with transparent pricing. Pick a package, add your car,
                     we'll take it from there.
                 </p>
@@ -16,6 +16,9 @@
                         <span class="mi mi-leading">build</span>View packages
                     </a>
                     <?php if (!$this->user): ?>
+                        <a href="<?= site_url('quick-book'); ?>" class="btn btn-warning btn-lg text-dark">
+                            <span class="mi mi-leading">send</span>Quick book — no login
+                        </a>
                         <a href="<?= site_url('signup'); ?>" class="btn btn-outline-light btn-lg">
                             <span class="mi mi-leading">person_add</span>Sign up free
                         </a>
@@ -43,7 +46,7 @@
                 <span class="mi mi-xl" style="color:var(--ymo-primary);">build</span>
                 <div class="display-6 text-primary fw-bold mt-2">1</div>
                 <h5>Choose a package</h5>
-                <p class="ymo-muted mb-0">Pick from periodic, premium, or AC service — clear pricing, no surprises.</p>
+                <p class="ymo-muted mb-0">Pick from periodic, premium, or AC service - clear pricing, no surprises.</p>
             </div>
         </div>
         <div class="col-md-4">
@@ -51,7 +54,7 @@
                 <span class="mi mi-xl" style="color:var(--ymo-primary);">directions_car</span>
                 <div class="display-6 text-primary fw-bold mt-2">2</div>
                 <h5>Add your vehicle</h5>
-                <p class="ymo-muted mb-0">Your make, variant, registration number — saved for next time.</p>
+                <p class="ymo-muted mb-0">Your make, variant, registration number - saved for next time.</p>
             </div>
         </div>
         <div class="col-md-4">
@@ -83,8 +86,21 @@
                     <a href="<?= site_url('book/'.$p['slug']); ?>" class="btn btn-primary mt-auto">
                         <span class="mi mi-leading">event_available</span>Book now
                     </a>
+                    <a href="<?= site_url('quick-book?package='.rawurlencode($p['slug'])); ?>" class="btn btn-link btn-sm mt-2 px-0">
+                        Request a callback instead
+                    </a>
                 </div>
             </div>
         <?php endforeach; ?>
     </div>
+
+    <?php if (!$this->user): ?>
+    <div class="md-card-filled text-center py-4 px-3 mt-5">
+        <h2 class="h4 mb-2">Don't want to create an account?</h2>
+        <p class="ymo-muted mb-3">Fill in your details once — our team will call you to confirm your booking.</p>
+        <a href="<?= site_url('quick-book'); ?>" class="btn btn-primary btn-lg">
+            <span class="mi mi-leading">send</span>Quick book — no login
+        </a>
+    </div>
+    <?php endif; ?>
 </section>

@@ -6,11 +6,21 @@
         <p class="ymo-muted">All packages include doorstep pick-up &amp; drop within serviceable areas.</p>
     </div>
 
-    <?php if (!empty($this->user) && empty($has_vehicles)): ?>
+    <?php if (empty($this->user)): ?>
+        <div class="alert alert-light border d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+            <div>
+                <strong>No account needed.</strong>
+                <span class="ymo-muted"> Share your details and our team will call you back.</span>
+            </div>
+            <a href="<?= site_url('quick-book'); ?>" class="btn btn-primary btn-sm">
+                <span class="mi mi-sm mi-leading">send</span>Quick book
+            </a>
+        </div>
+    <?php elseif (!empty($this->user) && empty($has_vehicles)): ?>
         <div class="alert alert-info d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4">
             <span>
                 <span class="mi mi-sm mi-leading">directions_car</span>
-                Add your vehicle once — then choose a package to book.
+                Add your vehicle once - then choose a package to book.
             </span>
             <a href="<?= site_url('vehicles/new?next=packages'); ?>" class="btn btn-primary btn-sm">
                 <span class="mi mi-sm mi-leading">add</span>Add vehicle
@@ -32,6 +42,9 @@
                     </ul>
                     <a href="<?= site_url('book/'.$p['slug']); ?>" class="btn btn-primary mt-auto">
                         <span class="mi mi-leading">event_available</span>Book now
+                    </a>
+                    <a href="<?= site_url('quick-book?package='.rawurlencode($p['slug'])); ?>" class="btn btn-link btn-sm mt-2 px-0">
+                        Request a callback instead
                     </a>
                 </div>
             </div>

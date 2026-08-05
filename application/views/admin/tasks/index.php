@@ -51,7 +51,7 @@
                         <a href="<?= admin_url('leads/'.$t['lead_id']); ?>"><?= html_escape($t['lead_name']); ?></a>
                     <?php elseif ($t['contact_name']): ?>
                         <a href="<?= admin_url('customers/'.$t['contact_id']); ?>"><?= html_escape($t['contact_name']); ?></a>
-                    <?php else: ?>—<?php endif; ?>
+                    <?php else: ?>-<?php endif; ?>
                 </td>
                 <td class="small"><?= html_escape($t['assignee_name']); ?></td>
                 <td class="small"><?= html_escape($t['status']); ?></td>

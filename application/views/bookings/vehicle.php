@@ -55,7 +55,7 @@
                                         <span class="ymo-muted font-monospace small"><?= html_escape($v['vehicle_number']); ?></span>
                                         <?php if ($blocked): ?>
                                             <br><span class="badge bg-warning-subtle text-dark mt-1">
-                                                In service — #<?= html_escape($active['reference']); ?>
+                                                In service - #<?= html_escape($active['reference']); ?>
                                             </span>
                                         <?php endif; ?>
                                     </div>

@@ -31,7 +31,7 @@
             <tr>
                 <td><?= html_escape($u['name']); ?></td>
                 <td class="small"><?= html_escape($u['email']); ?></td>
-                <td class="small"><?= html_escape($u['crm_role_label'] ?? '—'); ?></td>
+                <td class="small"><?= html_escape($u['crm_role_label'] ?? '-'); ?></td>
                 <td>
                     <?php if ($u['is_active']): ?>
                         <span class="badge bg-success-subtle text-success">Active</span>

@@ -136,7 +136,7 @@ def parse_live_page(html_text: str) -> dict:
         intro = intro[:277].rsplit(" ", 1)[0] + "…"
 
     return {
-        "title": title + (" — Your Mechanic Online" if "ymo" not in title.lower() else ""),
+        "title": title + (" - Your Mechanic Online" if "ymo" not in title.lower() else ""),
         "meta_description": desc[:160] if desc else intro[:160],
         "h1": h1,
         "intro": intro,
@@ -157,7 +157,7 @@ def extract_service_cards_from_html(html_text: str) -> dict[str, dict]:
         title = strip_tags(m.group(2))
         para = clean_body_fragment(m.group(3))
         cards[href] = {
-            "title": title + " — Your Mechanic Online",
+            "title": title + " - Your Mechanic Online",
             "meta_description": strip_tags(para)[:160],
             "h1": title,
             "intro": strip_tags(para)[:280],
@@ -211,8 +211,8 @@ def build_hub_pages(service_cards: dict[str, dict]) -> dict[str, dict]:
         )
 
     services_hub = {
-        "title": "Car Services in Pune & Indore — Your Mechanic Online",
-        "meta_description": "Periodic service, AC repair, denting & painting, rubbing & polishing, interior cleaning, brake repair — book online with YMO.",
+        "title": "Car Services in Pune & Indore - Your Mechanic Online",
+        "meta_description": "Periodic service, AC repair, denting & painting, rubbing & polishing, interior cleaning, brake repair - book online with YMO.",
         "h1": "Our car services",
         "intro": "Expert car care with transparent pricing and doorstep pick-up across Pune and Indore.",
         "body": "".join(cards_html),
@@ -234,8 +234,8 @@ def build_hub_pages(service_cards: dict[str, dict]) -> dict[str, dict]:
             loc_links.append(f'<li><a href="/{slug}">Car servicing in {label}</a></li>')
 
     locations_pune = {
-        "title": "Car Servicing in Pune — Your Mechanic Online",
-        "meta_description": "Book car service in Pune — Baner, Wakad, Hinjewadi, Aundh, Bavdhan, Viman Nagar and more. Doorstep pick-up.",
+        "title": "Car Servicing in Pune - Your Mechanic Online",
+        "meta_description": "Book car service in Pune - Baner, Wakad, Hinjewadi, Aundh, Bavdhan, Viman Nagar and more. Doorstep pick-up.",
         "h1": "Car servicing in Pune",
         "intro": "Doorstep pick-up, periodic service, AC repair, denting & polishing across Pune.",
         "body": "<ul>" + "".join(loc_links) + "</ul><p><a href=\"/book-car-servicing-in-pune/\">Book car servicing in Pune</a></p>",
@@ -243,8 +243,8 @@ def build_hub_pages(service_cards: dict[str, dict]) -> dict[str, dict]:
     }
 
     locations_indore = {
-        "title": "Car Servicing in Indore — Your Mechanic Online",
-        "meta_description": "Affordable car servicing in Indore — denting, AC repair, periodic service. Book online with YMO.",
+        "title": "Car Servicing in Indore - Your Mechanic Online",
+        "meta_description": "Affordable car servicing in Indore - denting, AC repair, periodic service. Book online with YMO.",
         "h1": "Car servicing in Indore",
         "intro": "Professional car care and transparent pricing for Indore drivers.",
         "body": '<p><a href="/bestcar-services-indore-affordable-solutions/">Affordable car services in Indore</a></p>',
@@ -253,12 +253,12 @@ def build_hub_pages(service_cards: dict[str, dict]) -> dict[str, dict]:
 
     about_us = {
         "title": "About Your Mechanic Online",
-        "meta_description": "Your Mechanic Online — trusted car servicing, repairs, and doorstep pick-up across Pune and Indore.",
+        "meta_description": "Your Mechanic Online - trusted car servicing, repairs, and doorstep pick-up across Pune and Indore.",
         "h1": "About Your Mechanic Online",
         "intro": "We bring expert car servicing to your doorstep with transparent pricing and trained technicians.",
         "body": (
             "<p>Your Mechanic Online (YMO) is a leading car service provider in Pune and Indore. "
-            "We offer periodic maintenance, AC repair, denting & painting, luxury car care, and more — "
+            "We offer periodic maintenance, AC repair, denting & painting, luxury car care, and more - "
             "with free doorstep pick-up and drop.</p>"
             "<p><a href=\"/contact-us\">Contact us</a> · "
             "<a href=\"/book-car-servicing-in-pune/\">Book a service</a></p>"

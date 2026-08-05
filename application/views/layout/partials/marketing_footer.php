@@ -34,6 +34,7 @@ $mail  = $ci->config->item('ymo_support_email');
                 <h6>Book online</h6>
                 <ul class="list-unstyled md-body-md mb-0">
                     <li class="mb-2"><a href="<?= html_escape(ymo_booking_url('packages')); ?>">Packages</a></li>
+                    <li class="mb-2"><a href="<?= html_escape(ymo_booking_url('quick-book')); ?>">Quick book</a></li>
                     <li><a href="<?= html_escape(ymo_booking_url('signup')); ?>">Sign up</a></li>
                 </ul>
             </div>
@@ -47,7 +48,10 @@ $mail  = $ci->config->item('ymo_support_email');
         </div>
         <div class="ymo-footer-bottom d-flex justify-content-between flex-wrap gap-2 mt-4 pt-3">
             <span class="md-body-md mb-0">&copy; <?= date('Y'); ?> <?= html_escape($brand); ?>. All rights reserved.</span>
-            <a href="<?= html_escape(ymo_booking_url('packages')); ?>" class="md-btn md-btn--tonal md-btn--sm">Book a service</a>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="<?= html_escape(ymo_booking_url('quick-book')); ?>" class="md-btn md-btn--tonal md-btn--sm">Quick book</a>
+                <a href="<?= html_escape(ymo_booking_url('packages')); ?>" class="md-btn md-btn--tonal md-btn--sm">Book a service</a>
+            </div>
         </div>
     </div>
 </footer>

@@ -11,8 +11,8 @@
                 <td><?= html_escape($c['name']); ?></td>
                 <td class="small text-uppercase"><?= html_escape($c['channel']); ?></td>
                 <td class="small"><?= html_escape($c['status']); ?></td>
-                <td class="small"><?= $c['scheduled_at'] ? html_escape(date('d M Y H:i', strtotime($c['scheduled_at']))) : '—'; ?></td>
-                <td class="small"><?= html_escape($c['creator_name'] ?? '—'); ?></td>
+                <td class="small"><?= $c['scheduled_at'] ? html_escape(date('d M Y H:i', strtotime($c['scheduled_at']))) : '-'; ?></td>
+                <td class="small"><?= html_escape($c['creator_name'] ?? '-'); ?></td>
                 <td class="text-end"><a href="<?= admin_url('campaigns/'.$c['id']); ?>" class="btn btn-sm btn-outline-primary">Open</a></td>
             </tr>
         <?php endforeach; ?>

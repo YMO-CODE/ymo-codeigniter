@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * Revolution Slider replacements — local assets under assets/img/marketing/.
+ * Revolution Slider replacements - local assets under assets/img/marketing/.
  * Regenerate: python deploy/marketing/scripts/sync_rev_sliders_from_wp.py
  */
 return array(

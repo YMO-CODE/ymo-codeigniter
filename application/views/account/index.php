@@ -26,7 +26,7 @@
             <?php if (!empty($referral_code)): ?>
                 <div class="md-card-outlined mt-3">
                     <h6 class="mb-2"><span class="mi mi-sm mi-leading">redeem</span>Refer friends</h6>
-                    <p class="small ymo-muted mb-2">Share your code — you earn &#8377;<?= number_format((float) $referrer_credit, 0); ?>, they get &#8377;<?= number_format((float) $referred_credit, 0); ?> after their first completed service.</p>
+                    <p class="small ymo-muted mb-2">Share your code - you earn &#8377;<?= number_format((float) $referrer_credit, 0); ?>, they get &#8377;<?= number_format((float) $referred_credit, 0); ?> after their first completed service.</p>
                     <div class="input-group input-group-sm mb-2">
                         <input type="text" class="form-control font-monospace text-uppercase" id="ymo-ref-code" readonly value="<?= html_escape($referral_code); ?>">
                         <button class="btn btn-outline-primary" type="button" id="ymo-ref-copy">Copy</button>

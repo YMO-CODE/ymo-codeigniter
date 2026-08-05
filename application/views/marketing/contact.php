@@ -36,8 +36,11 @@
             <div class="md-card-elevated p-4 h-100">
                 <h2 class="md-title-lg mb-2">Or book directly</h2>
                 <p class="md-body-md mb-4">Skip the form - choose a package and book in under 2 minutes.</p>
-                <a href="<?= html_escape($booking_url); ?>" class="md-btn md-btn--outlined w-100 mb-4">
+                <a href="<?= html_escape($booking_url); ?>" class="md-btn md-btn--outlined w-100 mb-3">
                     <span class="mi mi-leading">event_available</span>Book online
+                </a>
+                <a href="<?= html_escape(ymo_booking_url('quick-book')); ?>" class="md-btn md-btn--filled w-100 mb-4">
+                    <span class="mi mi-leading">send</span>Quick book — no login
                 </a>
                 <hr class="ymo-divider">
                 <p class="md-body-md mb-2"><span class="md-label-lg d-block mb-1">Phone</span><a href="tel:<?= html_escape(preg_replace('/[^+\d]/', '', $phone)); ?>"><?= html_escape($phone); ?></a></p>

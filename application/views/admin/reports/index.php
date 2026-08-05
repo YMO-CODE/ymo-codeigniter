@@ -52,7 +52,7 @@
                 <tr>
                     <td><a href="<?= admin_url('customers/'.$c['id']); ?>"><?= html_escape($c['name']); ?></a></td>
                     <td class="small"><?= html_escape($c['company']); ?></td>
-                    <td class="small"><?= !empty($c['due_at']) ? html_escape(date('d M Y', strtotime($c['due_at']))) : '—'; ?></td>
+                    <td class="small"><?= !empty($c['due_at']) ? html_escape(date('d M Y', strtotime($c['due_at']))) : '-'; ?></td>
                 </tr>
             <?php endforeach; ?>
             </tbody></table>
@@ -103,8 +103,8 @@
             </tbody></table>
             <p class="small ymo-muted mt-2 mb-0">
                 Webhook URLs (POST unless Meta verify GET):<br>
-                Meta: <code><?= html_escape(site_url('api/webhooks/meta')); ?></code> — Lead Forms (<code>leadgen</code>) + Instagram DMs (<code>messages</code>)<br>
-                Website: <code><?= html_escape(site_url('api/webhooks/website')); ?></code> — header <code>X-CRM-Signature: sha256=…</code><br>
+                Meta: <code><?= html_escape(site_url('api/webhooks/meta')); ?></code> - Lead Forms (<code>leadgen</code>) + Instagram DMs (<code>messages</code>)<br>
+                Website: <code><?= html_escape(site_url('api/webhooks/website')); ?></code> - header <code>X-CRM-Signature: sha256=…</code><br>
                 WhatsApp: <code><?= html_escape(site_url('api/webhooks/whatsapp')); ?></code>
             </p>
         </div>

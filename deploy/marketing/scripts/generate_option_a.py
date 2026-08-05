@@ -117,20 +117,20 @@ def slug_to_h1(slug: str) -> str:
 def meta_for(path: str, h1: str) -> str:
     ptype = infer_page_type(path)
     if ptype == "service":
-        return f"{h1} — book online with Your Mechanic Online. Transparent pricing and doorstep pick-up in Pune."
+        return f"{h1} - book online with Your Mechanic Online. Transparent pricing and doorstep pick-up in Pune."
     if ptype == "luxury":
-        return f"{h1} — specialist luxury car care in Pune. Book Mercedes, BMW, and Audi servicing with YMO."
+        return f"{h1} - specialist luxury car care in Pune. Book Mercedes, BMW, and Audi servicing with YMO."
     if "indore" in path:
-        return f"{h1} — affordable car servicing in Indore. Book online with Your Mechanic Online."
-    return f"{h1} — trusted car servicing with doorstep pick-up. Book online with Your Mechanic Online."
+        return f"{h1} - affordable car servicing in Indore. Book online with Your Mechanic Online."
+    return f"{h1} - trusted car servicing with doorstep pick-up. Book online with Your Mechanic Online."
 
 
 def intro_for(path: str) -> str:
     ptype = infer_page_type(path)
     if ptype == "blog":
-        return "Expert advice from the Your Mechanic Online team — when to service, what to expect, and how to book."
+        return "Expert advice from the Your Mechanic Online team - when to service, what to expect, and how to book."
     if ptype == "service":
-        return "Professional service, clear pricing, and convenient scheduling — book your slot in minutes."
+        return "Professional service, clear pricing, and convenient scheduling - book your slot in minutes."
     if ptype == "luxury":
         return "OEM-grade processes, trained technicians, and transparent pricing for premium vehicles."
     return "Doorstep pick-up and drop, trained technicians, and transparent pricing for local drivers."
@@ -175,13 +175,13 @@ def main() -> None:
         "<?php",
         "defined('BASEPATH') OR exit('No direct script access allowed');",
         "",
-        "/** Auto-generated Option A page stubs — replace body copy during WP migration. */",
+        "/** Auto-generated Option A page stubs - replace body copy during WP migration. */",
         "return array(",
     ]
     for path in missing:
         h1 = slug_to_h1(path)
         lines.append(f"    {php_str(path)} => array(")
-        lines.append(f"        'title'            => {php_str(h1 + ' — Your Mechanic Online')},")
+        lines.append(f"        'title'            => {php_str(h1 + ' - Your Mechanic Online')},")
         lines.append(f"        'meta_description' => {php_str(meta_for(path, h1))},")
         lines.append(f"        'h1'               => {php_str(h1)},")
         lines.append(f"        'intro'            => {php_str(intro_for(path))},")

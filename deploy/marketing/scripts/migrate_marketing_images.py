@@ -28,7 +28,7 @@ CONFIG_FILES = [
     ROOT / "application" / "config" / "marketing_pages_option_a.php",
     ROOT / "application" / "config" / "marketing_sliders.php",
 ]
-# Known RevSlider assets (homepage alias "main") — fetch even if not yet referenced in HTML.
+# Known RevSlider assets (homepage alias "main") - fetch even if not yet referenced in HTML.
 EXTRA_UPLOAD_PATHS = [
     "revslider/main/image_01.jpg",
     "revslider/main/image_021.jpg",
@@ -88,7 +88,7 @@ def choose_download_set(all_paths: set[str]) -> set[str]:
             full.sort(key=lambda p: ("-scaled" in p.lower(), -len(p)))
             chosen.add(full[0])
         else:
-            # Only thumbnails — take the largest width from suffix if parseable.
+            # Only thumbnails - take the largest width from suffix if parseable.
             def width_key(p: str) -> int:
                 m = re.search(r"-(\d+)x\d+\.", p, re.I)
                 return int(m.group(1)) if m else 0
@@ -253,7 +253,7 @@ def main() -> None:
                 downloaded.add(rel)
             elif ok and args.dry_run:
                 downloaded.add(rel)
-            print(f"  [{i}/{len(to_fetch)}] {rel} — {status}")
+            print(f"  [{i}/{len(to_fetch)}] {rel} - {status}")
             if not args.dry_run and status == "downloaded":
                 time.sleep(0.15)
 

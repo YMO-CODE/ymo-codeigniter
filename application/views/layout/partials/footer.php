@@ -33,6 +33,7 @@ $mail  = $ci->config->item('ymo_support_email');
                 <h6>Booking</h6>
                 <ul class="list-unstyled small">
                     <li><a href="<?= site_url('packages'); ?>">Packages</a></li>
+                    <li><a href="<?= site_url('quick-book'); ?>">Quick book</a></li>
                     <li><a href="<?= site_url('signup'); ?>">Sign up</a></li>
                     <li><a href="<?= site_url('login'); ?>">Sign in</a></li>
                 </ul>

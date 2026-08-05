@@ -9,7 +9,7 @@ $body = '
     <p style="margin:0 0 24px;">
         <a href="https://search.google.com/local/writereview?placeid=YOUR_GOOGLE_PLACE_ID" style="background:#3a6f37;color:#fff;text-decoration:none;padding:10px 18px;border-radius:6px;display:inline-block;">Leave a Google review</a>
     </p>
-    <p style="margin:0;color:#6b7280;font-size:13px;">Have feedback that\'s not for public eyes? Just hit reply — we read every email.</p>
+    <p style="margin:0;color:#6b7280;font-size:13px;">Have feedback that\'s not for public eyes? Just hit reply - we read every email.</p>
 ';
-$subject = 'Quick favour — how did we do?';
+$subject = 'Quick favour - how did we do?';
 include __DIR__.'/_layout.php';

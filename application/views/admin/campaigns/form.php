@@ -32,7 +32,7 @@ $seg = json_decode($camp['segment_json'] ?? '{}', TRUE) ?: array();
                 <div class="col-md-6">
                     <div class="form-floating">
                         <select class="form-select" name="tag_id">
-                            <option value="">—</option>
+                            <option value="">-</option>
                             <?php foreach ($tags as $t): ?>
                                 <option value="<?= (int) $t['id']; ?>" <?= (int)($seg['tag_id'] ?? 0) === (int)$t['id'] ? 'selected' : ''; ?>><?= html_escape($t['name']); ?></option>
                             <?php endforeach; ?>

@@ -18,7 +18,7 @@
                     </dd>
 
                     <dt class="col-sm-4 text-muted"><span class="mi mi-sm mi-leading">event</span>Preferred date</dt>
-                    <dd class="col-sm-8"><?= !empty($draft['preferred_date']) ? html_escape(date('d M Y', strtotime($draft['preferred_date']))) : '<span class="ymo-muted">Any day — we\'ll call to schedule</span>'; ?></dd>
+                    <dd class="col-sm-8"><?= !empty($draft['preferred_date']) ? html_escape(date('d M Y', strtotime($draft['preferred_date']))) : '<span class="ymo-muted">Any day - we\'ll call to schedule</span>'; ?></dd>
 
                     <?php if (!empty($draft['remarks'])): ?>
                         <dt class="col-sm-4 text-muted"><span class="mi mi-sm mi-leading">edit_note</span>Remarks</dt>

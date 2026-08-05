@@ -270,6 +270,8 @@ if (ymo_is_admin_host_request()) {
 
     // Public marketing-ish pages
     $route['packages'] = 'bookings/packages';
+    $route['quick-book'] = 'quick_book/index';
+    $route['quick-book/thanks'] = 'quick_book/thanks';
 
     // Booking flow
     $route['book/(:any)'] = 'bookings/start/$1';

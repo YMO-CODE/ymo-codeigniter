@@ -39,9 +39,9 @@ ON DUPLICATE KEY UPDATE `sort_order` = VALUES(`sort_order`);
 INSERT INTO `service_packages` (`id`, `name`, `slug`, `summary`, `price`, `sort_order`)
 VALUES
     (1, 'Basic Service',     'basic-service',     'Quick health check and essential top-ups to keep your car running smoothly.',  2499.00, 10),
-    (2, 'Standard Service',  'standard-service',  'Comprehensive periodic maintenance — recommended every 6 months / 10,000 km.', 4999.00, 20),
+    (2, 'Standard Service',  'standard-service',  'Comprehensive periodic maintenance - recommended every 6 months / 10,000 km.', 4999.00, 20),
     (3, 'Premium Service',   'premium-service',   'Full deep-dive servicing including AC, brakes and interior detailing.',        8499.00, 30),
-    (4, 'AC Service Special','ac-service',        'Dedicated air-conditioning service — gas top-up, leak check, vent clean.',     1999.00, 40)
+    (4, 'AC Service Special','ac-service',        'Dedicated air-conditioning service - gas top-up, leak check, vent clean.',     1999.00, 40)
 ON DUPLICATE KEY UPDATE
     `name`       = VALUES(`name`),
     `summary`    = VALUES(`summary`),

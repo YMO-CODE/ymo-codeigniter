@@ -26,5 +26,5 @@ $body .= '</table>
 
     <p><a href="'.htmlspecialchars(admin_url('bookings/'.$booking['id'])).'" style="background:#111418;color:#fff;text-decoration:none;padding:10px 18px;border-radius:6px;display:inline-block;">Open in admin</a></p>
 ';
-$subject = 'New booking — '.$booking['reference'];
+$subject = 'New booking - '.$booking['reference'];
 include __DIR__.'/_layout.php';

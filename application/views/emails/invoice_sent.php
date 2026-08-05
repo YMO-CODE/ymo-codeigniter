@@ -21,5 +21,5 @@ $body = '
     <p style="margin:0 0 16px;color:#3a3f46;">Prepared by: '.htmlspecialchars($invoice['created_by_name']).'</p>
     <p style="margin:0;color:#6b7280;font-size:13px;">If you have any questions about this invoice, reply to this email or call our support line.</p>
 ';
-$subject = 'Service invoice '.$invoice['invoice_number'].' — '.$invoice['booking_reference'];
+$subject = 'Service invoice '.$invoice['invoice_number'].' - '.$invoice['booking_reference'];
 include __DIR__.'/_layout.php';

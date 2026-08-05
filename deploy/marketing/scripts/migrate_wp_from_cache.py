@@ -209,7 +209,7 @@ def update_php_file(path: Path, updates: dict[str, dict]) -> int:
 def main() -> None:
     wp_pages = load_wp_pages()
     if not wp_pages:
-        raise SystemExit(f"No cache in {CACHE_DIR} — run migrate_wp_content.php first or add pages-*.json")
+        raise SystemExit(f"No cache in {CACHE_DIR} - run migrate_wp_content.php first or add pages-*.json")
 
     parent_paths = build_parent_paths(wp_pages)
     aliases = load_aliases()

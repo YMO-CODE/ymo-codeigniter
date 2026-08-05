@@ -3,7 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $ci      = &get_instance();
 $admin   = $ci->session->userdata('admin');
 $brand_name = $ci->config->item('ymo_brand_name');
-$page_title = isset($title) ? $title.' — Admin · '.$brand_name : 'Admin · '.$brand_name;
+$page_title = isset($title) ? $title.' - Admin · '.$brand_name : 'Admin · '.$brand_name;
 ?>
 <!DOCTYPE html>
 <html lang="en">

@@ -5,10 +5,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * Public booking entry-points + multi-step flow.
  *
  *   /packages                 list of active packages (public)
- *   /book/<slug>              start a booking — sets session draft, sends to step 2
- *   /booking/vehicle          step 2 — pick (or add) a vehicle (auth)
- *   /booking/details          step 3 — remarks + preferred date    (auth)
- *   /booking/confirm          step 4 — review summary               (auth)
+ *   /book/<slug>              start a booking - sets session draft, sends to step 2
+ *   /booking/vehicle          step 2 - pick (or add) a vehicle (auth)
+ *   /booking/details          step 3 - remarks + preferred date    (auth)
+ *   /booking/confirm          step 4 - review summary               (auth)
  *   /booking/place            POST: persist booking + dispatch notifications
  *   /booking/success/<id>     post-create confirmation page
  *   /booking/rebook/<id>      copy a past booking into the wizard
@@ -52,7 +52,7 @@ class Bookings extends MY_Controller
         $this->_set_draft(array('package_id' => (int) $package['id']));
 
         if (empty($this->user) || empty($this->user['id'])) {
-            $this->flash('info', 'Sign in to continue your booking.');
+            $this->flash('info', 'Sign in to continue your booking — or use the quick book form if you prefer not to create an account.');
             redirect(site_url('login?next='.urlencode('book/'.$slug)));
         }
         if (!ymo_user_is_verified($this->user)) {
@@ -61,7 +61,7 @@ class Bookings extends MY_Controller
         }
 
         if (empty($this->vehicle_model->for_user($this->user['id']))) {
-            $this->flash('info', 'Add your vehicle first — then pick this package to continue.');
+            $this->flash('info', 'Add your vehicle first - then pick this package to continue.');
             redirect(site_url('vehicles/new?next='.urlencode('book/'.$slug)));
         }
 
@@ -321,7 +321,7 @@ class Bookings extends MY_Controller
             return NULL;
         }
         $label = ucfirst(str_replace('_', ' ', $active['status']));
-        return 'This vehicle already has an active booking (#'.$active['reference'].' — '.$label.'). '
+        return 'This vehicle already has an active booking (#'.$active['reference'].' - '.$label.'). '
             .'Please wait until it is completed or contact us if you need help.';
     }
 
@@ -335,7 +335,7 @@ class Bookings extends MY_Controller
         ));
 
         // Email confirmation
-        $subject = 'Your booking is confirmed — '.$booking['reference'];
+        $subject = 'Your booking is confirmed - '.$booking['reference'];
         $this->mailer->send_view($booking['user_email'], $subject, 'emails/booking_confirmed', array(
             'booking' => $booking,
         ));

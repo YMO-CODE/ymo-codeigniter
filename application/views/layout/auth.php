@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 $ci = &get_instance();
-$page_title = isset($title) ? $title.' — '.$ci->config->item('ymo_brand_name') : $ci->config->item('ymo_brand_name');
+$page_title = isset($title) ? $title.' - '.$ci->config->item('ymo_brand_name') : $ci->config->item('ymo_brand_name');
 ?>
 <!DOCTYPE html>
 <html lang="en">

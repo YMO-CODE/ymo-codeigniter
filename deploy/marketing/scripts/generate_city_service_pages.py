@@ -39,7 +39,7 @@ CITIES = {
 }
 
 SERVICES = [
-    {"key": "complete-car-servicing", "title": "Complete Car Servicing", "slug": "services/complete-car-servicing-in-{city}", "price": 1999, "overview": "Periodic maintenance with oil and filter changes, brake cleaning, AC filter service, coolant top-up, and interior vacuum — with free pick-up and delivery."},
+    {"key": "complete-car-servicing", "title": "Complete Car Servicing", "slug": "services/complete-car-servicing-in-{city}", "price": 1999, "overview": "Periodic maintenance with oil and filter changes, brake cleaning, AC filter service, coolant top-up, and interior vacuum - with free pick-up and delivery."},
     {"key": "ac", "title": "Car Air Conditioner Servicing", "slug": "services/car-air-conditioner-servicing-in-{city}", "price": None, "overview": "AC gas recharge, leak test, compressor check, and filter cleaning for reliable cooling."},
     {"key": "brakes", "title": "Car Brake Repair", "slug": "services/car-brake-repair-in-{city}", "price": None, "overview": "Brake pads, rotors, calipers, and fluid inspection and replacement by trained technicians."},
     {"key": "denting", "title": "Car Denting And Painting", "slug": "services/car-denting-and-painting-in-{city}-3000", "price": 3000, "overview": "Panel dent repair and industry-approved paint from ₹3000 per panel with colour matching."},
@@ -78,7 +78,7 @@ def faq_html(faq: list[tuple[str, str]]) -> str:
 def nap_block(city_name: str) -> str:
     return (
         f'<div class="md-card-filled p-4 my-4 ymo-nap-block">'
-        f'<h3 class="md-title-md">Contact YMO — {city_name}</h3>'
+        f'<h3 class="md-title-md">Contact YMO - {city_name}</h3>'
         f'<p class="mb-1"><strong>Phone:</strong> <a href="tel:+917744065904">+91-7744-065904</a></p>'
         f'<p class="mb-1"><strong>Email:</strong> <a href="mailto:contactus@yourmechaniconline.com">contactus@yourmechaniconline.com</a></p>'
         f'<p class="mb-0"><strong>Service area:</strong> Doorstep pick-up and drop across {city_name}.</p></div>'
@@ -99,8 +99,8 @@ def generate_hub(city: str, data: dict) -> dict:
     )
     return {
         "path": path,
-        "title": f"Car Servicing in {name} — Your Mechanic Online",
-        "meta_description": f"Book expert car servicing in {name} — AC repair, denting, periodic service, and more. Free pick-up, transparent pricing. Call +91-7744-065904.",
+        "title": f"Car Servicing in {name} - Your Mechanic Online",
+        "meta_description": f"Book expert car servicing in {name} - AC repair, denting, periodic service, and more. Free pick-up, transparent pricing. Call +91-7744-065904.",
         "h1": f"Car servicing in {name}",
         "intro": f"Professional car care with doorstep pick-up across {name}.",
         "body": body,
@@ -137,7 +137,7 @@ def generate_service_page(city: str, city_name: str, svc: dict) -> dict:
     title_suffix = f" @ ₹{svc['price']}" if svc["price"] and "Deep Cleaning" not in svc["title"] and "Rubbing" not in svc["title"] else (f" @ ₹{svc['price']}" if svc["price"] else "")
     return {
         "path": slug,
-        "title": f"{svc['title']} in {city_name}{title_suffix} — Your Mechanic Online",
+        "title": f"{svc['title']} in {city_name}{title_suffix} - Your Mechanic Online",
         "meta_description": f"{svc['title']} in {city_name}{price_line}. Expert mechanics, transparent pricing, free pick-up. Book with Your Mechanic Online.",
         "h1": f"{svc['title']} in {city_name}",
         "intro": svc["overview"],
@@ -179,7 +179,7 @@ def main() -> None:
         "<?php",
         "defined('BASEPATH') OR exit('No direct script access allowed');",
         "",
-        "/** Auto-generated city hub + service pages — run generate_city_service_pages.py */",
+        "/** Auto-generated city hub + service pages - run generate_city_service_pages.py */",
         "return array(",
     ]
     for p in pages:

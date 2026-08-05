@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Weekly SEO audit — run after refreshing GSC exports in deploy/marketing/gsc/."""
+"""Weekly SEO audit - run after refreshing GSC exports in deploy/marketing/gsc/."""
 
 from __future__ import annotations
 

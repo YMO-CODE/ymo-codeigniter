@@ -121,27 +121,27 @@ def main() -> int:
         if meta.get("page_type") == "locality":
             if has_list or has_hex:
                 legacy_live.append(
-                    f"/{slug}/ — legacy services-list/hexagon still in HTML ({meta['source']})"
+                    f"/{slug}/ - legacy services-list/hexagon still in HTML ({meta['source']})"
                 )
             elif has_catalog:
                 ok_catalog.append(slug)
             else:
                 issues.append(
-                    f"/{slug}/ — locality page missing service card grid ({meta['source']})"
+                    f"/{slug}/ - locality page missing service card grid ({meta['source']})"
                 )
 
         if slug in ("services", "locations/indore", "locations/nashik") and not has_catalog:
-            issues.append(f"/{slug}/ — expected service card grid missing")
+            issues.append(f"/{slug}/ - expected service card grid missing")
 
         if slug == "car-services-in-pune" and (has_list or not has_catalog):
             issues.append(
-                f"/{slug}/ — legacy car-services-in-pune page still broken (list={has_list}, catalog={has_catalog})"
+                f"/{slug}/ - legacy car-services-in-pune page still broken (list={has_list}, catalog={has_catalog})"
             )
 
         if meta.get("config_services_list") == "yes" and meta.get("page_type") != "locality":
             if has_list:
                 legacy_live.append(
-                    f"/{slug}/ — config has services-list and live HTML still renders it"
+                    f"/{slug}/ - config has services-list and live HTML still renders it"
                 )
 
     print(f"Locality pages with card grid: {len(ok_catalog)}")

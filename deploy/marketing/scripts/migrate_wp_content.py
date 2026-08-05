@@ -370,7 +370,7 @@ def main() -> None:
 
     if args.dry_run:
         for slug in sorted(matched.keys())[:10]:
-            print(f"  [dry-run] {slug} — {matched[slug]['title'][:70]}")
+            print(f"  [dry-run] {slug} - {matched[slug]['title'][:70]}")
         if len(matched) > 10:
             print(f"  … and {len(matched) - 10} more")
         return
@@ -388,7 +388,7 @@ def main() -> None:
     print(f"Updated fields: marketing_pages_data.php={c1}, marketing_pages_option_a.php={c2}")
 
     if unmatched_targets:
-        print(f"Unmatched targets ({len(unmatched_targets)}) — may need manual fetch or URL alias:")
+        print(f"Unmatched targets ({len(unmatched_targets)}) - may need manual fetch or URL alias:")
         for slug in unmatched_targets[:15]:
             print(f"  - {slug}".encode("ascii", "replace").decode("ascii"))
         if len(unmatched_targets) > 15:

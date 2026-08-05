@@ -82,9 +82,14 @@ echo ymo_marketing_render_hero(
             <?php endif; ?>
             <div class="md-card-filled p-4 my-4">
                 <p class="md-body-md mb-3">Book your service online - same trusted team, faster scheduling.</p>
-                <a href="<?= html_escape($booking_url); ?>" class="md-btn md-btn--filled">
-                    <span class="mi mi-leading">event_available</span>Book now
-                </a>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="<?= html_escape($booking_url); ?>" class="md-btn md-btn--filled">
+                        <span class="mi mi-leading">event_available</span>Book now
+                    </a>
+                    <a href="<?= html_escape(ymo_booking_url('quick-book')); ?>" class="md-btn md-btn--tonal">
+                        <span class="mi mi-leading">send</span>Quick book — no login
+                    </a>
+                </div>
             </div>
             <p class="small ymo-muted mb-0">Serving Pune, Indore, and Nashik with free doorstep pick-up.</p>
         </div>

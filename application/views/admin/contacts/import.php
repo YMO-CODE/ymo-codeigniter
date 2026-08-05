@@ -42,9 +42,9 @@
             <div class="mb-3">
                 <label class="form-label">When a customer already exists (same mobile or email)</label>
                 <select name="duplicate_policy" class="form-select">
-                    <option value="merge_notes" selected>Merge — append notes, keep existing fields, add tags</option>
+                    <option value="merge_notes" selected>Merge - append notes, keep existing fields, add tags</option>
                     <option value="skip">Skip duplicates</option>
-                    <option value="update">Update — replace fields and tags from CSV</option>
+                    <option value="update">Update - replace fields and tags from CSV</option>
                 </select>
             </div>
             <button class="btn btn-primary" onclick="return confirm('Import <?= (int) $preview['total']; ?> customers into CRM?');">Import now</button>

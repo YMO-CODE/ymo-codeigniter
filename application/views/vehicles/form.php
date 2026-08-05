@@ -22,7 +22,7 @@
                     <?php endif; ?>
                     <div class="form-floating mb-3">
                         <select name="make_id" id="vh_make" class="form-select" required>
-                            <option value="">— Select brand —</option>
+                            <option value="">- Select brand -</option>
                             <?php foreach ($makes as $m): ?>
                                 <option value="<?= (int) $m['id']; ?>"
                                     <?= set_select('make_id', $m['id'], !empty($vehicle) && (int) $vehicle['make_id'] === (int) $m['id']); ?>>
@@ -43,7 +43,7 @@
                                data-uppercase required>
                         <label for="vh_number">Vehicle number (e.g. MH12AB1234)</label>
                     </div>
-                    <div class="md-field-help mb-3">Indian format. Spaces and dashes are okay — we'll clean them up.</div>
+                    <div class="md-field-help mb-3">Indian format. Spaces and dashes are okay - we'll clean them up.</div>
 
                     <div class="mb-3">
                         <label class="form-label small ymo-muted"><span class="mi mi-sm mi-leading">photo_camera</span>Photo (optional, max 3 MB)</label>

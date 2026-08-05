@@ -25,7 +25,7 @@
                 <td><?= html_escape($c['name']); ?><br><span class="ymo-muted small"><?= html_escape($c['mobile']); ?></span></td>
                 <td class="small"><?= html_escape($c['position']); ?></td>
                 <td class="small"><?= html_escape($c['stage']); ?></td>
-                <td class="small"><?= html_escape($c['assignee_name'] ?? '—'); ?></td>
+                <td class="small"><?= html_escape($c['assignee_name'] ?? '-'); ?></td>
                 <td class="text-end"><a href="<?= admin_url('recruitment/'.$c['id']); ?>" class="btn btn-sm btn-outline-primary">Open</a></td>
             </tr>
         <?php endforeach; ?>

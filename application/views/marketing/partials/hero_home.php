@@ -30,23 +30,10 @@ $image = !empty($hero['image']) && is_array($hero['image']) ? $hero['image'] : N
                         <?php endforeach; ?>
                     </div>
                 <?php endif; ?>
-                <div class="ymo-hero__actions d-flex flex-wrap gap-2">
-                    <?php if (!empty($hero['cta_primary'])): ?>
-                        <?php $btn = $hero['cta_primary']; ?>
-                        <a href="<?= html_escape($btn['href']); ?>" class="<?= html_escape(isset($btn['class']) ? $btn['class'] : 'md-btn md-btn--filled md-btn--lg'); ?>">
-                            <?php if (!empty($btn['icon'])): ?>
-                                <span class="mi mi-leading"><?= html_escape($btn['icon']); ?></span>
-                            <?php endif; ?>
-                            <?= html_escape($btn['label']); ?>
-                        </a>
-                    <?php endif; ?>
-                    <?php if (!empty($hero['cta_secondary'])): ?>
-                        <?php $btn = $hero['cta_secondary']; ?>
-                        <a href="<?= html_escape($btn['href']); ?>" class="<?= html_escape(isset($btn['class']) ? $btn['class'] : 'md-btn md-btn--on-dark md-btn--lg'); ?>">
-                            <?= html_escape($btn['label']); ?>
-                        </a>
-                    <?php endif; ?>
-                </div>
+                <?php $this->load->view('marketing/partials/hero_actions', array(
+                    'hero'          => $hero,
+                    'actions_class' => 'ymo-hero__actions d-flex flex-wrap gap-2',
+                )); ?>
             </div>
         </div>
     </div>

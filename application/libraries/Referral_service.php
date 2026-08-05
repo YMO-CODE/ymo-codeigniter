@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * Customer referral programme — codes, validation, completion credits, notifications.
+ * Customer referral programme - codes, validation, completion credits, notifications.
  */
 class Referral_service
 {
@@ -207,7 +207,7 @@ class Referral_service
             strtok($referral['referrer_name'], ' '),
             $ref_amt,
             $booking_ref,
-            'You earned Rs'.$ref_amt.' referral credit — booking '.$booking_ref.' is complete.'
+            'You earned Rs'.$ref_amt.' referral credit - booking '.$booking_ref.' is complete.'
         );
 
         // Referred customer
@@ -248,7 +248,7 @@ class Referral_service
         if ($email) {
             $mail_ok = $this->CI->mailer->send(
                 $email,
-                'Referral credit confirmed — Your Mechanic Online',
+                'Referral credit confirmed - Your Mechanic Online',
                 '<p>Hi '.htmlspecialchars($name).',</p><p>'.htmlspecialchars($plain_message).'</p>'
                 .'<p>We will apply this credit on your next service invoice.</p>',
                 strip_tags($plain_message)

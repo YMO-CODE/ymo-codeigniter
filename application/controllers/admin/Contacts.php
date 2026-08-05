@@ -265,7 +265,7 @@ class Contacts extends Crm_Controller
         }
 
         $this->render('admin/contacts/import', array(
-            'title'   => 'Import customers — preview',
+            'title'   => 'Import customers - preview',
             'preview' => $preview,
         ));
     }
@@ -308,7 +308,7 @@ class Contacts extends Crm_Controller
         }
         $this->db->trans_complete();
         if (!$this->db->trans_status()) {
-            $this->flash('error', 'Import failed — no changes were saved. Try again.');
+            $this->flash('error', 'Import failed - no changes were saved. Try again.');
             redirect(admin_url('customers/import'));
         }
 
@@ -356,7 +356,7 @@ class Contacts extends Crm_Controller
         $messages = array(
             UPLOAD_ERR_INI_SIZE   => 'File exceeds upload_max_filesize in php.ini.',
             UPLOAD_ERR_FORM_SIZE  => 'File exceeds the form size limit.',
-            UPLOAD_ERR_PARTIAL    => 'Upload interrupted — try again.',
+            UPLOAD_ERR_PARTIAL    => 'Upload interrupted - try again.',
             UPLOAD_ERR_NO_FILE    => 'Please choose a CSV file to upload.',
             UPLOAD_ERR_NO_TMP_DIR => 'Server missing temp folder for uploads.',
             UPLOAD_ERR_CANT_WRITE => 'Server could not write the uploaded file.',

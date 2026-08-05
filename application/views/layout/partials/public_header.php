@@ -47,6 +47,7 @@ $tel_href     = 'tel:'.preg_replace('/[^+\d]/', '', $phone);
 $home_url     = $booking_nav ? site_url('/') : ymo_public_nav_url('');
 $login_url    = ymo_booking_url('login');
 $book_url     = ymo_booking_url('packages');
+$quick_book_url = ymo_booking_url('quick-book');
 $account_url  = ymo_booking_url('account');
 $logout_url   = ymo_booking_url('logout');
 $bookings_url = ymo_booking_url('account/bookings');
@@ -103,6 +104,7 @@ $bookings_url = ymo_booking_url('account/bookings');
                 <ul class="navbar-nav me-auto ymo-nav-primary">
                     <li class="nav-item"><a class="nav-link ymo-nav-link <?= $nav_active(''); ?>" href="<?= site_url('/'); ?>"><span class="mi mi-sm mi-leading">home</span>Home</a></li>
                     <li class="nav-item"><a class="nav-link ymo-nav-link <?= $nav_active('packages'); ?>" href="<?= site_url('packages'); ?>"><span class="mi mi-sm mi-leading">build</span>Packages</a></li>
+                    <li class="nav-item"><a class="nav-link ymo-nav-link <?= $nav_active('quick-book'); ?>" href="<?= site_url('quick-book'); ?>"><span class="mi mi-sm mi-leading">send</span>Quick book</a></li>
                     <li class="nav-item"><a class="nav-link ymo-nav-link <?= $nav_active('account/bookings'); ?>" href="<?= site_url('account/bookings'); ?>"><span class="mi mi-sm mi-leading">event_note</span>My Bookings</a></li>
                     <li class="nav-item"><a class="nav-link ymo-nav-link <?= $nav_active('vehicles'); ?>" href="<?= site_url('vehicles'); ?>"><span class="mi mi-sm mi-leading">directions_car</span>My Vehicles</a></li>
                 </ul>
@@ -193,6 +195,9 @@ $bookings_url = ymo_booking_url('account/bookings');
                     <li class="nav-item">
                         <a class="nav-link ymo-nav-link <?= $nav_active('contact-us'); ?>" href="<?= html_escape(ymo_public_nav_url('contact-us')); ?>">Contact</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link ymo-nav-link <?= $nav_active('quick-book'); ?>" href="<?= html_escape($quick_book_url); ?>"><span class="mi mi-sm mi-leading">send</span>Quick book</a>
+                    </li>
                 </ul>
                 <ul class="navbar-nav ymo-nav-actions align-items-lg-center">
                     <?php if ($user): ?>
@@ -209,6 +214,11 @@ $bookings_url = ymo_booking_url('account/bookings');
                         <a class="md-btn md-btn--text md-btn--sm" href="<?= html_escape($login_url); ?>">Sign in</a>
                     </li>
                     <?php endif; ?>
+                    <li class="nav-item d-none d-lg-block">
+                        <a class="md-btn md-btn--tonal md-btn--sm" href="<?= html_escape($quick_book_url); ?>">
+                            <span class="mi mi-leading">send</span>Quick book
+                        </a>
+                    </li>
                     <li class="nav-item">
                         <a class="md-btn md-btn--filled md-btn--sm" href="<?= html_escape($book_url); ?>">
                             <span class="mi mi-leading">event_available</span>Book now
@@ -249,6 +259,9 @@ $bookings_url = ymo_booking_url('account/bookings');
                 </a>
                 <a class="ymo-drawer-link <?= $drawer_active('packages'); ?>" href="<?= site_url('packages'); ?>">
                     <span class="mi" aria-hidden="true">build</span>Packages
+                </a>
+                <a class="ymo-drawer-link <?= $drawer_active('quick-book'); ?>" href="<?= site_url('quick-book'); ?>">
+                    <span class="mi" aria-hidden="true">send</span>Quick book
                 </a>
                 <a class="ymo-drawer-link <?= $drawer_active('account/bookings'); ?>" href="<?= site_url('account/bookings'); ?>">
                     <span class="mi" aria-hidden="true">event_note</span>My Bookings
@@ -321,6 +334,9 @@ $bookings_url = ymo_booking_url('account/bookings');
                 <a class="ymo-drawer-link <?= $drawer_active('contact-us'); ?>" href="<?= html_escape(ymo_public_nav_url('contact-us')); ?>">
                     <span class="mi" aria-hidden="true">mail</span>Contact
                 </a>
+                <a class="ymo-drawer-link <?= $drawer_path_active('quick-book'); ?>" href="<?= html_escape($quick_book_url); ?>">
+                    <span class="mi" aria-hidden="true">send</span>Quick book
+                </a>
             <?php endif; ?>
         </nav>
 
@@ -353,6 +369,9 @@ $bookings_url = ymo_booking_url('account/bookings');
 
     <footer class="ymo-drawer-foot">
         <?php if ($booking_nav): ?>
+            <a href="<?= site_url('quick-book'); ?>" class="md-btn md-btn--tonal w-100 mb-2">
+                <span class="mi mi-leading">send</span>Quick book
+            </a>
             <a href="<?= site_url('packages'); ?>" class="md-btn md-btn--filled w-100">
                 <span class="mi mi-leading">add</span>Book a service
             </a>
@@ -364,6 +383,9 @@ $bookings_url = ymo_booking_url('account/bookings');
                 <?= form_close(); ?>
             </div>
         <?php else: ?>
+            <a href="<?= html_escape($quick_book_url); ?>" class="md-btn md-btn--tonal w-100 mb-2">
+                <span class="mi mi-leading">send</span>Quick book — no login
+            </a>
             <a href="<?= html_escape($book_url); ?>" class="md-btn md-btn--filled w-100">
                 <span class="mi mi-leading">event_available</span>Book a service
             </a>

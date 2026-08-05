@@ -16,7 +16,7 @@ echo ymo_marketing_render_hero('', $hero_page, isset($booking_url) ? $booking_ur
             <div class="col-lg-8">
                 <span class="md-label-lg d-block mb-2">Premium &amp; luxury cars</span>
                 <h2 class="md-headline-md mb-2">Mercedes, BMW, Audi &amp; more</h2>
-                <p class="md-body-md mb-0">Workshop-grade luxury car servicing in Pune — specialist technicians, genuine-spec care, and free pick-up for premium brands.</p>
+                <p class="md-body-md mb-0">Workshop-grade luxury car servicing in Pune - specialist technicians, genuine-spec care, and free pick-up for premium brands.</p>
             </div>
             <div class="col-lg-4 text-lg-end">
                 <a href="<?= site_url('premium-luxury-car-service-pune'); ?>" class="md-btn md-btn--filled">Luxury car service</a>
@@ -65,7 +65,7 @@ echo ymo_marketing_render_hero('', $hero_page, isset($booking_url) ? $booking_ur
     <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
         <div>
             <h2 class="md-headline-md mb-1">Brands we service</h2>
-            <p class="md-body-md mb-0">Maruti, Hyundai, Tata, Honda, and more — across Pune, Indore &amp; Nashik.</p>
+            <p class="md-body-md mb-0">Maruti, Hyundai, Tata, Honda, and more - across Pune, Indore &amp; Nashik.</p>
         </div>
         <a href="<?= site_url('brands'); ?>" class="md-btn md-btn--outlined md-btn--sm">All brands</a>
     </div>
@@ -98,7 +98,12 @@ echo ymo_marketing_render_hero('', $hero_page, isset($booking_url) ? $booking_ur
     <div class="md-card-filled text-center py-4 px-3">
         <h2 class="md-title-lg mb-2">Ready to book?</h2>
         <p class="md-body-md mb-3">Pick a package, add your car, confirm - we call you to schedule pick-up.</p>
-        <a href="<?= html_escape($booking_url); ?>" class="md-btn md-btn--filled md-btn--lg">View packages &amp; book</a>
+        <div class="d-flex flex-wrap justify-content-center gap-2">
+            <a href="<?= html_escape($booking_url); ?>" class="md-btn md-btn--filled md-btn--lg">View packages &amp; book</a>
+            <a href="<?= html_escape(ymo_booking_url('quick-book')); ?>" class="md-btn md-btn--tonal md-btn--lg">
+                <span class="mi mi-leading">send</span>Quick book — no login
+            </a>
+        </div>
         <p class="md-body-md mt-3 mb-0"><a href="<?= site_url('why-choose-ymo'); ?>">Why choose YMO over a doorstep mechanic?</a></p>
     </div>
 </section>

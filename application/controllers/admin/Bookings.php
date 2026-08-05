@@ -98,7 +98,7 @@ class Bookings extends Admin_Controller
                 'scheduled_at' => date('Y-m-d H:i:s', strtotime("+$months months")),
                 'status'       => 'pending',
             ));
-            // Review reminder — earliest send date
+            // Review reminder - earliest send date
             $this->reminder_model->create(array(
                 'booking_id'   => (int) $id,
                 'type'         => 'review',
@@ -144,7 +144,7 @@ class Bookings extends Admin_Controller
         ));
         $mail_ok = $this->mailer->send_view(
             $booking['user_email'],
-            'How did we do? — '.$booking['reference'],
+            'How did we do? - '.$booking['reference'],
             'emails/review_request',
             array('booking' => $booking)
         );
@@ -164,7 +164,7 @@ class Bookings extends Admin_Controller
             'mail'=> $mail_ok ? 'ok' : ($this->mailer->last_error() ?: 'fail'),
         ));
         $this->flash($sms_ok || $mail_ok ? 'success' : 'error',
-            $sms_ok || $mail_ok ? 'Review request sent.' : 'Could not send review request — check gateway logs.');
+            $sms_ok || $mail_ok ? 'Review request sent.' : 'Could not send review request - check gateway logs.');
         redirect(admin_url('bookings/'.$id));
     }
 
@@ -247,7 +247,7 @@ class Bookings extends Admin_Controller
         ));
         $this->mailer->send_view(
             $booking['user_email'],
-            'Booking update — '.$booking['reference'],
+            'Booking update - '.$booking['reference'],
             'emails/booking_status',
             array('booking' => $booking)
         );
@@ -381,7 +381,7 @@ class Bookings extends Admin_Controller
                 }
                 $mail_ok = $this->mailer->send_view_with_attachment(
                     $booking['user_email'],
-                    'Service invoice '.$invoice['invoice_number'].' — '.$booking['reference'],
+                    'Service invoice '.$invoice['invoice_number'].' - '.$booking['reference'],
                     'emails/invoice_sent',
                     array('invoice' => $invoice),
                     $attachments
@@ -407,7 +407,7 @@ class Bookings extends Admin_Controller
                 ? 'Invoice '.$invoice['invoice_number'].' created and sent to customer.'
                 : 'Invoice '.$invoice['invoice_number'].' updated'.($pdf_rel ? ' and PDF regenerated' : '').'. Customer notified.';
             if (!$sms_ok || !$mail_ok) {
-                $msg .= ' Some notifications failed — check logs.';
+                $msg .= ' Some notifications failed - check logs.';
                 $this->flash('warning', $msg);
             } else {
                 $this->flash('success', $msg);

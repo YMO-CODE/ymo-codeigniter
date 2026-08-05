@@ -43,7 +43,7 @@ LOCALITY_PATCHES = {
         ("'page_type'            => 'locality',", "'page_type'            => 'locality',\n        'city_slug'            => 'pune',\n        'locality_slug'        => 'viman_nagar',\n        'quick_answer'         => 'Your Mechanic Online provides affordable car servicing in Viman Nagar, Pune with free pick-up, AC repair, denting, polishing, and periodic maintenance.',\n        'updated_at'           => '2026-07-20',"),
     ],
     "best-car-servicing-in-bavdhan-pune-expert-care": [
-        ("'page_type'            => 'locality',", "'page_type'            => 'locality',\n        'city_slug'            => 'pune',\n        'locality_slug'        => 'bavdhan',\n        'quick_answer'         => 'Expert car servicing in Bavdhan, Pune — periodic maintenance, AC repair, denting, and luxury car care with free doorstep pick-up.',\n        'updated_at'           => '2026-07-20',"),
+        ("'page_type'            => 'locality',", "'page_type'            => 'locality',\n        'city_slug'            => 'pune',\n        'locality_slug'        => 'bavdhan',\n        'quick_answer'         => 'Expert car servicing in Bavdhan, Pune - periodic maintenance, AC repair, denting, and luxury car care with free doorstep pick-up.',\n        'updated_at'           => '2026-07-20',"),
     ],
     "the-best-bmw-servicing-in-wakad": None,  # removed
 }

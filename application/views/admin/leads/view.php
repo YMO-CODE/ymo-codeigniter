@@ -31,8 +31,8 @@
             <div class="row g-3">
                 <div class="col-md-6">
                     <h6 class="text-muted small text-uppercase">Contact</h6>
-                    <p class="mb-0"><?= $lead['mobile'] ? html_escape($lead['mobile']) : '—'; ?></p>
-                    <p class="ymo-muted small mb-0"><?= $lead['email'] ? html_escape($lead['email']) : '—'; ?></p>
+                    <p class="mb-0"><?= $lead['mobile'] ? html_escape($lead['mobile']) : '-'; ?></p>
+                    <p class="ymo-muted small mb-0"><?= $lead['email'] ? html_escape($lead['email']) : '-'; ?></p>
                     <?php if ($lead['company']): ?>
                         <p class="small mb-0 mt-1"><?= html_escape($lead['company']); ?></p>
                     <?php endif; ?>

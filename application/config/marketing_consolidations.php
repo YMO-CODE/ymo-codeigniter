@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * SEO consolidation 301s — thin/duplicate pages → canonical hubs.
+ * SEO consolidation 301s - thin/duplicate pages → canonical hubs.
  * Keys: path without leading slash. Values: new canonical path.
  */
 return array(

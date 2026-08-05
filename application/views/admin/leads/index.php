@@ -106,7 +106,7 @@
                     <?php endif; ?>
                     <strong><?= html_escape($l['name']); ?></strong><br>
                     <span class="ymo-muted">
-                        <?= $l['mobile'] ? html_escape($l['mobile']) : '—'; ?>
+                        <?= $l['mobile'] ? html_escape($l['mobile']) : '-'; ?>
                         <?= $l['email'] ? ' · '.html_escape($l['email']) : ''; ?>
                     </span>
                 </td>
@@ -118,7 +118,7 @@
                         <br><span class="small ymo-muted">Follow-up <?= html_escape(date('d M Y', strtotime($l['next_follow_up_at']))); ?></span>
                     <?php endif; ?>
                 </td>
-                <td class="small"><?= $l['assignee_name'] ? html_escape($l['assignee_name']) : '<span class="ymo-muted">—</span>'; ?></td>
+                <td class="small"><?= $l['assignee_name'] ? html_escape($l['assignee_name']) : '<span class="ymo-muted">-</span>'; ?></td>
                 <td class="small"><?= html_escape(date('d M Y', strtotime($l['created_at']))); ?></td>
                 <td class="text-end">
                     <a href="<?= admin_url('leads/'.$l['id']); ?>" class="btn btn-sm btn-outline-primary">Open</a>

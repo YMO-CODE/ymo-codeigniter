@@ -76,7 +76,7 @@ $status_icons = array(
                         <td class="small text-uppercase"><?= html_escape($r['channel']); ?></td>
                         <td class="small"><?= html_escape(date('d M Y', strtotime($r['scheduled_at']))); ?></td>
                         <td class="small"><?= html_escape($r['status']); ?></td>
-                        <td class="small"><?= $r['sent_at'] ? html_escape(date('d M', strtotime($r['sent_at']))) : '—'; ?></td>
+                        <td class="small"><?= $r['sent_at'] ? html_escape(date('d M', strtotime($r['sent_at']))) : '-'; ?></td>
                     </tr>
                 <?php endforeach; ?>
                 </tbody>

@@ -6,4 +6,4 @@ Due: <?= html_escape(date('d M Y, h:i A', strtotime($task['due_at']))); ?></p>
 <?php if (!empty($task['notes'])): ?>
 <p><?= nl2br(html_escape($task['notes'])); ?></p>
 <?php endif; ?>
-<p>— YMO CRM</p>
+<p>- YMO CRM</p>

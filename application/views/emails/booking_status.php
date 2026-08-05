@@ -15,5 +15,5 @@ $body = '
     <p style="margin:0 0 16px;color:#3a3f46;">'.htmlspecialchars($booking['package_name']).' &middot; '.htmlspecialchars($booking['vehicle_number']).'</p>
     <p style="margin:0;"><a href="'.htmlspecialchars(site_url("account/bookings/".$booking["id"])).'" style="color:#3a6f37;text-decoration:none;">View booking details &rarr;</a></p>
 ';
-$subject = 'Booking '.$status_label.' — '.$booking['reference'];
+$subject = 'Booking '.$status_label.' - '.$booking['reference'];
 include __DIR__.'/_layout.php';

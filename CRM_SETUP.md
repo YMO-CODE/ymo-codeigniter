@@ -441,6 +441,8 @@ YMO_MAIL_FROM_NAME=Your Mechanic Online
 
 Required for **India (DLT)** campaign SMS.
 
+**Template copy for Jio/MSG91 registration:** see [DLT_TEMPLATES.md](DLT_TEMPLATES.md) (all 8 templates with variables and sample text).
+
 ### Step-by-step
 
 1. Log in to [MSG91](https://msg91.com/) and note your **Auth Key**.

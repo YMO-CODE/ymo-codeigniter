@@ -151,11 +151,11 @@ if (!function_exists('marketing_brand_faq')) {
             ),
             array(
                 'q' => 'Can YMO handle '.$name.' AC repair and denting in '.$city_name.'?',
-                'a' => 'Yes. Beyond periodic service, YMO offers AC gas recharge, compressor repair, denting, painting, and polishing for '.$name.' cars — with workshop equipment, not just a home visit.',
+                'a' => 'Yes. Beyond periodic service, YMO offers AC gas recharge, compressor repair, denting, painting, and polishing for '.$name.' cars - with workshop equipment, not just a home visit.',
             ),
             array(
                 'q' => 'How often should I service my '.$name.'?',
-                'a' => 'Most '.$name.' owners should service every 10,000 km or 12 months, whichever comes first. Turbo, diesel, or high-mileage cars may need shorter intervals — we advise during inspection.',
+                'a' => 'Most '.$name.' owners should service every 10,000 km or 12 months, whichever comes first. Turbo, diesel, or high-mileage cars may need shorter intervals - we advise during inspection.',
             ),
         );
     }
@@ -200,7 +200,7 @@ if (!function_exists('marketing_brand_page_body')) {
 
         $html = '<div class="ymo-content-section mb-5">';
         $html .= '<h2 class="md-headline-md mb-3">'.$name.' car service in '.$city_name.'</h2>';
-        $html .= '<p class="md-body-md mb-3">'.html_escape($intro).' In '.$city_name.', YMO combines doorstep convenience with full workshop capability — so your '.$name.' gets more than a quick oil top-up at the kerb.</p>';
+        $html .= '<p class="md-body-md mb-3">'.html_escape($intro).' In '.$city_name.', YMO combines doorstep convenience with full workshop capability - so your '.$name.' gets more than a quick oil top-up at the kerb.</p>';
         $html .= '<p class="md-body-md mb-0">Whether you drive a '.html_escape(marketing_brand_models_list($brand)).', our trained mechanics follow manufacturer-recommended schedules, use quality parts, and keep you updated on WhatsApp with photos during the job.</p>';
         $html .= '</div>';
 
@@ -226,7 +226,7 @@ if (!function_exists('marketing_brand_page_body')) {
         $html .= '<tr><td>Denting &amp; painting (per panel)</td><td>₹3,000</td></tr>';
         $html .= '<tr><td>3-stage rubbing &amp; polishing</td><td>₹6,500</td></tr>';
         $html .= '</tbody></table></div>';
-        $html .= '<p class="md-body-md mb-0">All prices are indicative — we confirm the exact estimate for your '.$name.' before starting work. <a href="/locations/'.$city_slug.'">See all areas we serve in '.$city_name.'</a>.</p></div>';
+        $html .= '<p class="md-body-md mb-0">All prices are indicative - we confirm the exact estimate for your '.$name.' before starting work. <a href="/locations/'.$city_slug.'">See all areas we serve in '.$city_name.'</a>.</p></div>';
 
         $html .= '<div class="ymo-content-section"><p class="md-body-md">Also explore <a href="/brands">all brands we service</a> · <a href="/'.html_escape($hub_path).'">Car servicing in '.$city_name.'</a> · <a href="/premium-luxury-car-service-pune">Luxury car service</a></p></div>';
 
@@ -266,7 +266,7 @@ if (!function_exists('marketing_brand_pages')) {
                     'meta_description' => 'Book '.$name.' car service in '.$city_name.' from ₹1,999. Expert mechanics, free pick-up & drop, AC repair, denting & periodic maintenance for '.marketing_brand_models_list($brand).'.',
                     'h1'               => $name.' car service in '.$city_name,
                     'intro'            => $name.' servicing in '.$city_name.' with trained mechanics, transparent pricing, and free doorstep pick-up.',
-                    'quick_answer'     => 'YMO offers '.$name.' car service in '.$city_name.' from ₹1,999 — periodic maintenance, AC repair, and body work with free pick-up and drop.',
+                    'quick_answer'     => 'YMO offers '.$name.' car service in '.$city_name.' from ₹1,999 - periodic maintenance, AC repair, and body work with free pick-up and drop.',
                     'body'             => marketing_brand_page_body($brand, $city_slug, $city_name),
                     'page_type'        => 'brand',
                     'city_slug'        => $city_slug,
@@ -313,7 +313,7 @@ if (!function_exists('marketing_brands_index_page')) {
     function marketing_brands_index_page()
     {
         $cards = marketing_brands_index_cards();
-        $body = '<div class="ymo-content-section mb-5"><p class="md-body-lg mb-4">Your Mechanic Online services every major Indian car brand across Pune, Indore, and Nashik — with free pick-up, workshop-grade repairs, and transparent pricing from ₹1,999.</p></div>';
+        $body = '<div class="ymo-content-section mb-5"><p class="md-body-lg mb-4">Your Mechanic Online services every major Indian car brand across Pune, Indore, and Nashik - with free pick-up, workshop-grade repairs, and transparent pricing from ₹1,999.</p></div>';
         $body .= '<div class="row g-4">';
         foreach ($cards as $card) {
             $body .= '<div class="col-md-6 col-lg-4"><div class="md-card-elevated h-100 p-4">';
@@ -331,7 +331,7 @@ if (!function_exists('marketing_brands_index_page')) {
             'title'            => 'Car Brands We Service | Your Mechanic Online',
             'meta_description' => 'Maruti, Hyundai, Tata, Honda, Mahindra, Toyota, Kia, VW, Skoda & Renault car service in Pune, Indore & Nashik. Free pick-up from ₹1,999.',
             'h1'               => 'Brands we service',
-            'intro'            => 'Expert car servicing for every major brand — periodic maintenance, AC, denting, and more.',
+            'intro'            => 'Expert car servicing for every major brand - periodic maintenance, AC, denting, and more.',
             'quick_answer'     => 'YMO services Maruti Suzuki, Hyundai, Tata, Honda, Mahindra, Toyota, Kia, Volkswagen, Skoda, and Renault across Pune, Indore, and Nashik.',
             'body'             => $body,
             'page_type'        => 'hub',
@@ -1327,6 +1327,16 @@ if (!function_exists('marketing_hero_context')) {
             'class' => 'md-btn md-btn--filled md-btn--lg',
         );
 
+        $quick_book_btn_class = ($hero_type === 'home')
+            ? 'md-btn md-btn--outlined md-btn--on-dark md-btn--lg'
+            : 'md-btn md-btn--tonal md-btn--lg';
+        $cta_quick_book = array(
+            'href'  => ymo_booking_url('quick-book'),
+            'label' => 'Quick book — no login',
+            'icon'  => 'send',
+            'class' => $quick_book_btn_class,
+        );
+
         $cta_secondary = NULL;
         if ($hero_type === 'service' && $city) {
             $cta_secondary = array(
@@ -1439,6 +1449,7 @@ if (!function_exists('marketing_hero_context')) {
                 : '',
             'cta_primary'               => $cta_primary,
             'cta_secondary'             => $cta_secondary,
+            'cta_quick_book'            => $cta_quick_book,
             'show_cta'                  => $show_cta,
             'lead_in_hero'              => ($lead !== ''),
             'locality_label'            => $locality_label,

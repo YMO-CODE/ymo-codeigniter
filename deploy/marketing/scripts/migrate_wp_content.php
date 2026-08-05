@@ -317,7 +317,7 @@ echo 'Report: deploy/marketing/generated/wp_migration_report.json'."\n";
 if ($dryRun) {
     $i = 0;
     foreach ($matched as $slug => $row) {
-        echo "  [dry-run] {$slug} — ".mb_substr($row['title'], 0, 70)."\n";
+        echo "  [dry-run] {$slug} - ".mb_substr($row['title'], 0, 70)."\n";
         if (++$i >= 10) {
             break;
         }

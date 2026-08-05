@@ -30,7 +30,7 @@ return array(
         'brand_name'    => 'Hyundai',
         'slug'          => 'hyundai',
         'common_models' => array('i20', 'Creta', 'Venue', 'Verna', 'Grand i10', 'Alcazar'),
-        'intro_copy'    => 'Hyundai owners in Pune, Indore, and Nashik trust YMO for i20, Creta, and Venue servicing — factory-grade diagnostics, transparent pricing from ₹1,999, and workshop capability for denting, AC, and engine work.',
+        'intro_copy'    => 'Hyundai owners in Pune, Indore, and Nashik trust YMO for i20, Creta, and Venue servicing - factory-grade diagnostics, transparent pricing from ₹1,999, and workshop capability for denting, AC, and engine work.',
         'service_includes' => array(
             'Synthetic or semi-synthetic oil change per Hyundai schedule',
             'Brake disc/pad inspection and fluid top-up',
@@ -50,7 +50,7 @@ return array(
         'brand_name'    => 'Tata',
         'slug'          => 'tata',
         'common_models' => array('Nexon', 'Punch', 'Harrier', 'Safari', 'Tiago', 'Altroz'),
-        'intro_copy'    => 'Tata Nexon, Punch, Harrier, and Tiago owners choose YMO for periodic service, EV-ready workshop practices, and body repair — with trained mechanics who understand Tata\'s safety-focused platform and turbo diesel engines.',
+        'intro_copy'    => 'Tata Nexon, Punch, Harrier, and Tiago owners choose YMO for periodic service, EV-ready workshop practices, and body repair - with trained mechanics who understand Tata\'s safety-focused platform and turbo diesel engines.',
         'service_includes' => array(
             'Engine oil, filter, and air filter replacement',
             'Brake system inspection including ABS sensor check',
@@ -70,7 +70,7 @@ return array(
         'brand_name'    => 'Honda',
         'slug'          => 'honda',
         'common_models' => array('City', 'Amaze', 'Elevate', 'Jazz', 'WR-V'),
-        'intro_copy'    => 'Honda City, Amaze, and Elevate servicing at YMO covers i-VTEC and i-DTEC engines with precision — CVT fluid checks, genuine-spec filters, and the workshop depth to handle denting and AC compressor work.',
+        'intro_copy'    => 'Honda City, Amaze, and Elevate servicing at YMO covers i-VTEC and i-DTEC engines with precision - CVT fluid checks, genuine-spec filters, and the workshop depth to handle denting and AC compressor work.',
         'service_includes' => array(
             'Engine oil change with Honda-recommended viscosity',
             'CVT / automatic transmission fluid level check',
@@ -90,7 +90,7 @@ return array(
         'brand_name'    => 'Mahindra',
         'slug'          => 'mahindra',
         'common_models' => array('XUV700', 'Scorpio N', 'Thar', 'Bolero', 'XUV300', 'XUV400'),
-        'intro_copy'    => 'Mahindra SUVs — XUV700, Scorpio, Thar, and Bolero — need robust servicing for diesel torque and off-road use. YMO provides heavy-duty brake checks, 4×4 component inspection, and body repair with industry-approved paints.',
+        'intro_copy'    => 'Mahindra SUVs - XUV700, Scorpio, Thar, and Bolero - need robust servicing for diesel torque and off-road use. YMO provides heavy-duty brake checks, 4×4 component inspection, and body repair with industry-approved paints.',
         'service_includes' => array(
             'Diesel engine oil and fuel filter service',
             '4×4 transfer case and differential fluid check (where applicable)',
@@ -130,7 +130,7 @@ return array(
         'brand_name'    => 'Kia',
         'slug'          => 'kia',
         'common_models' => array('Seltos', 'Sonet', 'Carens', 'EV6'),
-        'intro_copy'    => 'Kia Seltos, Sonet, and Carens owners book YMO for turbo-petrol and diesel servicing, DCT fluid awareness, and warranty-friendly maintenance records — plus denting and polishing when city parking takes its toll.',
+        'intro_copy'    => 'Kia Seltos, Sonet, and Carens owners book YMO for turbo-petrol and diesel servicing, DCT fluid awareness, and warranty-friendly maintenance records - plus denting and polishing when city parking takes its toll.',
         'service_includes' => array(
             'Turbo engine oil change with correct grade',
             'DCT / automatic transmission inspection',
@@ -190,7 +190,7 @@ return array(
         'brand_name'    => 'Renault',
         'slug'          => 'renault',
         'common_models' => array('Kwid', 'Triber', 'Kiger', 'Duster', 'Megane'),
-        'intro_copy'    => 'Renault Kwid, Triber, Kiger, and Duster servicing at YMO covers budget-friendly periodic maintenance through to turbo diesel Duster work — honest estimates, trained mechanics, and free pick-up across Pune, Indore, and Nashik.',
+        'intro_copy'    => 'Renault Kwid, Triber, Kiger, and Duster servicing at YMO covers budget-friendly periodic maintenance through to turbo diesel Duster work - honest estimates, trained mechanics, and free pick-up across Pune, Indore, and Nashik.',
         'service_includes' => array(
             'Engine oil and filter change',
             'Brake shoe/pad inspection and adjustment',

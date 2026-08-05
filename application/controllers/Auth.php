@@ -11,7 +11,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  *   POST     /signup/resend    Auth::resend_otp
  *   GET/POST /login            Auth::login
  *   POST     /logout           Auth::logout
- *   GET/POST /forgot-password  Auth::forgot  (email OTP — SMS not used for reset)
+ *   GET/POST /forgot-password  Auth::forgot  (email OTP - SMS not used for reset)
  *   GET/POST /reset-password   Auth::reset
  */
 class Auth extends MY_Controller
@@ -69,7 +69,7 @@ class Auth extends MY_Controller
             'password' => $this->input->post('password'),
         ));
 
-        // Dev shortcut — skip OTP entirely (config-gated, off in production).
+        // Dev shortcut - skip OTP entirely (config-gated, off in production).
         if (ENVIRONMENT !== 'production' && $this->config->item('dev_auto_verify_otp')) {
             $this->user_model->mark_mobile_verified($user_id);
             $this->_set_session($user_id);
@@ -81,7 +81,7 @@ class Auth extends MY_Controller
 
         $issued = $this->otp_service->issue('sms', $mobile, 'signup');
         if (!$issued['ok']) {
-            $this->flash('warning', $issued['reason'] ?: 'Could not send OTP — please retry.');
+            $this->flash('warning', $issued['reason'] ?: 'Could not send OTP - please retry.');
         } else {
             $this->flash('success', 'OTP sent to your mobile.');
         }
@@ -102,7 +102,7 @@ class Auth extends MY_Controller
                 if ($r['ok']) {
                     $this->user_model->mark_mobile_verified($user['id']);
                     $this->_set_session($user['id']);
-                    $this->flash('success', 'Mobile verified — welcome aboard!');
+                    $this->flash('success', 'Mobile verified - welcome aboard!');
                     redirect(site_url('account'));
                 }
                 $this->flash('error', $r['reason']);
