@@ -214,11 +214,6 @@ $bookings_url = ymo_booking_url('account/bookings');
                         <a class="md-btn md-btn--text md-btn--sm" href="<?= html_escape($login_url); ?>">Sign in</a>
                     </li>
                     <?php endif; ?>
-                    <li class="nav-item d-none d-lg-block">
-                        <a class="md-btn md-btn--tonal md-btn--sm" href="<?= html_escape($quick_book_url); ?>">
-                            <span class="mi mi-leading">send</span>Quick book
-                        </a>
-                    </li>
                     <li class="nav-item">
                         <a class="md-btn md-btn--filled md-btn--sm" href="<?= html_escape($book_url); ?>">
                             <span class="mi mi-leading">event_available</span>Book now

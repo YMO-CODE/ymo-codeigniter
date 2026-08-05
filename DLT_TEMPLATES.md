@@ -58,20 +58,80 @@ For templates with multiple `{#alphanumeric#}` tags, MSG91 maps them **in left-t
 
 ## Template register
 
-**Jio DLT — all registered 03-08-2026** ✅
+**Jio DLT — first batch rejected 04-08-2026** — resubmit using [Resubmission guide](#resubmission-guide-04-08-2026-rejections) below.
 
 | Env variable | Jio DLT Template ID | MSG91 Flow ID | Status |
 |--------------|---------------------|---------------|--------|
-| `YMO_TPL_OTP` | `1277178574435658630` | | Jio ✅ · MSG91 pending |
-| `YMO_TPL_BOOKING_OK` | `1277178575522167187` | | Jio ✅ · MSG91 pending |
-| `YMO_TPL_BOOKING_STATUS` | `1277178575265770657` | | Jio ✅ · MSG91 pending |
-| `YMO_TPL_SERVICE_REMIND` | `1277178575320887401` | | Jio ✅ · MSG91 pending |
-| `YMO_TPL_REVIEW` | `1277178575937333729` | | Jio ✅ · MSG91 pending |
-| `YMO_TPL_INVOICE` | `1277178575259112040` | | Jio ✅ · MSG91 pending |
-| `YMO_TPL_REFERRAL` | `1277178575518353867` | | Jio ✅ · MSG91 pending |
-| `YMO_TPL_CRM_CAMPAIGN` | `1277178575305725211` | | Jio ✅ · MSG91 pending |
+| `YMO_TPL_OTP` | *(resubmit)* | | Jio rejected |
+| `YMO_TPL_BOOKING_OK` | *(resubmit)* | | Jio rejected |
+| `YMO_TPL_BOOKING_STATUS` | *(resubmit)* | | Jio rejected |
+| `YMO_TPL_SERVICE_REMIND` | *(resubmit)* | | Jio rejected |
+| `YMO_TPL_REVIEW` | *(resubmit)* | | Jio rejected |
+| `YMO_TPL_INVOICE` | *(resubmit)* | | Jio rejected |
+| `YMO_TPL_REFERRAL` | *(resubmit)* | | Jio rejected |
+| `YMO_TPL_CRM_CAMPAIGN` | *(resubmit)* | | Jio rejected |
 
-> **Important:** The IDs above are **Jio DLT** template IDs. The app `.env` values (`YMO_TPL_*`) must be the **MSG91 Flow template IDs** you get after adding these in MSG91 — they are usually different numbers.
+> **Important:** The app `.env` values (`YMO_TPL_*`) must be the **MSG91 Flow template IDs** after Jio approval — not the Jio DLT IDs.
+
+---
+
+## Resubmission guide (04-08-2026 rejections)
+
+Jio rejected the first batch for three recurring reasons:
+
+| Rejection reason | Fix |
+|------------------|-----|
+| **Complete entity name required** | Use **`Your Mechanic Online`** at the **start** of every template (not only `- YMO` at the end). Must match your PE / brand name on Jio exactly. |
+| **Service implicit content** | For booking, invoice, referral, reminder templates choose **Service Implicit** (not Transactional) where the portal offers it. Always say **car service** in the body. |
+| **Sample value incorrect** | Preview samples must match tag types: `{#number#}` = digits only (`482916`, `4850`), `{#alphanumeric#}` = letters/numbers (`Rajesh`, `YMO20260042`, `Confirmed`, `MH12AB1234`). No underscores in status sample — use `Confirmed` not `in_progress`. |
+| **Content not clear** (CRM) | Do not start with a bare variable. Use a fixed prefix: `Your Mechanic Online car service update:` |
+
+### Portal settings (all templates)
+
+| Field | Value |
+|-------|-------|
+| Header | `YMOCAR` |
+| Category | Consumer Goods and Automobiles |
+| Entity / brand in text | **Your Mechanic Online** (exact spelling) |
+
+### Communication type per template
+
+| Template | Jio type to select |
+|----------|-------------------|
+| OTP | **Transactional** |
+| Booking confirmed / status / reminder / review / invoice / referral | **Service Implicit** |
+| CRM campaign | **Service Implicit** (or Promotional only if SI not available and you have consent) |
+
+### Resubmit checklist
+
+1. Click **Edit** on each rejected row (or create new template with same `YMO_TPL_*` name).
+2. Paste the **Resubmit content** from the table below (includes `{#number#}` / `{#alphanumeric#}` tags).
+3. Paste the **Sample preview** exactly — Jio validates types from this.
+4. Save → wait for approval → add in MSG91 → copy Flow IDs to `.env`.
+
+| Name | Resubmit content | Sample preview |
+|------|------------------|----------------|
+| `YMO_TPL_OTP` | `Your Mechanic Online: OTP {#number#} for car service account verification. Valid 10 minutes. Do not share. - Your Mechanic Online` | `Your Mechanic Online: OTP 482916 for car service account verification. Valid 10 minutes. Do not share. - Your Mechanic Online` |
+| `YMO_TPL_BOOKING_OK` | `Your Mechanic Online: Hi {#alphanumeric#}, your car service booking {#alphanumeric#} is confirmed. We will call for pick-up. - Your Mechanic Online` | `Your Mechanic Online: Hi Rajesh, your car service booking YMO20260042 is confirmed. We will call for pick-up. - Your Mechanic Online` |
+| `YMO_TPL_BOOKING_STATUS` | `Your Mechanic Online: Car service booking {#alphanumeric#} status is {#alphanumeric#}. Details at yourmechaniconline.com - Your Mechanic Online` | `Your Mechanic Online: Car service booking YMO20260042 status is Confirmed. Details at yourmechaniconline.com - Your Mechanic Online` |
+| `YMO_TPL_SERVICE_REMIND` | `Your Mechanic Online: Hi {#alphanumeric#}, car {#alphanumeric#} is due for periodic service. Book at yourmechaniconline.com - Your Mechanic Online` | `Your Mechanic Online: Hi Rajesh, car MH12AB1234 is due for periodic service. Book at yourmechaniconline.com - Your Mechanic Online` |
+| `YMO_TPL_REVIEW` | `Your Mechanic Online: Hi {#alphanumeric#}, thank you for choosing our car service for booking {#alphanumeric#}. Please rate us on Google. - Your Mechanic Online` | `Your Mechanic Online: Hi Rajesh, thank you for choosing our car service for booking YMO20260042. Please rate us on Google. - Your Mechanic Online` |
+| `YMO_TPL_INVOICE` | `Your Mechanic Online: Car service invoice for booking {#alphanumeric#} total Rs {#number#}. Copy sent to your email. - Your Mechanic Online` | `Your Mechanic Online: Car service invoice for booking YMO20260042 total Rs 4850. Copy sent to your email. - Your Mechanic Online` |
+| `YMO_TPL_REFERRAL` | `Your Mechanic Online: Rs {#number#} car service referral credit for booking {#alphanumeric#}. - Your Mechanic Online` | `Your Mechanic Online: Rs 500 car service referral credit for booking YMO20260042. - Your Mechanic Online` |
+| `YMO_TPL_CRM_CAMPAIGN` | `Your Mechanic Online car service update: {#alphanumeric#}. Book at yourmechaniconline.com or call 7744065904. - Your Mechanic Online` | `Your Mechanic Online car service update: Monsoon offer 10 percent off periodic service this week. Book at yourmechaniconline.com or call 7744065904. - Your Mechanic Online` |
+
+**MSG91 variable mapping (unchanged order):**
+
+| Template | Variables (left → right) |
+|----------|-------------------------|
+| OTP | `otp` |
+| BOOKING_OK | `name`, `ref` |
+| BOOKING_STATUS | `ref`, `status` |
+| SERVICE_REMIND | `name`, `vehicle` |
+| REVIEW | `name`, `ref` |
+| INVOICE | `ref`, `total` *(name still sent by app — extra keys ignored)* |
+| REFERRAL | `amount`, `ref` *(name still sent by app — extra keys ignored)* |
+| CRM_CAMPAIGN | `msg` |
 
 | # | App key | Env variable | Jio type | # vars | App variables (MSG91 names) |
 |---|---------|--------------|----------|--------|---------------------------|
