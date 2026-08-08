@@ -66,6 +66,9 @@ echo ymo_marketing_render_hero(
                     <?= $body; ?>
                 </div>
             <?php endif; ?>
+            <?php if (!empty($pricing_tiers) && is_array($pricing_tiers)): ?>
+                <?php $this->load->view('marketing/partials/pricing_table', array('pricing_tiers' => $pricing_tiers)); ?>
+            <?php endif; ?>
             <?php if (!empty($faq) && is_array($faq)): ?>
                 <div class="ymo-content-section mb-5">
                     <h2 class="md-headline-md mb-3">Frequently asked questions</h2>

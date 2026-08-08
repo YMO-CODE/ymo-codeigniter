@@ -31,6 +31,7 @@ class Pages extends Marketing_Controller
         $page = $pages[$path];
         $this->page_meta = array(
             'title'            => $page['title'],
+            'meta_title'       => isset($page['meta_title']) ? $page['meta_title'] : '',
             'meta_description' => $page['meta_description'],
             'h1'               => $page['h1'],
             'intro'            => isset($page['intro']) ? $page['intro'] : '',
@@ -45,6 +46,7 @@ class Pages extends Marketing_Controller
             'brand_name'       => isset($page['brand_name']) ? $page['brand_name'] : '',
             'quick_answer'     => isset($page['quick_answer']) ? $page['quick_answer'] : '',
             'faq'              => isset($page['faq']) ? $page['faq'] : array(),
+            'pricing_tiers'    => isset($page['pricing_tiers']) ? $page['pricing_tiers'] : array(),
             'og_image'         => isset($page['og_image']) ? $page['og_image'] : '',
             'updated_at'       => isset($page['updated_at']) ? $page['updated_at'] : '',
         );
@@ -91,6 +93,7 @@ class Pages extends Marketing_Controller
             'page'                    => $page,
             'booking_url'             => ymo_booking_url('packages'),
             'body'                    => $body,
+            'pricing_tiers'           => isset($page['pricing_tiers']) ? $page['pricing_tiers'] : array(),
             'service_catalog'         => $service_catalog,
             'service_catalog_heading' => $service_catalog_heading,
             'service_catalog_city'    => $city_slug !== '' ? $city_slug : 'pune',

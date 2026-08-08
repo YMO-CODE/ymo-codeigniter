@@ -1,7 +1,9 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 $ci = &get_instance();
-$page_title = isset($title) ? $title.' - '.$ci->config->item('ymo_brand_name') : $ci->config->item('ymo_brand_name');
+$page_title = !empty($meta_title)
+    ? $meta_title
+    : (isset($title) ? $title.' - '.$ci->config->item('ymo_brand_name') : $ci->config->item('ymo_brand_name'));
 $body_class = isset($page_class) ? $page_class : 'ymo-marketing md-theme';
 ?>
 <!DOCTYPE html>
@@ -30,6 +32,7 @@ $body_class = isset($page_class) ? $page_class : 'ymo-marketing md-theme';
 </main>
 
 <?php $this->load->view('layout/partials/marketing_footer'); ?>
+<?php $this->load->view('layout/partials/whatsapp_cta'); ?>
 <?php $this->load->view('layout/partials/foot_assets'); ?>
 <?php $this->load->view('layout/partials/offers_popup'); ?>
 </body>

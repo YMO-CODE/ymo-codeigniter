@@ -109,6 +109,9 @@ if (!function_exists('marketing_pages_data')) {
         }
         $file = APPPATH.'config/marketing_pages_data.php';
         $pages = is_file($file) ? require $file : array();
+        if (function_exists('marketing_enrich_pages')) {
+            $pages = marketing_enrich_pages($pages);
+        }
         return is_array($pages) ? $pages : array();
     }
 }
@@ -1676,9 +1679,19 @@ if (!function_exists('marketing_schema_graph')) {
             '@id'         => marketing_canonical_url('').'#organization',
             'name'        => $brand,
             'url'         => marketing_canonical_url(''),
+            'logo'        => marketing_canonical_url('assets/img/logo.png'),
             'telephone'   => $phone,
             'email'       => $email,
+            'priceRange'  => '₹₹',
             'areaServed'  => $area_served,
+            'openingHoursSpecification' => array(
+                array(
+                    '@type'     => 'OpeningHoursSpecification',
+                    'dayOfWeek' => array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'),
+                    'opens'     => '09:00',
+                    'closes'    => '19:00',
+                ),
+            ),
         );
         if ($og_url !== '') {
             $graph[0]['image'] = $og_url;
@@ -1779,6 +1792,38 @@ if (!function_exists('marketing_schema_graph')) {
             );
             if ($og_url !== '') {
                 $service_node['image'] = $og_url;
+            }
+            $offer_price = NULL;
+            if (!empty($page_meta['service_key'])) {
+                foreach (marketing_service_catalog() as $cat) {
+                    if ($cat['key'] === $page_meta['service_key'] && !empty($cat['price_from'])) {
+                        $offer_price = (int) $cat['price_from'];
+                        break;
+                    }
+                }
+            }
+            if ($offer_price === NULL && !empty($page_meta['pricing_tiers']) && is_array($page_meta['pricing_tiers'])) {
+                foreach ($page_meta['pricing_tiers'] as $tier) {
+                    if (empty($tier['price'])) {
+                        continue;
+                    }
+                    if (preg_match('/₹([\d,]+)/', (string) $tier['price'], $m)) {
+                        $offer_price = (int) str_replace(',', '', $m[1]);
+                        break;
+                    }
+                }
+            }
+            if ($offer_price !== NULL && $offer_price > 0) {
+                $service_node['offers'] = array(
+                    '@type'         => 'Offer',
+                    'price'         => (string) $offer_price,
+                    'priceCurrency' => 'INR',
+                    'priceSpecification' => array(
+                        '@type'         => 'PriceSpecification',
+                        'minPrice'      => (string) $offer_price,
+                        'priceCurrency' => 'INR',
+                    ),
+                );
             }
             $graph[] = $service_node;
         }

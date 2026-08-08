@@ -4,6 +4,9 @@ $ci = &get_instance();
 $brand = $ci->config->item('ymo_brand_name');
 $phone = $ci->config->item('ymo_support_phone');
 $mail  = $ci->config->item('ymo_support_email');
+$trust = function_exists('marketing_trust_config') ? marketing_trust_config() : array();
+$instagram = !empty($trust['instagram_url']) ? $trust['instagram_url'] : '';
+$linkedin  = 'https://www.linkedin.com/company/your-mechanic-online/';
 ?>
 <footer class="ymo-footer">
     <div class="container py-2">
@@ -44,6 +47,12 @@ $mail  = $ci->config->item('ymo_support_email');
                     <a href="tel:<?= html_escape(preg_replace('/[^+\d]/', '', $phone)); ?>"><?= html_escape($phone); ?></a><br>
                     <a href="mailto:<?= html_escape($mail); ?>"><?= html_escape($mail); ?></a>
                 </p>
+                <?php if ($instagram !== ''): ?>
+                <p class="md-body-md mb-0 mt-2">
+                    <a href="<?= html_escape($instagram); ?>" target="_blank" rel="noopener noreferrer">Instagram</a>
+                    · <a href="<?= html_escape($linkedin); ?>" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                </p>
+                <?php endif; ?>
             </div>
         </div>
         <div class="ymo-footer-bottom d-flex justify-content-between flex-wrap gap-2 mt-4 pt-3">

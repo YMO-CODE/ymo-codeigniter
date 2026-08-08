@@ -19,6 +19,9 @@ if (!function_exists('marketing_seo_growth_pages')) {
 
         $pages = array_merge($pages, marketing_seo_growth_city_hubs($today));
         $pages = array_merge($pages, marketing_seo_growth_localities($today));
+        if (function_exists('marketing_seo_growth_pune_localities')) {
+            $pages = array_merge($pages, marketing_seo_growth_pune_localities($today));
+        }
         $pages = array_merge($pages, marketing_seo_growth_service_areas($today));
         $pages = array_merge($pages, marketing_seo_growth_blog_posts($today));
         $pages['why-choose-ymo'] = marketing_seo_growth_comparison_page($today);
