@@ -46,4 +46,10 @@ return array(
     'services/car-interior-cleaning-in-indore-2000/' => 'services/car-interior-cleaning-in-indore-2500',
     'services/car-interior-cleaning-in-nashik-2000' => 'services/car-interior-cleaning-in-nashik-2500',
     'services/car-interior-cleaning-in-nashik-2000/' => 'services/car-interior-cleaning-in-nashik-2500',
+
+    // Generic denting tags → denting service page (GSC: "denting painting" pos ~3, 0 clicks)
+    'tag/car-denting-and-painting' => 'services/car-denting-and-painting-3000',
+    'tag/car-denting-and-painting/' => 'services/car-denting-and-painting-3000',
+    'tag/car-denting-painting-pune' => 'services/car-denting-and-painting-3000',
+    'tag/car-denting-painting-pune/' => 'services/car-denting-and-painting-3000',
 );

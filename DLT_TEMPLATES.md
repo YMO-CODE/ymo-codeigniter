@@ -23,12 +23,14 @@ Use this document to register SMS templates on **Jio TrueConnect DLT** and map t
 
 ### Jio portal fields (per template)
 
-| Field | OTP example | Other templates |
-|-------|-------------|-----------------|
-| Type of Communication | **Transactional** | **Transactional** (or Service Implicit where available) |
+| Field | OTP only | All other templates (booking, invoice, etc.) |
+|-------|----------|-----------------------------------------------|
+| Type of Communication | **Transactional** | **Service Implicit** (NOT Transactional) |
 | Choose Category | Consumer Goods and Automobiles | Same |
 | Choose Header | `YMOCAR` | `YMOCAR` |
 | Content Template name | `YMO_TPL_OTP` | Use env var name (e.g. `YMO_TPL_BOOKING_OK`) |
+
+> **Critical:** If Jio shows rejection reason **"Service Implicit Content"**, you picked the wrong **Type of Communication**. Edit the template and change **Transactional → Service Implicit**. Do not change to Promotional unless Jio rejects Service Implicit for CRM offers.
 
 > **TRAI / Jio rules:** PE trade name must appear in content (“Your Mechanic Online” or “YMO”). Templates with **3 or more variables** may be rejected — prefer the **≤2 variable** versions marked below.
 
@@ -58,32 +60,41 @@ For templates with multiple `{#alphanumeric#}` tags, MSG91 maps them **in left-t
 
 ## Template register
 
-**Jio DLT — first batch rejected 04-08-2026** — resubmit using [Resubmission guide](#resubmission-guide-04-08-2026-rejections) below.
+**All 8 templates approved — Registered with All TSP (07-08-2026).** Next: add each in MSG91 and copy Flow IDs to `.env`.
 
 | Env variable | Jio DLT Template ID | MSG91 Flow ID | Status |
 |--------------|---------------------|---------------|--------|
-| `YMO_TPL_OTP` | *(resubmit)* | | Jio rejected |
-| `YMO_TPL_BOOKING_OK` | *(resubmit)* | | Jio rejected |
-| `YMO_TPL_BOOKING_STATUS` | *(resubmit)* | | Jio rejected |
-| `YMO_TPL_SERVICE_REMIND` | *(resubmit)* | | Jio rejected |
-| `YMO_TPL_REVIEW` | *(resubmit)* | | Jio rejected |
-| `YMO_TPL_INVOICE` | *(resubmit)* | | Jio rejected |
-| `YMO_TPL_REFERRAL` | *(resubmit)* | | Jio rejected |
-| `YMO_TPL_CRM_CAMPAIGN` | *(resubmit)* | | Jio rejected |
+| `YMO_TPL_OTP` | `1277178591884069081` | | Jio ✅ Active · MSG91 pending |
+| `YMO_TPL_BOOKING_OK` | `1277178591453817908` | | Jio ✅ Active · MSG91 pending |
+| `YMO_TPL_BOOKING_STATUS` | `1277178591568547322` | | Jio ✅ Active · MSG91 pending |
+| `YMO_TPL_SERVICE_REMIND` | `1277178591934852577` | | Jio ✅ Active · MSG91 pending |
+| `YMO_TPL_REVIEW` | `1277178591508786260` | | Jio ✅ Active · MSG91 pending |
+| `YMO_TPL_INVOICE` | `1277178591247861897` | | Jio ✅ Active · MSG91 pending |
+| `YMO_TPL_REFERRAL` | `1277178591255421707` | | Jio ✅ Active · MSG91 pending |
+| `YMO_TPL_CRM_CAMPAIGN` | `1277178591687073165` | | Jio ✅ Active · MSG91 pending |
 
 > **Important:** The app `.env` values (`YMO_TPL_*`) must be the **MSG91 Flow template IDs** after Jio approval — not the Jio DLT IDs.
 
 ---
 
-## Resubmission guide (04-08-2026 rejections)
+## Resubmission guide
 
-Jio rejected the first batch for three recurring reasons:
+### 06-08-2026 rejections (your screenshot)
+
+| What Jio showed | What it means | What to do |
+|-----------------|---------------|------------|
+| Reason: **Service Implicit Content** | Template text is fine for **Service Implicit**; you filed it as **Transactional** | Click **Edit** → change **Type of Communication** to **Service Implicit** → keep the resubmit content below → save |
+| Communication Type: **Transactional** | Wrong for booking, invoice, reminder, review, referral, CRM | Only **OTP** uses Transactional |
+
+**Do not resubmit as Transactional again.** Jio auto-rejects car-service updates under Transactional.
+
+### All rejection reasons (04-08 and 06-08)
 
 | Rejection reason | Fix |
 |------------------|-----|
+| **Service Implicit Content** | Set **Type of Communication = Service Implicit** (this is the 06-08 issue) |
 | **Complete entity name required** | Use **`Your Mechanic Online`** at the **start** of every template (not only `- YMO` at the end). Must match your PE / brand name on Jio exactly. |
-| **Service implicit content** | For booking, invoice, referral, reminder templates choose **Service Implicit** (not Transactional) where the portal offers it. Always say **car service** in the body. |
-| **Sample value incorrect** | Preview samples must match tag types: `{#number#}` = digits only (`482916`, `4850`), `{#alphanumeric#}` = letters/numbers (`Rajesh`, `YMO20260042`, `Confirmed`, `MH12AB1234`). No underscores in status sample — use `Confirmed` not `in_progress`. |
+| **Sample value incorrect** | Preview samples must match tag types: `{#number#}` = digits only (`482916`, `4850`), `{#alphanumeric#}` = letters/numbers (`Rajesh`, `YMO20260042`, `Confirmed`, `MH12AB1234`). No underscores in status sample - use `Confirmed` not `in_progress`. |
 | **Content not clear** (CRM) | Do not start with a bare variable. Use a fixed prefix: `Your Mechanic Online car service update:` |
 
 ### Portal settings (all templates)
@@ -104,10 +115,12 @@ Jio rejected the first batch for three recurring reasons:
 
 ### Resubmit checklist
 
-1. Click **Edit** on each rejected row (or create new template with same `YMO_TPL_*` name).
-2. Paste the **Resubmit content** from the table below (includes `{#number#}` / `{#alphanumeric#}` tags).
-3. Paste the **Sample preview** exactly — Jio validates types from this.
-4. Save → wait for approval → add in MSG91 → copy Flow IDs to `.env`.
+1. Click **Edit** on each rejected row.
+2. Set **Type of Communication** to **Service Implicit** (except OTP = Transactional).
+3. Paste the **Resubmit content** from the table below (includes `{#number#}` / `{#alphanumeric#}` tags).
+4. Paste the **Sample preview** exactly - Jio validates types from this.
+5. Category: **Consumer Goods and Automobiles** · Header: **YMOCAR**.
+6. Save, wait for approval, add in MSG91, copy Flow IDs to `.env`.
 
 | Name | Resubmit content | Sample preview |
 |------|------------------|----------------|
@@ -135,21 +148,21 @@ Jio rejected the first batch for three recurring reasons:
 
 | # | App key | Env variable | Jio type | # vars | App variables (MSG91 names) |
 |---|---------|--------------|----------|--------|---------------------------|
-| 1 | `otp` | `YMO_TPL_OTP` | Transactional | 1 | `otp` |
-| 2 | `booking_confirmed` | `YMO_TPL_BOOKING_OK` | Transactional | 2 | `name`, `ref` |
-| 3 | `booking_status` | `YMO_TPL_BOOKING_STATUS` | Transactional | 2 | `ref`, `status` |
-| 4 | `service_reminder` | `YMO_TPL_SERVICE_REMIND` | Transactional | 2 | `name`, `vehicle` |
-| 5 | `review_request` | `YMO_TPL_REVIEW` | Transactional | 2 | `name`, `ref` |
-| 6 | `invoice_sent` | `YMO_TPL_INVOICE` | Transactional | 3 | `name`, `ref`, `total` |
-| 7 | `referral_credit` | `YMO_TPL_REFERRAL` | Transactional | 3 | `name`, `amount`, `ref` |
-| 8 | `crm_campaign` | `YMO_TPL_CRM_CAMPAIGN` | Promotional | 1 | `msg` |
+| 1 | `otp` | `YMO_TPL_OTP` | **Transactional** | 1 | `otp` |
+| 2 | `booking_confirmed` | `YMO_TPL_BOOKING_OK` | **Service Implicit** | 2 | `name`, `ref` |
+| 3 | `booking_status` | `YMO_TPL_BOOKING_STATUS` | **Service Implicit** | 2 | `ref`, `status` |
+| 4 | `service_reminder` | `YMO_TPL_SERVICE_REMIND` | **Service Implicit** | 2 | `name`, `vehicle` |
+| 5 | `review_request` | `YMO_TPL_REVIEW` | **Service Implicit** | 2 | `name`, `ref` |
+| 6 | `invoice_sent` | `YMO_TPL_INVOICE` | **Service Implicit** | 2 | `ref`, `total` |
+| 7 | `referral_credit` | `YMO_TPL_REFERRAL` | **Service Implicit** | 2 | `amount`, `ref` |
+| 8 | `crm_campaign` | `YMO_TPL_CRM_CAMPAIGN` | **Service Implicit** | 1 | `msg` |
 
 ---
 
 ## 1. OTP (signup / login verification) ✅ Registered on Jio
 
 **Env:** `YMO_TPL_OTP`  
-**Jio DLT ID:** `1277178574435658630`  
+**Jio DLT ID:** `1277178591884069081`  
 **Jio settings:** Transactional · Consumer Goods · Header `YMOCAR` · Name `YMO_TPL_OTP`  
 **App variable:** `otp` → maps to `{#number#}`
 
@@ -173,14 +186,14 @@ Your Mechanic Online OTP is 482916. Valid for 10 minutes. Do not share with anyo
 
 | Jio DLT Template ID | MSG91 Flow ID | Status |
 |---------------------|---------------|--------|
-| `1277178574435658630` | | Jio ✅ · MSG91 pending |
+| `1277178591884069081` | | Jio ✅ · MSG91 pending |
 
 ---
 
 ## 2. Booking confirmed ✅ Registered on Jio
 
 **Env:** `YMO_TPL_BOOKING_OK`  
-**Jio DLT ID:** `1277178575522167187`  
+**Jio DLT ID:** `1277178591453817908`  
 **App variables:** `name`, `ref`, `package` (app sends all three; SMS uses first two only)
 
 ### Jio DLT content — **recommended (2 variables)**
@@ -204,14 +217,14 @@ Hi {#alphanumeric#}, your YMO booking {#alphanumeric#} for {#alphanumeric#} is c
 
 | Jio DLT Template ID | MSG91 Flow ID | Status |
 |---------------------|---------------|--------|
-| `1277178575522167187` | | Jio ✅ · MSG91 pending |
+| `1277178591453817908` | | Jio ✅ · MSG91 pending |
 
 ---
 
 ## 3. Booking status update ✅ Registered on Jio
 
 **Env:** `YMO_TPL_BOOKING_STATUS`  
-**Jio DLT ID:** `1277178575265770657`  
+**Jio DLT ID:** `1277178591568547322`  
 **App variables:** `ref`, `status`
 
 ### Jio DLT content
@@ -227,14 +240,14 @@ YMO booking {#alphanumeric#} is now {#alphanumeric#}. Visit yourmechaniconline.c
 
 | Jio DLT Template ID | MSG91 Flow ID | Status |
 |---------------------|---------------|--------|
-| `1277178575265770657` | | Jio ✅ · MSG91 pending |
+| `1277178591568547322` | | Jio ✅ · MSG91 pending |
 
 ---
 
 ## 4. Service reminder ✅ Registered on Jio
 
 **Env:** `YMO_TPL_SERVICE_REMIND`  
-**Jio DLT ID:** `1277178575320887401`  
+**Jio DLT ID:** `1277178591934852577`  
 **App variables:** `name`, `vehicle`
 
 ### Jio DLT content
@@ -250,14 +263,14 @@ Hi {#alphanumeric#}, time for your next car service ({#alphanumeric#}). Book at 
 
 | Jio DLT Template ID | MSG91 Flow ID | Status |
 |---------------------|---------------|--------|
-| `1277178575320887401` | | Jio ✅ · MSG91 pending |
+| `1277178591934852577` | | Jio ✅ · MSG91 pending |
 
 ---
 
 ## 5. Review request ✅ Registered on Jio
 
 **Env:** `YMO_TPL_REVIEW`  
-**Jio DLT ID:** `1277178575937333729`  
+**Jio DLT ID:** `1277178591508786260`  
 **App variables:** `name`, `ref`
 
 ### Jio DLT content
@@ -273,14 +286,14 @@ Hi {#alphanumeric#}, thanks for choosing YMO for booking {#alphanumeric#}. Pleas
 
 | Jio DLT Template ID | MSG91 Flow ID | Status |
 |---------------------|---------------|--------|
-| `1277178575937333729` | | Jio ✅ · MSG91 pending |
+| `1277178591508786260` | | Jio ✅ · MSG91 pending |
 
 ---
 
 ## 6. Service invoice sent ✅ Registered on Jio
 
 **Env:** `YMO_TPL_INVOICE`  
-**Jio DLT ID:** `1277178575259112040`  
+**Jio DLT ID:** `1277178591247861897`  
 **App variables:** `name`, `ref`, `invoice_no`, `total`
 
 ### Jio DLT content — **recommended (3 variables)**
@@ -299,14 +312,14 @@ Hi {#alphanumeric#}, invoice for booking {#alphanumeric#} is ready. Total Rs {#n
 
 | Jio DLT Template ID | MSG91 Flow ID | Status |
 |---------------------|---------------|--------|
-| `1277178575259112040` | | Jio ✅ · MSG91 pending |
+| `1277178591247861897` | | Jio ✅ · MSG91 pending |
 
 ---
 
 ## 7. Referral credit ✅ Registered on Jio
 
 **Env:** `YMO_TPL_REFERRAL`  
-**Jio DLT ID:** `1277178575518353867`  
+**Jio DLT ID:** `1277178591255421707`  
 **App variables:** `name`, `amount`, `ref`
 
 ### Jio DLT content (3 variables — register if accepted)
@@ -323,14 +336,14 @@ Hi {#alphanumeric#}, Rs {#number#} referral credit confirmed for booking {#alpha
 
 | Jio DLT Template ID | MSG91 Flow ID | Status |
 |---------------------|---------------|--------|
-| `1277178575518353867` | | Jio ✅ · MSG91 pending |
+| `1277178591255421707` | | Jio ✅ · MSG91 pending |
 
 ---
 
 ## 8. CRM campaign SMS ✅ Registered on Jio
 
 **Env:** `YMO_TPL_CRM_CAMPAIGN`  
-**Jio DLT ID:** `1277178575305725211`  
+**Jio DLT ID:** `1277178591687073165`  
 **App variable:** `msg`  
 **Jio type:** Promotional / Service Explicit (requires subscriber consent)
 
@@ -352,7 +365,7 @@ Hi {#alphanumeric#}, Rs {#number#} referral credit confirmed for booking {#alpha
 
 | Jio DLT Template ID | MSG91 Flow ID | Status |
 |---------------------|---------------|--------|
-| `1277178575305725211` | | Jio ✅ · MSG91 pending |
+| `1277178591687073165` | | Jio ✅ · MSG91 pending |
 
 ---
 
@@ -381,14 +394,14 @@ YMO_TPL_CRM_CAMPAIGN=msg91-flow-id-here
 
 ```env
 # Do not use these in the app — keep for MSG91 DLT linking
-# YMO_TPL_OTP           → 1277178574435658630
-# YMO_TPL_BOOKING_OK    → 1277178575522167187
-# YMO_TPL_BOOKING_STATUS→ 1277178575265770657
-# YMO_TPL_SERVICE_REMIND→ 1277178575320887401
-# YMO_TPL_REVIEW        → 1277178575937333729
-# YMO_TPL_INVOICE       → 1277178575259112040
-# YMO_TPL_REFERRAL      → 1277178575518353867
-# YMO_TPL_CRM_CAMPAIGN  → 1277178575305725211
+# YMO_TPL_OTP           → 1277178591884069081
+# YMO_TPL_BOOKING_OK    → 1277178591453817908
+# YMO_TPL_BOOKING_STATUS→ 1277178591568547322
+# YMO_TPL_SERVICE_REMIND→ 1277178591934852577
+# YMO_TPL_REVIEW        → 1277178591508786260
+# YMO_TPL_INVOICE       → 1277178591247861897
+# YMO_TPL_REFERRAL      → 1277178591255421707
+# YMO_TPL_CRM_CAMPAIGN  → 1277178591687073165
 ```
 
 Restart the app after updating env vars.
@@ -412,8 +425,8 @@ Restart the app after updating env vars.
 
 ## Next steps
 
-1. ~~Register all templates on Jio DLT~~ ✅ Done (03-08-2026)
-2. **MSG91** — add each Jio template, map header `YMOCAR`, set variable names (see sections above)
+1. ~~Register all templates on Jio DLT~~ ✅ Done — all Active, Registered with All TSP (07-08-2026)
+2. **MSG91** — add each Jio template ID above, map header `YMOCAR`, set variable names (see sections above)
 3. **MSG91** — create Flow for each template → copy Flow IDs to `.env`
 4. Set `YMO_MSG91_AUTHKEY` in `.env`
 5. Test OTP signup, then booking confirmed
