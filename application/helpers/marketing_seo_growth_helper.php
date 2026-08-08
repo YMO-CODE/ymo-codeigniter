@@ -253,6 +253,43 @@ if (!function_exists('marketing_seo_growth_pune_localities')) {
     }
 }
 
+if (!function_exists('marketing_seo_growth_pune_hub_body')) {
+    /** HTML body for locations/pune — all Pune locality cards from config. */
+    function marketing_seo_growth_pune_hub_body()
+    {
+        $cards = array();
+        foreach (marketing_pune_locality_defs() as $def) {
+            list($slug, , $label, , $extra) = $def;
+            $blurb = trim(preg_replace('/\s+/u', ' ', strip_tags((string) $extra)));
+            if (strlen($blurb) > 115) {
+                $blurb = preg_replace('/\s+\S*$/u', '…', substr($blurb, 0, 112));
+            }
+            $cards[] = array($label, '/'.$slug, $blurb);
+        }
+
+        $cards_html = marketing_seo_growth_neighbourhood_cards($cards);
+
+        return '<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">Pune neighbourhoods we serve</h2>'
+            .'<p class="md-body-md mb-4">Periodic car service, AC repair, denting, and polishing with free doorstep pick-up across 14 Pune areas — from Baner and Wakad to Kharadi, Kothrud, and Magarpatta.</p>'
+            .$cards_html
+            .'</div>'
+            .'<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">Why choose YMO in Pune?</h2>'
+            .'<p class="md-body-md mb-4">Expert technicians, competitive prices, and workshop-grade car servicing at transparent rates — with discounts built into our packages.</p>'
+            .'<div class="row g-4">'
+            .'<div class="col-md-6 col-lg-3"><div class="md-card-elevated h-100"><span class="mi mi-xl md-icon-primary">engineering</span>'
+            .'<h3 class="md-title-md mt-3 mb-2">Expert technicians</h3><p class="md-body-md mb-0">Trained mechanics for periodic service, engine work, brakes, AC, and body repair.</p></div></div>'
+            .'<div class="col-md-6 col-lg-3"><div class="md-card-elevated h-100"><span class="mi mi-xl md-icon-primary">payments</span>'
+            .'<h3 class="md-title-md mt-3 mb-2">Competitive prices</h3><p class="md-body-md mb-0">Upfront estimates from ₹1,999 on servicing, denting, and polishing in Pune.</p></div></div>'
+            .'<div class="col-md-6 col-lg-3"><div class="md-card-elevated h-100"><span class="mi mi-xl md-icon-primary">local_shipping</span>'
+            .'<h3 class="md-title-md mt-3 mb-2">Free pick-up &amp; drop</h3><p class="md-body-md mb-0">We collect and return your car across all 14 Pune neighbourhoods we serve.</p></div></div>'
+            .'<div class="col-md-6 col-lg-3"><div class="md-card-elevated h-100"><span class="mi mi-xl md-icon-primary">schedule</span>'
+            .'<h3 class="md-title-md mt-3 mb-2">Same-day service</h3><p class="md-body-md mb-0">Most maintenance and repair jobs completed the same day you book.</p></div></div>'
+            .'</div>'
+            .'<p class="md-body-md mt-4 mb-0">We also specialise in <a href="/premium-luxury-car-service-pune">luxury car service for Mercedes, BMW, and Audi</a> in Pune. '
+            .'<a href="/book-car-servicing-in-pune/">Book car servicing online</a> or call us to schedule pick-up.</p></div>';
+    }
+}
+
 if (!function_exists('marketing_seo_growth_localities')) {
     /** @return array<string,array> */
     function marketing_seo_growth_localities($today)

@@ -257,7 +257,7 @@ if (!function_exists('marketing_enrich_page')) {
 
         if ($path === 'locations/pune') {
             $page['meta_title'] = 'Car Servicing in Pune | Free Pickup | YMO';
-            $page['meta_description'] = 'Book car servicing in Pune — Baner, Wakad, Hinjewadi, Kharadi, Viman Nagar & more. Doorstep pick-up from ₹1,999. 4.8★ rated.';
+            $page['meta_description'] = 'Book car servicing in Pune — Baner, Wakad, Hinjewadi, Kharadi, Kothrud, Viman Nagar & 14 areas. Doorstep pick-up from ₹1,999. 4.8★ rated.';
         }
 
         if ($path === 'locations/indore') {

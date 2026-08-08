@@ -42,10 +42,11 @@ return array(
             'kalyani_nagar' => array('label' => 'Kalyani Nagar', 'slug' => 'car-servicing-in-kalyani-nagar-pune'),
         ),
         'neighborhoods' => array('Baner', 'Wakad', 'Hinjewadi', 'Aundh', 'Bavdhan', 'Viman Nagar', 'Kharadi', 'Koregaon Park', 'Kothrud', 'Hadapsar', 'Magarpatta', 'Wagholi', 'Pimple Saudagar', 'Kalyani Nagar', 'Warje'),
-        'quick_answer' => 'Your Mechanic Online offers doorstep car servicing across Pune with free pick-up and drop, transparent pricing from ₹1999, and nine specialist services covering Baner, Wakad, Hinjewadi, Aundh, Bavdhan, and Viman Nagar.',
+        'quick_answer' => 'Your Mechanic Online offers doorstep car servicing across 14 Pune neighbourhoods with free pick-up and drop, transparent pricing from ₹1,999, and full workshop services.',
         'faq' => array(
-            array('q' => 'What is the cost of car servicing in Pune?', 'a' => 'Complete car servicing in Pune starts from ₹1999. Rubbing and polishing packages start at ₹6500 and interior deep cleaning from ₹2500. YMO provides upfront estimates before work begins.'),
-            array('q' => 'Does YMO offer doorstep pick-up in Pune?', 'a' => 'Yes. We provide free doorstep pick-up and delivery across Pune including Baner, Wakad, Hinjewadi, Aundh, Bavdhan, and Viman Nagar.'),
+            array('q' => 'What is the cost of car servicing in Pune?', 'a' => 'Complete car servicing in Pune starts from ₹1,999. Rubbing and polishing packages start at ₹6,500 and interior deep cleaning from ₹2,500. YMO provides upfront estimates before work begins.'),
+            array('q' => 'Does YMO offer doorstep pick-up in Pune?', 'a' => 'Yes. We provide free doorstep pick-up and delivery across Baner, Wakad, Hinjewadi, Kharadi, Kothrud, Hadapsar, Magarpatta, Viman Nagar, and all listed Pune areas.'),
+            array('q' => 'Which areas in Pune do you serve?', 'a' => 'We serve 14 Pune neighbourhoods including Baner, Wakad, Hinjewadi, Aundh, Bavdhan, Viman Nagar, Kharadi, Koregaon Park, Kothrud, Hadapsar, Magarpatta, Wagholi, Pimple Saudagar, and Kalyani Nagar.'),
         ),
     ),
     'indore' => array(
