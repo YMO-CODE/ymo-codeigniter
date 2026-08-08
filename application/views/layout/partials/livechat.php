@@ -18,4 +18,41 @@ if ($license <= 0) {
     <a href="https://www.livechat.com/chat-with/<?= (int) $license; ?>/" rel="nofollow">Chat with us</a>,
     powered by <a href="https://www.livechat.com/?welcome" rel="noopener nofollow" target="_blank">LiveChat</a>
 </noscript>
+<script>
+(function () {
+    if (!document.body.classList.contains('ymo-marketing') || !window.LiveChatWidget) {
+        return;
+    }
+
+    function hideLiveChatBubble() {
+        try {
+            LiveChatWidget.call('hide');
+        } catch (e) {}
+    }
+
+    LiveChatWidget.on('ready', hideLiveChatBubble);
+    LiveChatWidget.on('visibility_changed', function (data) {
+        if (!data || data.visibility === 'maximized') {
+            return;
+        }
+        hideLiveChatBubble();
+    });
+
+    function bindLiveChatButton() {
+        var btn = document.getElementById('ymo-livechat-open');
+        if (!btn) {
+            return;
+        }
+        btn.addEventListener('click', function () {
+            LiveChatWidget.call('maximize');
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bindLiveChatButton);
+    } else {
+        bindLiveChatButton();
+    }
+})();
+</script>
 <!-- End of LiveChat code -->
