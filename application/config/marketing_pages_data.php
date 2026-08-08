@@ -348,7 +348,8 @@ if (function_exists('marketing_brands_index_page')) {
 }
 
 if (function_exists('marketing_seo_growth_pages')) {
-    $pages = array_merge($pages, marketing_seo_growth_pages());
+    // SEO growth fills gaps only — hand-migrated tier-1 entries in $pages must win.
+    $pages = $pages + marketing_seo_growth_pages();
 }
 
 $option_a_file = __DIR__.'/marketing_pages_option_a.php';
