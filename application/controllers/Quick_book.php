@@ -280,6 +280,13 @@ class Quick_book extends MY_Controller
             array('source' => 'quick_book')
         );
 
+        crm_notify_admin_new_lead($lead_id, 'Quick book', array(
+            'name'    => $payload['name'],
+            'mobile'  => $payload['mobile'],
+            'email'   => $payload['email'],
+            'message' => $this->_build_message($payload),
+        ));
+
         return $lead_id;
     }
 

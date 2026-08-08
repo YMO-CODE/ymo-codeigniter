@@ -36,6 +36,16 @@
                     <?php if ($lead['company']): ?>
                         <p class="small mb-0 mt-1"><?= html_escape($lead['company']); ?></p>
                     <?php endif; ?>
+                    <?php
+                    $lead_address = crm_lead_field($lead, 'address');
+                    $lead_car_type = crm_lead_field($lead, 'car_type');
+                    ?>
+                    <?php if ($lead_address): ?>
+                        <p class="small mb-0 mt-1"><span class="text-muted">Address:</span> <?= html_escape($lead_address); ?></p>
+                    <?php endif; ?>
+                    <?php if ($lead_car_type): ?>
+                        <p class="small mb-0 mt-1"><span class="text-muted">Car:</span> <?= html_escape($lead_car_type); ?></p>
+                    <?php endif; ?>
                 </div>
                 <div class="col-md-6">
                     <h6 class="text-muted small text-uppercase">Assigned to</h6>

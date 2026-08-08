@@ -285,12 +285,26 @@ class Crm_contact_model extends CI_Model
 
     public function create_from_lead(array $lead)
     {
+        $notes = trim((string) ($lead['message'] ?? ''));
+        $extra = array();
+        $address = function_exists('crm_lead_field') ? crm_lead_field($lead, 'address') : ($lead['address'] ?? '');
+        $car_type = function_exists('crm_lead_field') ? crm_lead_field($lead, 'car_type') : ($lead['car_type'] ?? '');
+        if ($address !== '') {
+            $extra[] = 'Address: '.$address;
+        }
+        if ($car_type !== '') {
+            $extra[] = 'Car: '.$car_type;
+        }
+        if ($extra) {
+            $notes = trim($notes.($notes !== '' ? "\n\n" : '').implode("\n", $extra));
+        }
+
         $id = $this->create(array(
             'name'                   => $lead['name'],
             'mobile'                 => $lead['mobile'],
             'email'                  => $lead['email'],
             'company'                => $lead['company'],
-            'notes'                  => $lead['message'],
+            'notes'                  => $notes !== '' ? $notes : NULL,
             'converted_from_lead_id' => (int) $lead['id'],
         ));
         $this->_link_user_if_exists($id, array(

@@ -94,6 +94,13 @@ class Contact extends Marketing_Controller
             array('source' => 'marketing_contact')
         );
 
+        crm_notify_admin_new_lead($lead_id, 'Contact form', array(
+            'name'    => $payload['name'],
+            'mobile'  => $payload['mobile'],
+            'email'   => $payload['email'],
+            'message' => $payload['message'],
+        ));
+
         return $lead_id;
     }
 }

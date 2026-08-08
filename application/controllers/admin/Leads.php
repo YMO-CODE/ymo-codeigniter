@@ -417,6 +417,8 @@ class Leads extends Crm_Controller
         $this->form_validation->set_rules('mobile', 'Mobile', 'trim|max_length[20]');
         $this->form_validation->set_rules('email', 'Email', 'trim|valid_email|max_length[180]');
         $this->form_validation->set_rules('company', 'Workshop', 'trim|max_length[120]');
+        $this->form_validation->set_rules('address', 'Address', 'trim|max_length[255]');
+        $this->form_validation->set_rules('car_type', 'Car type', 'trim|max_length[120]');
         $this->form_validation->set_rules('source_id', 'Source', 'required|integer');
         $stage_list = implode(',', array_keys(crm_lead_stages()));
         $this->form_validation->set_rules('stage', 'Stage', 'in_list['.$stage_list.']');
@@ -437,6 +439,8 @@ class Leads extends Crm_Controller
             'mobile'    => preg_replace('/\D/', '', (string) $this->input->post('mobile')),
             'email'     => strtolower(trim((string) $this->input->post('email'))),
             'company'   => $this->input->post('company') ?: NULL,
+            'address'   => trim((string) $this->input->post('address')) ?: NULL,
+            'car_type'  => trim((string) $this->input->post('car_type')) ?: NULL,
             'message'   => $this->input->post('message') ?: NULL,
             'stage'     => $stage,
             'status'    => $this->input->post('status') ?: 'open',

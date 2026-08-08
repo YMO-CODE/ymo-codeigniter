@@ -206,7 +206,7 @@ class Crm_lead_model extends CI_Model
 
     public function create(array $payload)
     {
-        $payload = $this->_normalize_followup_payload($payload);
+        $payload = $this->_filter_known_columns($this->_normalize_followup_payload($payload));
         $payload['created_at'] = date('Y-m-d H:i:s');
         $payload['updated_at'] = date('Y-m-d H:i:s');
         if (empty($payload['stage'])) {
@@ -220,7 +220,7 @@ class Crm_lead_model extends CI_Model
 
     public function update($id, array $payload)
     {
-        $payload = $this->_normalize_followup_payload($payload);
+        $payload = $this->_filter_known_columns($this->_normalize_followup_payload($payload));
         $payload['updated_at'] = date('Y-m-d H:i:s');
         $this->db->where('id', (int) $id)->update(self::TABLE, $payload);
         if (array_key_exists('next_follow_up_at', $payload) && empty($payload['stage_locked'])) {
@@ -312,6 +312,8 @@ class Crm_lead_model extends CI_Model
             'mobile'            => preg_replace('/\D/', '', (string) ($fields['mobile'] ?? '')),
             'email'             => strtolower(trim((string) ($fields['email'] ?? ''))),
             'company'           => $fields['company'] ?? NULL,
+            'address'           => $fields['address'] ?? NULL,
+            'car_type'          => $fields['car_type'] ?? NULL,
             'message'           => $fields['message'] ?? NULL,
             'stage'             => 'warm_lead',
             'external_lead_id'  => $external_id,
@@ -320,6 +322,8 @@ class Crm_lead_model extends CI_Model
             'created_at'        => date('Y-m-d H:i:s'),
             'updated_at'        => date('Y-m-d H:i:s'),
         );
+        $payload = $this->_apply_raw_address_car($payload, $fields['raw'] ?? NULL);
+        $payload = $this->_filter_known_columns($payload);
         $this->db->insert(self::TABLE, $payload);
         return (int) $this->db->insert_id();
     }
@@ -420,6 +424,47 @@ class Crm_lead_model extends CI_Model
         return $payload;
     }
 
+    protected function _apply_raw_address_car(array $payload, $raw)
+    {
+        if (!is_array($raw)) {
+            return $payload;
+        }
+        if (empty($payload['address'])) {
+            $parts = array_filter(array(
+                trim((string) ($raw['area'] ?? '')),
+                trim((string) ($raw['city'] ?? '')),
+            ));
+            if ($parts) {
+                $payload['address'] = implode(', ', $parts);
+            }
+        }
+        if (empty($payload['car_type'])) {
+            $make = trim((string) ($raw['make_name'] ?? ''));
+            $variant = trim((string) ($raw['variant'] ?? ''));
+            $car = trim($make.' '.$variant);
+            if ($car !== '') {
+                $payload['car_type'] = $car;
+            }
+        }
+        return $payload;
+    }
+
+    protected function _filter_known_columns(array $payload)
+    {
+        static $columns = NULL;
+        if ($columns === NULL) {
+            if (!$this->db->table_exists(self::TABLE)) {
+                $columns = array();
+            } else {
+                $columns = $this->db->list_fields(self::TABLE);
+            }
+        }
+        if (!$columns) {
+            return $payload;
+        }
+        return array_intersect_key($payload, array_flip($columns));
+    }
+
     protected function _apply_filters(array $filters)
     {
         if (!empty($filters['q'])) {
@@ -428,8 +473,14 @@ class Crm_lead_model extends CI_Model
                 ->like('l.name', $q)
                 ->or_like('l.mobile', $q)
                 ->or_like('l.email', $q)
-                ->or_like('l.company', $q)
-                ->group_end();
+                ->or_like('l.company', $q);
+            if ($this->db->field_exists('address', self::TABLE)) {
+                $this->db->or_like('l.address', $q);
+            }
+            if ($this->db->field_exists('car_type', self::TABLE)) {
+                $this->db->or_like('l.car_type', $q);
+            }
+            $this->db->group_end();
         }
         if (!empty($filters['source_slug'])) {
             $sid = $this->source_id_by_slug($filters['source_slug']);

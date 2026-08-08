@@ -391,6 +391,8 @@ CREATE TABLE IF NOT EXISTS `crm_leads` (
     `mobile`              VARCHAR(20)  NOT NULL DEFAULT '',
     `email`               VARCHAR(180) NOT NULL DEFAULT '',
     `company`             VARCHAR(120) NULL,
+    `address`             VARCHAR(255) NULL,
+    `car_type`            VARCHAR(120) NULL,
     `message`             TEXT NULL,
     `stage`               ENUM('hot_lead','warm_lead','followup_next_week','followup_next_month','later','quote_sent','lost') NOT NULL DEFAULT 'warm_lead',
     `status`              ENUM('open','converted','junk') NOT NULL DEFAULT 'open',

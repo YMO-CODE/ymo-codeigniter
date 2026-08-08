@@ -77,6 +77,20 @@ $action  = $is_edit ? admin_url('leads/'.$lead['id'].'/edit') : admin_url('leads
                             <label for="ld_followup">Next follow-up</label>
                         </div>
                     </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input class="form-control" id="ld_address" name="address" placeholder=" "
+                                   value="<?= html_escape(set_value('address', $lead ? crm_lead_field($lead, 'address') : '')); ?>">
+                            <label for="ld_address">Address</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input class="form-control" id="ld_car_type" name="car_type" placeholder=" "
+                                   value="<?= html_escape(set_value('car_type', $lead ? crm_lead_field($lead, 'car_type') : '')); ?>">
+                            <label for="ld_car_type">Car type</label>
+                        </div>
+                    </div>
                     <p class="col-12 small ymo-muted mb-0">Follow-up date auto-updates pipeline stage (Hot / Next week / Next month / Later). Use manual stage for Warm, Quote sent, or Lost.</p>
                     <?php if (crm_can('leads.assign')): ?>
                     <div class="col-md-6">

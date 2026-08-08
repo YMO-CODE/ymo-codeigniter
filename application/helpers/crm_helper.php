@@ -507,6 +507,79 @@ if (!function_exists('crm_lead_chat_messages')) {
     }
 }
 
+if (!function_exists('crm_lead_field')) {
+    /**
+     * Read a lead column, falling back to payload_json from web forms (quick-book, etc.).
+     *
+     * @param array  $lead
+     * @param string $key  address|car_type
+     */
+    function crm_lead_field(array $lead, $key)
+    {
+        if (!empty($lead[$key])) {
+            return (string) $lead[$key];
+        }
+        if (empty($lead['payload_json'])) {
+            return '';
+        }
+        $raw = json_decode((string) $lead['payload_json'], TRUE);
+        if (!is_array($raw)) {
+            return '';
+        }
+        if ($key === 'address') {
+            $parts = array_filter(array(
+                trim((string) ($raw['area'] ?? '')),
+                trim((string) ($raw['city'] ?? '')),
+            ));
+            return implode(', ', $parts);
+        }
+        if ($key === 'car_type') {
+            $make = trim((string) ($raw['make_name'] ?? ''));
+            $variant = trim((string) ($raw['variant'] ?? ''));
+            return trim($make.' '.$variant);
+        }
+        return '';
+    }
+}
+
+if (!function_exists('crm_notify_admin_new_lead')) {
+    /**
+     * Email admin when a public form creates a CRM lead. Failures are logged only.
+     *
+     * @param int    $lead_id
+     * @param string $source_label e.g. "Quick book", "Contact form"
+     * @param array  $lead         Keys: name, mobile, email (optional), message (optional)
+     */
+    function crm_notify_admin_new_lead($lead_id, $source_label, array $lead)
+    {
+        $lead_id = (int) $lead_id;
+        if ($lead_id <= 0) {
+            return;
+        }
+
+        $ci = &get_instance();
+        $admin_email = $ci->config->item('ymo_admin_notify');
+        if (!$admin_email) {
+            return;
+        }
+
+        $ci->load->library('mailer');
+        $name = trim((string) ($lead['name'] ?? 'Unknown'));
+        $subject = 'New lead - '.$source_label.' - '.$name;
+        $ok = $ci->mailer->send_view($admin_email, $subject, 'emails/lead_admin_new', array(
+            'lead_id'      => $lead_id,
+            'source_label' => $source_label,
+            'lead'         => $lead,
+        ));
+        if (!$ok) {
+            log_message(
+                'error',
+                '[crm] Lead admin notify failed for #'.$lead_id.': '.$ci->mailer->last_error()
+            );
+        }
+    }
+}
+
 if (!function_exists('crm_pagination_items')) {
     /**
      * Build page numbers for admin pagination with ellipsis after the first block.
