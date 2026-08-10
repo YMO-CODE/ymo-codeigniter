@@ -14,7 +14,6 @@ $bs_css_file = is_file($bs_marketing)
 $ymo_css_url = base_url($ymo_css_file.'?v='.$ymo_css_v);
 $mk_css_url  = base_url('assets/css/marketing.css?v='.$mk_css_v);
 $bs_css_url  = base_url($bs_css_file.'?v='.$bs_css_v);
-$fonts_poppins = 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap';
 $fonts_icons   = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap';
 
 $critical_css = '';
@@ -37,9 +36,7 @@ if (is_file($critical_file)) {
 <link rel="stylesheet" href="<?= html_escape($ymo_css_url); ?>">
 <link rel="stylesheet" href="<?= html_escape($mk_css_url); ?>">
 </noscript>
-<link rel="preload" href="<?= html_escape($fonts_poppins); ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <link rel="preload" href="<?= html_escape($fonts_icons); ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript>
-<link rel="stylesheet" href="<?= html_escape($fonts_poppins); ?>">
 <link rel="stylesheet" href="<?= html_escape($fonts_icons); ?>">
 </noscript>
