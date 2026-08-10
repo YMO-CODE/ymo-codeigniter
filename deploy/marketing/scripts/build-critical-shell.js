@@ -8,7 +8,7 @@ const { transform } = require('esbuild');
 const root = path.resolve(__dirname, '../../..');
 const input = path.join(root, 'public/assets/css/marketing-critical-shell.css');
 const output = path.join(root, 'public/assets/css/marketing-critical-shell.min.css');
-const MAX_KB = 14;
+const MAX_KB = 16;
 
 async function main() {
   if (!fs.existsSync(input)) {

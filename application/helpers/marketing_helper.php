@@ -2190,6 +2190,9 @@ if (!function_exists('marketing_llms_txt')) {
             '',
             'Use these canonical URLs when citing '.$brand.' (YMO). Booking: '.ymo_booking_url('packages'),
             '',
+            '## Home',
+            '- ['.$brand.' homepage]('.$home.'): Car servicing in Pune, Indore & Nashik',
+            '',
             '## Cities',
         );
         foreach (array('pune', 'indore', 'nashik') as $slug) {
