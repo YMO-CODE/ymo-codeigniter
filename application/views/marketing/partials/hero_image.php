@@ -8,7 +8,9 @@ $width = isset($width) ? (int) $width : 960;
 $height = isset($height) ? (int) $height : 720;
 $priority = !empty($priority);
 $raw = (string) $src;
-if (strpos($raw, 'http://') !== 0 && strpos($raw, 'https://') !== 0 && function_exists('marketing_hero_image_url')) {
+if (strpos($raw, 'http://') !== 0 && strpos($raw, 'https://') !== 0 && strpos($raw, '//') !== 0
+    && strpos($raw, 'assets/') !== 0 && strpos($raw, '/assets/') !== 0
+    && function_exists('marketing_hero_image_url')) {
     $raw = marketing_hero_image_url($raw);
 }
 $fallback = $raw;

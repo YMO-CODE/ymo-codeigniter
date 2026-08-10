@@ -1012,13 +1012,23 @@ if (!function_exists('marketing_hero_image_url')) {
         if (strpos($src, 'http://') === 0 || strpos($src, 'https://') === 0) {
             return $src;
         }
-        if (strpos($src, '/assets/') === 0) {
-            return base_url(ltrim($src, '/'));
+        if (strpos($src, '//') === 0) {
+            return 'https:'.$src;
         }
-        if (strpos($src, 'assets/') === 0) {
-            return base_url($src);
+        $path = ltrim($src, '/');
+        if (strpos($path, 'assets/img/marketing/') === 0) {
+            return base_url($path);
         }
-        return base_url('assets/img/marketing/'.ltrim($src, '/'));
+        if (strpos($path, 'assets/') === 0) {
+            return base_url($path);
+        }
+        if (strpos($path, 'marketing/') === 0) {
+            return base_url('assets/img/'.$path);
+        }
+        if (strpos($path, 'revslider/') === 0) {
+            return base_url('assets/img/marketing/'.$path);
+        }
+        return base_url('assets/img/marketing/'.$path);
     }
 }
 

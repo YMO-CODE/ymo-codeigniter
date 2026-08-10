@@ -37,12 +37,22 @@ if (is_file($critical_file)) {
 <?php if ($lcp_preload !== ''): ?>
 <link rel="preload" as="image" href="<?= html_escape($lcp_preload); ?>" fetchpriority="high">
 <?php endif; ?>
-<link rel="stylesheet" href="<?= html_escape($ymo_css_url); ?>">
-<?php if ($mk_css_v): ?>
-<link rel="stylesheet" href="<?= html_escape($mk_css_url); ?>">
-<?php endif; ?>
-<link rel="preload" href="<?= html_escape($bs_css_url); ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="<?= html_escape($bs_css_url); ?>"></noscript>
+<?php
+$deferred_styles = array($ymo_css_url);
+if ($mk_css_v) {
+    $deferred_styles[] = $mk_css_url;
+}
+$deferred_styles[] = $bs_css_url;
+foreach ($deferred_styles as $css_url):
+?>
+<link rel="preload" href="<?= html_escape($css_url); ?>" as="style">
+<link rel="stylesheet" href="<?= html_escape($css_url); ?>" media="print" onload="this.media='all'">
+<?php endforeach; ?>
+<noscript>
+    <link rel="stylesheet" href="<?= html_escape($ymo_css_url); ?>">
+    <?php if ($mk_css_v): ?><link rel="stylesheet" href="<?= html_escape($mk_css_url); ?>"><?php endif; ?>
+    <link rel="stylesheet" href="<?= html_escape($bs_css_url); ?>">
+</noscript>
 <link rel="preload" href="<?= html_escape($fonts_poppins); ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <link rel="preload" href="<?= html_escape($fonts_icons); ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript>
