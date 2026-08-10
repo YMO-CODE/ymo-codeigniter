@@ -36,8 +36,9 @@
     margin-bottom: 2rem;
 }
 
-.ymo-marketing .ymo-service-catalog .marketing-service-card {
+.ymo-marketing .marketing-service-card {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    will-change: transform;
 }
 
 .marketing-service-card:hover {
@@ -907,6 +908,7 @@
     color: #fff;
     transform: scale(1.05);
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+    will-change: transform;
 }
 
 .ymo-floating-action--whatsapp {

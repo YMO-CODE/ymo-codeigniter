@@ -127,8 +127,12 @@ class Marketing_Controller extends MY_Controller
 
     protected function render_marketing($view, array $data = array())
     {
-        $this->output->set_header('Cache-Control: no-cache, must-revalidate');
-        $this->output->set_header('Pragma: no-cache');
+        if ($this->input->method(TRUE) === 'GET' && empty($data['city_hint'])) {
+            if ($this->output->cache(15)) {
+                return;
+            }
+        }
+        $this->output->set_header('Cache-Control: public, max-age=0, s-maxage=300, stale-while-revalidate=60');
         $data = array_merge($this->page_meta, $data);
         if (empty($data['canonical_path'])) {
             $data['canonical_path'] = trim($this->uri->uri_string(), '/');
