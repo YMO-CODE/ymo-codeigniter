@@ -24,10 +24,15 @@ if (!is_file($critical_file)) {
 }
 if (is_file($critical_file)) {
     $critical_css = trim((string) file_get_contents($critical_file));
+} else {
+    // Critical CSS missing — log so this is visible in server logs, not silently skipped
+    error_log('[YMO] WARNING: marketing-critical-shell CSS not found at '.FCPATH.'assets/css/ — FCP will regress');
 }
 ?>
 <?php if ($critical_css !== ''): ?>
 <style><?= $critical_css; ?></style>
+<?php else: ?>
+<!-- YMO_CRITICAL_CSS_MISSING: deploy assets/css/marketing-critical-shell.min.css -->
 <?php endif; ?>
 <link rel="preload" href="<?= html_escape($bs_css_url); ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <link rel="preload" href="<?= html_escape($ymo_css_url); ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">

@@ -2080,15 +2080,27 @@ if (!function_exists('marketing_image_webp_url')) {
             return '';
         }
         $path = parse_url($url, PHP_URL_PATH);
-        if (!$path || !preg_match('/\.(jpe?g|png)$/i', $path)) {
+        if (!$path) {
+            return '';
+        }
+        // Already a WebP — return as-is so callers don't fall through to JPEG/PNG fallbacks
+        if (preg_match('/\.webp$/i', $path)) {
+            return $url;
+        }
+        if (!preg_match('/\.(jpe?g|png)$/i', $path)) {
             return '';
         }
         $webp_path = preg_replace('/\.(jpe?g|png)$/i', '.webp', $path);
-        $local = FCPATH.ltrim(str_replace('/', DIRECTORY_SEPARATOR, $webp_path), DIRECTORY_SEPARATOR);
-        if (!is_file($local)) {
-            return '';
+        // Only check filesystem for same-origin URLs; skip for CDN/external sources
+        $host = parse_url($url, PHP_URL_HOST);
+        $ci   = &get_instance();
+        $own  = parse_url($ci->config->item('base_url'), PHP_URL_HOST);
+        if ($host === NULL || $host === $own) {
+            $local = FCPATH.ltrim(str_replace('/', DIRECTORY_SEPARATOR, $webp_path), DIRECTORY_SEPARATOR);
+            if (!is_file($local)) {
+                return '';
+            }
         }
-        $ci = &get_instance();
         return rtrim($ci->config->item('base_url'), '/').$webp_path;
     }
 }

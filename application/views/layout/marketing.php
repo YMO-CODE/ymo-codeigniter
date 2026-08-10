@@ -20,9 +20,9 @@ $bs_js_v = (int) @filemtime(FCPATH.$bs_js_file);
     <title><?= html_escape($page_title); ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <?php $this->load->view('layout/partials/marketing_head_assets'); ?>
     <link rel="icon" type="image/png" href="<?= base_url('assets/img/logo.png'); ?>">
     <meta name="theme-color" content="#3a6f37">
-    <?php $this->load->view('layout/partials/marketing_head_assets'); ?>
     <?php $this->load->view('layout/partials/marketing_seo'); ?>
 </head>
 <body class="<?= html_escape($body_class); ?>"
