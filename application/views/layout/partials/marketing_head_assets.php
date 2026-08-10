@@ -20,6 +20,14 @@ if (!empty($og_image) && function_exists('marketing_hero_image_url')) {
 ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+.ymo-marketing .ymo-hero--home{position:relative;overflow:hidden;min-height:clamp(320px,42vw,520px);display:flex;align-items:center;background:#212529;color:#fff}
+.ymo-marketing .ymo-hero--home .ymo-hero__bg,.ymo-marketing .ymo-hero--home picture{position:absolute;inset:0;width:100%;height:100%}
+.ymo-marketing .ymo-hero--home .ymo-hero__bg,.ymo-marketing .ymo-hero--home picture img{width:100%;height:100%;object-fit:cover}
+.ymo-marketing .ymo-hero--home .ymo-hero__scrim{position:absolute;inset:0;z-index:1;background:linear-gradient(135deg,rgba(17,20,24,.82),rgba(17,20,24,.55))}
+.ymo-marketing .ymo-hero--home .ymo-hero__inner{position:relative;z-index:2;padding:clamp(3rem,8vw,5rem) 0 clamp(2.75rem,6vw,4.25rem);width:100%}
+.ymo-marketing .ymo-hero--home .ymo-hero__title{font-size:clamp(1.875rem,3.5vw,2.75rem);font-weight:700;color:#fff}
+</style>
 <?php if ($lcp_preload !== ''): ?>
 <link rel="preload" as="image" href="<?= html_escape($lcp_preload); ?>" fetchpriority="high">
 <?php endif; ?>

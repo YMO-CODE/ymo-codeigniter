@@ -31,6 +31,15 @@
 
     window.ymoLoadBootstrap = loadBootstrap;
 
+    function deferIdle(fn, timeoutMs) {
+        timeoutMs = timeoutMs || 4000;
+        if (typeof window.requestIdleCallback === 'function') {
+            window.requestIdleCallback(fn, { timeout: timeoutMs });
+        } else {
+            setTimeout(fn, Math.min(timeoutMs, 2500));
+        }
+    }
+
     // Snackbar auto-dismiss
     var dismissSnackbar = function (el) {
         if (!el || el.classList.contains('is-leaving')) { return; }
@@ -160,15 +169,38 @@
         });
     })();
 
-    // Hero carousel — load Bootstrap when carousel is present
+    // Hero carousel — load Bootstrap only on interaction or after idle (not on first paint)
     (function () {
         var carousel = document.querySelector('.ymo-hero-slider.carousel');
         if (!carousel) { return; }
-        loadBootstrap(function () {
-            if (bootstrap.Carousel) {
-                bootstrap.Carousel.getOrCreateInstance(carousel);
-            }
+
+        var started = false;
+        function startCarousel() {
+            if (started) { return; }
+            started = true;
+            loadBootstrap(function () {
+                if (!window.bootstrap || !bootstrap.Carousel) { return; }
+                var instance = bootstrap.Carousel.getOrCreateInstance(carousel, {
+                    ride: carousel.querySelectorAll('.carousel-item').length > 1 ? 'carousel' : false,
+                    interval: parseInt(carousel.getAttribute('data-bs-interval'), 10) || 6000,
+                    pause: carousel.getAttribute('data-bs-pause') || 'hover',
+                });
+                if (instance && typeof instance.cycle === 'function') {
+                    instance.cycle();
+                }
+            });
+        }
+
+        carousel.querySelectorAll('[data-bs-slide], [data-bs-slide-to]').forEach(function (el) {
+            el.addEventListener('click', function (e) {
+                if (!window.bootstrap) {
+                    e.preventDefault();
+                    startCarousel();
+                }
+            });
         });
+
+        deferIdle(startCarousel, 8000);
     })();
 
     // City hint dismiss
@@ -183,16 +215,7 @@
         });
     })();
 
-    // Defer third-party widgets until idle (LiveChat, offers)
-    function deferIdle(fn, timeoutMs) {
-        timeoutMs = timeoutMs || 4000;
-        if ('requestIdleCallback' in window) {
-            requestIdleCallback(fn, { timeout: timeoutMs });
-        } else {
-            setTimeout(fn, Math.min(timeoutMs, 2500));
-        }
-    }
-
+    // Defer third-party widgets until idle (offers popup only — LiveChat loads on click)
     deferIdle(function () {
         document.querySelectorAll('script[data-defer-load]').forEach(function (placeholder) {
             var s = document.createElement('script');
@@ -205,56 +228,65 @@
         document.querySelectorAll('link[data-defer-style]').forEach(function (link) {
             link.rel = 'stylesheet';
         });
-        initDeferredLiveChat();
     });
 
-    function initDeferredLiveChat() {
+    // LiveChat — load only when user opens chat (saves ~100 KiB on initial load)
+    (function () {
         var cfgEl = document.getElementById('ymo-livechat-config');
-        if (!cfgEl) { return; }
-        var cfg;
-        try {
-            cfg = JSON.parse(cfgEl.textContent || '{}');
-        } catch (e) {
-            return;
-        }
-        if (!cfg.license) { return; }
-
-        window.__lc = window.__lc || {};
-        window.__lc.license = cfg.license;
-        window.__lc.integration_name = 'manual_onboarding';
-        window.__lc.product_name = 'livechat';
-        (function (n, t) {
-            function i(args) { return e._h ? e._h.apply(null, args) : e._q.push(args); }
-            var e = { _q: [], _h: null, _v: '2.0',
-                on: function () { i(['on', [].slice.call(arguments)]); },
-                once: function () { i(['once', [].slice.call(arguments)]); },
-                off: function () { i(['off', [].slice.call(arguments)]); },
-                get: function () { return i(['get', [].slice.call(arguments)]); },
-                call: function () { i(['call', [].slice.call(arguments)]); },
-                init: function () {
-                    var s = t.createElement('script');
-                    s.async = true;
-                    s.src = 'https://cdn.livechatinc.com/tracking.js';
-                    t.head.appendChild(s);
-                }
-            };
-            if (!n.__lc.asyncInit) { e.init(); }
-            n.LiveChatWidget = n.LiveChatWidget || e;
-        }(window, document));
-
-        function hideBubble() {
-            try { LiveChatWidget.call('hide'); } catch (e) {}
-        }
-        LiveChatWidget.on('ready', hideBubble);
-        LiveChatWidget.on('visibility_changed', function (data) {
-            if (!data || data.visibility === 'maximized') { return; }
-            hideBubble();
-        });
         var btn = document.getElementById('ymo-livechat-open');
-        if (btn) {
-            btn.addEventListener('click', function () {
-                LiveChatWidget.call('maximize');
+        if (!cfgEl || !btn) { return; }
+
+        var loaded = false;
+        function loadLiveChat() {
+            if (loaded) {
+                try { LiveChatWidget.call('maximize'); } catch (e) {}
+                return;
+            }
+            loaded = true;
+            var cfg;
+            try {
+                cfg = JSON.parse(cfgEl.textContent || '{}');
+            } catch (e) {
+                return;
+            }
+            if (!cfg.license) { return; }
+
+            window.__lc = window.__lc || {};
+            window.__lc.license = cfg.license;
+            window.__lc.integration_name = 'manual_onboarding';
+            window.__lc.product_name = 'livechat';
+            (function (n, t) {
+                function i(args) { return e._h ? e._h.apply(null, args) : e._q.push(args); }
+                var e = { _q: [], _h: null, _v: '2.0',
+                    on: function () { i(['on', [].slice.call(arguments)]); },
+                    once: function () { i(['once', [].slice.call(arguments)]); },
+                    off: function () { i(['off', [].slice.call(arguments)]); },
+                    get: function () { return i(['get', [].slice.call(arguments)]); },
+                    call: function () { i(['call', [].slice.call(arguments)]); },
+                    init: function () {
+                        var s = t.createElement('script');
+                        s.async = true;
+                        s.src = 'https://cdn.livechatinc.com/tracking.js';
+                        t.head.appendChild(s);
+                    }
+                };
+                if (!n.__lc.asyncInit) { e.init(); }
+                n.LiveChatWidget = n.LiveChatWidget || e;
+            }(window, document));
+
+            function hideBubble() {
+                try { LiveChatWidget.call('hide'); } catch (e) {}
+            }
+            LiveChatWidget.on('ready', function () {
+                hideBubble();
+                try { LiveChatWidget.call('maximize'); } catch (e) {}
+            });
+            LiveChatWidget.on('visibility_changed', function (data) {
+                if (!data || data.visibility === 'maximized') { return; }
+                hideBubble();
             });
         }
-    }
+
+        btn.addEventListener('click', loadLiveChat);
+    })();
 })();

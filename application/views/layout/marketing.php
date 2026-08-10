@@ -5,7 +5,11 @@ $page_title = !empty($meta_title)
     ? $meta_title
     : (isset($title) ? $title.' - '.$ci->config->item('ymo_brand_name') : $ci->config->item('ymo_brand_name'));
 $body_class = isset($page_class) ? $page_class : 'ymo-marketing md-theme';
-$bs_js_v = (int) @filemtime(FCPATH.'assets/vendor/bootstrap/js/bootstrap.bundle.min.js');
+$bs_marketing_js = FCPATH.'assets/js/bootstrap-marketing.min.js';
+$bs_js_file = is_file($bs_marketing_js)
+    ? 'assets/js/bootstrap-marketing.min.js'
+    : 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js';
+$bs_js_v = (int) @filemtime(FCPATH.$bs_js_file);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -20,11 +24,12 @@ $bs_js_v = (int) @filemtime(FCPATH.'assets/vendor/bootstrap/js/bootstrap.bundle.
     <?php
     $mk_css_v = (int) @filemtime(FCPATH.'assets/css/marketing.css');
     if ($mk_css_v): ?>
-    <link rel="stylesheet" href="<?= base_url('assets/css/marketing.css?v='.$mk_css_v); ?>">
+    <link rel="preload" href="<?= base_url('assets/css/marketing.css?v='.$mk_css_v); ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="<?= base_url('assets/css/marketing.css?v='.$mk_css_v); ?>"></noscript>
     <?php endif; ?>
 </head>
 <body class="<?= html_escape($body_class); ?>"
-      data-bootstrap-js="<?= html_escape(base_url('assets/vendor/bootstrap/js/bootstrap.bundle.min.js?v='.$bs_js_v)); ?>">
+      data-bootstrap-js="<?= html_escape(base_url($bs_js_file.'?v='.$bs_js_v)); ?>">
 
 <?php $this->load->view('layout/partials/marketing_header'); ?>
 

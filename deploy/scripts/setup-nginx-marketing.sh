@@ -147,9 +147,11 @@ server {
 
     client_max_body_size 16M;
 
-    include /opt/ymo-codeigniter/deploy/nginx/static-assets.conf;
+    include ${ROOT}/deploy/nginx/security-headers.conf;
+    include ${ROOT}/deploy/nginx/static-assets.conf;
 
     location / {
+        add_header Cache-Control "no-cache, must-revalidate" always;
         proxy_http_version 1.1;
         proxy_set_header Connection "";
         proxy_set_header Host \$host;

@@ -3,16 +3,14 @@ $image = !empty($hero['image']) && is_array($hero['image']) ? $hero['image'] : N
 ?>
 <section class="ymo-hero ymo-hero--home" aria-label="Page hero">
     <?php if ($image): ?>
-        <img
-            class="ymo-hero__bg"
-            src="<?= html_escape(function_exists('marketing_image_preferred_url') ? marketing_image_preferred_url($image['src']) : $image['src']); ?>"
-            alt="<?= html_escape($image['alt']); ?>"
-            fetchpriority="high"
-            loading="eager"
-            decoding="async"
-            width="1920"
-            height="720"
-        >
+        <?php $this->load->view('marketing/partials/hero_image', array(
+            'src'      => $image['src'],
+            'alt'      => $image['alt'],
+            'class'    => 'ymo-hero__bg',
+            'width'    => 1920,
+            'height'   => 720,
+            'priority' => TRUE,
+        )); ?>
     <?php endif; ?>
     <div class="ymo-hero__scrim"></div>
     <div class="container ymo-hero__inner">

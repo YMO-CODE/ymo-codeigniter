@@ -91,6 +91,7 @@ class Pages extends Marketing_Controller
 
         if ($body !== '') {
             $body = marketing_optimize_content_images($body);
+            $body = marketing_body_fix_heading_order($body);
         }
 
         $this->render_marketing($view, array(

@@ -3,9 +3,13 @@
   "private": true,
   "description": "Build trimmed Bootstrap CSS for the marketing site",
   "scripts": {
-    "build:bootstrap": "node scripts/build-bootstrap-marketing.js"
+    "build:bootstrap": "node scripts/build-bootstrap-marketing.js",
+    "build:bootstrap-js": "node scripts/build-bootstrap-marketing-js.js",
+    "build": "npm run build:bootstrap && npm run build:bootstrap-js"
   },
   "devDependencies": {
+    "bootstrap": "5.3.3",
+    "esbuild": "^0.25.0",
     "fast-glob": "^3.3.2",
     "purgecss": "^6.0.0"
   }

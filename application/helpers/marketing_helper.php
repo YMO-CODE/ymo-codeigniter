@@ -1941,6 +1941,33 @@ if (!function_exists('marketing_schema_graph')) {
     }
 }
 
+if (!function_exists('marketing_image_webp_url')) {
+    /**
+     * WebP sibling URL when the file exists, else empty string.
+     *
+     * @param string $url
+     * @return string
+     */
+    function marketing_image_webp_url($url)
+    {
+        $url = trim((string) $url);
+        if ($url === '') {
+            return '';
+        }
+        $path = parse_url($url, PHP_URL_PATH);
+        if (!$path || !preg_match('/\.(jpe?g|png)$/i', $path)) {
+            return '';
+        }
+        $webp_path = preg_replace('/\.(jpe?g|png)$/i', '.webp', $path);
+        $local = FCPATH.ltrim(str_replace('/', DIRECTORY_SEPARATOR, $webp_path), DIRECTORY_SEPARATOR);
+        if (!is_file($local)) {
+            return '';
+        }
+        $ci = &get_instance();
+        return rtrim($ci->config->item('base_url'), '/').$webp_path;
+    }
+}
+
 if (!function_exists('marketing_image_preferred_url')) {
     /**
      * Prefer a local WebP sibling when it exists (same path, .webp extension).
@@ -2002,6 +2029,26 @@ if (!function_exists('marketing_optimize_content_images')) {
                 }
             }
             return $tag;
+        }, $html);
+    }
+}
+
+if (!function_exists('marketing_body_fix_heading_order')) {
+    /**
+     * Bump h3–h6 up one level in migrated body HTML (hero already provides h1).
+     *
+     * @param string $html
+     * @return string
+     */
+    function marketing_body_fix_heading_order($html)
+    {
+        $html = (string) $html;
+        if ($html === '' || !preg_match('/<h[3-6]\b/i', $html)) {
+            return $html;
+        }
+        return preg_replace_callback('/<\/?h([3-6])\b/i', function ($m) {
+            $level = (int) $m[1] - 1;
+            return str_replace($m[1], (string) $level, $m[0]);
         }, $html);
     }
 }

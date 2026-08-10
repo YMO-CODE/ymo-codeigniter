@@ -944,3 +944,17 @@
     display: inline-flex;
     align-items: center;
 }
+
+.ymo-marketing .ymo-topbar a,
+.ymo-marketing .ymo-drawer-link,
+.ymo-marketing .ymo-drawer-sub-link,
+.ymo-marketing .md-chip {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.ymo-marketing .ymo-hero-slider__indicators button {
+    min-width: 44px;
+    min-height: 44px;
+}

@@ -29,8 +29,8 @@ DirectoryIndex index.php
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     Header always set X-XSS-Protection "1; mode=block"
     Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
-    # Strict-Transport-Security only when HTTPS is in place:
-    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    # Strict-Transport-Security when HTTPS is in place (nginx also sets this on marketing host):
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" env=HTTPS
 </IfModule>
 
 # Cache static assets (version query string ?v= handles busting)

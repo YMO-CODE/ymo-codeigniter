@@ -18,7 +18,6 @@ $multi       = count($slides) > 1;
 <div class="ymo-hero-slider ymo-hero-slider--<?= html_escape($variant); ?> carousel slide<?= $multi ? '' : ' ymo-hero-slider--single'; ?> h-100"
      id="<?= html_escape($slider_id); ?>"
     <?php if ($multi): ?>
-     data-bs-ride="carousel"
      data-bs-interval="<?= (int) $interval_ms; ?>"
      data-bs-pause="hover"
      <?php endif; ?>
@@ -37,23 +36,17 @@ $multi       = count($slides) > 1;
     <?php endif; ?>
     <div class="carousel-inner h-100">
         <?php foreach ($slides as $i => $slide):
-            $src = (string) $slide['src'];
-            if (strpos($src, 'http://') !== 0 && strpos($src, 'https://') !== 0) {
-                $src = marketing_hero_image_url($src);
-            }
-            $src = marketing_image_preferred_url($src);
             $alt = isset($slide['alt']) ? (string) $slide['alt'] : 'Your Mechanic Online';
             ?>
             <div class="carousel-item h-100<?= $i === 0 ? ' active' : ''; ?>">
-                <img
-                    class="ymo-hero__photo d-block w-100 h-100"
-                    src="<?= html_escape($src); ?>"
-                    alt="<?= html_escape($alt); ?>"
-                    <?= $i === 0 ? 'fetchpriority="high" loading="eager"' : 'loading="lazy"'; ?>
-                    decoding="async"
-                    width="960"
-                    height="720"
-                >
+                <?php $this->load->view('marketing/partials/hero_image', array(
+                    'src'      => $slide['src'],
+                    'alt'      => $alt,
+                    'class'    => 'ymo-hero__photo d-block w-100 h-100',
+                    'width'    => 960,
+                    'height'   => 720,
+                    'priority' => ($i === 0),
+                )); ?>
             </div>
         <?php endforeach; ?>
     </div>

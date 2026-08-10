@@ -24,16 +24,14 @@ if ($type === 'service' || $type === 'brand') {
                 </div>
             <?php elseif ($image): ?>
                 <div class="ymo-hero__media">
-                    <img
-                        class="ymo-hero__photo"
-                        src="<?= html_escape(function_exists('marketing_image_preferred_url') ? marketing_image_preferred_url($image['src']) : $image['src']); ?>"
-                        alt="<?= html_escape($image['alt']); ?>"
-                        fetchpriority="high"
-                        loading="eager"
-                        decoding="async"
-                        width="960"
-                        height="720"
-                    >
+                    <?php $this->load->view('marketing/partials/hero_image', array(
+                        'src'      => $image['src'],
+                        'alt'      => $image['alt'],
+                        'class'    => 'ymo-hero__photo',
+                        'width'    => 960,
+                        'height'   => 720,
+                        'priority' => TRUE,
+                    )); ?>
                 </div>
             <?php endif; ?>
         </div>

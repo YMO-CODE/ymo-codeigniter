@@ -27,6 +27,9 @@ $page_meta = array(
 );
 $page_meta['og_image'] = marketing_resolve_og_image($page_meta['canonical_path'], $page_meta);
 $og_image = marketing_hero_image_url($page_meta['og_image']);
+if (function_exists('marketing_image_preferred_url')) {
+    $og_image = marketing_image_preferred_url($og_image);
+}
 $og_image_alt = isset($h1) && $h1 !== '' ? $h1 : $page_title;
 $schema = marketing_schema_graph($page_meta);
 ?>
