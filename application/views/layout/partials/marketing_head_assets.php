@@ -16,12 +16,13 @@ $mk_css_url  = base_url('assets/css/marketing.css?v='.$mk_css_v);
 $bs_css_url  = base_url($bs_css_file.'?v='.$bs_css_v);
 $fonts_poppins = 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap';
 $fonts_icons   = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap';
-$lcp_preload = '';
-if (!empty($og_image) && function_exists('marketing_hero_image_url')) {
-    $lcp_preload = marketing_hero_image_url($og_image);
-    if (function_exists('marketing_image_preferred_url')) {
-        $lcp_preload = marketing_image_preferred_url($lcp_preload);
-    }
+$lcp_hints = array('mobile' => '', 'desktop' => '', 'type' => 'image/webp');
+$lcp_og = isset($og_image) ? $og_image : '';
+if ($lcp_og === '' && isset($canonical_path) && function_exists('marketing_resolve_og_image')) {
+    $lcp_og = marketing_resolve_og_image($canonical_path, isset($page) && is_array($page) ? $page : array());
+}
+if ($lcp_og !== '' && function_exists('marketing_lcp_preload_hints')) {
+    $lcp_hints = marketing_lcp_preload_hints($lcp_og);
 }
 $critical_css = '';
 $critical_file = FCPATH.'assets/css/marketing-critical.min.css';
@@ -34,11 +35,14 @@ if (is_file($critical_file)) {
 ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<?php if ($lcp_hints['mobile'] !== ''): ?>
+<link rel="preload" as="image" href="<?= html_escape($lcp_hints['mobile']); ?>" type="<?= html_escape($lcp_hints['type']); ?>" fetchpriority="high" media="(max-width: 768px)">
+<?php endif; ?>
+<?php if ($lcp_hints['desktop'] !== ''): ?>
+<link rel="preload" as="image" href="<?= html_escape($lcp_hints['desktop']); ?>" type="<?= html_escape($lcp_hints['type']); ?>" fetchpriority="high" media="(min-width: 769px)">
+<?php endif; ?>
 <?php if ($critical_css !== ''): ?>
 <style><?= $critical_css; ?></style>
-<?php endif; ?>
-<?php if ($lcp_preload !== ''): ?>
-<link rel="preload" as="image" href="<?= html_escape($lcp_preload); ?>" fetchpriority="high">
 <?php endif; ?>
 <?php
 $deferred_styles = array($bs_css_url, $ymo_css_url);

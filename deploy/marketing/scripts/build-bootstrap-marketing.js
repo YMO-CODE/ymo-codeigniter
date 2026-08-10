@@ -4,6 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 const { PurgeCSS } = require('purgecss');
+const { transform } = require('esbuild');
 const fg = require('fast-glob');
 
 const root = path.resolve(__dirname, '../../..');
@@ -59,7 +60,8 @@ async function main() {
     process.exit(1);
   }
 
-  fs.writeFileSync(cssOutput, result[0].css, 'utf8');
+  const minified = await transform(result[0].css, { loader: 'css', minify: true });
+  fs.writeFileSync(cssOutput, minified.code, 'utf8');
   const outKb = (fs.statSync(cssOutput).size / 1024).toFixed(1);
   const inKb = (fs.statSync(cssInput).size / 1024).toFixed(1);
   console.log(`bootstrap-marketing.min.css: ${outKb} KiB (from ${inKb} KiB bootstrap.min.css)`);

@@ -92,7 +92,7 @@ $bookings_url = ymo_booking_url('account/bookings');
 <nav class="ymo-navbar md-top-app-bar navbar navbar-expand-lg">
     <div class="container">
         <a class="navbar-brand ymo-brand" href="<?= html_escape($home_url); ?>" aria-label="<?= html_escape($brand); ?>">
-            <?= function_exists('marketing_brand_logo_html') ? marketing_brand_logo_html(array('class' => 'ymo-brand-logo', 'width' => 120, 'height' => 44, 'priority' => TRUE)) : '<img src="'.html_escape(base_url('assets/img/logo.png')).'" alt="'.html_escape($brand).'" class="ymo-brand-logo" width="120" height="44" fetchpriority="high" decoding="async">'; ?>
+            <?= function_exists('marketing_brand_logo_html') ? marketing_brand_logo_html(array('class' => 'ymo-brand-logo', 'width' => 120, 'height' => 44, 'priority' => !(isset($ymo_defer_logo_priority) && $ymo_defer_logo_priority))) : '<img src="'.html_escape(base_url('assets/img/logo.png')).'" alt="'.html_escape($brand).'" class="ymo-brand-logo" width="120" height="44" fetchpriority="high" decoding="async">'; ?>
         </a>
         <button class="navbar-toggler md-icon-btn" type="button"
                 data-bs-toggle="offcanvas" data-bs-target="#ymoDrawer"

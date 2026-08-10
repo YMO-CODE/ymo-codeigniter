@@ -1987,6 +1987,85 @@ if (!function_exists('marketing_brand_logo_html')) {
     }
 }
 
+if (!function_exists('marketing_image_responsive_srcset')) {
+    /**
+     * Build srcset for local WebP hero images with -768 / -1280 variants.
+     *
+     * @param string $url Absolute image URL (prefer WebP)
+     * @return array{src:string,srcset:string,sizes:string,mobile:string,desktop:string}
+     */
+    function marketing_image_responsive_srcset($url)
+    {
+        $url = trim((string) $url);
+        $empty = array('src' => $url, 'srcset' => '', 'sizes' => '100vw', 'mobile' => '', 'desktop' => '');
+        if ($url === '') {
+            return $empty;
+        }
+        $path = parse_url($url, PHP_URL_PATH);
+        if (!$path || !preg_match('/\.webp$/i', $path)) {
+            $empty['desktop'] = $url;
+            return $empty;
+        }
+        $ci = &get_instance();
+        $base = rtrim($ci->config->item('base_url'), '/');
+        $dir = dirname($path);
+        $stem = pathinfo($path, PATHINFO_FILENAME);
+        $local_base = FCPATH.ltrim(str_replace('/', DIRECTORY_SEPARATOR, $path), DIRECTORY_SEPARATOR);
+        $parts = array();
+        $mobile = '';
+        foreach (array(768, 1280) as $width) {
+            $variant_path = $dir.'/'.$stem.'-'.$width.'.webp';
+            $local = FCPATH.ltrim(str_replace('/', DIRECTORY_SEPARATOR, $variant_path), DIRECTORY_SEPARATOR);
+            if (is_file($local)) {
+                $parts[] = $base.$variant_path.' '.$width.'w';
+                if ($width === 768) {
+                    $mobile = $base.$variant_path;
+                }
+            }
+        }
+        if (is_file($local_base)) {
+            $full_w = 1920;
+            if (function_exists('getimagesize')) {
+                $info = @getimagesize($local_base);
+                if ($info && !empty($info[0])) {
+                    $full_w = (int) $info[0];
+                }
+            }
+            $parts[] = $base.$path.' '.$full_w.'w';
+        }
+        $srcset = implode(', ', $parts);
+        $src = $mobile !== '' ? $mobile : ($parts ? explode(' ', $parts[count($parts) - 1])[0] : $base.$path);
+        return array(
+            'src'      => $src,
+            'srcset'   => $srcset,
+            'sizes'    => '100vw',
+            'mobile'   => $mobile !== '' ? $mobile : $src,
+            'desktop'  => $base.$path,
+        );
+    }
+}
+
+if (!function_exists('marketing_lcp_preload_hints')) {
+    /**
+     * @param string $og_image
+     * @return array{mobile:string,desktop:string,type:string}
+     */
+    function marketing_lcp_preload_hints($og_image)
+    {
+        $url = marketing_hero_image_url($og_image);
+        $webp = marketing_image_webp_url($url);
+        if ($webp === '') {
+            $webp = marketing_image_preferred_url($url);
+        }
+        $resp = marketing_image_responsive_srcset($webp);
+        return array(
+            'mobile'  => $resp['mobile'],
+            'desktop' => $resp['desktop'],
+            'type'    => 'image/webp',
+        );
+    }
+}
+
 if (!function_exists('marketing_image_webp_url')) {
     /**
      * WebP sibling URL when the file exists, else empty string.
