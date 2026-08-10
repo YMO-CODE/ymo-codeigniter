@@ -21,12 +21,6 @@ $bs_js_v = (int) @filemtime(FCPATH.$bs_js_file);
     <meta name="theme-color" content="#3a6f37">
     <?php $this->load->view('layout/partials/marketing_seo'); ?>
     <?php $this->load->view('layout/partials/marketing_head_assets'); ?>
-    <?php
-    $mk_css_v = (int) @filemtime(FCPATH.'assets/css/marketing.css');
-    if ($mk_css_v): ?>
-    <link rel="preload" href="<?= base_url('assets/css/marketing.css?v='.$mk_css_v); ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="<?= base_url('assets/css/marketing.css?v='.$mk_css_v); ?>"></noscript>
-    <?php endif; ?>
 </head>
 <body class="<?= html_escape($body_class); ?>"
       data-bootstrap-js="<?= html_escape(base_url($bs_js_file.'?v='.$bs_js_v)); ?>">
