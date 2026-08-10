@@ -1,0 +1,12 @@
+{
+  "name": "ymo-marketing-assets",
+  "private": true,
+  "description": "Build trimmed Bootstrap CSS for the marketing site",
+  "scripts": {
+    "build:bootstrap": "node scripts/build-bootstrap-marketing.js"
+  },
+  "devDependencies": {
+    "fast-glob": "^3.3.2",
+    "purgecss": "^6.0.0"
+  }
+}

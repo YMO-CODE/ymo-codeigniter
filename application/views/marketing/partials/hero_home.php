@@ -5,7 +5,7 @@ $image = !empty($hero['image']) && is_array($hero['image']) ? $hero['image'] : N
     <?php if ($image): ?>
         <img
             class="ymo-hero__bg"
-            src="<?= html_escape($image['src']); ?>"
+            src="<?= html_escape(function_exists('marketing_image_preferred_url') ? marketing_image_preferred_url($image['src']) : $image['src']); ?>"
             alt="<?= html_escape($image['alt']); ?>"
             fetchpriority="high"
             loading="eager"

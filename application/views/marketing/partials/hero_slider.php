@@ -41,6 +41,7 @@ $multi       = count($slides) > 1;
             if (strpos($src, 'http://') !== 0 && strpos($src, 'https://') !== 0) {
                 $src = marketing_hero_image_url($src);
             }
+            $src = marketing_image_preferred_url($src);
             $alt = isset($slide['alt']) ? (string) $slide['alt'] : 'Your Mechanic Online';
             ?>
             <div class="carousel-item h-100<?= $i === 0 ? ' active' : ''; ?>">

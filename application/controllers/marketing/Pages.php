@@ -89,6 +89,10 @@ class Pages extends Marketing_Controller
             }
         }
 
+        if ($body !== '') {
+            $body = marketing_optimize_content_images($body);
+        }
+
         $this->render_marketing($view, array(
             'page'                    => $page,
             'booking_url'             => ymo_booking_url('packages'),

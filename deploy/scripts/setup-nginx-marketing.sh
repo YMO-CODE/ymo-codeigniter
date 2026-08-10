@@ -147,6 +147,8 @@ server {
 
     client_max_body_size 16M;
 
+    include /opt/ymo-codeigniter/deploy/nginx/static-assets.conf;
+
     location / {
         proxy_http_version 1.1;
         proxy_set_header Connection "";

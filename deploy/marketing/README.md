@@ -113,3 +113,15 @@ python deploy/marketing/scripts/migrate_marketing_images.py
 - Report: `deploy/marketing/generated/image_migration_report.json`
 
 Re-run safely — existing files are skipped (cached).
+
+### Trimmed Bootstrap CSS (marketing only)
+
+Marketing pages load `public/assets/css/bootstrap-marketing.min.css` (~130 KiB) instead of the full vendor bundle (~227 KiB). Rebuild after changing Bootstrap usage in views, `marketing.css`, or page body HTML:
+
+```bash
+cd deploy/marketing
+npm install
+npm run build:bootstrap
+```
+
+If the trimmed file is missing, `marketing_head_assets.php` falls back to `assets/vendor/bootstrap/css/bootstrap.min.css`.

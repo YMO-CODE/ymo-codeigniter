@@ -928,3 +928,19 @@
         height: 3rem;
     }
 }
+
+/* Accessibility — minimum touch target size (WCAG 2.5.5) */
+.ymo-marketing .md-btn,
+.ymo-marketing .ymo-floating-action,
+.ymo-marketing .navbar-toggler,
+.ymo-marketing .ymo-hero-slider__control,
+.ymo-marketing .carousel-indicators button {
+    min-width: 44px;
+    min-height: 44px;
+}
+
+.ymo-marketing .ymo-nav-link {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+}

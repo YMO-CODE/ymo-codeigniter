@@ -1164,6 +1164,7 @@ if (!function_exists('marketing_hero_resolve_image')) {
         if ($url === '') {
             return NULL;
         }
+        $url = marketing_image_preferred_url($url);
         return array('src' => $url, 'alt' => $alt);
     }
 }
@@ -1940,13 +1941,82 @@ if (!function_exists('marketing_schema_graph')) {
     }
 }
 
+if (!function_exists('marketing_image_preferred_url')) {
+    /**
+     * Prefer a local WebP sibling when it exists (same path, .webp extension).
+     *
+     * @param string $url Absolute or site-relative image URL
+     * @return string
+     */
+    function marketing_image_preferred_url($url)
+    {
+        $url = trim((string) $url);
+        if ($url === '') {
+            return '';
+        }
+        $path = parse_url($url, PHP_URL_PATH);
+        if (!$path || !preg_match('/\.(jpe?g|png)$/i', $path)) {
+            return $url;
+        }
+        $webp_path = preg_replace('/\.(jpe?g|png)$/i', '.webp', $path);
+        $local = FCPATH.ltrim(str_replace('/', DIRECTORY_SEPARATOR, $webp_path), DIRECTORY_SEPARATOR);
+        if (is_file($local)) {
+            $ci = &get_instance();
+            return rtrim($ci->config->item('base_url'), '/').$webp_path;
+        }
+        return $url;
+    }
+}
+
+if (!function_exists('marketing_optimize_content_images')) {
+    /**
+     * Lazy-load below-fold images and add dimensions when missing.
+     *
+     * @param string $html
+     * @return string
+     */
+    function marketing_optimize_content_images($html)
+    {
+        $html = (string) $html;
+        if ($html === '' || stripos($html, '<img') === FALSE) {
+            return $html;
+        }
+        return preg_replace_callback('/<img\b[^>]*>/i', function ($m) {
+            $tag = $m[0];
+            if (stripos($tag, 'loading=') === FALSE) {
+                $tag = preg_replace('/<img/i', '<img loading="lazy"', $tag, 1);
+            }
+            if (stripos($tag, 'decoding=') === FALSE) {
+                $tag = preg_replace('/<img/i', '<img decoding="async"', $tag, 1);
+            }
+            if (stripos($tag, 'width=') === FALSE) {
+                $tag = preg_replace('/<img/i', '<img width="800"', $tag, 1);
+            }
+            if (stripos($tag, 'height=') === FALSE) {
+                $tag = preg_replace('/<img/i', '<img height="533"', $tag, 1);
+            }
+            if (preg_match('/\ssrc=(["\'])([^"\']+)\1/i', $tag, $src_m)) {
+                $preferred = marketing_image_preferred_url($src_m[2]);
+                if ($preferred !== $src_m[2]) {
+                    $tag = str_replace($src_m[0], ' src="'.html_escape($preferred, ENT_QUOTES).'"', $tag);
+                }
+            }
+            return $tag;
+        }, $html);
+    }
+}
+
 if (!function_exists('marketing_llms_txt')) {
-    /** @return string */
+    /** @return string llms.txt per https://llmstxt.org */
     function marketing_llms_txt()
     {
+        $brand = 'Your Mechanic Online';
+        $home  = marketing_canonical_url('');
         $lines = array(
-            '# Your Mechanic Online - canonical pages for AI citation',
-            '# https://www.yourmechaniconline.com',
+            '# '.$brand,
+            '> Doorstep car servicing in Pune, Indore, and Nashik — free pick-up, transparent pricing from ₹1,999, workshop-grade repairs.',
+            '',
+            'Use these canonical URLs when citing '.$brand.' (YMO). Booking: '.ymo_booking_url('packages'),
             '',
             '## Cities',
         );
@@ -1955,24 +2025,39 @@ if (!function_exists('marketing_llms_txt')) {
             if (!$city) {
                 continue;
             }
-            $lines[] = '- '.marketing_canonical_url($city['hub_path']).' - Car servicing in '.$city['name'];
+            $lines[] = '- [Car servicing in '.$city['name'].']('.marketing_canonical_url($city['hub_path']).'): City hub with neighbourhoods and services';
         }
         $lines[] = '';
-        $lines[] = '## Services (Pune)';
-        foreach (marketing_pages_data() as $path => $page) {
-            if (strpos($path, 'services/') !== 0 || strpos($path, '-in-indore') !== FALSE || strpos($path, '-in-nashik') !== FALSE) {
-                continue;
+        $lines[] = '## Key locality pages';
+        if (function_exists('marketing_pune_locality_defs')) {
+            foreach (marketing_pune_locality_defs() as $def) {
+                $lines[] = '- ['.$def[2].', Pune]('.marketing_canonical_url($def[0]).')';
             }
-            if (!isset($page['page_type']) || $page['page_type'] !== 'service') {
-                continue;
-            }
-            $lines[] = '- '.marketing_canonical_url($path).' - '.(isset($page['h1']) ? $page['h1'] : $path);
         }
+        $lines[] = '';
+        $lines[] = '## Services';
+        $lines[] = '- [Service catalogue]('.marketing_canonical_url('services').'): All car services across Pune, Indore, Nashik';
+        foreach (marketing_pages_data() as $path => $page) {
+            if (strpos($path, 'services/') !== 0 || !is_array($page)) {
+                continue;
+            }
+            if (strpos($path, '-in-indore') !== FALSE || strpos($path, '-in-nashik') !== FALSE) {
+                continue;
+            }
+            $label = !empty($page['h1']) ? $page['h1'] : $path;
+            $lines[] = '- ['.$label.']('.marketing_canonical_url($path).')';
+        }
+        $lines[] = '';
+        $lines[] = '## Optional';
+        $lines[] = '- [About us]('.marketing_canonical_url('about-us').')';
+        $lines[] = '- [Luxury car service Pune]('.marketing_canonical_url('premium-luxury-car-service-pune').')';
+        $lines[] = '- [Why choose YMO]('.marketing_canonical_url('why-choose-ymo').')';
         $lines[] = '';
         $lines[] = '## Contact';
-        $lines[] = '- '.marketing_canonical_url('contact-us');
-        $lines[] = '- Tel: +91-7744-065904';
+        $lines[] = '- [Contact us]('.marketing_canonical_url('contact-us').'): Book or enquire online';
+        $lines[] = '- Phone: +91-7744-065904';
         $lines[] = '- Email: contactus@yourmechaniconline.com';
+        $lines[] = '- Instagram: https://www.instagram.com/yourmechaniconline_ymo/';
         return implode("\n", $lines)."\n";
     }
 }
