@@ -4,6 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 const { PurgeCSS } = require('purgecss');
+const { transform } = require('esbuild');
 const fg = require('fast-glob');
 
 const root = path.resolve(__dirname, '../../..');
@@ -70,7 +71,8 @@ async function main() {
   }
 
   const merged = parts.join('\n');
-  fs.writeFileSync(cssOutput, merged, 'utf8');
+  const minified = await transform(merged, { loader: 'css', minify: true });
+  fs.writeFileSync(cssOutput, minified.code, 'utf8');
   const outKb = (fs.statSync(cssOutput).size / 1024).toFixed(1);
   console.log(`marketing-critical.min.css: ${outKb} KiB`);
 }
