@@ -19,7 +19,20 @@ fi
 
 echo "==> Pulling latest from origin/master..."
 git fetch origin
-git pull origin master
+if ! git rev-parse --verify origin/master >/dev/null 2>&1; then
+  echo "ERROR: origin/master not found after fetch."
+  exit 1
+fi
+LOCAL="$(git rev-parse HEAD)"
+REMOTE="$(git rev-parse origin/master)"
+if [ "$LOCAL" = "$REMOTE" ]; then
+  echo "    Already up to date with origin/master."
+elif git merge-base --is-ancestor "$LOCAL" "$REMOTE" 2>/dev/null; then
+  git merge --ff-only origin/master
+else
+  echo "    Local branch diverged (often a VPS-only commit). Resetting to origin/master..."
+  git reset --hard origin/master
+fi
 
 HEAD="$(git rev-parse --short HEAD)"
 echo "==> Now at: $(git log -1 --oneline)"
