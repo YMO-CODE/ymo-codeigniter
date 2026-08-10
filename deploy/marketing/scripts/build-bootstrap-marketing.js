@@ -26,18 +26,15 @@ const contentGlobs = [
   'application/helpers/marketing_seo_enhancements_helper.php',
 ];
 
-const safelist = [
-  'show', 'active', 'fade', 'collapsing', 'collapse',
-  'modal-backdrop', 'offcanvas-backdrop',
-  'carousel-item-next', 'carousel-item-prev', 'carousel-item-start', 'carousel-item-end',
-  /^carousel/, /^offcanvas/, /^navbar/, /^nav-/, /^btn-close/,
-  /^alert/, /^form-floating/, /^table/, /^col-/, /^row/, /^container/,
-  /^d-/, /^flex-/, /^align-/, /^justify-/, /^gap-/, /^g-/, /^gy-/, /^gx-/,
-  /^p[trblxye]?-/, /^m[trblxye]?-/, /^w-/, /^h-/, /^text-/, /^opacity-/,
-  /^visually-hidden/, /^clearfix/, /^small/, /^list-unstyled/,
-  /^offset-/, /^order-/, /^float-/, /^position-/, /^border/, /^rounded/,
-  /^vc_/, /^wpb_/, /^page-margin/, /^full-width/, /^accordion/,
-];
+const safelist = {
+  standard: [
+    'show', 'active', 'fade', 'collapsing', 'collapse',
+    'modal-backdrop', 'offcanvas-backdrop', 'offcanvas-open',
+    'carousel-item-next', 'carousel-item-prev', 'carousel-item-start', 'carousel-item-end',
+  ],
+  deep: [/^carousel/, /^offcanvas/],
+  greedy: [/^accordion/, /^vc_/, /^wpb_/, /^page-margin/, /^full-width/],
+};
 
 async function main() {
   const content = fg.sync(contentGlobs, { cwd: root, absolute: true });
@@ -54,10 +51,7 @@ async function main() {
     fontFace: true,
     keyframes: true,
     variables: true,
-    safelist: {
-      standard: safelist,
-      deep: [/carousel/, /offcanvas/, /collapse/],
-    },
+    safelist,
   });
 
   if (!result[0] || !result[0].css) {

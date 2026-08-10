@@ -1941,6 +1941,42 @@ if (!function_exists('marketing_schema_graph')) {
     }
 }
 
+if (!function_exists('marketing_brand_logo_html')) {
+    /**
+     * Brand logo with WebP when available.
+     *
+     * @param array{class?:string,width?:int,height?:int,priority?:bool,lazy?:bool} $opts
+     * @return string
+     */
+    function marketing_brand_logo_html(array $opts = array())
+    {
+        $class = isset($opts['class']) ? (string) $opts['class'] : 'ymo-brand-logo';
+        $width = isset($opts['width']) ? (int) $opts['width'] : 120;
+        $height = isset($opts['height']) ? (int) $opts['height'] : 44;
+        $lazy = !empty($opts['lazy']);
+        $priority = !empty($opts['priority']);
+        $ci = &get_instance();
+        $brand = $ci->config->item('ymo_brand_name');
+        $png = base_url('assets/img/logo.png');
+        $webp = '';
+        if (is_file(FCPATH.'assets/img/logo.webp')) {
+            $webp = base_url('assets/img/logo.webp');
+        }
+        $attrs = 'class="'.html_escape($class).'"'
+            .' alt="'.html_escape($brand).'"'
+            .' width="'.(int) $width.'"'
+            .' height="'.(int) $height.'"'
+            .' decoding="async"'
+            .($lazy ? ' loading="lazy"' : '')
+            .($priority ? ' fetchpriority="high"' : '');
+        if ($webp !== '') {
+            return '<picture><source srcset="'.html_escape($webp).'" type="image/webp">'
+                .'<img src="'.html_escape($png).'" '.$attrs.'></picture>';
+        }
+        return '<img src="'.html_escape($png).'" '.$attrs.'>';
+    }
+}
+
 if (!function_exists('marketing_image_webp_url')) {
     /**
      * WebP sibling URL when the file exists, else empty string.

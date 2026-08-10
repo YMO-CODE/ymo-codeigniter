@@ -12,7 +12,7 @@ $linkedin  = 'https://www.linkedin.com/company/your-mechanic-online/';
     <div class="container py-2">
         <div class="row gy-4">
             <div class="col-lg-4">
-                <img src="<?= base_url('assets/img/logo.png'); ?>" alt="<?= html_escape($brand); ?>" class="ymo-footer-logo mb-3" width="140" height="52" loading="lazy" decoding="async">
+                <?= function_exists('marketing_brand_logo_html') ? marketing_brand_logo_html(array('class' => 'ymo-footer-logo mb-3', 'width' => 140, 'height' => 52, 'lazy' => TRUE)) : '<img src="'.html_escape(base_url('assets/img/logo.png')).'" alt="'.html_escape($brand).'" class="ymo-footer-logo mb-3" width="140" height="52" loading="lazy" decoding="async">'; ?>
                 <p class="md-body-md mb-0">Periodic service, AC repair, denting &amp; polishing - book online in minutes.</p>
             </div>
             <div class="col-6 col-lg-2">
