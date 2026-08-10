@@ -16,7 +16,7 @@ $linkedin  = 'https://www.linkedin.com/company/your-mechanic-online/';
                 <p class="md-body-md mb-0">Periodic service, AC repair, denting &amp; polishing - book online in minutes.</p>
             </div>
             <div class="col-6 col-lg-2">
-                <h6>Company</h6>
+                <p class="ymo-footer-heading">Company</p>
                 <ul class="list-unstyled md-body-md mb-0">
                     <li class="mb-2"><a href="<?= site_url('about-us'); ?>">About</a></li>
                     <li class="mb-2"><a href="<?= site_url('contact-us'); ?>">Contact</a></li>
@@ -25,7 +25,7 @@ $linkedin  = 'https://www.linkedin.com/company/your-mechanic-online/';
                 </ul>
             </div>
             <div class="col-6 col-lg-2">
-                <h6>Cities &amp; brands</h6>
+                <p class="ymo-footer-heading">Cities &amp; brands</p>
                 <ul class="list-unstyled md-body-md mb-0">
                     <li class="mb-2"><a href="<?= site_url('locations/pune'); ?>">Pune</a></li>
                     <li class="mb-2"><a href="<?= site_url('locations/indore'); ?>">Indore</a></li>
@@ -34,7 +34,7 @@ $linkedin  = 'https://www.linkedin.com/company/your-mechanic-online/';
                 </ul>
             </div>
             <div class="col-6 col-lg-2">
-                <h6>Book online</h6>
+                <p class="ymo-footer-heading">Book online</p>
                 <ul class="list-unstyled md-body-md mb-0">
                     <li class="mb-2"><a href="<?= html_escape(ymo_booking_url('packages')); ?>">Packages</a></li>
                     <li class="mb-2"><a href="<?= html_escape(ymo_booking_url('quick-book')); ?>">Quick book</a></li>
@@ -42,8 +42,8 @@ $linkedin  = 'https://www.linkedin.com/company/your-mechanic-online/';
                 </ul>
             </div>
             <div class="col-12 col-lg-3">
-                <h6>Need a hand?</h6>
-                <p class="md-body-md mb-0">
+                <p class="ymo-footer-heading">Need a hand?</p>
+                <p class="md-body-md mb-0 ymo-footer-contact">
                     <a href="tel:<?= html_escape(preg_replace('/[^+\d]/', '', $phone)); ?>"><?= html_escape($phone); ?></a><br>
                     <a href="mailto:<?= html_escape($mail); ?>"><?= html_escape($mail); ?></a>
                 </p>

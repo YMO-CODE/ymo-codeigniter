@@ -5,7 +5,9 @@
   "scripts": {
     "build:bootstrap": "node scripts/build-bootstrap-marketing.js",
     "build:bootstrap-js": "node scripts/build-bootstrap-marketing-js.js",
-    "build": "npm run build:bootstrap && npm run build:bootstrap-js"
+    "build:critical-css": "node scripts/build-critical-css.js",
+    "build:ymo-css": "node scripts/build-ymo-css.js",
+    "build": "npm run build:bootstrap && npm run build:bootstrap-js && npm run build:critical-css && npm run build:ymo-css"
   },
   "devDependencies": {
     "bootstrap": "5.3.3",

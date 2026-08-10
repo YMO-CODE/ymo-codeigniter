@@ -123,6 +123,8 @@ cd deploy/marketing
 npm install
 npm run build:bootstrap
 npm run build:bootstrap-js   # Offcanvas + Carousel only (~29 KiB vs ~79 KiB full bundle)
+npm run build:critical-css   # Above-fold CSS → marketing-critical.min.css (inlined in <head>)
+npm run build:ymo-css        # ymo.min.css for production
 ```
 
-If the trimmed file is missing, `marketing_head_assets.php` falls back to `assets/vendor/bootstrap/css/bootstrap.min.css`. JS falls back to `bootstrap.bundle.min.js`.
+If the trimmed file is missing, `marketing_head_assets.php` falls back to `assets/vendor/bootstrap/css/bootstrap.min.css`. JS falls back to `bootstrap.bundle.min.js`. CSS loads `ymo.min.css` when present, else `ymo.css`.

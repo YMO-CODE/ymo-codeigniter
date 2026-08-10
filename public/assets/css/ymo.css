@@ -941,9 +941,15 @@ h1, h2, h3, h4, h5, h6 { font-weight: 700; letter-spacing: -0.01em; }
     margin-top: 4rem;
     border-top: 1px solid var(--ymo-grey-300);
 }
-.ymo-footer h6 { color: var(--ymo-black); margin-bottom: 1rem; font-weight: 700; }
+.ymo-footer .ymo-footer-heading { color: var(--ymo-black); margin-bottom: 1rem; font-weight: 700; }
 .ymo-footer a { color: var(--ymo-grey-700); }
 .ymo-footer a:hover { color: var(--ymo-primary); }
+.ymo-footer-contact a {
+    display: inline-block;
+    padding: 12px 8px;
+    min-height: 44px;
+    line-height: 1.25;
+}
 .ymo-footer-logo {
     height: 56px;
     width: auto;
@@ -1619,12 +1625,13 @@ table.ymo-table tbody tr:hover { background: var(--ymo-grey-100); }
     border-top: 1px solid var(--md-sys-color-outline-variant);
     margin-top: 0;
 }
-.md-theme .ymo-footer h6 {
+.md-theme .ymo-footer .ymo-footer-heading {
     font-size: 0.8125rem;
     font-weight: 600;
     letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--md-sys-color-on-surface-variant);
+    margin-bottom: 1rem;
 }
 .md-theme .ymo-footer-bottom {
     border-top: 1px solid var(--md-sys-color-outline-variant);

@@ -58,21 +58,25 @@
         }
     });
 
-    // Material ripple
+    // Material ripple — batch geometry read in rAF to avoid forced reflow on click
     document.addEventListener('click', function (e) {
         var btn = e.target.closest('.btn, .md-fab, .md-btn');
         if (!btn || btn.disabled) { return; }
-        var rect = btn.getBoundingClientRect();
-        var size = Math.max(rect.width, rect.height);
-        var ripple = document.createElement('span');
-        ripple.className = 'md-ripple';
-        ripple.style.width = ripple.style.height = size + 'px';
-        ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
-        ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
-        var prior = btn.querySelector('.md-ripple');
-        if (prior) { prior.remove(); }
-        btn.appendChild(ripple);
-        setTimeout(function () { ripple.remove(); }, 600);
+        var clientX = e.clientX;
+        var clientY = e.clientY;
+        requestAnimationFrame(function () {
+            var rect = btn.getBoundingClientRect();
+            var size = Math.max(rect.width, rect.height);
+            var ripple = document.createElement('span');
+            ripple.className = 'md-ripple';
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = (clientX - rect.left - size / 2) + 'px';
+            ripple.style.top = (clientY - rect.top - size / 2) + 'px';
+            var prior = btn.querySelector('.md-ripple');
+            if (prior) { prior.remove(); }
+            btn.appendChild(ripple);
+            setTimeout(function () { ripple.remove(); }, 600);
+        });
     });
 
     // Lazy hero / body images (data-src)
