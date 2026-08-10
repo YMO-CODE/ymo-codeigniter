@@ -18,19 +18,12 @@ $fonts_poppins = 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;
 $fonts_icons   = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap';
 
 $critical_css = '';
-$critical_candidates = array(
-    FCPATH.'assets/css/marketing-critical.min.css',
-    FCPATH.'assets/css/marketing-critical-shell.min.css',
-    FCPATH.'assets/css/marketing-critical-shell.css',
-    FCPATH.'assets/css/marketing-critical.css',
-);
-foreach ($critical_candidates as $critical_file) {
-    if (is_file($critical_file)) {
-        $critical_css = trim((string) file_get_contents($critical_file));
-        if ($critical_css !== '') {
-            break;
-        }
-    }
+$critical_file = FCPATH.'assets/css/marketing-critical-shell.min.css';
+if (!is_file($critical_file)) {
+    $critical_file = FCPATH.'assets/css/marketing-critical-shell.css';
+}
+if (is_file($critical_file)) {
+    $critical_css = trim((string) file_get_contents($critical_file));
 }
 ?>
 <?php if ($critical_css !== ''): ?>

@@ -8,7 +8,7 @@
     "build:critical-shell": "node scripts/build-critical-shell.js",
     "build:critical-css": "node scripts/build-critical-css.js",
     "build:ymo-css": "node scripts/build-ymo-css.js",
-    "build": "npm run build:bootstrap && npm run build:bootstrap-js && npm run build:critical-css && npm run build:critical-shell && npm run build:ymo-css"
+    "build": "npm run build:bootstrap && npm run build:bootstrap-js && npm run build:critical-shell && npm run build:ymo-css"
   },
   "devDependencies": {
     "bootstrap": "5.3.3",
