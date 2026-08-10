@@ -9,11 +9,8 @@ $bs_css_v  = is_file($bs_marketing)
 $bs_css_file = is_file($bs_marketing)
     ? 'assets/css/bootstrap-marketing.min.css'
     : 'assets/vendor/bootstrap/css/bootstrap.min.css';
-$bs_css_url = base_url($bs_css_file.'?v='.$bs_css_v);
-$ymo_css_url = base_url('assets/css/ymo.css?v='.$ymo_css_v);
-$mk_css_url  = base_url('assets/css/marketing.css?v='.$mk_css_v);
-$fonts_poppins = 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=optional';
-$fonts_icons   = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=optional';
+$fonts_poppins = 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap';
+$fonts_icons   = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap';
 $lcp_preload = '';
 if (!empty($og_image) && function_exists('marketing_hero_image_url')) {
     $lcp_preload = marketing_hero_image_url($og_image);
@@ -37,22 +34,11 @@ if (is_file($critical_file)) {
 <?php if ($lcp_preload !== ''): ?>
 <link rel="preload" as="image" href="<?= html_escape($lcp_preload); ?>" fetchpriority="high">
 <?php endif; ?>
-<?php
-$deferred_styles = array($ymo_css_url);
-if ($mk_css_v) {
-    $deferred_styles[] = $mk_css_url;
-}
-$deferred_styles[] = $bs_css_url;
-foreach ($deferred_styles as $css_url):
-?>
-<link rel="preload" href="<?= html_escape($css_url); ?>" as="style">
-<link rel="stylesheet" href="<?= html_escape($css_url); ?>" media="print" onload="this.media='all'">
-<?php endforeach; ?>
-<noscript>
-    <link rel="stylesheet" href="<?= html_escape($ymo_css_url); ?>">
-    <?php if ($mk_css_v): ?><link rel="stylesheet" href="<?= html_escape($mk_css_url); ?>"><?php endif; ?>
-    <link rel="stylesheet" href="<?= html_escape($bs_css_url); ?>">
-</noscript>
+<link rel="stylesheet" href="<?= base_url($bs_css_file.'?v='.$bs_css_v); ?>">
+<link rel="stylesheet" href="<?= base_url('assets/css/ymo.css?v='.$ymo_css_v); ?>">
+<?php if ($mk_css_v): ?>
+<link rel="stylesheet" href="<?= base_url('assets/css/marketing.css?v='.$mk_css_v); ?>">
+<?php endif; ?>
 <link rel="preload" href="<?= html_escape($fonts_poppins); ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <link rel="preload" href="<?= html_escape($fonts_icons); ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript>
