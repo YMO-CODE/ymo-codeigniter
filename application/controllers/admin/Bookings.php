@@ -142,6 +142,7 @@ class Bookings extends Admin_Controller
             'name' => strtok($booking['user_name'], ' '),
             'ref'  => $booking['reference'],
         ));
+        ymo_sms_log('admin.review_request', 'review_request', $booking['user_mobile'], $sms_ok, $this->sms_gateway);
         $mail_ok = $this->mailer->send_view(
             $booking['user_email'],
             'How did we do? - '.$booking['reference'],
@@ -241,10 +242,11 @@ class Bookings extends Admin_Controller
 
     protected function _notify_customer_status(array $booking)
     {
-        $this->sms_gateway->send_template($booking['user_mobile'], 'booking_status', array(
+        $sms_ok = $this->sms_gateway->send_template($booking['user_mobile'], 'booking_status', array(
             'ref'    => $booking['reference'],
-            'status' => $booking['status'],
+            'status' => ymo_sms_status_label($booking['status']),
         ));
+        ymo_sms_log('admin.booking_status', 'booking_status', $booking['user_mobile'], $sms_ok, $this->sms_gateway);
         $this->mailer->send_view(
             $booking['user_email'],
             'Booking update - '.$booking['reference'],
@@ -360,13 +362,12 @@ class Bookings extends Admin_Controller
         $mail_ok = FALSE;
 
         if ($notify) {
-            $total_fmt = number_format((float) $invoice['grand_total'], 2);
+            $total_fmt = ymo_sms_dlt_number($invoice['grand_total']);
             $sms_ok = $this->sms_gateway->send_template($booking['user_mobile'], 'invoice_sent', array(
-                'name'       => strtok($booking['user_name'], ' '),
-                'ref'        => $booking['reference'],
-                'invoice_no' => $invoice['invoice_number'],
-                'total'      => $total_fmt,
+                'ref'   => $booking['reference'],
+                'total' => $total_fmt,
             ));
+            ymo_sms_log('admin.invoice_sent', 'invoice_sent', $booking['user_mobile'], $sms_ok, $this->sms_gateway);
             if ($sms_ok) {
                 $this->booking_invoice_model->mark_sms_sent($invoice['id']);
             }

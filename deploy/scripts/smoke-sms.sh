@@ -16,8 +16,14 @@ if [ -z "$MOBILE" ]; then
 fi
 
 COMPOSE="docker compose -f docker-compose.yml -f deploy/docker-compose.vps.yml -f deploy/docker-compose.prod.yml"
-if [ -f "deploy/docker-compose.vps.yml" ]; then
-  $COMPOSE exec -T app php public/index.php cli/sms test "$TEMPLATE" "$MOBILE"
+if [ "$TEMPLATE" = "all" ]; then
+  if [ -f "deploy/docker-compose.vps.yml" ]; then
+    $COMPOSE exec -T app php index.php cli/sms test_all "$MOBILE"
+  else
+    php public/index.php cli/sms test_all "$MOBILE"
+  fi
+elif [ -f "deploy/docker-compose.vps.yml" ]; then
+  $COMPOSE exec -T app php index.php cli/sms test "$TEMPLATE" "$MOBILE"
 else
   php public/index.php cli/sms test "$TEMPLATE" "$MOBILE"
 fi

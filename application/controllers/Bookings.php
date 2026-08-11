@@ -327,12 +327,12 @@ class Bookings extends MY_Controller
 
     protected function _notify_user_on_create(array $booking)
     {
-        // SMS confirmation
-        $this->sms_gateway->send_template($booking['user_mobile'], 'booking_confirmed', array(
+        $sms_ok = $this->sms_gateway->send_template($booking['user_mobile'], 'booking_confirmed', array(
             'name'    => strtok($booking['user_name'], ' '),
             'ref'     => $booking['reference'],
             'package' => $booking['package_name'],
         ));
+        ymo_sms_log('booking.create', 'booking_confirmed', $booking['user_mobile'], $sms_ok, $this->sms_gateway);
 
         // Email confirmation
         $subject = 'Your booking is confirmed - '.$booking['reference'];

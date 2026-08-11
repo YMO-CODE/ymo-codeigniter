@@ -317,3 +317,48 @@ if (!function_exists('ymo_enforce_deploy_session')) {
         }
     }
 }
+
+if (!function_exists('ymo_sms_status_label')) {
+    /**
+     * Human-readable booking status for DLT SMS (alphanumeric tag — no underscores).
+     */
+    function ymo_sms_status_label($status)
+    {
+        $key = strtolower(str_replace(' ', '_', trim((string) $status)));
+        $map = array(
+            'pending'     => 'Pending',
+            'confirmed'   => 'Confirmed',
+            'in_progress' => 'In Progress',
+            'completed'   => 'Completed',
+            'cancelled'   => 'Cancelled',
+        );
+        return isset($map[$key]) ? $map[$key] : ucwords(str_replace('_', ' ', $key));
+    }
+}
+
+if (!function_exists('ymo_sms_dlt_number')) {
+    /**
+     * Format amounts for DLT {#number#} tags (digits; whole rupees without decimals).
+     */
+    function ymo_sms_dlt_number($amount)
+    {
+        $n = (float) $amount;
+        if ($n == floor($n)) {
+            return (string) (int) $n;
+        }
+        return number_format($n, 2, '.', '');
+    }
+}
+
+if (!function_exists('ymo_sms_log')) {
+    /** Log SMS dispatch result for ops debugging. */
+    function ymo_sms_log($context, $template_key, $mobile, $ok, $gateway = NULL)
+    {
+        if ($ok) {
+            log_message('info', sprintf('[sms] %s ok template=%s to=%s', $context, $template_key, $mobile));
+            return;
+        }
+        $err = ($gateway && method_exists($gateway, 'last_error')) ? $gateway->last_error() : 'unknown';
+        log_message('error', sprintf('[sms] %s fail template=%s to=%s err=%s', $context, $template_key, $mobile, $err));
+    }
+}

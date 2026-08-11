@@ -87,14 +87,34 @@ From repo root on VPS:
 ```bash
 bash deploy/scripts/smoke-sms.sh 9876543210 otp
 # or
-docker compose exec app php public/index.php cli/sms test otp 9876543210
+docker compose -f docker-compose.yml -f deploy/docker-compose.vps.yml -f deploy/docker-compose.prod.yml exec app php index.php cli/sms test otp 9876543210
 ```
 
 Then test in product:
 
 1. **OTP** — sign up on booking site with your mobile.
 2. **Booking confirmed** — place a test booking.
-3. **CRM SMS** — Admin → Campaigns → SMS to your number.
+3. **Booking status** — Admin → Bookings → change status.
+4. **Service reminder** — cron after booking completed (+4 months default).
+5. **Review request** — cron (+3 days) or Admin → Send review request.
+6. **Invoice** — Admin → issue & send invoice.
+7. **Referral** — complete a referred booking.
+8. **CRM campaign** — Admin → Campaigns → SMS campaign.
+
+---
+
+## Feature → template wiring (app)
+
+| Feature | Template key | Trigger |
+|---------|--------------|---------|
+| Signup / login OTP | `otp` | `Otp_service` on verify flow |
+| Booking placed | `booking_confirmed` | `Bookings::place()` |
+| Admin status change | `booking_status` | `admin/Bookings::update_status()` |
+| Service due reminder | `service_reminder` | Daily cron (`cli/cron run`) |
+| Google review prompt | `review_request` | Cron (+N days) or admin manual send |
+| Invoice notification | `invoice_sent` | Admin create/update invoice with notify |
+| Referral credit | `referral_credit` | Booking marked completed (referral programme) |
+| CRM bulk SMS | `crm_campaign` | Admin campaign send + cron batches |
 
 ---
 

@@ -164,7 +164,9 @@ class Otp_service
     {
         $brand = $this->CI->config->item('ymo_brand_name');
         if ($channel === 'sms') {
-            return $this->CI->sms_gateway->send_otp($destination, $code);
+            $ok = $this->CI->sms_gateway->send_otp($destination, $code);
+            ymo_sms_log('otp.'.$purpose, 'otp', $destination, $ok, $this->CI->sms_gateway);
+            return $ok;
         }
         $subject = $brand.' verification code';
         $html = $this->CI->load->view('emails/otp', array(

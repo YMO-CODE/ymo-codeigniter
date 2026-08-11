@@ -173,6 +173,7 @@ class Crm_campaign_model extends CI_Model
             } elseif ($r['channel'] === 'sms' && !empty($r['mobile'])) {
                 if ($tpl) {
                     $ok = $sms->send_template($r['mobile'], 'crm_campaign', array('msg' => $camp['body']));
+                    ymo_sms_log('crm.campaign', 'crm_campaign', $r['mobile'], $ok, $sms);
                 } else {
                     $ok = FALSE;
                     $err = 'CRM SMS template not configured (YMO_TPL_CRM_CAMPAIGN)';

@@ -239,6 +239,7 @@ class Referral_service
         );
 
         $sms_ok = $this->CI->sms_gateway->send_template($mobile, 'referral_credit', $vars);
+        ymo_sms_log('referral.'.$role, 'referral_credit', $mobile, $sms_ok, $this->CI->sms_gateway);
         if (!$sms_ok && ENVIRONMENT !== 'production') {
             log_message('debug', '[referral] SMS stub '.$role.': '.$plain_message);
             $sms_ok = TRUE;

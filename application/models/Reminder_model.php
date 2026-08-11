@@ -35,6 +35,20 @@ class Reminder_model extends CI_Model
      */
     public function due_next_service($limit)
     {
+        return $this->_due_reminders('next_service', $limit);
+    }
+
+    /** Review prompts scheduled after booking completion (cron). */
+    public function due_review($limit)
+    {
+        return $this->_due_reminders('review', $limit);
+    }
+
+    /**
+     * @param string $type next_service|review
+     */
+    protected function _due_reminders($type, $limit)
+    {
         return $this->db->select('r.*, b.user_id, b.reference, b.preferred_date, b.created_at AS booking_created_at,
                                   u.name AS user_name, u.mobile AS user_mobile, u.email AS user_email,
                                   v.vehicle_number, v.variant AS vehicle_variant, m.name AS vehicle_make,
@@ -46,7 +60,7 @@ class Reminder_model extends CI_Model
                         ->join('vehicle_makes m',    'm.id = v.make_id', 'left')
                         ->join('service_packages p', 'p.id = b.package_id', 'left')
                         ->where('r.status', 'pending')
-                        ->where('r.type',   'next_service')
+                        ->where('r.type',   $type)
                         ->where('r.scheduled_at <=', date('Y-m-d H:i:s'))
                         ->order_by('r.scheduled_at', 'ASC')
                         ->limit((int) $limit)

@@ -4,9 +4,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 /**
  * CLI SMS smoke tests for MSG91 Flow setup.
  *
- *   php public/index.php cli/sms test otp 9876543210
- *   php public/index.php cli/sms test booking_confirmed 9876543210
- *   php public/index.php cli/sms config
+ * Host (repo root):  php public/index.php cli/sms test otp 9876543210
+ * Docker (app svc):  php index.php cli/sms test otp 9876543210
  */
 class Sms extends CI_Controller
 {
@@ -43,8 +42,8 @@ class Sms extends CI_Controller
         $template_key = trim((string) $template_key);
         $mobile = trim((string) $mobile);
         if ($mobile === '') {
-            echo "Usage: php public/index.php cli/sms test TEMPLATE MOBILE\n";
-            echo "  e.g. php public/index.php cli/sms test otp 9876543210\n";
+            echo "Usage: php index.php cli/sms test TEMPLATE MOBILE  (inside Docker)\n";
+            echo "  e.g. php index.php cli/sms test otp 9876543210\n";
             return;
         }
 
@@ -57,6 +56,44 @@ class Sms extends CI_Controller
         }
         echo "FAIL — ".$this->sms_gateway->last_error()."\n";
         exit(1);
+    }
+
+    /** Send a smoke test for every configured template. */
+    public function test_all($mobile = '')
+    {
+        $mobile = trim((string) $mobile);
+        if ($mobile === '') {
+            echo "Usage: php index.php cli/sms test_all MOBILE\n";
+            return;
+        }
+
+        $keys = array(
+            'otp', 'booking_confirmed', 'booking_status', 'service_reminder',
+            'review_request', 'invoice_sent', 'referral_credit', 'crm_campaign',
+        );
+        $templates = (array) $this->config->item('sms_templates');
+        $failed = 0;
+
+        foreach ($keys as $key) {
+            if (empty($templates[$key])) {
+                echo "SKIP $key — not configured in .env\n";
+                continue;
+            }
+            echo "→ $key … ";
+            $ok = $this->sms_gateway->send_template($mobile, $key, $this->_sample_vars($key));
+            if ($ok) {
+                echo "OK\n";
+            } else {
+                echo "FAIL — ".$this->sms_gateway->last_error()."\n";
+                $failed++;
+            }
+            sleep(2);
+        }
+
+        if ($failed > 0) {
+            exit(1);
+        }
+        echo "All configured templates sent.\n";
     }
 
     /** @return array<string, string> */
@@ -74,7 +111,7 @@ class Sms extends CI_Controller
             case 'review_request':
                 return array('name' => 'Test', 'ref' => 'YMO-TEST-001');
             case 'invoice_sent':
-                return array('name' => 'Test', 'ref' => 'YMO-TEST-001', 'invoice_no' => 'INV-TEST-1', 'total' => '4850.00');
+                return array('ref' => 'YMO-TEST-001', 'total' => '4850');
             case 'referral_credit':
                 return array('name' => 'Test', 'amount' => '500', 'ref' => 'YMO-TEST-001');
             case 'crm_campaign':
