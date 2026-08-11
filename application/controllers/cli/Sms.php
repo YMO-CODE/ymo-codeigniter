@@ -96,6 +96,16 @@ class Sms extends CI_Controller
         echo "All configured templates sent.\n";
     }
 
+    /** Show MSG91 payload without sending (debug variable mapping). */
+    public function preview($template_key = 'booking_status', $mobile = '9981021695')
+    {
+        $template_key = trim((string) $template_key);
+        $vars = $this->_sample_vars($template_key);
+        $payload = $this->sms_gateway->build_msg91_payload($template_key, $mobile, $vars);
+        echo json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)."\n";
+        echo "\nMSG91 var keys for this template: ".json_encode($this->config->item('sms_msg91_var_keys')[$template_key] ?? array())."\n";
+    }
+
     /** @return array<string, string> */
     protected function _sample_vars($template_key)
     {

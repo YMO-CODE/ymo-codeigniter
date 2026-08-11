@@ -76,6 +76,20 @@ $config['sms_templates'] = array(
 	'referral_credit'    => getenv('YMO_TPL_REFERRAL')        ?: '',
 );
 
+// MSG91 API variable names — must match ##name## placeholders in each MSG91 template.
+// Defaults: otp → otp; all others → var1, var2, … Override per template via env:
+//   YMO_MSG91_VARKEYS_BOOKING_STATUS=var1,var2
+$config['sms_msg91_var_keys'] = array(
+	'otp'               => ($__v = getenv('YMO_MSG91_VARKEYS_OTP')) && $__v !== '' ? array_map('trim', explode(',', $__v)) : array('otp'),
+	'booking_confirmed' => ($__v = getenv('YMO_MSG91_VARKEYS_BOOKING_CONFIRMED')) && $__v !== '' ? array_map('trim', explode(',', $__v)) : array('var1', 'var2'),
+	'booking_status'    => ($__v = getenv('YMO_MSG91_VARKEYS_BOOKING_STATUS')) && $__v !== '' ? array_map('trim', explode(',', $__v)) : array('var1', 'var2'),
+	'service_reminder'  => ($__v = getenv('YMO_MSG91_VARKEYS_SERVICE_REMINDER')) && $__v !== '' ? array_map('trim', explode(',', $__v)) : array('var1', 'var2'),
+	'review_request'    => ($__v = getenv('YMO_MSG91_VARKEYS_REVIEW_REQUEST')) && $__v !== '' ? array_map('trim', explode(',', $__v)) : array('var1', 'var2'),
+	'invoice_sent'      => ($__v = getenv('YMO_MSG91_VARKEYS_INVOICE_SENT')) && $__v !== '' ? array_map('trim', explode(',', $__v)) : array('var1', 'var2'),
+	'referral_credit'   => ($__v = getenv('YMO_MSG91_VARKEYS_REFERRAL_CREDIT')) && $__v !== '' ? array_map('trim', explode(',', $__v)) : array('var1', 'var2'),
+	'crm_campaign'      => ($__v = getenv('YMO_MSG91_VARKEYS_CRM_CAMPAIGN')) && $__v !== '' ? array_map('trim', explode(',', $__v)) : array('var1'),
+);
+
 // --- Referral programme -----------------------------------------------------
 $config['referral_enabled']         = getenv('YMO_REFERRAL_ENABLED') !== '0';
 $config['referral_credit_referrer'] = (float) (getenv('YMO_REFERRAL_CREDIT_REFERRER') ?: 500);
