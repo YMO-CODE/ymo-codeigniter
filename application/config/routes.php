@@ -270,6 +270,7 @@ if (ymo_is_admin_host_request()) {
     $route['logout'] = 'auth/logout';
     $route['forgot-password'] = 'auth/forgot';
     $route['reset-password'] = 'auth/reset';
+    $route['reset-password/resend'] = 'auth/resend_reset_otp';
 
     // Public marketing-ish pages
     $route['packages'] = 'bookings/packages';

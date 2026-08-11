@@ -11,8 +11,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  *   POST     /signup/resend    Auth::resend_otp
  *   GET/POST /login            Auth::login
  *   POST     /logout           Auth::logout
- *   GET/POST /forgot-password  Auth::forgot  (email OTP - SMS not used for reset)
+ *   GET/POST /forgot-password  Auth::forgot  (SMS OTP to registered mobile)
  *   GET/POST /reset-password   Auth::reset
+ *   POST     /reset-password/resend Auth::resend_reset_otp
  */
 class Auth extends MY_Controller
 {
@@ -186,24 +187,24 @@ class Auth extends MY_Controller
         redirect(site_url('/'));
     }
 
-    // --- Forgot / reset password -------------------------------------------
+    // --- Forgot / reset password (SMS OTP) ---------------------------------
 
     public function forgot()
     {
         if ($this->input->method() === 'post') {
-            $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|max_length[180]');
+            $this->form_validation->set_rules('mobile', 'Mobile', 'trim|required|regex_match[/^[6-9]\d{9}$/]');
             if ($this->form_validation->run()) {
-                $email = strtolower(trim($this->input->post('email')));
-                $u = $this->user_model->find_by_email($email);
-                if ($u) {
-                    $issued = $this->otp_service->issue('email', $email, 'reset');
+                $mobile = trim($this->input->post('mobile'));
+                $u = $this->user_model->find_by_mobile($mobile);
+                if ($u && $u['is_active']) {
+                    $issued = $this->otp_service->issue('sms', $mobile, 'reset');
                     if (!$issued['ok']) {
-                        log_message('error', '[auth] Password reset OTP email failed for '.$email.': '.$issued['reason']);
+                        log_message('error', '[auth] Password reset OTP SMS failed for '.$mobile.': '.$issued['reason']);
                     }
                 }
                 // Don't leak account existence.
-                $this->session->set_userdata('reset_email', $email);
-                $this->flash('info', 'If an account exists for that email, we sent a verification code.');
+                $this->session->set_userdata('reset_mobile', $mobile);
+                $this->flash('info', 'If an account exists for that mobile, we sent a verification code by SMS.');
                 redirect(site_url('reset-password'));
             }
         }
@@ -212,8 +213,8 @@ class Auth extends MY_Controller
 
     public function reset()
     {
-        $email = strtolower(trim((string) $this->session->userdata('reset_email')));
-        if ($email === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE) {
+        $mobile = trim((string) $this->session->userdata('reset_mobile'));
+        if ($mobile === '' || !preg_match('/^[6-9]\d{9}$/', $mobile)) {
             redirect(site_url('forgot-password'));
         }
 
@@ -223,13 +224,13 @@ class Auth extends MY_Controller
             $this->form_validation->set_rules('confirm',  'Confirm',  'required|matches[password]');
 
             if ($this->form_validation->run()) {
-                $r = $this->otp_service->verify('email', $email, 'reset', $this->input->post('code'));
+                $r = $this->otp_service->verify('sms', $mobile, 'reset', $this->input->post('code'));
                 if ($r['ok']) {
-                    $u = $this->user_model->find_by_email($email);
+                    $u = $this->user_model->find_by_mobile($mobile);
                     if ($u) {
                         $this->user_model->update_password($u['id'], $this->input->post('password'));
                     }
-                    $this->session->unset_userdata('reset_email');
+                    $this->session->unset_userdata('reset_mobile');
                     $this->flash('success', 'Password updated. Please sign in.');
                     redirect(site_url('login'));
                 }
@@ -238,9 +239,28 @@ class Auth extends MY_Controller
         }
 
         $this->render('auth/reset', array(
-            'title' => 'Set a new password',
-            'email' => $email,
+            'title'    => 'Set a new password',
+            'mobile'   => $mobile,
+            'cooldown' => (int) $this->config->item('otp_resend_cooldown'),
         ), 'layout/auth');
+    }
+
+    public function resend_reset_otp()
+    {
+        $mobile = trim((string) $this->session->userdata('reset_mobile'));
+        if ($mobile === '' || !preg_match('/^[6-9]\d{9}$/', $mobile)) {
+            redirect(site_url('forgot-password'));
+        }
+
+        $u = $this->user_model->find_by_mobile($mobile);
+        if ($u && $u['is_active']) {
+            $r = $this->otp_service->issue('sms', $mobile, 'reset');
+            $this->flash($r['ok'] ? 'success' : 'error',
+                $r['ok'] ? 'A fresh OTP has been sent to your mobile.' : $r['reason']);
+        } else {
+            $this->flash('info', 'If an account exists for that mobile, we sent a verification code by SMS.');
+        }
+        redirect(site_url('reset-password'));
     }
 
     // --- helpers -----------------------------------------------------------
