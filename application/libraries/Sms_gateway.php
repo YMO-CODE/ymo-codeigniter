@@ -94,10 +94,17 @@ class Sms_gateway
             return FALSE;
         }
 
-        $payload = array_merge(array(
+        $recipient = array_merge(array('mobiles' => $mobile), $vars);
+        $payload = array(
             'template_id' => $template_id,
-            'mobiles'     => $mobile,
-        ), $vars);
+            'recipients'  => array($recipient),
+        );
+        $sender = trim((string) $this->CI->config->item('sms_msg91_sender'));
+        if ($sender !== '') {
+            $payload['sender'] = $sender;
+        }
+
+        log_message('debug', '[sms] msg91 send template='.$template_id.' vars='.json_encode($vars));
 
         $ch = curl_init('https://control.msg91.com/api/v5/flow/');
         curl_setopt_array($ch, array(

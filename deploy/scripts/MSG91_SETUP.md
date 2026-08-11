@@ -40,7 +40,20 @@ YMO_MSG91_ROUTE=4
 | YMO_TPL_REFERRAL | `1277178591255421707` | `name`, `amount`, `ref` |
 | YMO_TPL_CRM_CAMPAIGN | `1277178591687073165` | `msg` |
 
-Map each `{#number#}` / `{#alphanumeric#}` slot in MSG91 to the variable name in the table (left → right).
+Map each `{#number#}` / `{#alphanumeric#}` slot in MSG91 to the **exact API variable name** below (MSG91 → + Add Variable). These names must match what the app sends in the Flow API `recipients` object.
+
+| Template | MSG91 variable names (left → right) | App JSON keys |
+|----------|-------------------------------------|---------------|
+| OTP | `otp` | `otp` |
+| BOOKING_OK | `name`, `ref` | `name`, `ref` |
+| BOOKING_STATUS | `ref`, `status` | `ref`, `status` |
+| SERVICE_REMIND | `name`, `vehicle` | `name`, `vehicle` |
+| REVIEW | `name`, `ref` | `name`, `ref` |
+| INVOICE | `ref`, `total` | `ref`, `total` |
+| REFERRAL | `amount`, `ref` | `amount`, `ref` |
+| CRM_CAMPAIGN | `msg` | `msg` |
+
+> Do **not** leave generic names like `var1` / `alphanumeric` unless you rename them in MSG91 to match the App JSON keys column.
 
 ---
 
