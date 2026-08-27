@@ -27,12 +27,24 @@ $linkedin  = 'https://www.linkedin.com/company/your-mechanic-online/';
             <div class="col-6 col-lg-2">
                 <p class="ymo-footer-heading">Cities &amp; brands</p>
                 <ul class="list-unstyled md-body-md mb-0">
-                    <li class="mb-2"><a href="<?= site_url('locations/pune'); ?>">Pune</a></li>
-                    <li class="mb-2"><a href="<?= site_url('locations/indore'); ?>">Indore</a></li>
-                    <li class="mb-2"><a href="<?= site_url('locations/nashik'); ?>">Nashik</a></li>
+                    <li class="mb-2"><a href="<?= site_url('locations/pune'); ?>">Car servicing in Pune</a></li>
+                    <li class="mb-2"><a href="<?= site_url('locations/indore'); ?>">Car servicing in Indore</a></li>
+                    <li class="mb-2"><a href="<?= site_url('locations/nashik'); ?>">Car servicing in Nashik</a></li>
                     <li><a href="<?= site_url('brands'); ?>">All brands</a></li>
                 </ul>
             </div>
+            <?php foreach (function_exists('marketing_footer_extra_link_sections') ? marketing_footer_extra_link_sections() : array() as $section): ?>
+            <div class="col-6 col-lg-2">
+                <p class="ymo-footer-heading"><?= html_escape($section['title']); ?></p>
+                <ul class="list-unstyled md-body-md mb-0">
+                    <?php foreach ($section['links'] as $i => $link): ?>
+                    <li class="<?= ($i < count($section['links']) - 1) ? 'mb-2' : ''; ?>">
+                        <a href="<?= site_url($link['slug']); ?>"><?= html_escape($link['label']); ?></a>
+                    </li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+            <?php endforeach; ?>
             <div class="col-6 col-lg-2">
                 <p class="ymo-footer-heading">Book online</p>
                 <ul class="list-unstyled md-body-md mb-0">

@@ -2,12 +2,8 @@
 """
 Audit marketing URLs: legacy 301 sources vs canonical pages.
 
-Fetches live URLs (no redirect follow) and classifies HTTP status.
-Use after deploying redirect consolidations.
-
-Examples:
-  python deploy/marketing/scripts/audit_legacy_urls.py
-  python deploy/marketing/scripts/audit_legacy_urls.py --base https://www.yourmechaniconline.com
+For full index-readiness (canonical, noindex, orphans, TTFB per sitemap URL):
+  python deploy/marketing/scripts/index_readiness_audit.py
 """
 
 from __future__ import annotations

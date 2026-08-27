@@ -5,6 +5,7 @@ class Pages extends Marketing_Controller
 {
     public function show()
     {
+        marketing_enforce_canonical_path();
         $request_path = marketing_normalize_path($this->uri->uri_string());
         $consolidated = marketing_lookup_redirect($request_path);
         if ($consolidated !== NULL && $consolidated !== '') {
@@ -93,6 +94,8 @@ class Pages extends Marketing_Controller
             $body = marketing_optimize_content_images($body);
             $body = marketing_body_fix_heading_order($body);
         }
+
+        $body = marketing_page_internal_links_append($path, $page, $body);
 
         $this->render_marketing($view, array(
             'page'                    => $page,

@@ -5,6 +5,7 @@ class Home extends Marketing_Controller
 {
     public function index()
     {
+        marketing_enforce_canonical_path();
         $this->page_meta = array(
             'title'            => 'Car Servicing in Pune, Indore & Nashik',
             'meta_title'       => 'Car Servicing Near Me — Pune, Indore & Nashik | Free Pickup | YMO',

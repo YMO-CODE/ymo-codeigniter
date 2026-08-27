@@ -12,24 +12,25 @@ class Seo extends Marketing_Controller
                 'loc'        => marketing_canonical_url(''),
                 'priority'   => '1.0',
                 'changefreq' => 'weekly',
-                'lastmod'    => date('Y-m-d'),
+                'lastmod'    => '2026-08-27',
             ),
             array(
                 'loc'        => marketing_canonical_url('contact-us'),
                 'priority'   => '0.8',
                 'changefreq' => 'monthly',
-                'lastmod'    => date('Y-m-d'),
+                'lastmod'    => '2026-07-20',
             ),
         );
         foreach (marketing_sitemap_pages() as $path => $page) {
             if (!is_array($page)) {
                 continue;
             }
+            $lastmod = !empty($page['updated_at']) ? $page['updated_at'] : '2026-08-01';
             $urls[] = array(
                 'loc'        => marketing_canonical_url($path),
                 'priority'   => marketing_page_priority($page),
-                'changefreq' => 'monthly',
-                'lastmod'    => !empty($page['updated_at']) ? $page['updated_at'] : date('Y-m-d'),
+                'changefreq' => marketing_page_changefreq($page),
+                'lastmod'    => $lastmod,
             );
         }
 

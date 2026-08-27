@@ -23,6 +23,7 @@ if (!function_exists('marketing_seo_growth_pages')) {
         $pages = array_merge($pages, marketing_seo_growth_service_areas($today));
         $pages = array_merge($pages, marketing_seo_growth_blog_posts($today));
         $pages['why-choose-ymo'] = marketing_seo_growth_comparison_page($today);
+        $pages = array_merge($pages, marketing_seo_growth_locality_scaffolds($today));
 
         return $pages;
     }
@@ -310,6 +311,64 @@ if (!function_exists('marketing_seo_growth_localities')) {
         $pages = array();
         foreach ($defs as $d) {
             $pages[$d[0]] = marketing_seo_growth_locality_entry($d[0], $d[1], $d[2], $d[3], $d[4], $d[5], $today);
+        }
+        return $pages;
+    }
+}
+
+if (!function_exists('marketing_seo_growth_locality_scaffold_entry')) {
+    /**
+     * Minimal locality page — unique copy must be added by a human (content_pending).
+     *
+     * @return array<string,mixed>
+     */
+    function marketing_seo_growth_locality_scaffold_entry($slug, $city, $loc_slug, $label, $today)
+    {
+        $city_name = ucfirst($city);
+        $body = '<div class="ymo-content-section mb-5"><p class="md-body-md"><strong>Content pending:</strong> '
+            .'Add 2–3 unique sentences about car servicing in '.html_escape($label)
+            .' (local landmarks, typical pick-up points, common vehicle types served).</p>'
+            .'<p class="md-body-md mb-0"><a href="/locations/'.$city.'">Car servicing in '
+            .html_escape($city_name).' — all areas</a> · <a href="/services">Service catalogue</a></p></div>';
+
+        return array(
+            'title'            => 'Car Servicing in '.$label.', '.$city_name.' | YMO',
+            'meta_description' => 'Car servicing in '.$label.', '.$city_name.' with free doorstep pick-up. Book periodic service, AC repair, and denting with Your Mechanic Online.',
+            'h1'               => 'Car servicing in '.$label.', '.$city_name,
+            'intro'            => 'Doorstep car servicing in '.$label.' — book online with free pick-up.',
+            'body'             => $body,
+            'page_type'        => 'locality',
+            'city_slug'        => $city,
+            'locality_slug'    => $loc_slug,
+            'locality_label'   => $label,
+            'content_pending'  => TRUE,
+            'service_catalog'  => TRUE,
+            'updated_at'       => $today,
+            'view'             => 'marketing/page',
+        );
+    }
+}
+
+if (!function_exists('marketing_seo_growth_locality_scaffolds')) {
+    /** New locality routes awaiting unique copy (do not auto-generate templated bodies). */
+    function marketing_seo_growth_locality_scaffolds($today = '2026-08-27')
+    {
+        $defs = array(
+            array('car-servicing-in-rau-indore', 'indore', 'rau', 'Rau'),
+            array('car-servicing-in-scheme-54-indore', 'indore', 'scheme_54', 'Scheme 54'),
+            array('car-servicing-in-old-palasia-indore', 'indore', 'old_palasia', 'Old Palasia'),
+            array('car-servicing-in-sudama-nagar-indore', 'indore', 'sudama_nagar', 'Sudama Nagar'),
+            array('car-servicing-in-mahalaxmi-nagar-indore', 'indore', 'mahalaxmi_nagar', 'Mahalaxmi Nagar'),
+            array('car-servicing-in-gangapur-road-nashik', 'nashik', 'gangapur_road', 'Gangapur Road'),
+            array('car-servicing-in-indira-nagar-nashik', 'nashik', 'indira_nagar', 'Indira Nagar'),
+            array('car-servicing-in-cidco-nashik', 'nashik', 'cidco', 'CIDCO'),
+            array('car-servicing-in-deolali-nashik', 'nashik', 'deolali', 'Deolali'),
+            array('car-servicing-in-mumbai-naka-nashik', 'nashik', 'mumbai_naka', 'Mumbai Naka'),
+            array('car-servicing-in-govind-nagar-nashik', 'nashik', 'govind_nagar', 'Govind Nagar'),
+        );
+        $pages = array();
+        foreach ($defs as $d) {
+            $pages[$d[0]] = marketing_seo_growth_locality_scaffold_entry($d[0], $d[1], $d[2], $d[3], $today);
         }
         return $pages;
     }

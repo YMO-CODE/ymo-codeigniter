@@ -53,7 +53,7 @@ echo ymo_marketing_render_hero('', $hero_page, isset($booking_url) ? $booking_ur
         <p class="md-body-md mb-3">Free doorstep pick-up and drop across all three cities - browse services and neighbourhoods on each city page.</p>
         <div class="d-flex flex-wrap gap-2">
             <?php foreach ($city_strip as $city): ?>
-                <a href="<?= site_url($city['hub_path']); ?>" class="md-chip md-chip--filled"><?= html_escape($city['name']); ?></a>
+                <a href="<?= site_url($city['hub_path']); ?>" class="md-chip md-chip--filled">Car servicing in <?= html_escape($city['name']); ?></a>
             <?php endforeach; ?>
         </div>
     </div>

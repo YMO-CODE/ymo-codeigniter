@@ -127,10 +127,43 @@ if (!function_exists('marketing_pages_data')) {
         if ($pages !== NULL) {
             return $pages;
         }
+
+        $cache_dir = APPPATH.'cache';
+        $cache_file = $cache_dir.'/marketing_pages_registry.php';
+        $source_files = array(
+            APPPATH.'config/marketing_pages_data.php',
+            APPPATH.'config/marketing_pages_city_services.php',
+            APPPATH.'config/marketing_pages_option_a.php',
+            APPPATH.'config/marketing_cities.php',
+            APPPATH.'config/marketing_brands.php',
+            APPPATH.'helpers/marketing_seo_growth_helper.php',
+            APPPATH.'helpers/marketing_internal_links_helper.php',
+        );
+        $max_mtime = 0;
+        foreach ($source_files as $src) {
+            if (is_file($src)) {
+                $max_mtime = max($max_mtime, (int) filemtime($src));
+            }
+        }
+        if (is_dir($cache_dir) && is_writable($cache_dir)
+            && is_file($cache_file) && filemtime($cache_file) >= $max_mtime) {
+            $cached = include $cache_file;
+            if (is_array($cached)) {
+                $pages = $cached;
+                if (function_exists('marketing_enrich_pages')) {
+                    $pages = marketing_enrich_pages($pages);
+                }
+                return $pages;
+            }
+        }
+
         $file = APPPATH.'config/marketing_pages_data.php';
         $pages = is_file($file) ? require $file : array();
         if (function_exists('marketing_enrich_pages')) {
             $pages = marketing_enrich_pages($pages);
+        }
+        if (is_dir($cache_dir) && is_writable($cache_dir)) {
+            @file_put_contents($cache_file, '<?php return '.var_export($pages, TRUE).';');
         }
         return is_array($pages) ? $pages : array();
     }
@@ -1678,6 +1711,21 @@ if (!function_exists('marketing_page_priority')) {
     }
 }
 
+if (!function_exists('marketing_page_changefreq')) {
+    /** @param array $page */
+    function marketing_page_changefreq(array $page)
+    {
+        $type = isset($page['page_type']) ? $page['page_type'] : '';
+        if ($type === 'hub') {
+            return 'weekly';
+        }
+        if ($type === 'blog') {
+            return 'monthly';
+        }
+        return 'monthly';
+    }
+}
+
 if (!function_exists('marketing_breadcrumbs')) {
     /**
      * @param string $path
@@ -2377,13 +2425,15 @@ if (!function_exists('marketing_public_nav_items')) {
                 'slug'     => $city['hub_path'],
                 'children' => array(),
             );
-            if ($city_slug === 'pune' && !empty($city['localities']) && is_array($city['localities'])) {
+            if (!empty($city['localities']) && is_array($city['localities'])) {
                 foreach ($city['localities'] as $loc) {
                     $item['children'][] = array(
                         'label' => $loc['label'],
                         'slug'  => $loc['slug'],
                     );
                 }
+            }
+            if ($city_slug === 'pune') {
                 $item['children'][] = array(
                     'label' => 'Luxury cars',
                     'slug'  => 'premium-luxury-car-service-pune',

@@ -49,6 +49,9 @@ done
 echo "==> Resetting admin sessions (post-deploy sign-out)..."
 bash "$ROOT/deploy/scripts/reset-sessions.sh"
 
+echo "==> Busting marketing page registry cache..."
+rm -f "$ROOT/application/cache/marketing_pages_registry.php" 2>/dev/null || true
+
 echo ""
 echo "App is listening on 127.0.0.1:8080 (nginx should proxy to this)."
 echo ""

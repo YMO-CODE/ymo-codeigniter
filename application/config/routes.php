@@ -233,7 +233,7 @@ if (ymo_is_admin_host_request()) {
     if (is_file($marketing_pages_file)) {
         // Helpers are not autoloaded yet when routes.php runs — load them so brand/SEO
         // slugs are registered (marketing_pages_data merges via marketing_* functions).
-        foreach (array('marketing_helper', 'marketing_seo_growth_helper', 'marketing_seo_enhancements_helper') as $helper) {
+        foreach (array('marketing_helper', 'marketing_seo_growth_helper', 'marketing_seo_enhancements_helper', 'marketing_internal_links_helper') as $helper) {
             $helper_file = APPPATH.'helpers/'.$helper.'.php';
             if (is_file($helper_file)) {
                 require_once $helper_file;

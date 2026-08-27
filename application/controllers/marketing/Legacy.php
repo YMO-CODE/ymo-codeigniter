@@ -6,6 +6,7 @@ class Legacy extends Marketing_Controller
     /** 404 handler on marketing host — try legacy WP redirects first. */
     public function go()
     {
+        marketing_enforce_canonical_path();
         $path = marketing_normalize_path($this->uri->uri_string());
         $resolved = marketing_resolve_page_path($path);
         if ($resolved['key'] !== '') {
