@@ -15,7 +15,7 @@ if (!function_exists('marketing_seo_growth_pages')) {
             return $pages;
         }
         $pages = array();
-        $today = '2026-08-01';
+        $today = '2026-08-27';
 
         $pages = array_merge($pages, marketing_seo_growth_city_hubs($today));
         $pages = array_merge($pages, marketing_seo_growth_localities($today));
@@ -23,7 +23,6 @@ if (!function_exists('marketing_seo_growth_pages')) {
         $pages = array_merge($pages, marketing_seo_growth_service_areas($today));
         $pages = array_merge($pages, marketing_seo_growth_blog_posts($today));
         $pages['why-choose-ymo'] = marketing_seo_growth_comparison_page($today);
-        $pages = array_merge($pages, marketing_seo_growth_locality_scaffolds($today));
 
         return $pages;
     }
@@ -302,73 +301,103 @@ if (!function_exists('marketing_seo_growth_localities')) {
             array('car-servicing-in-bhawarkua-indore', 'indore', 'bhawarkua', 'Bhawarkua', 'Ring Road junction and educational institutes', "Bhawarkua's growing residential belt deserves reliable car care without long garage queues."),
             array('car-servicing-in-ab-road-indore', 'indore', 'ab_road', 'AB Road', 'Industry House, Satya Sai Square, and AB Road flyover', "AB Road is Indore's main commercial artery - YMO serves commuters and businesses with full workshop capability."),
             array('car-servicing-in-nipania-indore', 'indore', 'nipania', 'Nipania', 'Nipania township, Super Corridor, and adjoining projects', "Nipania's fast-growing township area is home to families who prefer booking service online with free pick-up."),
+            array(
+                'car-servicing-in-rau-indore',
+                'indore',
+                'rau',
+                'Rau',
+                'IIM Indore campus belt, Rau–Pithampur Road, and adjoining townships',
+                'Rau sits on the western edge of Indore where residential townships and the IIM Indore corridor meet the Pithampur industrial road. Hatchbacks and compact SUVs used for daily AB Road commutes often need brake checks and periodic service after highway stretches — YMO collects from your society gate or office parking so you skip the workshop queue.',
+            ),
+            array(
+                'car-servicing-in-scheme-54-indore',
+                'indore',
+                'scheme_54',
+                'Scheme 54',
+                'C21 Mall vicinity, Bombay Hospital Indore, and MR 10 connector',
+                'Scheme 54 is a dense mix of offices, clinics, and apartment blocks where street parking is scarce during business hours. YMO\'s pick-up model suits professionals who want workshop-grade AC repair, denting, or a full periodic service without losing a morning slot to traffic around the MR 10 junction.',
+            ),
+            array(
+                'car-servicing-in-old-palasia-indore',
+                'indore',
+                'old_palasia',
+                'Old Palasia',
+                'Sarafa Bazaar lanes, Chappan Dukan, and traditional Palasia crossroads',
+                'Old Palasia\'s narrow lanes and busy evening footfall make it awkward to leave a car at a neighbourhood garage for half a day. YMO picks up from your building or office near Sarafa and Chappan Dukan, handles servicing at our workshop, and returns the car when work is complete — with photos on WhatsApp in between.',
+            ),
+            array(
+                'car-servicing-in-sudama-nagar-indore',
+                'indore',
+                'sudama_nagar',
+                'Sudama Nagar',
+                'Sudama Nagar main road, Ring Road approach, and nearby colonies',
+                'Sudama Nagar is an established residential belt where families rely on one or two cars for school runs and Ring Road commutes. YMO covers Maruti, Hyundai, Tata, and Honda hatchbacks and sedans common in the area — from oil-and-filter changes to pre-monsoon AC gas checks — with upfront pricing before any work starts.',
+            ),
+            array(
+                'car-servicing-in-mahalaxmi-nagar-indore',
+                'indore',
+                'mahalaxmi_nagar',
+                'Mahalaxmi Nagar',
+                'Mahalaxmi Nagar square, adjoining Ring Road sectors, and residential layouts',
+                'Mahalaxmi Nagar\'s wide internal roads still fill quickly at peak hours, so many owners prefer not to drive to a crowded service lane twice in one day. Book online, choose a pick-up window, and YMO handles periodic maintenance, brake work, or body repair while you get on with your day.',
+            ),
             array('car-servicing-in-college-road-nashik', 'nashik', 'college_road', 'College Road', 'College Road cafes and residential complexes', 'College Road is a popular Nashik neighbourhood - YMO provides full workshop servicing with pick-up from your building.'),
             array('car-servicing-in-nashik-road', 'nashik', 'nashik_road', 'Nashik Road', 'Nashik Road station area and Bytco Point', 'Nashik Road commuters rely on YMO for dependable car care with pick-up from the station area.'),
             array('car-servicing-in-panchavati-nashik', 'nashik', 'panchavati', 'Panchavati', 'Panchavati Karanja and Godavari ghats vicinity', "Panchavati's mix of old-city lanes and newer developments needs flexible pick-up and workshop-grade repairs."),
             array('car-servicing-in-dwarka-nashik', 'nashik', 'dwarka', 'Dwarka', 'Dwarka residential zone and Adgaon connector', "Dwarka's growing residential area benefits from YMO online booking and free pick-up."),
             array('car-servicing-in-uday-nagar-nashik', 'nashik', 'uday_nagar', 'Uday Nagar', 'Uday Nagar colony and College Road proximity', 'Uday Nagar residents choose YMO for hassle-free servicing without waiting at a garage.'),
+            array(
+                'car-servicing-in-gangapur-road-nashik',
+                'nashik',
+                'gangapur_road',
+                'Gangapur Road',
+                'Gangapur Dam road stretch, Anandwalli, and riverside residential belts',
+                'Gangapur Road runs through some of Nashik\'s greener, upmarket residential zones where longer daily drives to MIDC or the highway add wear on brakes and suspension. YMO picks up sedans and SUVs from apartment complexes along the Gangapur stretch and brings them back after complete servicing, AC work, or 3-stage polishing.',
+            ),
+            array(
+                'car-servicing-in-indira-nagar-nashik',
+                'nashik',
+                'indira_nagar',
+                'Indira Nagar',
+                'Indira Nagar Nagar parishad roads, College Road connector, and nearby schools',
+                'Indira Nagar is a family-oriented colony where most households depend on a single car for school drops and city errands. YMO\'s online booking and free pick-up suit owners who want periodic service from ₹1,999 without spending a Saturday morning at a garage near College Road.',
+            ),
+            array(
+                'car-servicing-in-cidco-nashik',
+                'nashik',
+                'cidco',
+                'CIDCO',
+                'CIDCO planned colonies, Satpur–Ambad link, and township sectors',
+                'CIDCO\'s planned layouts and wide internal roads still mean a trip across town to find a trusted workshop. YMO collects from your CIDCO sector, services the car at our facility, and drops it back — covering everything from filter changes on daily commuters to denting after tight parking bumps in shared basements.',
+            ),
+            array(
+                'car-servicing-in-deolali-nashik',
+                'nashik',
+                'deolali',
+                'Deolali',
+                'Deolali Camp, Artillery Centre approach, and cantonment residential areas',
+                'Deolali sits slightly apart from central Nashik, so driving in for a half-day service is often impractical. YMO schedules pick-up from camp colonies and Deolali town, handles hatchbacks, MUVs, and older sedans alike, and returns the vehicle once workshop checks — brakes, fluids, AC — are finished.',
+            ),
+            array(
+                'car-servicing-in-mumbai-naka-nashik',
+                'nashik',
+                'mumbai_naka',
+                'Mumbai Naka',
+                'Mumbai Naka circle, Old Agra Road junction, and surrounding commercial strips',
+                'Mumbai Naka is one of Nashik\'s busiest junctions where stop-start traffic and heat take a toll on clutches, brakes, and AC systems. YMO picks up from offices and residential blocks near the circle, performs proper diagnostics at the workshop — not a roadside top-up — and delivers the car back with a clear estimate breakdown.',
+            ),
+            array(
+                'car-servicing-in-govind-nagar-nashik',
+                'nashik',
+                'govind_nagar',
+                'Govind Nagar',
+                'Govind Nagar main road, Panchavati approach, and adjoining housing societies',
+                'Govind Nagar combines older lane-style housing with newer societies closer to Panchavati and College Road. Owners here often book YMO for pre-trip checks before highway runs to Mumbai or Shirdi, or for routine servicing on Maruti and Hyundai models common in the neighbourhood — always with pick-up included.',
+            ),
         );
         $pages = array();
         foreach ($defs as $d) {
             $pages[$d[0]] = marketing_seo_growth_locality_entry($d[0], $d[1], $d[2], $d[3], $d[4], $d[5], $today);
-        }
-        return $pages;
-    }
-}
-
-if (!function_exists('marketing_seo_growth_locality_scaffold_entry')) {
-    /**
-     * Minimal locality page — unique copy must be added by a human (content_pending).
-     *
-     * @return array<string,mixed>
-     */
-    function marketing_seo_growth_locality_scaffold_entry($slug, $city, $loc_slug, $label, $today)
-    {
-        $city_name = ucfirst($city);
-        $body = '<div class="ymo-content-section mb-5"><p class="md-body-md"><strong>Content pending:</strong> '
-            .'Add 2–3 unique sentences about car servicing in '.html_escape($label)
-            .' (local landmarks, typical pick-up points, common vehicle types served).</p>'
-            .'<p class="md-body-md mb-0"><a href="/locations/'.$city.'">Car servicing in '
-            .html_escape($city_name).' — all areas</a> · <a href="/services">Service catalogue</a></p></div>';
-
-        return array(
-            'title'            => 'Car Servicing in '.$label.', '.$city_name.' | YMO',
-            'meta_description' => 'Car servicing in '.$label.', '.$city_name.' with free doorstep pick-up. Book periodic service, AC repair, and denting with Your Mechanic Online.',
-            'h1'               => 'Car servicing in '.$label.', '.$city_name,
-            'intro'            => 'Doorstep car servicing in '.$label.' — book online with free pick-up.',
-            'body'             => $body,
-            'page_type'        => 'locality',
-            'city_slug'        => $city,
-            'locality_slug'    => $loc_slug,
-            'locality_label'   => $label,
-            'content_pending'  => TRUE,
-            'service_catalog'  => TRUE,
-            'updated_at'       => $today,
-            'view'             => 'marketing/page',
-        );
-    }
-}
-
-if (!function_exists('marketing_seo_growth_locality_scaffolds')) {
-    /** New locality routes awaiting unique copy (do not auto-generate templated bodies). */
-    function marketing_seo_growth_locality_scaffolds($today = '2026-08-27')
-    {
-        $defs = array(
-            array('car-servicing-in-rau-indore', 'indore', 'rau', 'Rau'),
-            array('car-servicing-in-scheme-54-indore', 'indore', 'scheme_54', 'Scheme 54'),
-            array('car-servicing-in-old-palasia-indore', 'indore', 'old_palasia', 'Old Palasia'),
-            array('car-servicing-in-sudama-nagar-indore', 'indore', 'sudama_nagar', 'Sudama Nagar'),
-            array('car-servicing-in-mahalaxmi-nagar-indore', 'indore', 'mahalaxmi_nagar', 'Mahalaxmi Nagar'),
-            array('car-servicing-in-gangapur-road-nashik', 'nashik', 'gangapur_road', 'Gangapur Road'),
-            array('car-servicing-in-indira-nagar-nashik', 'nashik', 'indira_nagar', 'Indira Nagar'),
-            array('car-servicing-in-cidco-nashik', 'nashik', 'cidco', 'CIDCO'),
-            array('car-servicing-in-deolali-nashik', 'nashik', 'deolali', 'Deolali'),
-            array('car-servicing-in-mumbai-naka-nashik', 'nashik', 'mumbai_naka', 'Mumbai Naka'),
-            array('car-servicing-in-govind-nagar-nashik', 'nashik', 'govind_nagar', 'Govind Nagar'),
-        );
-        $pages = array();
-        foreach ($defs as $d) {
-            $pages[$d[0]] = marketing_seo_growth_locality_scaffold_entry($d[0], $d[1], $d[2], $d[3], $today);
         }
         return $pages;
     }
