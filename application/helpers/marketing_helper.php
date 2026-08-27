@@ -521,6 +521,56 @@ if (!function_exists('marketing_redirect_to')) {
     }
 }
 
+if (!function_exists('marketing_redirect_source_paths')) {
+    /**
+     * Paths that 301 elsewhere — exclude from sitemap and route registration checks.
+     *
+     * @return array<string,bool> normalized path => true
+     */
+    function marketing_redirect_source_paths()
+    {
+        static $sources = NULL;
+        if ($sources !== NULL) {
+            return $sources;
+        }
+        $sources = array();
+        $rules = marketing_redirect_rules();
+        foreach ($rules['exact'] as $from => $to) {
+            $from_n = marketing_normalize_path($from);
+            $to_n = marketing_normalize_path($to);
+            if ($from_n !== '' && $to_n !== '' && $from_n !== $to_n) {
+                $sources[$from_n] = TRUE;
+            }
+        }
+        return $sources;
+    }
+}
+
+if (!function_exists('marketing_sitemap_pages')) {
+    /**
+     * Canonical marketing pages for XML sitemap (excludes 301 redirect sources).
+     *
+     * @return array<string,array>
+     */
+    function marketing_sitemap_pages()
+    {
+        $pages = marketing_pages_data();
+        $redirect_sources = marketing_redirect_source_paths();
+        $out = array();
+        foreach ($pages as $path => $page) {
+            if (!is_array($page)) {
+                continue;
+            }
+            $norm = marketing_normalize_path($path);
+            if (isset($redirect_sources[$norm])) {
+                continue;
+            }
+            $out[$path] = $page;
+        }
+        return $out;
+    }
+}
+
 if (!function_exists('ymo_marketing_sliders_config')) {
     /** @return array<string, array{interval_ms:int, slides:array}> */
     function ymo_marketing_sliders_config()

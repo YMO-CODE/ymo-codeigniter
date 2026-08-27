@@ -6,6 +6,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * Keys: path without leading slash. Values: new canonical path.
  */
 return array(
+    // Legacy city hubs → canonical /locations/{city}
+    'book-car-servicing-in-pune' => 'locations/pune',
+    'book-car-servicing-in-pune/' => 'locations/pune',
+    'bestcar-services-indore-affordable-solutions' => 'locations/indore',
+    'bestcar-services-indore-affordable-solutions/' => 'locations/indore',
+
     // Duplicate / legacy Pune listing pages
     'car-services-in-pune' => 'locations/pune',
     'car-services-in-pune/' => 'locations/pune',

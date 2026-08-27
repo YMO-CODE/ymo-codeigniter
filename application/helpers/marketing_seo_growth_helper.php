@@ -287,7 +287,7 @@ if (!function_exists('marketing_seo_growth_pune_hub_body')) {
             .'<h3 class="md-title-md mt-3 mb-2">Same-day service</h3><p class="md-body-md mb-0">Most maintenance and repair jobs completed the same day you book.</p></div></div>'
             .'</div>'
             .'<p class="md-body-md mt-4 mb-0">We also specialise in <a href="/premium-luxury-car-service-pune">luxury car service for Mercedes, BMW, and Audi</a> in Pune. '
-            .'<a href="/book-car-servicing-in-pune/">Book car servicing online</a> or call us to schedule pick-up.</p></div>';
+            .'<a href="/locations/pune">Book car servicing online</a> or call us to schedule pick-up.</p></div>';
     }
 }
 

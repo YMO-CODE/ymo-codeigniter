@@ -21,7 +21,7 @@ class Seo extends Marketing_Controller
                 'lastmod'    => date('Y-m-d'),
             ),
         );
-        foreach (marketing_pages_data() as $path => $page) {
+        foreach (marketing_sitemap_pages() as $path => $page) {
             if (!is_array($page)) {
                 continue;
             }

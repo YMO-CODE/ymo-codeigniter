@@ -13,5 +13,5 @@ return array(
     'ymo-car-servicing-locations-in-pune/top-mercedes-servicing-baner/the-best-audi-servicing-baner-pune/top-mercedes-servicing-in-bavdhan' => 'best-car-servicing-in-pune-ymo/top-mercedes-servicing-baner/the-best-audi-servicing-baner-pune/top-mercedes-servicing-in-bavdhan',
     'ymo-spares' => 'ymo-car-spares-parts-india',
     'the-best-car-servicing-in-wakad' => 'affordable-car-servicing-in-wakad-pune',
-    'best-car-services-in-pune' => 'book-car-servicing-in-pune',
+    'best-car-services-in-pune' => 'locations/pune',
 );

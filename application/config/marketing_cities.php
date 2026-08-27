@@ -56,7 +56,6 @@ return array(
         'name'       => 'Indore',
         'slug'       => 'indore',
         'hub_path'   => 'locations/indore',
-        'legacy_hub' => 'bestcar-services-indore-affordable-solutions',
         'phone'      => '+91-7744065904',
         'voice_phone'=> '+91-7744065904',
         'whatsapp'   => '+91-7744065904',
