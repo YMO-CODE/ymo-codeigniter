@@ -303,12 +303,14 @@ $bookings_url = ymo_booking_url('account/bookings');
                                 All of <?= html_escape($city['label']); ?>
                             </a>
                             <?php if (!empty($city['children'])): ?>
+                                <div class="ymo-drawer-loc-grid">
                                 <?php foreach ($city['children'] as $child): ?>
                                     <a class="ymo-drawer-sub-link<?= $drawer_path_active($child['slug']) ? ' is-active' : ''; ?>"
                                        href="<?= html_escape(ymo_public_nav_url($child['slug'])); ?>">
                                         <?= html_escape($child['label']); ?>
                                     </a>
                                 <?php endforeach; ?>
+                                </div>
                             <?php endif; ?>
                         <?php endforeach; ?>
                         </div>
