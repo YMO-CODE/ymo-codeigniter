@@ -51,7 +51,7 @@ Visit http://www.yourmechaniconline.com:8080/ — “Book now” goes to http://
 | `application/controllers/marketing/*` | Marketing controllers |
 | `application/helpers/marketing_helper.php` | `ymo_booking_url()`, redirects |
 | `deploy/nginx/marketing.conf` | Apex→www + www proxy |
-| `deploy/marketing/gsc/` | GSC export reference |
+| `deploy/marketing/gsc/` | GSC export reference (auto-refreshed via API — see [GSC_SETUP.md](GSC_SETUP.md)) |
 
 ## Production DNS
 
@@ -72,6 +72,13 @@ Point `@` and `www` A records to VPS. See [GODADDY_DNS.md](../GODADDY_DNS.md).
 Regenerate after updating GSC exports in `deploy/marketing/gsc/`:
 
 ```bash
+# Automated (recommended) — one-time setup: deploy/marketing/GSC_SETUP.md
+python -m pip install -r deploy/marketing/requirements-gsc.txt
+python deploy/marketing/scripts/fetch_gsc.py
+python deploy/marketing/scripts/gsc_report.py
+
+# Or drop manual CSV exports from Search Console UI into deploy/marketing/gsc/
+
 python deploy/marketing/scripts/generate_option_a.py
 copy deploy\marketing\generated\pages_option_a.php application\config\marketing_pages_option_a.php
 copy deploy\marketing\generated\redirects_option_a.php application\config\marketing_redirects_option_a.php

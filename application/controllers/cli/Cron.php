@@ -23,6 +23,7 @@ class Cron extends CI_Controller
         ymo_load_db_settings();
         $this->load->model(array('reminder_model', 'otp_model'));
         $this->load->library(array('sms_gateway', 'mailer'));
+        $this->load->helper('marketing');
     }
 
     public function run()

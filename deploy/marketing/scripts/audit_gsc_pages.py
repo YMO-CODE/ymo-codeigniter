@@ -2,8 +2,12 @@
 """Audit GSC exports vs marketing_pages_data.php for Option A migration."""
 import csv
 import re
+import sys
 from pathlib import Path
 from urllib.parse import urlparse
+
+if sys.platform == "win32" and hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 ROOT = Path(__file__).resolve().parents[3]
 GSC = ROOT / "deploy" / "marketing" / "gsc"

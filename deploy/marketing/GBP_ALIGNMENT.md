@@ -7,9 +7,13 @@ Use this when updating city hub pages or after GBP profile changes.
 | Field | Website source | GBP |
 |-------|----------------|-----|
 | Business name | Your Mechanic Online | Same |
-| Phone | +91-7744-065904 | Same |
+| Voice phone (Pune) | +91-7558783868 | Same |
+| Voice phone (Nashik) | +91-7558303868 | Same |
+| WhatsApp | +91-7744065904 | Description/posts only — not primary phone |
 | Email | contactus@yourmechaniconline.com | Same |
 | Cities | Pune, Indore, Nashik | One profile per city |
+
+See [GBP_ACTIONS.md](GBP_ACTIONS.md) for profile completion checklist.
 
 ## City hub pages to verify
 
@@ -31,11 +35,20 @@ Set `gbp_url` in `application/config/marketing_cities.php` for each city — thi
 
 ## Weekly SEO audit
 
-```powershell
-# 1. Export fresh GSC data to deploy/marketing/gsc/
-python deploy/marketing/scripts/audit_gsc_pages.py
-python deploy/marketing/scripts/check_marketing_pages.py
-python deploy/marketing/scripts/check_marketing_links.py
+```bash
+# Automated (recommended) — one-time setup: deploy/marketing/GSC_SETUP.md
+python -m pip install -r deploy/marketing/requirements-gsc.txt
+python deploy/marketing/scripts/fetch_gsc.py
+python deploy/marketing/scripts/gsc_report.py
+python deploy/marketing/scripts/weekly_seo_audit.py
+
+# VPS cron (Mondays): deploy/scripts/cron-gsc-weekly.sh
+
+# After www deploy — verify redirects before GSC resubmit:
+bash deploy/marketing/scripts/verify_www_redirects.sh
+
+# Manual GSC resubmit steps: deploy/marketing/GSC_RESUBMIT.md
+# GBP off-site checklist: deploy/marketing/GBP_ACTIONS.md
 ```
 
 Submit updated sitemap in GSC: `https://www.yourmechaniconline.com/sitemap.xml`

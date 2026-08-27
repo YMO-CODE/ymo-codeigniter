@@ -143,6 +143,7 @@ class Bookings extends Admin_Controller
             'ref'  => $booking['reference'],
         ));
         ymo_sms_log('admin.review_request', 'review_request', $booking['user_mobile'], $sms_ok, $this->sms_gateway);
+        $this->load->helper('marketing');
         $mail_ok = $this->mailer->send_view(
             $booking['user_email'],
             'How did we do? - '.$booking['reference'],

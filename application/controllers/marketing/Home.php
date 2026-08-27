@@ -7,11 +7,11 @@ class Home extends Marketing_Controller
     {
         $this->page_meta = array(
             'title'            => 'Car Servicing in Pune, Indore & Nashik',
-            'meta_title'       => 'Car Servicing in Pune, Indore & Nashik | Free Pickup | YMO',
-            'meta_description' => 'Expert car servicing and repair in Pune, Indore & Nashik. Free doorstep pickup, transparent pricing from ₹1,999. 4.8★ rated. Book online with YMO.',
+            'meta_title'       => 'Car Servicing Near Me — Pune, Indore & Nashik | Free Pickup | YMO',
+            'meta_description' => 'Doorstep car servicing near you in Pune, Indore & Nashik. Free pick-up from ₹1,999. Call Pune 7558783868, Nashik 7558303868. Book online — 4.8★ rated YMO.',
             'h1'               => 'Car servicing in Pune, Indore & Nashik',
             'canonical_path'   => '',
-            'quick_answer'     => 'Your Mechanic Online offers doorstep car servicing across Pune, Indore, and Nashik with free pick-up and drop, trained mechanics, and transparent pricing from ₹1999.',
+            'quick_answer'     => 'Your Mechanic Online offers doorstep car servicing across Pune, Indore, and Nashik with free pick-up and drop, trained mechanics, transparent pricing from ₹1999, and voice support on 7558783868 (Pune) or 7558303868 (Nashik).',
             'og_image'         => '/assets/img/marketing/revslider/main/image_01.jpg',
         );
         $this->render_marketing('marketing/home', array(

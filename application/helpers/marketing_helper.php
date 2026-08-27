@@ -88,12 +88,32 @@ if (!function_exists('ymo_show_booking_nav')) {
     }
 }
 
+if (!function_exists('marketing_canonical_base')) {
+    /** Always www marketing origin — never inbound Host (apex consolidation). */
+    function marketing_canonical_base()
+    {
+        $base = function_exists('ymo_env') ? ymo_env('YMO_MARKETING_APP_URL') : getenv('YMO_MARKETING_APP_URL');
+        if ($base === FALSE || trim((string) $base) === '') {
+            $ci = &get_instance();
+            $base = $ci->config->item('ymo_marketing_url');
+        }
+        if ($base === FALSE || trim((string) $base) === '') {
+            $ci = &get_instance();
+            $base = rtrim($ci->config->item('base_url'), '/');
+        } else {
+            $base = function_exists('ymo_sanitize_external_app_url')
+                ? ymo_sanitize_external_app_url($base)
+                : rtrim((string) $base, '/');
+        }
+        return rtrim((string) $base, '/');
+    }
+}
+
 if (!function_exists('marketing_canonical_url')) {
     /** @param string $path Path without leading slash */
     function marketing_canonical_url($path = '')
     {
-        $ci = &get_instance();
-        $base = rtrim($ci->config->item('base_url'), '/');
+        $base = marketing_canonical_base();
         $path = ltrim((string) $path, '/');
         return $path === '' ? $base.'/' : $base.'/'.$path;
     }
@@ -1189,7 +1209,28 @@ if (!function_exists('marketing_trust_config')) {
         }
         $file = APPPATH.'config/marketing_trust.php';
         $trust = is_file($file) ? require $file : array();
-        return is_array($trust) ? $trust : array();
+        if (!is_array($trust)) {
+            $trust = array();
+        }
+        $place_id = function_exists('ymo_env') ? ymo_env('YMO_GBP_PLACE_ID') : getenv('YMO_GBP_PLACE_ID');
+        if ($place_id !== FALSE && trim((string) $place_id) !== '') {
+            $trust['google_place_id'] = trim((string) $place_id);
+        }
+        return $trust;
+    }
+}
+
+if (!function_exists('marketing_gbp_review_url')) {
+    /** URL for post-service Google review requests. */
+    function marketing_gbp_review_url()
+    {
+        $trust = marketing_trust_config();
+        $place_id = isset($trust['google_place_id']) ? trim((string) $trust['google_place_id']) : '';
+        if ($place_id !== '') {
+            return 'https://search.google.com/local/writereview?placeid='.rawurlencode($place_id);
+        }
+        $share = isset($trust['gbp_share_url']) ? trim((string) $trust['gbp_share_url']) : '';
+        return $share !== '' ? $share : 'https://www.google.com/search?q=Your+Mechanic+Online+Pune+review';
     }
 }
 

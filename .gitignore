@@ -17,6 +17,8 @@ Thumbs.db
 node_modules/
 .idea/
 .vscode/
+/deploy/marketing/gsc-credentials.json
+/deploy/marketing/**/gsc-credentials*.json
 /import/source/*.xlsx
 /import/staging/*.csv
 /import/staging/*.json

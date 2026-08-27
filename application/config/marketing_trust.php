@@ -7,6 +7,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  */
 return array(
     'gbp_share_url'  => 'https://share.google/zdztabyzbml7l1uvZ',
+    // Google Place ID for review links (writereview URL). Set YMO_GBP_PLACE_ID in .env when known.
+    'google_place_id' => '',
     'google_rating'  => 4.8,
     'review_count'   => 306,
     'years'          => 0,

@@ -198,11 +198,12 @@ if (!function_exists('marketing_pune_locality_defs')) {
             array('affordable-car-servicing-in-wakad-pune', 'wakad', 'Wakad', 'Datta Mandir Chowk, Hinjewadi Road, and Wakad Bridge', 'Wakad commuters rely on YMO for periodic service, AC repair, and denting without long waits at local garages.', array('Hinjewadi', 'Baner', 'Pimple Saudagar')),
             array('best-car-services-hinjewadi-pune', 'hinjewadi', 'Hinjewadi', 'Phase 1–3 IT parks, Marunji Road, and Wakad connector', 'Hinjewadi\'s tech workforce needs reliable car care with transparent pricing — YMO picks up from your office or home.', array('Wakad', 'Baner', 'Kharadi')),
             array('car-servicing-in-aundh', 'aundh', 'Aundh', 'D P Road, Bremen Chowk, and University Road', 'Aundh residents get workshop-grade servicing with free pick-up across central-west Pune.', array('Baner', 'Bavdhan', 'Kothrud')),
-            array('best-car-servicing-in-bavdhan-pune-expert-care', 'bavdhan', 'Bavdhan', 'Bavdhan Budruk, NDA Road, and Pashan link road', 'Bavdhan\'s hillside roads demand well-maintained brakes and suspension — YMO handles both with upfront estimates.', array('Baner', 'Aundh', 'Kothrud')),
+            array('best-car-servicing-in-bavdhan-pune-expert-care', 'bavdhan', 'Bavdhan', 'Bavdhan Budruk, NDA Road, and Pashan link road', 'Bavdhan\'s hillside roads demand well-maintained brakes and suspension — YMO handles both with upfront estimates.', array('Warje', 'Baner', 'Kothrud')),
             array('affordable-car-services-viman-nagar-pune', 'viman_nagar', 'Viman Nagar', 'Phoenix Marketcity, Nagar Road, and Lohegaon approach', 'Viman Nagar drivers choose YMO for same-day periodic service and specialist AC and brake work.', array('Kharadi', 'Kalyani Nagar', 'Hadapsar')),
             array('car-servicing-in-kharadi-pune', 'kharadi', 'Kharadi', 'EON IT Park, World Trade Center, and Kharadi bypass', 'Kharadi\'s IT hub needs dependable car servicing — YMO collects your car and returns it with WhatsApp photo updates.', array('Viman Nagar', 'Hadapsar', 'Magarpatta')),
             array('car-servicing-in-koregaon-park-pune', 'koregaon_park', 'Koregaon Park', 'North Main Road, Lane 5, and Osho Garden area', 'Koregaon Park owners expect quality care — YMO delivers workshop-grade service with free pick-up across KP and Kalyani Nagar.', array('Kalyani Nagar', 'Viman Nagar', 'Hadapsar')),
-            array('car-servicing-in-kothrud-pune', 'kothrud', 'Kothrud', 'Paud Road, Karve Road, and Vanaz corner', 'Kothrud\'s dense traffic and hill climbs make regular servicing essential — YMO covers all of Kothrud with free pick-up.', array('Bavdhan', 'Warje', 'Aundh')),
+            array('car-servicing-in-kothrud-pune', 'kothrud', 'Kothrud', 'Paud Road, Karve Road, and Vanaz corner', 'Kothrud\'s dense traffic and hill climbs make regular servicing essential — YMO covers all of Kothrud with free pick-up.', array('Warje', 'Bavdhan', 'Aundh')),
+            array('car-servicing-in-warje-pune', 'warje', 'Warje', 'Warje Bridge, Mumbai–Bangalore Highway, Karvenagar, and Chandani Chowk', 'Warje and Karvenagar residents rely on YMO for periodic service, AC repair, and denting with free pick-up — close to our Hinjewadi workshop corridor.', array('Kothrud', 'Bavdhan', 'Hinjewadi')),
             array('car-servicing-in-hadapsar-pune', 'hadapsar', 'Hadapsar', 'Magarpatta Road, Solapur Road, and Hadapsar Gaothan', 'Hadapsar and Magarpatta commuters trust YMO for periodic maintenance, AC gas recharge, and brake work.', array('Magarpatta', 'Kharadi', 'Viman Nagar')),
             array('car-servicing-in-magarpatta-pune', 'magarpatta', 'Magarpatta', 'Magarpatta City, Cybercity, and Hadapsar flyover', 'Magarpatta City residents get free pick-up and transparent pricing from ₹1,999 for complete car servicing.', array('Hadapsar', 'Kharadi', 'Wagholi')),
             array('car-servicing-in-wagholi-pune', 'wagholi', 'Wagholi', 'Wagholi Chowk, Lonikand Road, and airport road belt', 'Wagholi\'s growing townships rely on YMO for full workshop capability — not just a quick home visit.', array('Kharadi', 'Hadapsar', 'Viman Nagar')),
@@ -220,9 +221,9 @@ if (!function_exists('marketing_seo_growth_pune_localities')) {
         foreach (marketing_pune_locality_defs() as $def) {
             list($slug, $loc_slug, $label, $landmarks, $extra, $nearby) = $def;
             $page = marketing_seo_growth_locality_entry($slug, 'pune', $loc_slug, $label, $landmarks, $extra, $today);
-            $page['title'] = 'Car Service in '.$label.', Pune | Free Pickup | YMO';
+            $page['title'] = 'Car Service in '.$label.', Pune | From ₹1,999 | Free Pickup | YMO';
             $page['meta_title'] = $page['title'];
-            $page['meta_description'] = 'Expert car servicing & repair in '.$label.', Pune. Free doorstep pickup, transparent pricing from ₹1,999, 4.8★ rated. Book online with YMO.';
+            $page['meta_description'] = 'Car service in '.$label.', Pune from ₹1,999. Free doorstep pick-up, AC repair, denting & periodic maintenance. Book Your Mechanic Online — 4.8★ rated.';
             $page['h1'] = 'Car service in '.$label.', Pune';
             $page['locality_label'] = $label;
             $page['faq'] = array(
@@ -270,7 +271,7 @@ if (!function_exists('marketing_seo_growth_pune_hub_body')) {
         $cards_html = marketing_seo_growth_neighbourhood_cards($cards);
 
         return '<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">Pune neighbourhoods we serve</h2>'
-            .'<p class="md-body-md mb-4">Periodic car service, AC repair, denting, and polishing with free doorstep pick-up across 14 Pune areas — from Baner and Wakad to Kharadi, Kothrud, and Magarpatta.</p>'
+            .'<p class="md-body-md mb-4">Periodic car service, AC repair, denting, and polishing with free doorstep pick-up across 15 Pune areas — from Baner and Wakad to Warje, Kharadi, Kothrud, and Magarpatta.</p>'
             .$cards_html
             .'</div>'
             .'<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">Why choose YMO in Pune?</h2>'
@@ -281,7 +282,7 @@ if (!function_exists('marketing_seo_growth_pune_hub_body')) {
             .'<div class="col-md-6 col-lg-3"><div class="md-card-elevated h-100"><span class="mi mi-xl md-icon-primary">payments</span>'
             .'<h3 class="md-title-md mt-3 mb-2">Competitive prices</h3><p class="md-body-md mb-0">Upfront estimates from ₹1,999 on servicing, denting, and polishing in Pune.</p></div></div>'
             .'<div class="col-md-6 col-lg-3"><div class="md-card-elevated h-100"><span class="mi mi-xl md-icon-primary">local_shipping</span>'
-            .'<h3 class="md-title-md mt-3 mb-2">Free pick-up &amp; drop</h3><p class="md-body-md mb-0">We collect and return your car across all 14 Pune neighbourhoods we serve.</p></div></div>'
+            .'<h3 class="md-title-md mt-3 mb-2">Free pick-up &amp; drop</h3><p class="md-body-md mb-0">We collect and return your car across all 15 Pune neighbourhoods we serve.</p></div></div>'
             .'<div class="col-md-6 col-lg-3"><div class="md-card-elevated h-100"><span class="mi mi-xl md-icon-primary">schedule</span>'
             .'<h3 class="md-title-md mt-3 mb-2">Same-day service</h3><p class="md-body-md mb-0">Most maintenance and repair jobs completed the same day you book.</p></div></div>'
             .'</div>'

@@ -8,6 +8,7 @@ $page_title = isset($title) ? $title.' - '.$ci->config->item('ymo_brand_name') :
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="robots" content="noindex,nofollow">
     <title><?= html_escape($page_title); ?></title>
     <link rel="icon" type="image/png" href="<?= base_url('assets/img/logo.png'); ?>">
     <meta name="theme-color" content="#3a6f37">

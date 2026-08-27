@@ -15,7 +15,15 @@ $hook['pre_system'] = array(
     'params'   => array(),
 );
 
-$hook['pre_controller'] = array(
+$hook['pre_controller'][] = array(
+    'class'    => '',
+    'function' => 'ymo_hook_redirect_marketing_apex_to_www',
+    'filename' => 'ymo_marketing_apex_redirect.php',
+    'filepath' => 'hooks',
+    'params'   => array(),
+);
+
+$hook['pre_controller'][] = array(
     'class'    => '',
     'function' => 'ymo_hook_redirect_legacy_admin_path',
     'filename' => 'ymo_legacy_admin_redirect.php',
