@@ -81,6 +81,9 @@ class Pages extends Marketing_Controller
 
             $body = marketing_strip_locality_services_list($body);
             $body = marketing_normalize_locality_body($body);
+            if (!empty($page['pricing_tiers'])) {
+                $body = marketing_strip_locality_services_section($body);
+            }
 
             if ($locality_slug !== '') {
                 $service_catalog = TRUE;

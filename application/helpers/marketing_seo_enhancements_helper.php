@@ -101,6 +101,25 @@ if (!function_exists('marketing_service_pricing_tiers')) {
     }
 }
 
+if (!function_exists('marketing_locality_pricing_tiers')) {
+    /**
+     * Standard service price guide for locality and city hub pages.
+     *
+     * @return array<int,array{label:string,price:string}>
+     */
+    function marketing_locality_pricing_tiers()
+    {
+        return array(
+            array('label' => 'Complete car servicing', 'price' => 'From ₹1,999'),
+            array('label' => 'AC repair and gas recharge', 'price' => 'From ₹999'),
+            array('label' => 'Brake inspection and replacement', 'price' => 'From ₹499'),
+            array('label' => 'Denting and painting (per panel)', 'price' => 'From ₹3,000'),
+            array('label' => 'Interior deep cleaning', 'price' => 'From ₹2,500'),
+            array('label' => '3-stage rubbing and polishing', 'price' => 'From ₹6,500'),
+        );
+    }
+}
+
 if (!function_exists('marketing_service_faqs')) {
     /**
      * @param string $service_key
@@ -233,6 +252,11 @@ if (!function_exists('marketing_enrich_page')) {
             if (isset($desc_map[$svc['key']])) {
                 $page['meta_description'] = $desc_map[$svc['key']];
             }
+        }
+
+        $page_type = isset($page['page_type']) ? $page['page_type'] : '';
+        if (($page_type === 'locality' || $page_type === 'hub') && empty($page['pricing_tiers'])) {
+            $page['pricing_tiers'] = marketing_locality_pricing_tiers();
         }
 
         if ($path === '') {

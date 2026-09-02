@@ -3194,6 +3194,28 @@ if (!function_exists('marketing_normalize_locality_body')) {
     }
 }
 
+if (!function_exists('marketing_strip_locality_services_section')) {
+    /**
+     * Remove inline service price list when pricing table is rendered separately.
+     *
+     * @param string $body
+     */
+    function marketing_strip_locality_services_section($body)
+    {
+        $body = (string) $body;
+        if ($body === '') {
+            return $body;
+        }
+
+        return trim(preg_replace(
+            '/<div class="ymo-content-section[^"]*"[^>]*>\s*<h2 class="md-headline-md[^"]*"[^>]*>\s*Services in [^<]+<\/h2>[\s\S]*?<\/div>/i',
+            '',
+            $body,
+            1
+        ));
+    }
+}
+
 if (!function_exists('marketing_locality_service_catalog_heading')) {
     /** @param array $page */
     function marketing_locality_service_catalog_heading(array $page)

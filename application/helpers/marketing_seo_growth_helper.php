@@ -45,14 +45,7 @@ if (!function_exists('marketing_seo_growth_locality_entry')) {
         $body = '<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">Car service in '.$loc_label.', '.$city_name.'</h2>'
             .'<p class="md-body-md mb-3">'.html_escape($body_extra).'</p>'
             .'<p class="md-body-md mb-0">Local landmarks and neighbourhoods we cover include '.html_escape($landmarks)
-            .'. YMO picks up your car, services it at our workshop, and returns it when done - with WhatsApp updates and photos throughout.</p></div>'
-            .'<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">Services in '.$loc_label.'</h2>'
-            .'<p class="md-body-md mb-3">From periodic maintenance to specialist repairs - one booking, free pick-up, transparent pricing.</p>'
-            .'<ul class="md-body-md"><li class="mb-2">Complete car servicing from ₹1,999</li>'
-            .'<li class="mb-2">AC repair and gas recharge</li><li class="mb-2">Brake inspection and replacement</li>'
-            .'<li class="mb-2">Denting and painting from ₹3,000 per panel</li>'
-            .'<li class="mb-2">Interior deep cleaning from ₹2,500</li>'
-            .'<li class="mb-0">3-stage rubbing and polishing from ₹6,500</li></ul>'
+            .'. YMO picks up your car, services it at our workshop, and returns it when done - with WhatsApp updates and photos throughout.</p>'
             .'<p class="md-body-md mt-3 mb-0"><a href="/locations/'.$city.'">All '.$city_name.' areas</a> · '
             .'<a href="/services">Service catalogue</a> · <a href="/brands">Brands we service</a></p></div>';
 
