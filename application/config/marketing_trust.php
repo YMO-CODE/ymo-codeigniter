@@ -18,7 +18,7 @@ return array(
     'show_in_header' => TRUE,
     'same_as'        => array(
         'https://www.instagram.com/yourmechaniconline_ymo/',
-        'https://www.linkedin.com/company/your-mechanic-online/',
+        'https://www.linkedin.com/company/yours-mechanic-online/',
         'https://share.google/zdztabyzbml7l1uvZ',
     ),
     'instagram_url'  => 'https://www.instagram.com/yourmechaniconline_ymo/',
