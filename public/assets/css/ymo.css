@@ -990,16 +990,21 @@ h1, h2, h3, h4, h5, h6 { font-weight: 700; letter-spacing: -0.01em; }
 .ymo-footer {
     background: var(--ymo-grey-100, #f3f4f6);
     color: var(--ymo-grey-700);
-    padding: 2rem 0 1rem;
+    padding: 2.25rem 0 1.25rem;
     margin-top: 3rem;
     border-top: 1px solid var(--ymo-grey-300);
+}
+
+.ymo-footer > .container {
+    padding-left: max(1.25rem, var(--bs-gutter-x, 0.75rem));
+    padding-right: max(1.25rem, var(--bs-gutter-x, 0.75rem));
 }
 
 .ymo-footer-main {
     display: grid;
     gap: 1.75rem;
     grid-template-columns: 1fr;
-    padding-bottom: 1.25rem;
+    padding-bottom: 1.5rem;
 }
 
 .ymo-footer-brand {
@@ -1023,7 +1028,7 @@ h1, h2, h3, h4, h5, h6 { font-weight: 700; letter-spacing: -0.01em; }
 }
 
 .ymo-footer-aside {
-    padding: 1rem 1.15rem;
+    padding: 1.35rem 1.5rem 1.45rem;
     background: #fff;
     border: 1px solid var(--ymo-grey-300);
     border-radius: 14px;
@@ -1031,7 +1036,7 @@ h1, h2, h3, h4, h5, h6 { font-weight: 700; letter-spacing: -0.01em; }
 
 .ymo-footer .ymo-footer-heading {
     color: var(--ymo-black);
-    margin: 0 0 0.65rem;
+    margin: 0 0 0.75rem;
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.05em;
@@ -1060,13 +1065,19 @@ h1, h2, h3, h4, h5, h6 { font-weight: 700; letter-spacing: -0.01em; }
     text-decoration: underline;
 }
 
+.ymo-footer-links--contact {
+    margin-bottom: 0.85rem !important;
+}
+
 .ymo-footer-links--contact a {
     font-size: 0.875rem;
     font-weight: 500;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .ymo-footer-social {
-    margin: 0;
+    margin: 0 0 1rem;
     font-size: 0.8125rem;
 }
 
@@ -1094,7 +1105,7 @@ h1, h2, h3, h4, h5, h6 { font-weight: 700; letter-spacing: -0.01em; }
 }
 
 .ymo-footer-areas {
-    margin-top: 0.25rem;
+    margin-top: 0.5rem;
     background: #fff;
     border: 1px solid var(--ymo-grey-300);
     border-radius: 14px;
@@ -1106,7 +1117,7 @@ h1, h2, h3, h4, h5, h6 { font-weight: 700; letter-spacing: -0.01em; }
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    padding: 0.9rem 1.15rem;
+    padding: 1rem 1.5rem;
     font-size: 0.875rem;
     font-weight: 600;
     color: var(--ymo-black);
@@ -1138,12 +1149,12 @@ h1, h2, h3, h4, h5, h6 { font-weight: 700; letter-spacing: -0.01em; }
 }
 
 .ymo-footer-areas__body {
-    padding: 0 1.15rem 1.1rem;
+    padding: 1.25rem 1.5rem 1.45rem;
     border-top: 1px solid var(--ymo-grey-300);
 }
 
 .ymo-footer-areas__city {
-    margin: 0 0 0.55rem;
+    margin: 0 0 0.7rem;
     font-size: 0.8125rem;
     font-weight: 700;
     color: var(--ymo-black);
@@ -1152,8 +1163,8 @@ h1, h2, h3, h4, h5, h6 { font-weight: 700; letter-spacing: -0.01em; }
 .ymo-footer-links--cols-2 {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 0.75rem;
-    row-gap: 0.3rem;
+    column-gap: 1.1rem;
+    row-gap: 0.45rem;
 }
 
 .ymo-footer-links--cols-2 li {
@@ -1170,6 +1181,12 @@ h1, h2, h3, h4, h5, h6 { font-weight: 700; letter-spacing: -0.01em; }
     color: var(--ymo-primary-dark);
 }
 
+@media (min-width: 768px) {
+    .ymo-footer-nav {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
 .ymo-footer .ymo-footer-bottom {
     display: flex;
     align-items: center;
@@ -1177,28 +1194,32 @@ h1, h2, h3, h4, h5, h6 { font-weight: 700; letter-spacing: -0.01em; }
     flex-wrap: wrap;
     gap: 0.75rem;
     border-top: 1px solid var(--ymo-grey-300);
-    padding-top: 0.85rem;
-    margin-top: 1rem;
+    padding-top: 1rem;
+    margin-top: 1.25rem;
     font-size: 0.8125rem;
     color: var(--ymo-grey-500);
 }
 
-@media (min-width: 768px) {
-    .ymo-footer-nav {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-}
-
 @media (min-width: 992px) {
     .ymo-footer {
-        padding: 2rem 0 1rem;
+        padding: 2.5rem 0 1.35rem;
         margin-top: 2.5rem;
     }
 
     .ymo-footer-main {
-        grid-template-columns: minmax(180px, 0.95fr) minmax(0, 2fr) minmax(210px, 0.85fr);
-        gap: 2rem;
+        grid-template-columns: minmax(180px, 0.95fr) minmax(0, 2fr) minmax(220px, 0.85fr);
+        gap: 2.25rem;
         align-items: start;
+    }
+
+    .ymo-footer-aside {
+        padding: 1.45rem 1.65rem 1.55rem;
+    }
+
+    .ymo-footer-areas__summary,
+    .ymo-footer-areas__body {
+        padding-left: 1.65rem;
+        padding-right: 1.65rem;
     }
 }
 

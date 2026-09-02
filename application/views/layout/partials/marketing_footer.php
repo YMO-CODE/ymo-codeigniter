@@ -58,12 +58,12 @@ foreach ($footer_sections as $section) {
 
             <div class="ymo-footer-aside">
                 <p class="ymo-footer-heading">Need a hand?</p>
-                <ul class="ymo-footer-links ymo-footer-links--contact mb-3">
+                <ul class="ymo-footer-links ymo-footer-links--contact">
                     <li><a href="tel:<?= html_escape(preg_replace('/[^+\d]/', '', $phone)); ?>"><?= html_escape($phone); ?></a></li>
                     <li><a href="mailto:<?= html_escape($mail); ?>"><?= html_escape($mail); ?></a></li>
                 </ul>
                 <?php if ($instagram !== ''): ?>
-                <p class="ymo-footer-social mb-3">
+                <p class="ymo-footer-social">
                     <a href="<?= html_escape($instagram); ?>" target="_blank" rel="noopener noreferrer">Instagram</a>
                     <span aria-hidden="true"> · </span>
                     <a href="<?= html_escape($linkedin); ?>" target="_blank" rel="noopener noreferrer">LinkedIn</a>
