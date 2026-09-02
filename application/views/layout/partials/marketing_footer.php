@@ -1,5 +1,4 @@
-<?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+<?php defined('BASEPATH') OR exit('No direct script access allowed');
 $ci = &get_instance();
 $brand = $ci->config->item('ymo_brand_name');
 $phone = $ci->config->item('ymo_support_phone');
@@ -7,17 +6,27 @@ $mail  = $ci->config->item('ymo_support_email');
 $trust = function_exists('marketing_trust_config') ? marketing_trust_config() : array();
 $instagram = !empty($trust['instagram_url']) ? $trust['instagram_url'] : '';
 $linkedin  = 'https://www.linkedin.com/company/your-mechanic-online/';
+$footer_sections = function_exists('marketing_footer_extra_link_sections') ? marketing_footer_extra_link_sections() : array();
+$footer_city_sections = array();
+$footer_other_sections = array();
+foreach ($footer_sections as $section) {
+    if (!empty($section['type']) && $section['type'] === 'city_areas') {
+        $footer_city_sections[] = $section;
+    } else {
+        $footer_other_sections[] = $section;
+    }
+}
 ?>
 <footer class="ymo-footer">
     <div class="container py-2">
         <div class="row gy-4">
-            <div class="col-lg-4">
+            <div class="col-lg-4 col-xl-3">
                 <?= function_exists('marketing_brand_logo_html') ? marketing_brand_logo_html(array('class' => 'ymo-footer-logo mb-3', 'width' => 140, 'height' => 52, 'lazy' => TRUE)) : '<img src="'.html_escape(base_url('assets/img/logo.png')).'" alt="'.html_escape($brand).'" class="ymo-footer-logo mb-3" width="140" height="52" loading="lazy" decoding="async">'; ?>
                 <p class="md-body-md mb-0">Periodic service, AC repair, denting &amp; polishing - book online in minutes.</p>
             </div>
             <div class="col-6 col-lg-2">
                 <p class="ymo-footer-heading">Company</p>
-                <ul class="list-unstyled md-body-md mb-0">
+                <ul class="list-unstyled md-body-md mb-0 ymo-footer-links">
                     <li class="mb-2"><a href="<?= site_url('about-us'); ?>">About</a></li>
                     <li class="mb-2"><a href="<?= site_url('contact-us'); ?>">Contact</a></li>
                     <li class="mb-2"><a href="<?= site_url('why-choose-ymo'); ?>">Why choose YMO</a></li>
@@ -26,17 +35,17 @@ $linkedin  = 'https://www.linkedin.com/company/your-mechanic-online/';
             </div>
             <div class="col-6 col-lg-2">
                 <p class="ymo-footer-heading">Cities &amp; brands</p>
-                <ul class="list-unstyled md-body-md mb-0">
+                <ul class="list-unstyled md-body-md mb-0 ymo-footer-links">
                     <li class="mb-2"><a href="<?= site_url('locations/pune'); ?>">Car servicing in Pune</a></li>
                     <li class="mb-2"><a href="<?= site_url('locations/indore'); ?>">Car servicing in Indore</a></li>
                     <li class="mb-2"><a href="<?= site_url('locations/nashik'); ?>">Car servicing in Nashik</a></li>
                     <li><a href="<?= site_url('brands'); ?>">All brands</a></li>
                 </ul>
             </div>
-            <?php foreach (function_exists('marketing_footer_extra_link_sections') ? marketing_footer_extra_link_sections() : array() as $section): ?>
+            <?php foreach ($footer_other_sections as $section): ?>
             <div class="col-6 col-lg-2">
                 <p class="ymo-footer-heading"><?= html_escape($section['title']); ?></p>
-                <ul class="list-unstyled md-body-md mb-0">
+                <ul class="list-unstyled md-body-md mb-0 ymo-footer-links">
                     <?php foreach ($section['links'] as $i => $link): ?>
                     <li class="<?= ($i < count($section['links']) - 1) ? 'mb-2' : ''; ?>">
                         <a href="<?= site_url($link['slug']); ?>"><?= html_escape($link['label']); ?></a>
@@ -47,7 +56,7 @@ $linkedin  = 'https://www.linkedin.com/company/your-mechanic-online/';
             <?php endforeach; ?>
             <div class="col-6 col-lg-2">
                 <p class="ymo-footer-heading">Book online</p>
-                <ul class="list-unstyled md-body-md mb-0">
+                <ul class="list-unstyled md-body-md mb-0 ymo-footer-links">
                     <li class="mb-2"><a href="<?= html_escape(ymo_booking_url('packages')); ?>">Packages</a></li>
                     <li class="mb-2"><a href="<?= html_escape(ymo_booking_url('quick-book')); ?>">Quick book</a></li>
                     <li><a href="<?= html_escape(ymo_booking_url('signup')); ?>">Sign up</a></li>
@@ -66,6 +75,24 @@ $linkedin  = 'https://www.linkedin.com/company/your-mechanic-online/';
                 </p>
                 <?php endif; ?>
             </div>
+            <?php if ($footer_city_sections !== array()): ?>
+            <div class="col-12">
+                <div class="row g-3 g-lg-4 ymo-footer-city-grid">
+                    <?php foreach ($footer_city_sections as $section): ?>
+                    <div class="col-md-4">
+                        <p class="ymo-footer-heading ymo-footer-heading--compact"><?= html_escape($section['title']); ?></p>
+                        <ul class="list-unstyled md-body-md mb-0 ymo-footer-links ymo-footer-links--cols-2">
+                            <?php foreach ($section['links'] as $link): ?>
+                            <li>
+                                <a href="<?= site_url($link['slug']); ?>"><?= html_escape($link['label']); ?></a>
+                            </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php endif; ?>
         </div>
         <div class="ymo-footer-bottom d-flex justify-content-between flex-wrap gap-2 mt-4 pt-3">
             <span class="md-body-md mb-0">&copy; <?= date('Y'); ?> <?= html_escape($brand); ?>. All rights reserved.</span>

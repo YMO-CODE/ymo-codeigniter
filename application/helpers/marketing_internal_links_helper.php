@@ -295,8 +295,10 @@ if (!function_exists('marketing_footer_extra_link_sections')) {
                 $links[] = array('label' => $loc['label'], 'slug' => $loc['slug']);
             }
             $sections[] = array(
-                'title' => $cfg[$city_slug]['name'].' areas',
-                'links' => $links,
+                'title'   => $cfg[$city_slug]['name'].' areas',
+                'links'   => $links,
+                'columns' => 2,
+                'type'    => 'city_areas',
             );
         }
         $sections[] = array(

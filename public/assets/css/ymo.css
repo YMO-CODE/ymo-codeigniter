@@ -1012,7 +1012,44 @@ h1, h2, h3, h4, h5, h6 { font-weight: 700; letter-spacing: -0.01em; }
     padding-top: 1rem;
     margin-top: 2rem;
     font-size: 0.85rem;
-    color: var(--ymo-grey-500);
+}
+
+.ymo-footer-links--cols-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 0.85rem;
+    row-gap: 0.35rem;
+}
+
+.ymo-footer-links--cols-2 li {
+    margin: 0;
+    min-width: 0;
+}
+
+.ymo-footer-links--cols-2 a {
+    display: block;
+    font-size: 0.8125rem;
+    line-height: 1.35;
+}
+
+.ymo-footer-city-grid {
+    padding-top: 0.25rem;
+    border-top: 1px solid var(--ymo-grey-300);
+}
+
+.ymo-footer-heading--compact {
+    margin-bottom: 0.65rem;
+}
+
+@media (min-width: 992px) {
+    .ymo-footer {
+        padding: 2.25rem 0 1.25rem;
+        margin-top: 3rem;
+    }
+
+    .ymo-footer .ymo-footer-heading {
+        margin-bottom: 0.75rem;
+    }
 }
 
 /* ---------------- Flash / alerts ------------------------------------- */
@@ -1688,6 +1725,14 @@ table.ymo-table tbody tr:hover { background: var(--ymo-grey-100); }
 }
 .md-theme .ymo-footer-bottom {
     border-top: 1px solid var(--md-sys-color-outline-variant);
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.md-theme .ymo-footer-city-grid {
+    border-top-color: var(--md-sys-color-outline-variant);
+}
+
+.md-theme .ymo-footer-links--cols-2 a {
     color: var(--md-sys-color-on-surface-variant);
 }
 
