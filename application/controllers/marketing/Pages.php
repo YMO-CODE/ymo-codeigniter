@@ -93,6 +93,12 @@ class Pages extends Marketing_Controller
         if ($body !== '') {
             $body = marketing_optimize_content_images($body);
             $body = marketing_body_fix_heading_order($body);
+            $page_faq = isset($page['faq']) && is_array($page['faq']) ? $page['faq'] : array();
+            if ($page_faq !== array()) {
+                $body = marketing_strip_embedded_faq_from_body($body);
+            } else {
+                $body = marketing_normalize_body_faq_sections($body);
+            }
         }
 
         $body = marketing_page_internal_links_append($path, $page, $body);

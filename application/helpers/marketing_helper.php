@@ -815,12 +815,57 @@ if (!function_exists('marketing_normalize_accordion_answer')) {
             return '<p>'.htmlspecialchars($lines[0], ENT_QUOTES, 'UTF-8').'</p>';
         }
 
-        $out = '<ul class="list iconList mb-0">';
+        $out = '<ul>';
         foreach ($lines as $line) {
             $out .= '<li>'.htmlspecialchars($line, ENT_QUOTES, 'UTF-8').'</li>';
         }
 
         return $out.'</ul>';
+    }
+}
+
+if (!function_exists('marketing_normalize_faq_answer_content')) {
+    /**
+     * Strip legacy WP wrappers and normalize FAQ answer markup for cards.
+     *
+     * @param string $html
+     */
+    function marketing_normalize_faq_answer_content($html)
+    {
+        $html = trim((string) $html);
+        if ($html === '') {
+            return '';
+        }
+
+        $previous = '';
+        while ($html !== $previous) {
+            $previous = $html;
+            $html = preg_replace('/<div class="clearfix">\s*(.*?)\s*<\/div>/is', '$1', $html);
+            $html = preg_replace(
+                '/<div class="wpb_text_column[^"]*"[^>]*>\s*<div class="wpb_wrapper">\s*(.*?)\s*<\/div>\s*<\/div>/is',
+                '$1',
+                $html
+            );
+        }
+
+        $html = trim($html);
+        if ($html === '') {
+            return '';
+        }
+
+        if (preg_match('/<ul[^>]*>/i', $html) && preg_match_all('/<li[^>]*>(.*?)<\/li>/is', $html, $listItems)) {
+            $out = '<ul>';
+            foreach ($listItems[1] as $item) {
+                $line = trim(html_entity_decode(strip_tags($item), ENT_QUOTES, 'UTF-8'));
+                if ($line !== '') {
+                    $out .= '<li>'.htmlspecialchars($line, ENT_QUOTES, 'UTF-8').'</li>';
+                }
+            }
+
+            return $out.'</ul>';
+        }
+
+        return marketing_normalize_accordion_answer($html);
     }
 }
 
@@ -848,7 +893,7 @@ if (!function_exists('marketing_extract_accordion_items')) {
     {
         $items = array();
         if (!preg_match_all(
-            '/<li>\s*(?:<div[^>]*>\s*)?<h3>(.*?)<\/h3>\s*(?:<\/div>\s*)?<div class="clearfix">[\s\S]*?<p[^>]*>(.*?)<\/p>/is',
+            '/<li>\s*(?:<div[^>]*>\s*)?<h3>(.*?)<\/h3>\s*(?:<\/div>\s*)?<div class="clearfix">([\s\S]*?)<\/div>\s*<\/li>/is',
             (string) $html,
             $matches,
             PREG_SET_ORDER
@@ -857,7 +902,7 @@ if (!function_exists('marketing_extract_accordion_items')) {
         }
         foreach ($matches as $row) {
             $q = trim(html_entity_decode(strip_tags($row[1]), ENT_QUOTES, 'UTF-8'));
-            $a = marketing_normalize_accordion_answer($row[2]);
+            $a = marketing_normalize_faq_answer_content($row[2]);
             if ($q !== '' && $a !== '') {
                 $items[] = array('q' => $q, 'a' => $a);
             }
@@ -866,24 +911,176 @@ if (!function_exists('marketing_extract_accordion_items')) {
     }
 }
 
-if (!function_exists('marketing_render_accordion_html')) {
+if (!function_exists('marketing_faq_answer_html')) {
+    /**
+     * Normalize FAQ answer to HTML (paragraph or bullet list).
+     *
+     * @param string $html Plain text or legacy markup
+     */
+    function marketing_faq_answer_html($html)
+    {
+        $html = trim((string) $html);
+        if ($html === '') {
+            return '';
+        }
+        if (preg_match('/<[a-z][^>]*>/i', $html)) {
+            return marketing_normalize_faq_answer_content($html);
+        }
+
+        return '<p>'.htmlspecialchars($html, ENT_QUOTES, 'UTF-8').'</p>';
+    }
+}
+
+if (!function_exists('marketing_normalize_faq_items')) {
+    /** @param array<int, array{q?:string,a?:string}> $items @return array<int, array{q:string,a:string}> */
+    function marketing_normalize_faq_items(array $items)
+    {
+        $out = array();
+        foreach ($items as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+            $q = isset($row['q']) ? trim((string) $row['q']) : '';
+            $a = isset($row['a']) ? trim((string) $row['a']) : '';
+            if ($q === '' || $a === '') {
+                continue;
+            }
+            $out[] = array(
+                'q' => $q,
+                'a' => marketing_faq_answer_html($a),
+            );
+        }
+        return $out;
+    }
+}
+
+if (!function_exists('marketing_render_faq_cards_html')) {
     /** @param array<int, array{q:string,a:string}> $items */
-    function marketing_render_accordion_html(array $items)
+    function marketing_render_faq_cards_html(array $items)
     {
         if ($items === array()) {
             return '';
         }
 
-        $html = '<ul class="accordion">';
+        $html = '<div class="ymo-faq-list">';
         foreach ($items as $item) {
-            $html .= '<li><div><h3>'.htmlspecialchars($item['q'], ENT_QUOTES, 'UTF-8').'</h3></div>';
-            $html .= '<div class="clearfix">'.$item['a'].'</div></li>';
+            $html .= '<article class="ymo-faq-card">';
+            $html .= '<h3 class="ymo-faq-card__question">'.htmlspecialchars($item['q'], ENT_QUOTES, 'UTF-8').'</h3>';
+            $html .= '<div class="ymo-faq-card__answer">'.$item['a'].'</div>';
+            $html .= '</article>';
         }
-        return $html.'</ul>';
+
+        return $html.'</div>';
     }
 }
 
-if (!function_exists('marketing_render_template_bullet_list')) {
+if (!function_exists('marketing_render_faq_section_html')) {
+    /**
+     * Full FAQ block: grey section + title + white Q&amp;A cards.
+     *
+     * @param string $title
+     * @param array<int, array{q:string,a:string}|array{q?:string,a?:string}> $items
+     */
+    function marketing_render_faq_section_html($title, array $items)
+    {
+        $items = marketing_normalize_faq_items($items);
+        if ($items === array()) {
+            return '';
+        }
+
+        $title = trim((string) $title);
+        if ($title === '') {
+            $title = 'Popular questions';
+        }
+
+        return '<section class="ymo-faq-section">'
+            .'<h2 class="ymo-faq-section__title">'.htmlspecialchars($title, ENT_QUOTES, 'UTF-8').'</h2>'
+            .marketing_render_faq_cards_html($items)
+            .'</section>';
+    }
+}
+
+if (!function_exists('marketing_render_accordion_html')) {
+    /** @param array<int, array{q:string,a:string}> $items @deprecated Use marketing_render_faq_cards_html */
+    function marketing_render_accordion_html(array $items)
+    {
+        return marketing_render_faq_cards_html(marketing_normalize_faq_items($items));
+    }
+}
+
+if (!function_exists('marketing_normalize_body_faq_sections')) {
+    /**
+     * Replace legacy WP accordion FAQ blocks in page body with card layout.
+     *
+     * @param string $body
+     */
+    function marketing_normalize_body_faq_sections($body)
+    {
+        $body = (string) $body;
+        if ($body === '' || (stripos($body, 'accordion') === FALSE && stripos($body, 'Popular questions') === FALSE)) {
+            return $body;
+        }
+
+        $patterns = array(
+            '/<h([234])[^>]*>\s*Popular questions\s*<\/h\1>\s*<ul class="accordion[^"]*">([\s\S]*?)<\/ul>/i',
+            '/<h([234])[^>]*>\s*Frequently asked questions\s*<\/h\1>\s*<ul class="accordion[^"]*">([\s\S]*?)<\/ul>/i',
+            '/<h([234])[^>]*>\s*POPULAR QUESTIONS\s*<\/h\1>\s*<ul class="accordion[^"]*">([\s\S]*?)<\/ul>/i',
+        );
+
+        foreach ($patterns as $pattern) {
+            $body = preg_replace_callback(
+                $pattern,
+                function ($match) {
+                    $title = trim(html_entity_decode(strip_tags($match[0]), ENT_QUOTES, 'UTF-8'));
+                    if (preg_match('/<h[234][^>]*>\s*(.*?)\s*<\/h/i', $match[0], $heading)) {
+                        $title = trim(html_entity_decode(strip_tags($heading[1]), ENT_QUOTES, 'UTF-8'));
+                    }
+                    $items = marketing_extract_accordion_items('<ul class="accordion">'.$match[2].'</ul>');
+                    $section = marketing_render_faq_section_html($title, $items);
+
+                    return $section !== '' ? $section : $match[0];
+                },
+                $body
+            );
+        }
+
+        return $body;
+    }
+}
+
+if (!function_exists('marketing_strip_embedded_faq_from_body')) {
+    /**
+     * Remove inline FAQ blocks from body when structured faq[] is rendered separately.
+     *
+     * @param string $body
+     */
+    function marketing_strip_embedded_faq_from_body($body)
+    {
+        $body = (string) $body;
+        if ($body === '') {
+            return $body;
+        }
+
+        $body = preg_replace('/<section class="ymo-faq-section">[\s\S]*?<\/section>/i', '', $body);
+        $body = preg_replace(
+            '/<div class="col-lg-6">\s*<h2 class="md-headline-md mb-3">Popular questions<\/h2>\s*<div class="ymo-faq-list">[\s\S]*?<\/div>\s*<\/div>/i',
+            '',
+            $body
+        );
+
+        $patterns = array(
+            '/<h([234])[^>]*>\s*Popular questions\s*<\/h\1>\s*<ul class="accordion[^"]*">[\s\S]*?<\/ul>/i',
+            '/<h([234])[^>]*>\s*Frequently asked questions\s*<\/h\1>\s*<ul class="accordion[^"]*">[\s\S]*?<\/ul>/i',
+            '/<h([234])[^>]*>\s*POPULAR QUESTIONS\s*<\/h\1>\s*<ul class="accordion[^"]*">[\s\S]*?<\/ul>/i',
+        );
+
+        foreach ($patterns as $pattern) {
+            $body = preg_replace($pattern, '', $body);
+        }
+
+        return trim($body);
+    }
+}
     /** @param array<int, string> $items */
     function marketing_render_template_bullet_list(array $items)
     {
@@ -909,9 +1106,9 @@ if (!function_exists('marketing_build_why_faq_section')) {
             $html .= '<p class="md-body-md mb-3">'.htmlspecialchars($intro, ENT_QUOTES, 'UTF-8').'</p>';
         }
         $html .= marketing_render_template_bullet_list($bullets);
-        $html .= '</div><div class="col-lg-6"><h2 class="md-headline-md mb-3">Popular questions</h2>';
-        $html .= marketing_render_accordion_html($faqs);
-        $html .= '</div></div></div>';
+        $html .= '</div></div>';
+        $html .= marketing_render_faq_section_html('Popular questions', $faqs);
+        $html .= '</div>';
 
         return $html;
     }
