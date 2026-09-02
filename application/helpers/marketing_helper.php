@@ -1081,6 +1081,8 @@ if (!function_exists('marketing_strip_embedded_faq_from_body')) {
         return trim($body);
     }
 }
+
+if (!function_exists('marketing_render_template_bullet_list')) {
     /** @param array<int, string> $items */
     function marketing_render_template_bullet_list(array $items)
     {
