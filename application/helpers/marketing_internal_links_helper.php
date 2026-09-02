@@ -284,8 +284,9 @@ if (!function_exists('marketing_footer_extra_link_sections')) {
             }
             $links = array(
                 array(
-                    'label' => 'All '.$cfg[$city_slug]['name'].' areas',
-                    'slug'  => $cfg[$city_slug]['hub_path'],
+                    'label'    => 'All '.$cfg[$city_slug]['name'].' areas',
+                    'slug'     => $cfg[$city_slug]['hub_path'],
+                    'featured' => TRUE,
                 ),
             );
             foreach ($cfg[$city_slug]['localities'] as $loc) {
