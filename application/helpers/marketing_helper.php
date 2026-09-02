@@ -993,10 +993,80 @@ if (!function_exists('marketing_render_faq_section_html')) {
             $title = 'Popular questions';
         }
 
-        return '<section class="ymo-faq-section">'
-            .'<h2 class="ymo-faq-section__title">'.htmlspecialchars($title, ENT_QUOTES, 'UTF-8').'</h2>'
+        return '<section class="ymo-page-section ymo-faq-section">'
+            .'<h2 class="ymo-page-section__title">'.htmlspecialchars($title, ENT_QUOTES, 'UTF-8').'</h2>'
             .marketing_render_faq_cards_html($items)
             .'</section>';
+    }
+}
+
+if (!function_exists('marketing_render_pricing_section_html')) {
+    /**
+     * Transparent pricing block — matches FAQ section shell.
+     *
+     * @param array<int, array{label?:string,price?:string}> $tiers
+     */
+    function marketing_render_pricing_section_html(array $tiers)
+    {
+        if ($tiers === array()) {
+            return '';
+        }
+
+        $html = '<section class="ymo-page-section ymo-pricing-section">';
+        $html .= '<h2 class="ymo-page-section__title">Transparent pricing</h2>';
+        $html .= '<div class="ymo-page-section__panel ymo-pricing-table">';
+        $html .= '<table><thead><tr>';
+        $html .= '<th scope="col">Car type / variant</th>';
+        $html .= '<th scope="col" class="ymo-pricing-table__price">Price (from)</th>';
+        $html .= '</tr></thead><tbody>';
+
+        foreach ($tiers as $tier) {
+            if (!is_array($tier) || empty($tier['label'])) {
+                continue;
+            }
+            $html .= '<tr>';
+            $html .= '<td>'.htmlspecialchars((string) $tier['label'], ENT_QUOTES, 'UTF-8').'</td>';
+            $html .= '<td class="ymo-pricing-table__price">'.htmlspecialchars((string) ($tier['price'] ?? ''), ENT_QUOTES, 'UTF-8').'</td>';
+            $html .= '</tr>';
+        }
+
+        $html .= '</tbody></table></div>';
+        $html .= '<p class="ymo-page-section__note">Final price confirmed before service begins. No hidden charges.</p>';
+        $html .= '</section>';
+
+        return $html;
+    }
+}
+
+if (!function_exists('marketing_detach_faq_sections_from_body')) {
+    /**
+     * Move inline FAQ sections out of body so they can sit beside pricing.
+     *
+     * @param string $body
+     * @return array{body:string,faq_html:string}
+     */
+    function marketing_detach_faq_sections_from_body($body)
+    {
+        $body = (string) $body;
+        $sections = array();
+
+        if ($body !== '' && preg_match_all(
+            '/<section class="ymo-page-section ymo-faq-section">[\s\S]*?<\/section>|<section class="ymo-faq-section">[\s\S]*?<\/section>/i',
+            $body,
+            $matches
+        )) {
+            $sections = $matches[0];
+            $body = preg_replace(
+                '/<section class="ymo-page-section ymo-faq-section">[\s\S]*?<\/section>|<section class="ymo-faq-section">[\s\S]*?<\/section>/i',
+                '',
+                $body
+            );
+        }
+
+        return array(
+            'body'     => trim($body),
+            'faq_html' => implode("\n", $sections),
+        );
     }
 }
 
@@ -1061,6 +1131,7 @@ if (!function_exists('marketing_strip_embedded_faq_from_body')) {
             return $body;
         }
 
+        $body = preg_replace('/<section class="ymo-page-section ymo-faq-section">[\s\S]*?<\/section>/i', '', $body);
         $body = preg_replace('/<section class="ymo-faq-section">[\s\S]*?<\/section>/i', '', $body);
         $body = preg_replace(
             '/<div class="col-lg-6">\s*<h2 class="md-headline-md mb-3">Popular questions<\/h2>\s*<div class="ymo-faq-list">[\s\S]*?<\/div>\s*<\/div>/i',

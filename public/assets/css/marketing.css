@@ -739,6 +739,79 @@
     font-weight: 700;
 }
 
+/* Supplemental blocks — pricing + FAQ share one layout system */
+.ymo-supplement-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin: 2.5rem 0;
+}
+
+.ymo-page-section {
+    background: var(--ymo-surface-muted, #f3f4f6);
+    border-radius: 16px;
+    padding: 2rem 1.75rem;
+    margin: 0;
+}
+
+.ymo-supplement-stack .ymo-page-section {
+    margin: 0;
+}
+
+.ymo-page-section__title {
+    margin: 0 0 1.35rem;
+    font-size: 1.625rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--md-sys-color-on-surface, #1a1a1a);
+}
+
+.ymo-page-section__panel {
+    background: #fff;
+    border: 1px solid var(--md-sys-color-outline-variant, #e3e6ea);
+    border-radius: 14px;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+    overflow: hidden;
+}
+
+.ymo-page-section__note {
+    margin: 1rem 0 0;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--ymo-grey-600, #6b7280);
+}
+
+.ymo-pricing-table table {
+    width: 100%;
+    margin: 0;
+    border-collapse: collapse;
+}
+
+.ymo-pricing-table th,
+.ymo-pricing-table td {
+    padding: 0.95rem 1.35rem;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant, #e5e7eb);
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--md-sys-color-on-surface, #111827);
+    vertical-align: middle;
+}
+
+.ymo-pricing-table tr:last-child td,
+.ymo-pricing-table tr:last-child th {
+    border-bottom: 0;
+}
+
+.ymo-pricing-table thead th {
+    font-weight: 700;
+    background: #fff;
+}
+
+.ymo-pricing-table__price {
+    text-align: right;
+    white-space: nowrap;
+}
+
 /* FAQ — Popular questions card layout */
 .ymo-faq-section {
     background: var(--ymo-surface-muted, #f3f4f6);
@@ -747,6 +820,7 @@
     margin: 2.5rem 0;
 }
 
+.marketing-body .ymo-page-section,
 .marketing-body .ymo-faq-section {
     margin-left: 0;
     margin-right: 0;

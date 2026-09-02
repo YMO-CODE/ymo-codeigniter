@@ -103,10 +103,16 @@ class Pages extends Marketing_Controller
 
         $body = marketing_page_internal_links_append($path, $page, $body);
 
+        $body_faq_html = '';
+        $detached_faq = marketing_detach_faq_sections_from_body($body);
+        $body = $detached_faq['body'];
+        $body_faq_html = $detached_faq['faq_html'];
+
         $this->render_marketing($view, array(
             'page'                    => $page,
             'booking_url'             => ymo_booking_url('packages'),
             'body'                    => $body,
+            'body_faq_html'           => $body_faq_html,
             'pricing_tiers'           => isset($page['pricing_tiers']) ? $page['pricing_tiers'] : array(),
             'service_catalog'         => $service_catalog,
             'service_catalog_heading' => $service_catalog_heading,

@@ -66,15 +66,11 @@ echo ymo_marketing_render_hero(
                     <?= $body; ?>
                 </div>
             <?php endif; ?>
-            <?php if (!empty($pricing_tiers) && is_array($pricing_tiers)): ?>
-                <?php $this->load->view('marketing/partials/pricing_table', array('pricing_tiers' => $pricing_tiers)); ?>
-            <?php endif; ?>
-            <?php if (!empty($faq) && is_array($faq)): ?>
-                <?php $this->load->view('marketing/partials/faq_section', array(
-                    'title' => 'Popular questions',
-                    'items' => $faq,
-                )); ?>
-            <?php endif; ?>
+            <?php $this->load->view('marketing/partials/supplemental_sections', array(
+                'pricing_tiers' => isset($pricing_tiers) ? $pricing_tiers : array(),
+                'faq'           => isset($faq) ? $faq : array(),
+                'body_faq_html' => isset($body_faq_html) ? $body_faq_html : '',
+            )); ?>
             <div class="md-card-filled p-4 my-4">
                 <p class="md-body-md mb-3">Book your service online - same trusted team, faster scheduling.</p>
                 <div class="d-flex flex-wrap gap-2">
