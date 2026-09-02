@@ -963,11 +963,12 @@ if (!function_exists('marketing_render_faq_cards_html')) {
         }
 
         $html = '<div class="ymo-faq-list">';
-        foreach ($items as $item) {
-            $html .= '<article class="ymo-faq-card">';
-            $html .= '<h3 class="ymo-faq-card__question">'.htmlspecialchars($item['q'], ENT_QUOTES, 'UTF-8').'</h3>';
+        foreach ($items as $index => $item) {
+            $open = $index === 0 ? ' open' : '';
+            $html .= '<details class="ymo-faq-card"'.$open.'>';
+            $html .= '<summary class="ymo-faq-card__question">'.htmlspecialchars($item['q'], ENT_QUOTES, 'UTF-8').'</summary>';
             $html .= '<div class="ymo-faq-card__answer">'.$item['a'].'</div>';
-            $html .= '</article>';
+            $html .= '</details>';
         }
 
         return $html.'</div>';

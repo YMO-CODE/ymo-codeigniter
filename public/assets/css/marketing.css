@@ -770,6 +770,11 @@
 
     .ymo-supplement-grid--split .ymo-faq-card__question {
         font-size: 1.2rem;
+        padding: 1.15rem 1.25rem;
+    }
+
+    .ymo-supplement-grid--split .ymo-faq-card__answer {
+        padding: 0 1.25rem 1.15rem;
     }
 
     .ymo-supplement-grid--split .ymo-pricing-table th,
@@ -887,20 +892,57 @@
     background: #fff;
     border: 1px solid var(--md-sys-color-outline-variant, #e3e6ea);
     border-radius: 14px;
-    padding: 1.65rem 1.85rem;
     box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+    overflow: hidden;
 }
 
 .ymo-faq-card__question {
-    margin: 0 0 0.85rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0;
+    padding: 1.35rem 1.85rem;
     font-size: 1.375rem;
     font-weight: 700;
     line-height: 1.35;
     color: var(--md-sys-color-on-surface, #111827);
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+}
+
+.ymo-faq-card__question::-webkit-details-marker {
+    display: none;
+}
+
+.ymo-faq-card__question::after {
+    content: "+";
+    flex-shrink: 0;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 999px;
+    background: var(--ymo-surface-muted, #f3f4f6);
+    color: var(--md-sys-color-on-surface, #111827);
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.75rem;
+    text-align: center;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.ymo-faq-card[open] .ymo-faq-card__question::after {
+    content: "−";
+    transform: rotate(180deg);
+}
+
+.ymo-faq-card__question:hover::after {
+    background: var(--md-sys-color-surface-container-high, #e9ecef);
 }
 
 .ymo-faq-card__answer {
     margin: 0;
+    padding: 0 1.85rem 1.35rem;
     font-size: 1rem;
     line-height: 1.65;
     color: var(--ymo-grey-700, #374151);
