@@ -739,12 +739,55 @@
     font-weight: 700;
 }
 
-/* Supplemental blocks — pricing + FAQ share one layout system */
+/* Supplemental blocks — pricing + FAQ side-by-side on desktop */
+.ymo-supplement-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    margin: 2.5rem 0;
+    align-items: start;
+}
+
+.ymo-supplement-grid__col {
+    min-width: 0;
+}
+
+.ymo-supplement-grid__col--faq {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+@media (min-width: 992px) {
+    .ymo-supplement-grid--split {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        align-items: stretch;
+    }
+
+    .ymo-supplement-grid--split .ymo-supplement-grid__col .ymo-page-section {
+        height: 100%;
+    }
+
+    .ymo-supplement-grid--split .ymo-faq-card__question {
+        font-size: 1.2rem;
+    }
+
+    .ymo-supplement-grid--split .ymo-pricing-table th,
+    .ymo-supplement-grid--split .ymo-pricing-table td {
+        padding: 0.8rem 1rem;
+        font-size: 0.9375rem;
+    }
+}
+
 .ymo-supplement-stack {
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
     margin: 2.5rem 0;
+}
+
+.ymo-supplement-grid .ymo-page-section {
+    margin: 0;
 }
 
 .ymo-page-section {
