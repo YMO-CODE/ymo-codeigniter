@@ -397,8 +397,6 @@ return array(
     'the-best-car-servicing-in-wakad/' => 'affordable-car-servicing-in-wakad-pune',
     'the-best-mercedes-servicing-in-bavdhan' => 'best-car-servicing-in-bavdhan-pune-expert-care',
     'the-best-mercedes-servicing-in-bavdhan/' => 'best-car-servicing-in-bavdhan-pune-expert-care',
-    'wp-content/uploads/2023/04/logowithtext.png' => '',
-    'wp-content/uploads/2023/04/logowithtext.png/' => '',
     'ymo-car-servicing-locations-in-pune' => 'locations/pune',
     'ymo-car-servicing-locations-in-pune/' => 'locations/pune',
     'ymo-car-servicing-locations-in-pune/the-best-audi-servicing-in-viman-nagar' => 'affordable-car-services-viman-nagar-pune',

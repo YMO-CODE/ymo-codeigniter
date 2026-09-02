@@ -7,6 +7,12 @@ class Legacy extends Marketing_Controller
     public function go()
     {
         marketing_enforce_canonical_path();
+
+        if (function_exists('marketing_legacy_query_should_gone') && marketing_legacy_query_should_gone()) {
+            marketing_respond_gone();
+            return;
+        }
+
         $path = marketing_normalize_path($this->uri->uri_string());
         $resolved = marketing_resolve_page_path($path);
         if ($resolved['key'] !== '') {
@@ -30,7 +36,14 @@ class Legacy extends Marketing_Controller
                 redirect(site_url('/'), 'location', 301);
             }
             marketing_redirect_to($target, 301);
+            return;
         }
+
+        if (function_exists('marketing_should_respond_gone') && marketing_should_respond_gone($path)) {
+            marketing_respond_gone();
+            return;
+        }
+
         show_404();
     }
 }

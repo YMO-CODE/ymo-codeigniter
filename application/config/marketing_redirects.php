@@ -9,11 +9,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  */
 
 $config['marketing_redirect_prefixes'] = array(
-    'tag/'        => 'locations/pune',
-    'category/'   => 'services',
-    'galleries/'  => 'services',
-    'team/'       => 'about-us',
-    'wp-content/' => '',
+    // Prefix catch-alls removed — unlisted tag/category/gallery paths now 410 via Legacy.php.
+    // Explicit 301s live in marketing_redirects_option_a.php and marketing_consolidations.php.
 );
 
 $config['marketing_redirects_exact'] = array(

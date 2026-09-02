@@ -3,7 +3,10 @@
 Audit marketing URLs: legacy 301 sources vs canonical pages.
 
 For full index-readiness (canonical, noindex, orphans, TTFB per sitemap URL):
-  python deploy/marketing/scripts/index_readiness_audit.py
+  python3 deploy/marketing/scripts/index_readiness_audit.py
+
+For legacy WP retirement (410 vs 301, sitemap regression guard):
+  python3 deploy/marketing/scripts/legacy_retirement_audit.py
 """
 
 from __future__ import annotations
