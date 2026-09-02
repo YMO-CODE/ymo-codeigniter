@@ -93,9 +93,13 @@ class Pages extends Marketing_Controller
             }
         }
 
+        $aside_html = '';
         if ($body !== '') {
             $body = marketing_optimize_content_images($body);
             $body = marketing_body_fix_heading_order($body);
+            $detached_about = marketing_detach_about_faq_row_from_body($body);
+            $body = $detached_about['body'];
+            $aside_html = $detached_about['aside_html'];
             $page_faq = isset($page['faq']) && is_array($page['faq']) ? $page['faq'] : array();
             if ($page_faq !== array()) {
                 $body = marketing_strip_embedded_faq_from_body($body);
@@ -116,6 +120,7 @@ class Pages extends Marketing_Controller
             'booking_url'             => ymo_booking_url('packages'),
             'body'                    => $body,
             'body_faq_html'           => $body_faq_html,
+            'aside_html'              => isset($aside_html) ? $aside_html : '',
             'pricing_tiers'           => isset($page['pricing_tiers']) ? $page['pricing_tiers'] : array(),
             'service_catalog'         => $service_catalog,
             'service_catalog_heading' => $service_catalog_heading,

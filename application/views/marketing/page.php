@@ -70,6 +70,7 @@ echo ymo_marketing_render_hero(
                 'pricing_tiers' => isset($pricing_tiers) ? $pricing_tiers : array(),
                 'faq'           => isset($faq) ? $faq : array(),
                 'body_faq_html' => isset($body_faq_html) ? $body_faq_html : '',
+                'aside_html'    => isset($aside_html) ? $aside_html : '',
             )); ?>
             <div class="md-card-filled p-4 my-4">
                 <p class="md-body-md mb-3">Book your service online - same trusted team, faster scheduling.</p>

@@ -1039,6 +1039,67 @@ if (!function_exists('marketing_render_pricing_section_html')) {
     }
 }
 
+if (!function_exists('marketing_render_content_section_html')) {
+    /**
+     * Grey section + white panel for prose content (e.g. About YMO beside FAQ).
+     *
+     * @param string $title
+     * @param string $inner_html Safe HTML fragment
+     */
+    function marketing_render_content_section_html($title, $inner_html)
+    {
+        $title = trim((string) $title);
+        $inner_html = trim((string) $inner_html);
+        if ($title === '' || $inner_html === '') {
+            return '';
+        }
+
+        return '<section class="ymo-page-section ymo-content-panel">'
+            .'<h2 class="ymo-page-section__title">'.htmlspecialchars($title, ENT_QUOTES, 'UTF-8').'</h2>'
+            .'<div class="ymo-page-section__panel ymo-content-panel__body">'.$inner_html.'</div>'
+            .'</section>';
+    }
+}
+
+if (!function_exists('marketing_detach_about_faq_row_from_body')) {
+    /**
+     * Move About YMO + inline FAQ row into supplemental aside + faq[].
+     *
+     * @param string $body
+     * @return array{body:string,aside_html:string}
+     */
+    function marketing_detach_about_faq_row_from_body($body)
+    {
+        $body = (string) $body;
+        if ($body === '' || stripos($body, 'About YMO') === FALSE) {
+            return array('body' => $body, 'aside_html' => '');
+        }
+
+        if (!preg_match(
+            '/<div class="ymo-content-section[^"]*">\s*<div class="row g-4 g-lg-5">\s*<div class="col-lg-6">\s*'
+            .'<h2 class="md-headline-md mb-3">About YMO<\/h2>([\s\S]*?)<\/div>\s*<div class="col-lg-6">[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/i',
+            $body,
+            $matches
+        )) {
+            return array('body' => $body, 'aside_html' => '');
+        }
+
+        $aside_html = marketing_render_content_section_html('About YMO', $matches[1]);
+        $body = preg_replace(
+            '/<div class="ymo-content-section[^"]*">\s*<div class="row g-4 g-lg-5">\s*<div class="col-lg-6">\s*'
+            .'<h2 class="md-headline-md mb-3">About YMO<\/h2>[\s\S]*?<\/div>\s*<div class="col-lg-6">[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/i',
+            '',
+            $body,
+            1
+        );
+
+        return array(
+            'body'       => trim($body),
+            'aside_html' => $aside_html,
+        );
+    }
+}
+
 if (!function_exists('marketing_detach_faq_sections_from_body')) {
     /**
      * Move inline FAQ sections out of body so they can sit beside pricing.

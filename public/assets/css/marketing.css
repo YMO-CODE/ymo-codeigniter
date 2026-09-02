@@ -860,6 +860,28 @@
     white-space: nowrap;
 }
 
+.ymo-content-panel__body {
+    padding: 1.35rem 1.85rem;
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--ymo-grey-700, #374151);
+}
+
+.ymo-content-panel__body p {
+    margin: 0 0 0.85rem;
+}
+
+.ymo-content-panel__body p:last-child {
+    margin-bottom: 0;
+}
+
+@media (min-width: 992px) {
+    .ymo-supplement-grid--split .ymo-content-panel__body {
+        padding: 1.15rem 1.25rem;
+        font-size: 0.9375rem;
+    }
+}
+
 /* FAQ — Popular questions card layout */
 .ymo-faq-section {
     background: var(--ymo-surface-muted, #f3f4f6);
