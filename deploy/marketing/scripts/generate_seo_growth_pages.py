@@ -16,7 +16,7 @@ def locality_page(slug, title, meta, h1, qa, city, loc_slug, loc_label, landmark
     faq = [
         (
             f"What is the cost of car servicing in {loc_label}?",
-            f"Complete car servicing in {loc_label} starts from ₹1,999 at YMO. We share upfront estimates before work begins.",
+            f"Complete car servicing in {loc_label} starts from ₹2,499 at YMO. We share upfront estimates before work begins.",
         ),
         (
             f"Do you offer free pick-up in {loc_label}?",
@@ -37,7 +37,7 @@ def locality_page(slug, title, meta, h1, qa, city, loc_slug, loc_label, landmark
         f"YMO picks up your car, services it at our workshop, and returns it when done - with WhatsApp updates and photos throughout.</p></div>"
         f'<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">Services in {loc_label}</h2>'
         f'<p class="md-body-md mb-3">From periodic maintenance to specialist repairs - one booking, free pick-up, transparent pricing.</p>'
-        f'<ul class="md-body-md"><li class="mb-2">Complete car servicing from ₹1,999</li>'
+        f'<ul class="md-body-md"><li class="mb-2">Complete car servicing from ₹2,499</li>'
         f'<li class="mb-2">AC repair and gas recharge</li><li class="mb-2">Brake inspection and replacement</li>'
         f'<li class="mb-2">Denting and painting from ₹3,000 per panel</li>'
         f'<li class="mb-2">Interior deep cleaning from ₹2,500</li>'
@@ -146,7 +146,7 @@ def main():
         '<div class="col-md-6 col-lg-3"><div class="md-card-elevated h-100"><span class="mi mi-xl md-icon-primary">engineering</span>'
         '<h3 class="md-title-md mt-3 mb-2">Expert technicians</h3><p class="md-body-md mb-0">Trained mechanics for Maruti, Hyundai, Tata, and premium brands.</p></div></div>'
         '<div class="col-md-6 col-lg-3"><div class="md-card-elevated h-100"><span class="mi mi-xl md-icon-primary">payments</span>'
-        '<h3 class="md-title-md mt-3 mb-2">Upfront pricing</h3><p class="md-body-md mb-0">Clear estimates from ₹1,999 - no surprise add-ons at billing.</p></div></div>'
+        '<h3 class="md-title-md mt-3 mb-2">Upfront pricing</h3><p class="md-body-md mb-0">Clear estimates from ₹2,499 - no surprise add-ons at billing.</p></div></div>'
         '<div class="col-md-6 col-lg-3"><div class="md-card-elevated h-100"><span class="mi mi-xl md-icon-primary">local_shipping</span>'
         '<h3 class="md-title-md mt-3 mb-2">Free pick-up</h3><p class="md-body-md mb-0">We collect and return your car across Vijay Nagar, Palasia, Bhawarkua, and more.</p></div></div>'
         '<div class="col-md-6 col-lg-3"><div class="md-card-elevated h-100"><span class="mi mi-xl md-icon-primary">schedule</span>'
@@ -158,7 +158,7 @@ def main():
     pages.append(
         f"""    'locations/indore' => array(
         'title'            => 'Car Servicing in Indore - Your Mechanic Online',
-        'meta_description' => 'Affordable car servicing in Indore - Vijay Nagar, Palasia, Bhawarkua, AB Road, Nipania. Denting, AC repair, periodic service from ₹1,999 with free pick-up.',
+        'meta_description' => 'Affordable car servicing in Indore - Vijay Nagar, Palasia, Bhawarkua, AB Road, Nipania. Denting, AC repair, periodic service from ₹2,499 with free pick-up.',
         'h1'               => 'Car servicing in Indore',
         'intro'            => 'Professional car care and transparent pricing for Indore drivers.',
         'quick_answer'     => 'Your Mechanic Online is among the best car service providers in Indore, offering affordable denting, painting, AC repair, periodic servicing, and free pick-up/drop with transparent pricing.',
@@ -169,7 +169,7 @@ def main():
         'service_catalog_heading' => 'Car services in Indore',
         'updated_at'       => '{TODAY}',
         'faq'              => array(
-            array('q' => 'What is the cost of car servicing in Indore?', 'a' => 'Car servicing in Indore starts from ₹1,999 for periodic maintenance. YMO shares upfront estimates for denting, AC repair, and other jobs before starting work.'),
+            array('q' => 'What is the cost of car servicing in Indore?', 'a' => 'Car servicing in Indore starts from ₹2,499 for periodic maintenance. YMO shares upfront estimates for denting, AC repair, and other jobs before starting work.'),
             array('q' => 'Do you provide same-day car service in Indore?', 'a' => 'Yes. Most maintenance and repair jobs are completed the same day. Book online or call +91-7744-065904.'),
             array('q' => 'Which areas in Indore do you serve?', 'a' => 'We serve Vijay Nagar, Palasia, Bhawarkua, AB Road, Nipania, Deoguradia, Rau, Scheme 54, and surrounding Indore areas with free pick-up and drop.'),
         ),
@@ -204,7 +204,7 @@ def main():
         '<div class="col-md-6 col-lg-3"><div class="md-card-elevated h-100"><span class="mi mi-xl md-icon-primary">engineering</span>'
         '<h3 class="md-title-md mt-3 mb-2">Expert technicians</h3><p class="md-body-md mb-0">Modern diagnostic equipment and trained mechanics for all brands.</p></div></div>'
         '<div class="col-md-6 col-lg-3"><div class="md-card-elevated h-100"><span class="mi mi-xl md-icon-primary">payments</span>'
-        '<h3 class="md-title-md mt-3 mb-2">Transparent pricing</h3><p class="md-body-md mb-0">Upfront estimates from ₹1,999 - know the cost before we start.</p></div></div>'
+        '<h3 class="md-title-md mt-3 mb-2">Transparent pricing</h3><p class="md-body-md mb-0">Upfront estimates from ₹2,499 - know the cost before we start.</p></div></div>'
         '<div class="col-md-6 col-lg-3"><div class="md-card-elevated h-100"><span class="mi mi-xl md-icon-primary">local_shipping</span>'
         '<h3 class="md-title-md mt-3 mb-2">Free pick-up</h3><p class="md-body-md mb-0">We collect and return your car across College Road, Nashik Road, and Panchavati.</p></div></div>'
         '<div class="col-md-6 col-lg-3"><div class="md-card-elevated h-100"><span class="mi mi-xl md-icon-primary">auto_fix_high</span>'
@@ -216,7 +216,7 @@ def main():
     pages.append(
         f"""    'locations/nashik' => array(
         'title'            => 'Car Servicing in Nashik - Your Mechanic Online',
-        'meta_description' => 'Expert car servicing in Nashik - College Road, Nashik Road, Panchavati, Dwarka, Uday Nagar. Free pick-up, AC repair, denting from ₹1,999.',
+        'meta_description' => 'Expert car servicing in Nashik - College Road, Nashik Road, Panchavati, Dwarka, Uday Nagar. Free pick-up, AC repair, denting from ₹2,499.',
         'h1'               => 'Car servicing in Nashik',
         'intro'            => 'Expert car care and repairs for Nashik drivers with free pick-up.',
         'quick_answer'     => 'Your Mechanic Online provides expert car servicing and repairs in Nashik with trained mechanics, transparent pricing, and doorstep pick-up across College Road, Nashik Road, Uday Nagar, and surrounding areas.',
@@ -240,9 +240,9 @@ def main():
         locality_page(
             "car-servicing-in-vijay-nagar-indore",
             "Car Servicing in Vijay Nagar, Indore | YMO",
-            "Car service in Vijay Nagar Indore from ₹1,999. Free pick-up, AC repair, denting, periodic maintenance. Book YMO online.",
+            "Car service in Vijay Nagar Indore from ₹2,499. Free pick-up, AC repair, denting, periodic maintenance. Book YMO online.",
             "Car servicing in Vijay Nagar, Indore",
-            "YMO offers car servicing in Vijay Nagar, Indore from ₹1,999 with free pick-up, expert mechanics, and transparent pricing.",
+            "YMO offers car servicing in Vijay Nagar, Indore from ₹2,499 with free pick-up, expert mechanics, and transparent pricing.",
             "indore",
             "vijay_nagar",
             "Vijay Nagar",
@@ -254,9 +254,9 @@ def main():
         locality_page(
             "car-servicing-in-palasia-indore",
             "Car Servicing in Palasia, Indore | YMO",
-            "Trusted car servicing in Palasia Indore. Periodic service, AC repair, denting from ₹1,999 with free doorstep pick-up.",
+            "Trusted car servicing in Palasia Indore. Periodic service, AC repair, denting from ₹2,499 with free doorstep pick-up.",
             "Car servicing in Palasia, Indore",
-            "Expert car servicing in Palasia, Indore with free pick-up, same-day options, and upfront pricing from ₹1,999.",
+            "Expert car servicing in Palasia, Indore with free pick-up, same-day options, and upfront pricing from ₹2,499.",
             "indore",
             "palasia",
             "Palasia",
@@ -268,7 +268,7 @@ def main():
         locality_page(
             "car-servicing-in-bhawarkua-indore",
             "Car Servicing in Bhawarkua, Indore | YMO",
-            "Affordable car service in Bhawarkua Indore. Free pick-up, AC repair, denting, complete servicing from ₹1,999.",
+            "Affordable car service in Bhawarkua Indore. Free pick-up, AC repair, denting, complete servicing from ₹2,499.",
             "Car servicing in Bhawarkua, Indore",
             "Affordable car servicing in Bhawarkua, Indore - periodic maintenance, AC, brakes, and body work with free pick-up.",
             "indore",
@@ -282,9 +282,9 @@ def main():
         locality_page(
             "car-servicing-in-ab-road-indore",
             "Car Servicing on AB Road, Indore | YMO",
-            "Car service on AB Road Indore - free pick-up, periodic servicing from ₹1,999, AC repair and denting.",
+            "Car service on AB Road Indore - free pick-up, periodic servicing from ₹2,499, AC repair and denting.",
             "Car servicing on AB Road, Indore",
-            "Car servicing along AB Road, Indore with free pick-up, expert mechanics, and transparent pricing from ₹1,999.",
+            "Car servicing along AB Road, Indore with free pick-up, expert mechanics, and transparent pricing from ₹2,499.",
             "indore",
             "ab_road",
             "AB Road",
@@ -296,7 +296,7 @@ def main():
         locality_page(
             "car-servicing-in-nipania-indore",
             "Car Servicing in Nipania, Indore | YMO",
-            "Car service in Nipania Indore and surrounding townships. Free pick-up, complete servicing from ₹1,999.",
+            "Car service in Nipania Indore and surrounding townships. Free pick-up, complete servicing from ₹2,499.",
             "Car servicing in Nipania, Indore",
             "Doorstep car servicing in Nipania, Indore - periodic service, AC repair, and denting with free pick-up and drop.",
             "indore",
@@ -311,7 +311,7 @@ def main():
         locality_page(
             "car-servicing-in-college-road-nashik",
             "Car Servicing on College Road, Nashik | YMO",
-            "Car service on College Road Nashik from ₹1,999. Free pick-up, AC repair, denting, periodic maintenance.",
+            "Car service on College Road Nashik from ₹2,499. Free pick-up, AC repair, denting, periodic maintenance.",
             "Car servicing on College Road, Nashik",
             "Expert car servicing on College Road, Nashik with free pick-up, transparent pricing, and same-day options.",
             "nashik",
@@ -325,9 +325,9 @@ def main():
         locality_page(
             "car-servicing-in-nashik-road",
             "Car Servicing on Nashik Road | YMO",
-            "Car service on Nashik Road from ₹1,999. Free pick-up near the railway station area, AC repair, and denting.",
+            "Car service on Nashik Road from ₹2,499. Free pick-up near the railway station area, AC repair, and denting.",
             "Car servicing on Nashik Road, Nashik",
-            "Affordable car servicing on Nashik Road with free pick-up, expert mechanics, and upfront pricing from ₹1,999.",
+            "Affordable car servicing on Nashik Road with free pick-up, expert mechanics, and upfront pricing from ₹2,499.",
             "nashik",
             "nashik_road",
             "Nashik Road",
@@ -339,7 +339,7 @@ def main():
         locality_page(
             "car-servicing-in-panchavati-nashik",
             "Car Servicing in Panchavati, Nashik | YMO",
-            "Car service in Panchavati Nashik from ₹1,999. Free pick-up, periodic service, AC repair, and denting.",
+            "Car service in Panchavati Nashik from ₹2,499. Free pick-up, periodic service, AC repair, and denting.",
             "Car servicing in Panchavati, Nashik",
             "Trusted car servicing in Panchavati, Nashik - free pick-up, same-day service, and transparent pricing.",
             "nashik",
@@ -353,9 +353,9 @@ def main():
         locality_page(
             "car-servicing-in-dwarka-nashik",
             "Car Servicing in Dwarka, Nashik | YMO",
-            "Car service in Dwarka Nashik from ₹1,999. Free pick-up, complete servicing, AC repair, and denting.",
+            "Car service in Dwarka Nashik from ₹2,499. Free pick-up, complete servicing, AC repair, and denting.",
             "Car servicing in Dwarka, Nashik",
-            "Doorstep car servicing in Dwarka, Nashik with free pick-up and expert mechanics from ₹1,999.",
+            "Doorstep car servicing in Dwarka, Nashik with free pick-up and expert mechanics from ₹2,499.",
             "nashik",
             "dwarka",
             "Dwarka",
@@ -367,7 +367,7 @@ def main():
         locality_page(
             "car-servicing-in-uday-nagar-nashik",
             "Car Servicing in Uday Nagar, Nashik | YMO",
-            "Car service in Uday Nagar Nashik from ₹1,999. Free pick-up, periodic maintenance, AC and brake repair.",
+            "Car service in Uday Nagar Nashik from ₹2,499. Free pick-up, periodic maintenance, AC and brake repair.",
             "Car servicing in Uday Nagar, Nashik",
             "Affordable car servicing in Uday Nagar, Nashik - free pick-up, transparent pricing, and expert technicians.",
             "nashik",
@@ -457,17 +457,17 @@ def main():
             "Maruti Swift Service Cost in Pune (2026 Guide) | YMO",
             "How much does a Maruti Swift service cost in Pune in 2026? Complete guide to periodic service prices, what is included, and how to book.",
             "How much does a Maruti Swift service cost in Pune? (2026 guide)",
-            "Maruti Swift periodic service in Pune starts from ₹1,999 at YMO - covering oil change, filters, brake cleaning, AC filter, wash, and free pick-up.",
-            '<div class="ymo-content-section mb-5"><p class="md-body-md">If you own a Maruti Swift in Pune, you have probably wondered what a fair price for periodic service looks like in 2026. Authorised service centres charge a premium; local garages may skip steps. YMO sits in the middle - workshop-quality work from ₹1,999 with free pick-up.</p>'
+            "Maruti Swift periodic service in Pune starts from ₹2,499 at YMO - covering oil change, filters, brake cleaning, AC filter, wash, and free pick-up.",
+            '<div class="ymo-content-section mb-5"><p class="md-body-md">If you own a Maruti Swift in Pune, you have probably wondered what a fair price for periodic service looks like in 2026. Authorised service centres charge a premium; local garages may skip steps. YMO sits in the middle - workshop-quality work from ₹2,499 with free pick-up.</p>'
             '<h2 class="md-headline-md mt-4 mb-3">Typical Swift service costs in Pune (2026)</h2>'
             '<div class="table-responsive"><table class="table md-body-md"><thead><tr><th>Service type</th><th>Indicative cost</th></tr></thead><tbody>'
-            "<tr><td>Basic periodic service (oil, filters, wash)</td><td>₹1,999</td></tr>"
+            "<tr><td>Basic periodic service (oil, filters, wash)</td><td>₹2,499</td></tr>"
             "<tr><td>AC service / gas recharge</td><td>₹1,500 – ₹4,000</td></tr>"
             "<tr><td>Brake pad replacement</td><td>₹2,000 – ₹5,000</td></tr>"
             "<tr><td>Denting (per panel)</td><td>From ₹3,000</td></tr>"
             "</tbody></table></div>"
             "<p class=\"md-body-md mt-3\">Prices vary by mileage, parts needed, and Swift variant (petrol vs CNG). YMO always shares an estimate before starting.</p>"
-            '<h2 class="md-headline-md mt-4 mb-3">What is included in YMO\'s ₹1,999 package?</h2>'
+            '<h2 class="md-headline-md mt-4 mb-3">What is included in YMO\'s ₹2,499 package?</h2>'
             "<ul class=\"md-body-md\"><li>Engine oil and filter change</li><li>Air filter check/replace if needed</li>"
             "<li>Brake cleaning and greasing</li><li>AC filter cleaning</li><li>Coolant and fluid top-ups</li>"
             "<li>Interior vacuum and exterior wash</li><li>Free pick-up and delivery across Pune</li></ul>"
@@ -498,13 +498,13 @@ def main():
         (
             "blog/hyundai-i20-service-cost-pune",
             "Hyundai i20 Service Cost in Pune: What to Expect | YMO",
-            "Hyundai i20 service cost in Pune - periodic maintenance prices, DCT/CVT notes, and what YMO includes from ₹1,999.",
+            "Hyundai i20 service cost in Pune - periodic maintenance prices, DCT/CVT notes, and what YMO includes from ₹2,499.",
             "Hyundai i20 service cost in Pune: what to expect",
-            "Hyundai i20 periodic service in Pune starts from ₹1,999 at YMO with oil change, filters, brake check, wash, and free pick-up.",
+            "Hyundai i20 periodic service in Pune starts from ₹2,499 at YMO with oil change, filters, brake check, wash, and free pick-up.",
             '<div class="ymo-content-section mb-5"><p class="md-body-md">The Hyundai i20 is one of Pune\'s most popular hatchbacks. Service costs depend on petrol vs diesel, manual vs iMT/DCT, and whether you are due for a major interval at 40,000 km or beyond.</p>'
             '<h2 class="md-headline-md mt-4 mb-3">i20 service price guide</h2>'
             '<div class="table-responsive"><table class="table md-body-md"><thead><tr><th>Service</th><th>From</th></tr></thead><tbody>'
-            "<tr><td>Periodic service</td><td>₹1,999</td></tr>"
+            "<tr><td>Periodic service</td><td>₹2,499</td></tr>"
             "<tr><td>AC service</td><td>₹1,500+</td></tr>"
             "<tr><td>DCT fluid check (if applicable)</td><td>On inspection</td></tr>"
             "</tbody></table></div>"
@@ -532,9 +532,9 @@ def main():
         (
             "blog/complete-vs-periodic-car-service",
             "Complete vs Periodic Car Service: What's the Difference? | YMO",
-            "Complete car service vs periodic service explained - what each includes, when you need which, and costs in Pune from ₹1,999.",
+            "Complete car service vs periodic service explained - what each includes, when you need which, and costs in Pune from ₹2,499.",
             "Complete car service vs periodic service: what's the difference?",
-            "Periodic service covers oil, filters, and basic checks from ₹1,999; complete service adds deeper inspection items based on mileage and manufacturer schedule.",
+            "Periodic service covers oil, filters, and basic checks from ₹2,499; complete service adds deeper inspection items based on mileage and manufacturer schedule.",
             '<div class="ymo-content-section mb-5"><p class="md-body-md">Manufacturers use different names - periodic, general, comprehensive - which confuses drivers. Here is a practical breakdown for Pune car owners.</p>'
             '<h2 class="md-headline-md mt-4 mb-3">Periodic service (every 10,000 km / 12 months)</h2>'
             "<ul class=\"md-body-md\"><li>Engine oil and filter</li><li>Air filter inspection</li>"
@@ -552,7 +552,7 @@ def main():
             "Doorstep Car Service in Pune: Is It Worth It? | YMO",
             "Doorstep car service in Pune - compare mechanic-at-home vs pick-up/workshop model. When YMO full-service approach saves money and quality.",
             "Doorstep car service in Pune: is it worth it?",
-            "Basic doorstep checks suit minor jobs; YMO pick-up + workshop model is worth it for AC, denting, brakes, and complete servicing from ₹1,999.",
+            "Basic doorstep checks suit minor jobs; YMO pick-up + workshop model is worth it for AC, denting, brakes, and complete servicing from ₹2,499.",
             '<div class="ymo-content-section mb-5"><p class="md-body-md">Doorstep car services promise convenience - a mechanic visits your home. But convenience alone does not fix every problem. Here is an honest comparison.</p>'
             '<h2 class="md-headline-md mt-4 mb-3">When doorstep works</h2>'
             "<ul class=\"md-body-md\"><li>Battery jump-start or minor fuse issues</li>"
@@ -574,7 +574,7 @@ def main():
         '<div class="ymo-content-section mb-5"><p class="md-body-md">Searching for doorstep car service in Pune often means choosing between a mechanic who visits your home and a service that collects your car for proper workshop repair. Here is a factual comparison of what YMO offers versus a typical mechanic-at-home model.</p></div>'
         '<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">Pick-up + workshop vs mechanic at home</h2>'
         '<div class="table-responsive"><table class="table md-body-md"><thead><tr><th>Capability</th><th>YMO (pick-up + workshop)</th><th>Mechanic at home</th></tr></thead><tbody>'
-        "<tr><td>Periodic service from ₹1,999</td><td>Yes</td><td>Sometimes (limited)</td></tr>"
+        "<tr><td>Periodic service from ₹2,499</td><td>Yes</td><td>Sometimes (limited)</td></tr>"
         "<tr><td>Free pick-up and drop</td><td>Yes</td><td>N/A (they come to you)</td></tr>"
         "<tr><td>AC gas recharge &amp; leak repair</td><td>Full workshop equipment</td><td>Portable kit only</td></tr>"
         "<tr><td>Denting &amp; painting</td><td>Yes - booth and colour match</td><td>Not possible at home</td></tr>"

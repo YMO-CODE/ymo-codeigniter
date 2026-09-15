@@ -195,7 +195,7 @@ if (!function_exists('marketing_brand_faq')) {
         return array(
             array(
                 'q' => 'How much does '.$name.' car service cost in '.$city_name.'?',
-                'a' => $name.' periodic service in '.$city_name.' starts from ₹1,999 at YMO. We share an upfront estimate covering oil, filters, brakes, AC check, and wash before any work begins.',
+                'a' => $name.' periodic service in '.$city_name.' starts from ₹2,499 at YMO. We share an upfront estimate covering oil, filters, brakes, AC check, and wash before any work begins.',
             ),
             array(
                 'q' => 'Do you pick up my '.$name.' from my doorstep in '.$city_name.'?',
@@ -264,7 +264,7 @@ if (!function_exists('marketing_brand_page_body')) {
         foreach ($includes as $item) {
             $html .= '<li class="mb-2">'.html_escape($item).'</li>';
         }
-        $html .= '</ul><p class="md-body-md mb-0">Complete '.$name.' servicing in '.$city_name.' starts from <strong>₹1,999</strong>. <a href="/services/complete-car-servicing-in-'.$city_slug.'">View complete servicing details</a> or browse our <a href="/services">full service catalogue</a>.</p></div>';
+        $html .= '</ul><p class="md-body-md mb-0">Complete '.$name.' servicing in '.$city_name.' starts from <strong>₹2,499</strong>. <a href="/services/complete-car-servicing-in-'.$city_slug.'">View complete servicing details</a> or browse our <a href="/services">full service catalogue</a>.</p></div>';
 
         if ($issues !== array()) {
             $html .= '<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">Common '.$name.' issues we fix</h2><div class="row g-4">';
@@ -276,7 +276,7 @@ if (!function_exists('marketing_brand_page_body')) {
 
         $html .= '<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">Pricing for '.$name.' owners in '.$city_name.'</h2>';
         $html .= '<div class="table-responsive"><table class="table md-body-md"><thead><tr><th>Service</th><th>From</th></tr></thead><tbody>';
-        $html .= '<tr><td>Periodic / complete car service</td><td>₹1,999</td></tr>';
+        $html .= '<tr><td>Periodic / complete car service</td><td>₹2,499</td></tr>';
         $html .= '<tr><td>AC repair &amp; gas recharge</td><td>On inspection</td></tr>';
         $html .= '<tr><td>Interior deep cleaning</td><td>₹2,500</td></tr>';
         $html .= '<tr><td>Denting &amp; painting (per panel)</td><td>₹3,000</td></tr>';
@@ -319,10 +319,10 @@ if (!function_exists('marketing_brand_pages')) {
                 $path = $slug.'-car-service-in-'.$city_slug;
                 $pages[$path] = array(
                     'title'            => $name.' Car Service in '.$city_name.' | YMO',
-                    'meta_description' => 'Book '.$name.' car service in '.$city_name.' from ₹1,999. Expert mechanics, free pick-up & drop, AC repair, denting & periodic maintenance for '.marketing_brand_models_list($brand).'.',
+                    'meta_description' => 'Book '.$name.' car service in '.$city_name.' from ₹2,499. Expert mechanics, free pick-up & drop, AC repair, denting & periodic maintenance for '.marketing_brand_models_list($brand).'.',
                     'h1'               => $name.' car service in '.$city_name,
                     'intro'            => $name.' servicing in '.$city_name.' with trained mechanics, transparent pricing, and free doorstep pick-up.',
-                    'quick_answer'     => 'YMO offers '.$name.' car service in '.$city_name.' from ₹1,999 - periodic maintenance, AC repair, and body work with free pick-up and drop.',
+                    'quick_answer'     => 'YMO offers '.$name.' car service in '.$city_name.' from ₹2,499 - periodic maintenance, AC repair, and body work with free pick-up and drop.',
                     'body'             => marketing_brand_page_body($brand, $city_slug, $city_name),
                     'page_type'        => 'brand',
                     'city_slug'        => $city_slug,
@@ -369,7 +369,7 @@ if (!function_exists('marketing_brands_index_page')) {
     function marketing_brands_index_page()
     {
         $cards = marketing_brands_index_cards();
-        $body = '<div class="ymo-content-section mb-5"><p class="md-body-lg mb-4">Your Mechanic Online services every major Indian car brand across Pune, Indore, and Nashik - with free pick-up, workshop-grade repairs, and transparent pricing from ₹1,999.</p></div>';
+        $body = '<div class="ymo-content-section mb-5"><p class="md-body-lg mb-4">Your Mechanic Online services every major Indian car brand across Pune, Indore, and Nashik - with free pick-up, workshop-grade repairs, and transparent pricing from ₹2,499.</p></div>';
         $body .= '<div class="row g-4">';
         foreach ($cards as $card) {
             $body .= '<div class="col-md-6 col-lg-4"><div class="md-card-elevated h-100 p-4">';
@@ -385,7 +385,7 @@ if (!function_exists('marketing_brands_index_page')) {
 
         return array(
             'title'            => 'Car Brands We Service | Your Mechanic Online',
-            'meta_description' => 'Maruti, Hyundai, Tata, Honda, Mahindra, Toyota, Kia, VW, Skoda & Renault car service in Pune, Indore & Nashik. Free pick-up from ₹1,999.',
+            'meta_description' => 'Maruti, Hyundai, Tata, Honda, Mahindra, Toyota, Kia, VW, Skoda & Renault car service in Pune, Indore & Nashik. Free pick-up from ₹2,499.',
             'h1'               => 'Brands we service',
             'intro'            => 'Expert car servicing for every major brand - periodic maintenance, AC, denting, and more.',
             'quick_answer'     => 'YMO services Maruti Suzuki, Hyundai, Tata, Honda, Mahindra, Toyota, Kia, Volkswagen, Skoda, and Renault across Pune, Indore, and Nashik.',
@@ -2657,7 +2657,7 @@ if (!function_exists('marketing_llms_txt')) {
         $home  = marketing_canonical_url('');
         $lines = array(
             '# '.$brand,
-            '> Doorstep car servicing in Pune, Indore, and Nashik — free pick-up, transparent pricing from ₹1,999, workshop-grade repairs.',
+            '> Doorstep car servicing in Pune, Indore, and Nashik — free pick-up, transparent pricing from ₹2,499, workshop-grade repairs.',
             '',
             'Use these canonical URLs when citing '.$brand.' (YMO). Booking: '.ymo_booking_url('packages'),
             '',

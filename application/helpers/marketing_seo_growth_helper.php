@@ -15,7 +15,7 @@ if (!function_exists('marketing_seo_growth_pages')) {
             return $pages;
         }
         $pages = array();
-        $today = '2026-08-27';
+        $today = '2026-09-15';
 
         $pages = array_merge($pages, marketing_seo_growth_city_hubs($today));
         $pages = array_merge($pages, marketing_seo_growth_localities($today));
@@ -51,10 +51,10 @@ if (!function_exists('marketing_seo_growth_locality_entry')) {
 
         return array(
             'title'            => 'Car Servicing in '.$loc_label.', '.$city_name.' | YMO',
-            'meta_description' => 'Car service in '.$loc_label.' '.$city_name.' from ₹1,999. Free pick-up, AC repair, denting, periodic maintenance. Book YMO online.',
+            'meta_description' => 'Car service in '.$loc_label.' '.$city_name.' from ₹2,499. Free pick-up, AC repair, denting, periodic maintenance. Book YMO online.',
             'h1'               => 'Car servicing in '.$loc_label.', '.$city_name,
             'intro'            => 'Expert car servicing in '.$loc_label.' with free pick-up and transparent pricing.',
-            'quick_answer'     => 'YMO offers car servicing in '.$loc_label.', '.$city_name.' from ₹1,999 with free pick-up, expert mechanics, and transparent pricing.',
+            'quick_answer'     => 'YMO offers car servicing in '.$loc_label.', '.$city_name.' from ₹2,499 with free pick-up, expert mechanics, and transparent pricing.',
             'body'             => $body,
             'page_type'        => 'locality',
             'city_slug'        => $city,
@@ -63,7 +63,7 @@ if (!function_exists('marketing_seo_growth_locality_entry')) {
             'service_catalog'  => TRUE,
             'updated_at'       => $today,
             'faq'              => array(
-                array('q' => 'What is the cost of car servicing in '.$loc_label.'?', 'a' => 'Complete car servicing in '.$loc_label.' starts from ₹1,999 at YMO. We share upfront estimates before work begins.'),
+                array('q' => 'What is the cost of car servicing in '.$loc_label.'?', 'a' => 'Complete car servicing in '.$loc_label.' starts from ₹2,499 at YMO. We share upfront estimates before work begins.'),
                 array('q' => 'Do you offer free pick-up in '.$loc_label.'?', 'a' => 'Yes. We collect your car from '.$loc_label.' and surrounding '.$city_name.' areas at no extra charge.'),
                 array('q' => 'Which services are available in '.$loc_label.'?', 'a' => 'Periodic service, AC repair, brake work, denting, polishing, interior cleaning, and engine diagnostics.'),
             ),
@@ -106,7 +106,7 @@ if (!function_exists('marketing_seo_growth_city_hubs')) {
         return array(
             'locations/indore' => array(
                 'title'            => 'Car Servicing in Indore - Your Mechanic Online',
-                'meta_description' => 'Affordable car servicing in Indore - Vijay Nagar, Palasia, Bhawarkua, AB Road, Nipania. Denting, AC repair, periodic service from ₹1,999 with free pick-up.',
+                'meta_description' => 'Affordable car servicing in Indore - Vijay Nagar, Palasia, Bhawarkua, AB Road, Nipania. Denting, AC repair, periodic service from ₹2,499 with free pick-up.',
                 'h1'               => 'Car servicing in Indore',
                 'intro'            => 'Professional car care and transparent pricing for Indore drivers.',
                 'quick_answer'     => 'Your Mechanic Online is among the best car service providers in Indore, offering affordable denting, painting, AC repair, periodic servicing, and free pick-up/drop with transparent pricing.',
@@ -117,7 +117,7 @@ if (!function_exists('marketing_seo_growth_city_hubs')) {
                 'service_catalog_heading' => 'Car services in Indore',
                 'updated_at'       => $today,
                 'faq'              => array(
-                    array('q' => 'What is the cost of car servicing in Indore?', 'a' => 'Car servicing in Indore starts from ₹1,999 for periodic maintenance. YMO shares upfront estimates for denting, AC repair, and other jobs before starting work.'),
+                    array('q' => 'What is the cost of car servicing in Indore?', 'a' => 'Car servicing in Indore starts from ₹2,499 for periodic maintenance. YMO shares upfront estimates for denting, AC repair, and other jobs before starting work.'),
                     array('q' => 'Do you provide same-day car service in Indore?', 'a' => 'Yes. Most maintenance and repair jobs are completed the same day. Book online or call +91-7744-065904.'),
                     array('q' => 'Which areas in Indore do you serve?', 'a' => 'We serve Vijay Nagar, Palasia, Bhawarkua, AB Road, Nipania, Deoguradia, Rau, Scheme 54, and surrounding Indore areas with free pick-up and drop.'),
                 ),
@@ -126,7 +126,7 @@ if (!function_exists('marketing_seo_growth_city_hubs')) {
             ),
             'locations/nashik' => array(
                 'title'            => 'Car Servicing in Nashik - Your Mechanic Online',
-                'meta_description' => 'Expert car servicing in Nashik - College Road, Nashik Road, Panchavati, Dwarka, Uday Nagar. Free pick-up, AC repair, denting from ₹1,999.',
+                'meta_description' => 'Expert car servicing in Nashik - College Road, Nashik Road, Panchavati, Dwarka, Uday Nagar. Free pick-up, AC repair, denting from ₹2,499.',
                 'h1'               => 'Car servicing in Nashik',
                 'intro'            => 'Expert car care and repairs for Nashik drivers with free pick-up.',
                 'quick_answer'     => 'Your Mechanic Online provides expert car servicing and repairs in Nashik with trained mechanics, transparent pricing, and doorstep pick-up across College Road, Nashik Road, Uday Nagar, and surrounding areas.',
@@ -172,7 +172,7 @@ if (!function_exists('marketing_seo_growth_why_city_block')) {
             .'<div class="col-md-6 col-lg-3"><div class="md-card-elevated h-100"><span class="mi mi-xl md-icon-primary">engineering</span>'
             .'<h3 class="md-title-md mt-3 mb-2">Expert technicians</h3><p class="md-body-md mb-0">Trained mechanics for all major brands.</p></div></div>'
             .'<div class="col-md-6 col-lg-3"><div class="md-card-elevated h-100"><span class="mi mi-xl md-icon-primary">payments</span>'
-            .'<h3 class="md-title-md mt-3 mb-2">Upfront pricing</h3><p class="md-body-md mb-0">Clear estimates from ₹1,999.</p></div></div>'
+            .'<h3 class="md-title-md mt-3 mb-2">Upfront pricing</h3><p class="md-body-md mb-0">Clear estimates from ₹2,499.</p></div></div>'
             .'<div class="col-md-6 col-lg-3"><div class="md-card-elevated h-100"><span class="mi mi-xl md-icon-primary">local_shipping</span>'
             .'<h3 class="md-title-md mt-3 mb-2">Free pick-up</h3><p class="md-body-md mb-0">We collect and return your car across '.$city_name.'.</p></div></div>'
             .'<div class="col-md-6 col-lg-3"><div class="md-card-elevated h-100"><span class="mi mi-xl md-icon-primary">schedule</span>'
@@ -198,7 +198,7 @@ if (!function_exists('marketing_pune_locality_defs')) {
             array('car-servicing-in-kothrud-pune', 'kothrud', 'Kothrud', 'Paud Road, Karve Road, and Vanaz corner', 'Kothrud\'s dense traffic and hill climbs make regular servicing essential — YMO covers all of Kothrud with free pick-up.', array('Warje', 'Bavdhan', 'Aundh')),
             array('car-servicing-in-warje-pune', 'warje', 'Warje', 'Warje Bridge, Mumbai–Bangalore Highway, Karvenagar, and Chandani Chowk', 'Warje and Karvenagar residents rely on YMO for periodic service, AC repair, and denting with free pick-up — close to our Hinjewadi workshop corridor.', array('Kothrud', 'Bavdhan', 'Hinjewadi')),
             array('car-servicing-in-hadapsar-pune', 'hadapsar', 'Hadapsar', 'Magarpatta Road, Solapur Road, and Hadapsar Gaothan', 'Hadapsar and Magarpatta commuters trust YMO for periodic maintenance, AC gas recharge, and brake work.', array('Magarpatta', 'Kharadi', 'Viman Nagar')),
-            array('car-servicing-in-magarpatta-pune', 'magarpatta', 'Magarpatta', 'Magarpatta City, Cybercity, and Hadapsar flyover', 'Magarpatta City residents get free pick-up and transparent pricing from ₹1,999 for complete car servicing.', array('Hadapsar', 'Kharadi', 'Wagholi')),
+            array('car-servicing-in-magarpatta-pune', 'magarpatta', 'Magarpatta', 'Magarpatta City, Cybercity, and Hadapsar flyover', 'Magarpatta City residents get free pick-up and transparent pricing from ₹2,499 for complete car servicing.', array('Hadapsar', 'Kharadi', 'Wagholi')),
             array('car-servicing-in-wagholi-pune', 'wagholi', 'Wagholi', 'Wagholi Chowk, Lonikand Road, and airport road belt', 'Wagholi\'s growing townships rely on YMO for full workshop capability — not just a quick home visit.', array('Kharadi', 'Hadapsar', 'Viman Nagar')),
             array('car-servicing-in-pimple-saudagar-pune', 'pimple_saudagar', 'Pimple Saudagar', 'Kate Puram Chowk, Wakad link road, and Sangvi', 'Pimple Saudagar and Sangvi areas get free pick-up and expert mechanics for all major car brands.', array('Wakad', 'Baner', 'Aundh')),
             array('car-servicing-in-kalyani-nagar-pune', 'kalyani_nagar', 'Kalyani Nagar', 'North Avenue, Central Avenue, and Nagar Road', 'Kalyani Nagar professionals choose YMO for luxury and everyday cars with WhatsApp updates throughout service.', array('Viman Nagar', 'Koregaon Park', 'Kharadi')),
@@ -214,13 +214,13 @@ if (!function_exists('marketing_seo_growth_pune_localities')) {
         foreach (marketing_pune_locality_defs() as $def) {
             list($slug, $loc_slug, $label, $landmarks, $extra, $nearby) = $def;
             $page = marketing_seo_growth_locality_entry($slug, 'pune', $loc_slug, $label, $landmarks, $extra, $today);
-            $page['title'] = 'Car Service in '.$label.', Pune | From ₹1,999 | Free Pickup | YMO';
+            $page['title'] = 'Car Service in '.$label.', Pune | From ₹2,499 | Free Pickup | YMO';
             $page['meta_title'] = $page['title'];
-            $page['meta_description'] = 'Car service in '.$label.', Pune from ₹1,999. Free doorstep pick-up, AC repair, denting & periodic maintenance. Book Your Mechanic Online — 4.8★ rated.';
+            $page['meta_description'] = 'Car service in '.$label.', Pune from ₹2,499. Free doorstep pick-up, AC repair, denting & periodic maintenance. Book Your Mechanic Online — 4.8★ rated.';
             $page['h1'] = 'Car service in '.$label.', Pune';
             $page['locality_label'] = $label;
             $page['faq'] = array(
-                array('q' => 'How much does car servicing cost in '.$label.'?', 'a' => 'Complete car servicing in '.$label.' starts from ₹1,999 at YMO. We share upfront estimates before work begins.'),
+                array('q' => 'How much does car servicing cost in '.$label.'?', 'a' => 'Complete car servicing in '.$label.' starts from ₹2,499 at YMO. We share upfront estimates before work begins.'),
                 array('q' => 'Does YMO offer free pick-up in '.$label.'?', 'a' => 'Yes. We collect your car from '.$label.' and surrounding Pune areas at no extra charge.'),
                 array('q' => 'How long does a car service take?', 'a' => 'Most periodic services are completed within 4–6 hours with WhatsApp photo updates throughout.'),
                 array('q' => 'Which services are available in '.$label.'?', 'a' => 'Periodic service, AC repair, brake work, denting, polishing, interior cleaning, and engine diagnostics.'),
@@ -273,7 +273,7 @@ if (!function_exists('marketing_seo_growth_pune_hub_body')) {
             .'<div class="col-md-6 col-lg-3"><div class="md-card-elevated h-100"><span class="mi mi-xl md-icon-primary">engineering</span>'
             .'<h3 class="md-title-md mt-3 mb-2">Expert technicians</h3><p class="md-body-md mb-0">Trained mechanics for periodic service, engine work, brakes, AC, and body repair.</p></div></div>'
             .'<div class="col-md-6 col-lg-3"><div class="md-card-elevated h-100"><span class="mi mi-xl md-icon-primary">payments</span>'
-            .'<h3 class="md-title-md mt-3 mb-2">Competitive prices</h3><p class="md-body-md mb-0">Upfront estimates from ₹1,999 on servicing, denting, and polishing in Pune.</p></div></div>'
+            .'<h3 class="md-title-md mt-3 mb-2">Competitive prices</h3><p class="md-body-md mb-0">Upfront estimates from ₹2,499 on servicing, denting, and polishing in Pune.</p></div></div>'
             .'<div class="col-md-6 col-lg-3"><div class="md-card-elevated h-100"><span class="mi mi-xl md-icon-primary">local_shipping</span>'
             .'<h3 class="md-title-md mt-3 mb-2">Free pick-up &amp; drop</h3><p class="md-body-md mb-0">We collect and return your car across all 15 Pune neighbourhoods we serve.</p></div></div>'
             .'<div class="col-md-6 col-lg-3"><div class="md-card-elevated h-100"><span class="mi mi-xl md-icon-primary">schedule</span>'
@@ -353,7 +353,7 @@ if (!function_exists('marketing_seo_growth_localities')) {
                 'indira_nagar',
                 'Indira Nagar',
                 'Indira Nagar Nagar parishad roads, College Road connector, and nearby schools',
-                'Indira Nagar is a family-oriented colony where most households depend on a single car for school drops and city errands. YMO\'s online booking and free pick-up suit owners who want periodic service from ₹1,999 without spending a Saturday morning at a garage near College Road.',
+                'Indira Nagar is a family-oriented colony where most households depend on a single car for school drops and city errands. YMO\'s online booking and free pick-up suit owners who want periodic service from ₹2,499 without spending a Saturday morning at a garage near College Road.',
             ),
             array(
                 'car-servicing-in-cidco-nashik',
@@ -391,6 +391,23 @@ if (!function_exists('marketing_seo_growth_localities')) {
         $pages = array();
         foreach ($defs as $d) {
             $pages[$d[0]] = marketing_seo_growth_locality_entry($d[0], $d[1], $d[2], $d[3], $d[4], $d[5], $today);
+        }
+        $handoff = marketing_content_handoff_data();
+        if (!empty($handoff['localities']) && is_array($handoff['localities'])) {
+            foreach ($handoff['localities'] as $slug => $override) {
+                if (!isset($pages[$slug]) || !is_array($override)) {
+                    continue;
+                }
+                foreach (array('title', 'meta_description', 'h1', 'intro', 'body') as $field) {
+                    if (isset($override[$field])) {
+                        $pages[$slug][$field] = $override[$field];
+                    }
+                }
+                if (isset($override['intro'])) {
+                    $pages[$slug]['quick_answer'] = $override['intro'];
+                }
+                $pages[$slug]['updated_at'] = $today;
+            }
         }
         return $pages;
     }
@@ -445,11 +462,11 @@ if (!function_exists('marketing_seo_growth_blog_posts')) {
                 'Maruti Swift Service Cost in Pune (2026 Guide) | YMO',
                 'How much does a Maruti Swift service cost in Pune in 2026? Complete guide to periodic service prices and what is included.',
                 'How much does a Maruti Swift service cost in Pune? (2026 guide)',
-                'Maruti Swift periodic service in Pune starts from ₹1,999 at YMO - oil change, filters, brake cleaning, AC filter, wash, and free pick-up.',
-                '<div class="ymo-content-section mb-5"><p class="md-body-md">If you own a Maruti Swift in Pune, authorised centres charge a premium while local garages may skip steps. YMO offers workshop-quality work from ₹1,999 with free pick-up.</p>'
+                'Maruti Swift periodic service in Pune starts from ₹2,499 at YMO - oil change, filters, brake cleaning, AC filter, wash, and free pick-up.',
+                '<div class="ymo-content-section mb-5"><p class="md-body-md">If you own a Maruti Swift in Pune, authorised centres charge a premium while local garages may skip steps. YMO offers workshop-quality work from ₹2,499 with free pick-up.</p>'
                 .'<h2 class="md-headline-md mt-4 mb-3">Typical Swift service costs (2026)</h2>'
                 .'<div class="table-responsive"><table class="table md-body-md"><thead><tr><th>Service</th><th>From</th></tr></thead><tbody>'
-                .'<tr><td>Periodic service</td><td>₹1,999</td></tr><tr><td>AC gas recharge</td><td>₹1,500 – ₹4,000</td></tr>'
+                .'<tr><td>Periodic service</td><td>₹2,499</td></tr><tr><td>AC gas recharge</td><td>₹1,500 – ₹4,000</td></tr>'
                 .'<tr><td>Brake pads</td><td>₹2,000 – ₹5,000</td></tr></tbody></table></div>'
                 .'<p class="md-body-md mt-3"><a href="/maruti-suzuki-car-service-in-pune">Maruti service in Pune</a> · '
                 .'<a href="/services/complete-car-servicing-in-pune">Complete servicing</a></p></div>',
@@ -471,9 +488,9 @@ if (!function_exists('marketing_seo_growth_blog_posts')) {
             array(
                 'blog/hyundai-i20-service-cost-pune',
                 'Hyundai i20 Service Cost in Pune: What to Expect | YMO',
-                'Hyundai i20 service cost in Pune - periodic maintenance prices and what YMO includes from ₹1,999.',
+                'Hyundai i20 service cost in Pune - periodic maintenance prices and what YMO includes from ₹2,499.',
                 'Hyundai i20 service cost in Pune: what to expect',
-                'Hyundai i20 periodic service in Pune starts from ₹1,999 at YMO with oil change, filters, brake check, wash, and free pick-up.',
+                'Hyundai i20 periodic service in Pune starts from ₹2,499 at YMO with oil change, filters, brake check, wash, and free pick-up.',
                 '<div class="ymo-content-section mb-5"><p class="md-body-md">The i20 is one of Pune\'s most popular hatchbacks. Costs depend on petrol vs diesel and mileage interval.</p>'
                 .'<p class="md-body-md"><a href="/hyundai-car-service-in-pune">Hyundai car service in Pune</a></p></div>',
             ),
@@ -492,7 +509,7 @@ if (!function_exists('marketing_seo_growth_blog_posts')) {
                 'Complete vs Periodic Car Service: What\'s the Difference? | YMO',
                 'Complete car service vs periodic service explained - what each includes and when you need which.',
                 'Complete car service vs periodic service: what\'s the difference?',
-                'Periodic service covers oil, filters, and basic checks from ₹1,999; complete service adds deeper items based on mileage.',
+                'Periodic service covers oil, filters, and basic checks from ₹2,499; complete service adds deeper items based on mileage.',
                 '<div class="ymo-content-section mb-5"><p class="md-body-md">Periodic service (every 10,000 km) covers oil, filters, brake cleaning, and wash. Complete/major service at 40,000 km+ adds spark plugs, belts, and deeper inspection.</p>'
                 .'<p class="md-body-md"><a href="/services/complete-car-servicing-in-pune">Book complete car servicing in Pune</a></p></div>',
             ),
@@ -522,7 +539,53 @@ if (!function_exists('marketing_seo_growth_blog_posts')) {
                 'view'             => 'marketing/page',
             );
         }
+        $handoff = marketing_content_handoff_data();
+        if (!empty($handoff['blog']) && is_array($handoff['blog'])) {
+            foreach ($handoff['blog'] as $slug => $entry) {
+                if (!is_array($entry)) {
+                    continue;
+                }
+                $pages[$slug] = array(
+                    'title'            => $entry['title'],
+                    'meta_description' => $entry['meta_description'],
+                    'h1'               => $entry['h1'],
+                    'intro'            => $entry['intro'],
+                    'quick_answer'     => $entry['intro'],
+                    'body'             => $entry['body'],
+                    'page_type'        => 'blog',
+                    'city_slug'        => !empty($entry['city_slug']) ? $entry['city_slug'] : 'pune',
+                    'updated_at'       => $today,
+                    'og_image'         => '/assets/img/marketing/revslider/main/image_01.jpg',
+                    'view'             => 'marketing/page',
+                );
+            }
+        }
         return $pages;
+    }
+}
+
+if (!function_exists('marketing_content_handoff_data')) {
+    /** @return array{blog:array<string,array>,localities:array<string,array>} */
+    function marketing_content_handoff_data()
+    {
+        static $data = NULL;
+        if ($data !== NULL) {
+            return $data;
+        }
+        $path = APPPATH.'config/marketing_content_handoff.php';
+        if (!is_file($path)) {
+            $data = array('blog' => array(), 'localities' => array());
+            return $data;
+        }
+        $loaded = require $path;
+        $data = is_array($loaded) ? $loaded : array('blog' => array(), 'localities' => array());
+        if (!isset($data['blog']) || !is_array($data['blog'])) {
+            $data['blog'] = array();
+        }
+        if (!isset($data['localities']) || !is_array($data['localities'])) {
+            $data['localities'] = array();
+        }
+        return $data;
     }
 }
 
@@ -533,7 +596,7 @@ if (!function_exists('marketing_seo_growth_comparison_page')) {
         $body = '<div class="ymo-content-section mb-5"><p class="md-body-md">Searching for doorstep car service often means choosing between a mechanic at your home and a service that collects your car for proper workshop repair. Here is a factual comparison.</p></div>'
             .'<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">Pick-up + workshop vs mechanic at home</h2>'
             .'<div class="table-responsive"><table class="table md-body-md"><thead><tr><th>Capability</th><th>YMO</th><th>Mechanic at home</th></tr></thead><tbody>'
-            .'<tr><td>Periodic service from ₹1,999</td><td>Yes</td><td>Sometimes</td></tr>'
+            .'<tr><td>Periodic service from ₹2,499</td><td>Yes</td><td>Sometimes</td></tr>'
             .'<tr><td>Free pick-up and drop</td><td>Yes</td><td>N/A</td></tr>'
             .'<tr><td>AC gas recharge &amp; leak repair</td><td>Workshop equipment</td><td>Portable kit only</td></tr>'
             .'<tr><td>Denting &amp; painting</td><td>Yes</td><td>Not at home</td></tr>'

@@ -43,7 +43,7 @@ if (!function_exists('marketing_service_pricing_tiers')) {
     {
         $defaults = array(
             'complete-car-servicing' => array(
-                array('label' => 'Hatchback (Maruti Swift, i10, etc.)', 'price' => '₹1,999'),
+                array('label' => 'Hatchback (Maruti Swift, i10, etc.)', 'price' => '₹2,499'),
                 array('label' => 'Sedan (Honda City, Verna, etc.)', 'price' => '₹2,499'),
                 array('label' => 'SUV / MUV', 'price' => '₹2,999'),
                 array('label' => 'Luxury / Premium', 'price' => 'On request'),
@@ -92,7 +92,7 @@ if (!function_exists('marketing_service_pricing_tiers')) {
             ),
             'lube' => array(
                 array('label' => 'Express oil + filter (hatchback)', 'price' => '₹1,499'),
-                array('label' => 'Oil + filter (sedan)', 'price' => '₹1,999'),
+                array('label' => 'Oil + filter (sedan)', 'price' => '₹2,499'),
                 array('label' => 'Synthetic oil change (SUV)', 'price' => '₹2,499'),
                 array('label' => 'Luxury / Premium', 'price' => 'On request'),
             ),
@@ -110,7 +110,7 @@ if (!function_exists('marketing_locality_pricing_tiers')) {
     function marketing_locality_pricing_tiers()
     {
         return array(
-            array('label' => 'Complete car servicing', 'price' => 'From ₹1,999'),
+            array('label' => 'Complete car servicing', 'price' => 'From ₹2,499'),
             array('label' => 'AC repair and gas recharge', 'price' => 'From ₹999'),
             array('label' => 'Brake inspection and replacement', 'price' => 'From ₹499'),
             array('label' => 'Denting and painting (per panel)', 'price' => 'From ₹3,000'),
@@ -134,7 +134,7 @@ if (!function_exists('marketing_service_faqs')) {
 
         $map = array(
             'complete-car-servicing' => array(
-                array('q' => 'How much does a complete car service cost at YMO in '.$city_name.'?', 'a' => 'Complete car servicing at YMO starts from ₹1,999. The final price depends on your car\'s make, model, and oil type. You\'ll get a transparent estimate before we begin.'),
+                array('q' => 'How much does a complete car service cost at YMO in '.$city_name.'?', 'a' => 'Complete car servicing at YMO starts from ₹2,499. The final price depends on your car\'s make, model, and oil type. You\'ll get a transparent estimate before we begin.'),
                 array('q' => 'Does YMO offer free pickup for car servicing?', 'a' => $pickup),
                 array('q' => 'How long does a full car service take?', 'a' => 'Most periodic services are completed within 4–6 hours. We send WhatsApp updates with photos throughout the process.'),
                 array('q' => 'Do you service all car brands?', 'a' => $brands),
@@ -241,7 +241,7 @@ if (!function_exists('marketing_enrich_page')) {
                 $page['pricing_tiers'] = $tiers;
             }
             $desc_map = array(
-                'complete-car-servicing' => 'Periodic car maintenance from ₹1,999 in '.$city_name.'. Oil & filter change, brake check, AC filter, free pick-up. Book online with YMO.',
+                'complete-car-servicing' => 'Periodic car maintenance from ₹2,499 in '.$city_name.'. Oil & filter change, brake check, AC filter, free pick-up. Book online with YMO.',
                 'ac'                     => 'AC gas recharge, compressor check & filter cleaning in '.$city_name.' from ₹999. Free pick-up included. Book online with YMO.',
                 'brakes'                   => 'Brake pad replacement & inspection in '.$city_name.' from ₹499. Free pick-up, upfront pricing. Book online with YMO.',
                 'denting'                  => 'Panel denting & painting from ₹3,000 in '.$city_name.'. Colour match, paint warranty, free pick-up. Book with YMO.',
@@ -261,7 +261,7 @@ if (!function_exists('marketing_enrich_page')) {
 
         if ($path === '') {
             $page['meta_title'] = 'Car Servicing in Pune, Indore & Nashik | Free Pickup | YMO';
-            $page['meta_description'] = 'Expert car servicing and repair in Pune, Indore & Nashik. Free doorstep pickup, transparent pricing from ₹1,999. 4.8★ rated. Book online with YMO.';
+            $page['meta_description'] = 'Expert car servicing and repair in Pune, Indore & Nashik. Free doorstep pickup, transparent pricing from ₹2,499. 4.8★ rated. Book online with YMO.';
         }
 
         if (!empty($page['page_type']) && $page['page_type'] === 'locality' && !empty($page['locality_label'])) {
@@ -281,7 +281,7 @@ if (!function_exists('marketing_enrich_page')) {
 
         if ($path === 'locations/pune') {
             $page['meta_title'] = 'Car Servicing in Pune | Free Pickup | YMO';
-            $page['meta_description'] = 'Book car servicing in Pune — Baner, Wakad, Hinjewadi, Kharadi, Kothrud, Viman Nagar & 14 areas. Doorstep pick-up from ₹1,999. 4.8★ rated.';
+            $page['meta_description'] = 'Book car servicing in Pune — Baner, Wakad, Hinjewadi, Kharadi, Kothrud, Viman Nagar & 14 areas. Doorstep pick-up from ₹2,499. 4.8★ rated.';
         }
 
         if ($path === 'locations/indore') {

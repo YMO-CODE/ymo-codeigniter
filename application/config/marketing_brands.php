@@ -30,7 +30,7 @@ return array(
         'brand_name'    => 'Hyundai',
         'slug'          => 'hyundai',
         'common_models' => array('i20', 'Creta', 'Venue', 'Verna', 'Grand i10', 'Alcazar'),
-        'intro_copy'    => 'Hyundai owners in Pune, Indore, and Nashik trust YMO for i20, Creta, and Venue servicing - factory-grade diagnostics, transparent pricing from ₹1,999, and workshop capability for denting, AC, and engine work.',
+        'intro_copy'    => 'Hyundai owners in Pune, Indore, and Nashik trust YMO for i20, Creta, and Venue servicing - factory-grade diagnostics, transparent pricing from ₹2,499, and workshop capability for denting, AC, and engine work.',
         'service_includes' => array(
             'Synthetic or semi-synthetic oil change per Hyundai schedule',
             'Brake disc/pad inspection and fluid top-up',

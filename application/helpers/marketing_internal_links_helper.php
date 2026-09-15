@@ -193,7 +193,13 @@ if (!function_exists('marketing_blog_hub_body')) {
         $posts = array(
             array('blog/best-oil-change-service-in-pune', 'Best oil change service in Pune'),
             array('blog/car-ac-gas-recharge-cost-pune-2026', 'AC gas recharge cost guide'),
+            array('blog/car-ac-service-cost-pune', 'AC service cost in Pune'),
+            array('blog/car-denting-painting-cost-indore', 'Denting & painting cost in Indore'),
+            array('blog/car-denting-painting-cost-nashik', 'Denting & painting cost in Nashik'),
             array('blog/car-denting-painting-cost-pune', 'Denting & painting cost guide'),
+            array('blog/car-service-cost-indore', 'Car service cost in Indore'),
+            array('blog/car-service-cost-nashik', 'Car service cost in Nashik'),
+            array('blog/car-service-cost-pune', 'Car service cost in Pune'),
             array('blog/complete-vs-periodic-car-service', 'Complete vs periodic service'),
             array('blog/doorstep-car-service-pune-worth-it', 'Doorstep car service guide'),
             array('blog/hyundai-i20-service-cost-pune', 'Hyundai i20 service cost'),

@@ -20,7 +20,7 @@ CITIES = {
         "neighborhoods": ["Deoguradia", "Vijay Nagar", "Palasia", "Bhawarkua", "Rau", "Scheme 54", "AB Road", "Nipania"],
         "quick_answer": "Your Mechanic Online is among the best car service providers in Indore, offering affordable denting, painting, AC repair, periodic servicing, and free pick-up/drop with transparent pricing.",
         "faq": [
-            ("What is the cost of car servicing in Indore?", "Car servicing in Indore starts from ₹1999 for periodic maintenance. YMO shares upfront estimates for denting, AC repair, and other jobs before starting work."),
+            ("What is the cost of car servicing in Indore?", "Car servicing in Indore starts from ₹2,499 for periodic maintenance. YMO shares upfront estimates for denting, AC repair, and other jobs before starting work."),
             ("Do you provide same-day car service in Indore?", "Yes. Most maintenance and repair jobs are completed the same day. Book online or call +91-7744-065904."),
             ("Which areas in Indore do you serve?", "We serve Deoguradia, Vijay Nagar, Palasia, Bhawarkua, Rau, Scheme 54, AB Road, Nipania, and surrounding Indore areas with free pick-up and drop."),
         ],
@@ -39,7 +39,7 @@ CITIES = {
 }
 
 SERVICES = [
-    {"key": "complete-car-servicing", "title": "Complete Car Servicing", "slug": "services/complete-car-servicing-in-{city}", "price": 1999, "overview": "Periodic maintenance with oil and filter changes, brake cleaning, AC filter service, coolant top-up, and interior vacuum - with free pick-up and delivery."},
+    {"key": "complete-car-servicing", "title": "Complete Car Servicing", "slug": "services/complete-car-servicing-in-{city}", "price": 2499, "overview": "Periodic maintenance with oil and filter changes, brake cleaning, AC filter service, coolant top-up, and interior vacuum - with free pick-up and delivery."},
     {"key": "ac", "title": "Car Air Conditioner Servicing", "slug": "services/car-air-conditioner-servicing-in-{city}", "price": None, "overview": "AC gas recharge, leak test, compressor check, and filter cleaning for reliable cooling."},
     {"key": "brakes", "title": "Car Brake Repair", "slug": "services/car-brake-repair-in-{city}", "price": None, "overview": "Brake pads, rotors, calipers, and fluid inspection and replacement by trained technicians."},
     {"key": "denting", "title": "Car Denting And Painting", "slug": "services/car-denting-and-painting-in-{city}-3000", "price": 3000, "overview": "Panel dent repair and industry-approved paint from ₹3000 per panel with colour matching."},
