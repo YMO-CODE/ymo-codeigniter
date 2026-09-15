@@ -419,7 +419,7 @@ if (!function_exists('marketing_seo_growth_service_areas')) {
     {
         $defs = array(
             array('car-ac-repair-in-baner', 'Car AC Repair in Baner, Pune | YMO', 'Car AC repair in Baner Pune - gas recharge, leak test, compressor check. Free pick-up.', 'Car AC repair in Baner, Pune', 'pune', 'baner', 'Baner', 'ac', "Baner's summer heat makes working AC essential. YMO includes leak detection, compressor inspection, and gas recharge at our workshop - not a portable kit at your parking spot. See <a href=\"/the-best-car-servicing-in-baner\">car servicing in Baner</a> and <a href=\"/maruti-suzuki-car-service-in-pune\">Maruti service in Pune</a>."),
-            array('car-denting-and-painting-in-wakad', 'Car Denting & Painting in Wakad, Pune | YMO', 'Car denting and painting in Wakad from ₹3,000/panel. Colour matching and free pick-up.', 'Car denting & painting in Wakad, Pune', 'pune', 'wakad', 'Wakad', 'denting', "Wakad's tight parking means dents are common. YMO picks up your car for panel repair and respray in a controlled booth - from ₹3,000 per panel. See <a href=\"/affordable-car-servicing-in-wakad-pune\">car servicing in Wakad</a>."),
+            array('car-denting-and-painting-in-wakad', 'Car Denting & Painting in Wakad, Pune | YMO', 'Car denting and painting in Wakad from ₹4,500/panel. Colour matching and free pick-up.', 'Car denting & painting in Wakad, Pune', 'pune', 'wakad', 'Wakad', 'denting', "Wakad's tight parking means dents are common. YMO picks up your car for panel repair and respray in a controlled booth - from ₹4,500 per panel. See <a href=\"/affordable-car-servicing-in-wakad-pune\">car servicing in Wakad</a>."),
             array('car-polishing-in-hinjewadi', 'Car Polishing in Hinjewadi, Pune | YMO', '3-stage car polishing in Hinjewadi from ₹6,500. Restore gloss and remove fine scratches.', 'Car polishing in Hinjewadi, Pune', 'pune', 'hinjewadi', 'Hinjewadi', 'polishing', "Hinjewadi IT corridor cars face sun exposure and fine scratches. YMO's 3-stage polish from ₹6,500 requires proper workshop equipment. Pair with <a href=\"/best-car-services-hinjewadi-pune\">car servicing in Hinjewadi</a>."),
             array('car-brake-repair-in-aundh', 'Car Brake Repair in Aundh, Pune | YMO', 'Car brake repair in Aundh - pads, rotors, fluid check. Free pick-up.', 'Car brake repair in Aundh, Pune', 'pune', 'aundh', 'Aundh', 'brakes', "Squealing brakes on Aundh hill roads need proper inspection. YMO covers pad replacement, rotor assessment, and fluid checks at our workshop. See <a href=\"/car-servicing-in-aundh\">car servicing in Aundh</a>."),
             array('car-ac-repair-in-viman-nagar', 'Car AC Repair in Viman Nagar, Pune | YMO', 'Car AC repair in Viman Nagar - gas recharge, compressor service. Free pick-up.', 'Car AC repair in Viman Nagar, Pune', 'pune', 'viman_nagar', 'Viman Nagar', 'ac', "Viman Nagar summer heat strains AC systems. YMO provides full diagnostics with pick-up from residential complexes. See <a href=\"/hyundai-car-service-in-pune\">Hyundai service in Pune</a>."),
@@ -497,10 +497,10 @@ if (!function_exists('marketing_seo_growth_blog_posts')) {
             array(
                 'blog/car-denting-painting-cost-pune',
                 'Car Denting & Painting Cost in Pune - Price per Panel | YMO',
-                'Car denting and painting cost in Pune - per panel pricing from ₹3,000 and factors that affect quotes.',
+                'Car denting and painting cost in Pune - per panel pricing from ₹4,500 and factors that affect quotes.',
                 'Car denting & painting cost in Pune - price per panel explained',
-                'Car denting and painting in Pune starts from ₹3,000 per panel at YMO with colour matching and free pick-up.',
-                '<div class="ymo-content-section mb-5"><p class="md-body-md">YMO denting and painting starts from ₹3,000 per panel with pick-up so you do not wait at the garage.</p>'
+                'Car denting and painting in Pune starts from ₹4,500 per panel at YMO with colour matching and free pick-up.',
+                '<div class="ymo-content-section mb-5"><p class="md-body-md">YMO denting and painting starts from ₹4,500 per panel with pick-up so you do not wait at the garage.</p>'
                 .'<p class="md-body-md"><a href="/services/car-denting-and-painting-3000">Denting in Pune</a> · '
                 .'<a href="/car-denting-and-painting-in-wakad">Denting in Wakad</a></p></div>',
             ),

@@ -279,7 +279,7 @@ if (!function_exists('marketing_brand_page_body')) {
         $html .= '<tr><td>Periodic / complete car service</td><td>₹2,499</td></tr>';
         $html .= '<tr><td>AC repair &amp; gas recharge</td><td>On inspection</td></tr>';
         $html .= '<tr><td>Interior deep cleaning</td><td>₹2,500</td></tr>';
-        $html .= '<tr><td>Denting &amp; painting (per panel)</td><td>₹3,000</td></tr>';
+        $html .= '<tr><td>Denting &amp; painting (per panel)</td><td>₹4,500</td></tr>';
         $html .= '<tr><td>3-stage rubbing &amp; polishing</td><td>₹6,500</td></tr>';
         $html .= '</tbody></table></div>';
         $html .= '<p class="md-body-md mb-0">All prices are indicative - we confirm the exact estimate for your '.$name.' before starting work. <a href="/locations/'.$city_slug.'">See all areas we serve in '.$city_name.'</a>.</p></div>';

@@ -171,9 +171,9 @@ return array(
             'icon'          => 'auto_fix_high',
             'pune_slug'     => 'services/car-denting-and-painting-3000',
             'city_slug'     => 'services/car-denting-and-painting-in-{city}-3000',
-            'price_from'    => 3000,
+            'price_from'    => 4500,
             'og_image'      => '/assets/img/marketing/2022/03/car-painting-in-pune.jpg',
-            'overview'      => 'Panel dent repair and industry-approved paint from ₹3000 per panel with colour matching.',
+            'overview'      => 'Panel dent repair and industry-approved paint from ₹4,500 per panel with colour matching.',
         ),
         array(
             'key'           => 'engine',

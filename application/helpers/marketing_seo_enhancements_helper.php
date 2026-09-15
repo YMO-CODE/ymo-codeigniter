@@ -61,7 +61,7 @@ if (!function_exists('marketing_service_pricing_tiers')) {
                 array('label' => 'Luxury / Premium', 'price' => 'On request'),
             ),
             'denting' => array(
-                array('label' => 'Single panel (dent + paint)', 'price' => '₹3,000'),
+                array('label' => 'Single panel (dent + paint)', 'price' => '₹4,500'),
                 array('label' => 'Bumper (front or rear)', 'price' => '₹3,500'),
                 array('label' => 'Full body (estimate)', 'price' => 'From ₹18,000'),
                 array('label' => 'Luxury / Premium', 'price' => 'On request'),
@@ -113,7 +113,7 @@ if (!function_exists('marketing_locality_pricing_tiers')) {
             array('label' => 'Complete car servicing', 'price' => 'From ₹2,499'),
             array('label' => 'AC repair and gas recharge', 'price' => 'From ₹999'),
             array('label' => 'Brake inspection and replacement', 'price' => 'From ₹499'),
-            array('label' => 'Denting and painting (per panel)', 'price' => 'From ₹3,000'),
+            array('label' => 'Denting and painting (per panel)', 'price' => 'From ₹4,500'),
             array('label' => 'Interior deep cleaning', 'price' => 'From ₹2,500'),
             array('label' => '3-stage rubbing and polishing', 'price' => 'From ₹6,500'),
         );
@@ -155,7 +155,7 @@ if (!function_exists('marketing_service_faqs')) {
                 array('q' => 'Is there a warranty on brake work at YMO?', 'a' => $warranty),
             ),
             'denting' => array(
-                array('q' => 'How much does denting and painting cost at YMO?', 'a' => 'Panel denting and painting at YMO starts from ₹3,000 per panel with colour matching, anti-rust treatment, and a paint warranty. Full-body quotes are shared after inspection.'),
+                array('q' => 'How much does denting and painting cost at YMO?', 'a' => 'Panel denting and painting at YMO starts from ₹4,500 per panel with colour matching, anti-rust treatment, and a paint warranty. Full-body quotes are shared after inspection.'),
                 array('q' => 'Does YMO offer free pick-up for denting work?', 'a' => $pickup),
                 array('q' => 'How long does denting and painting take?', 'a' => 'Single-panel jobs typically take 2–3 days. Full-body repaints take longer — we give a clear timeline before work begins.'),
                 array('q' => 'Do you match the original car colour?', 'a' => 'Yes. We use industry-approved paints with colour-match processes and quality paint booth finishing.'),
@@ -244,7 +244,7 @@ if (!function_exists('marketing_enrich_page')) {
                 'complete-car-servicing' => 'Periodic car maintenance from ₹2,499 in '.$city_name.'. Oil & filter change, brake check, AC filter, free pick-up. Book online with YMO.',
                 'ac'                     => 'AC gas recharge, compressor check & filter cleaning in '.$city_name.' from ₹999. Free pick-up included. Book online with YMO.',
                 'brakes'                   => 'Brake pad replacement & inspection in '.$city_name.' from ₹499. Free pick-up, upfront pricing. Book online with YMO.',
-                'denting'                  => 'Panel denting & painting from ₹3,000 in '.$city_name.'. Colour match, paint warranty, free pick-up. Book with YMO.',
+                'denting'                  => 'Panel denting & painting from ₹4,500 in '.$city_name.'. Colour match, paint warranty, free pick-up. Book with YMO.',
                 'engine'                   => 'Engine diagnostics, tune-ups & repair in '.$city_name.'. Expert mechanics, free pick-up, transparent pricing. Book with YMO.',
                 'interior'                 => 'Interior deep cleaning from ₹2,500 in '.$city_name.'. Vacuum, upholstery, odour removal. Free pick-up with YMO.',
                 'polishing'                => '3-stage car rubbing & polishing from ₹6,500 in '.$city_name.'. Restore gloss, free pick-up. Book with YMO.',
