@@ -469,7 +469,7 @@ if (!function_exists('marketing_seo_growth_blog_posts')) {
                 .'<tr><td>Periodic service</td><td>₹2,499</td></tr><tr><td>AC gas recharge</td><td>₹1,500 – ₹4,000</td></tr>'
                 .'<tr><td>Brake pads</td><td>₹2,000 – ₹5,000</td></tr></tbody></table></div>'
                 .'<p class="md-body-md mt-3"><a href="/maruti-suzuki-car-service-in-pune">Maruti service in Pune</a> · '
-                .'<a href="/services/complete-car-servicing-in-pune">Complete servicing</a></p></div>',
+                .'<a href="/services/complete-car-servicing">Complete servicing</a></p></div>',
             ),
             array(
                 'blog/car-ac-gas-recharge-cost-pune-2026',
@@ -511,7 +511,7 @@ if (!function_exists('marketing_seo_growth_blog_posts')) {
                 'Complete car service vs periodic service: what\'s the difference?',
                 'Periodic service covers oil, filters, and basic checks from ₹2,499; complete service adds deeper items based on mileage.',
                 '<div class="ymo-content-section mb-5"><p class="md-body-md">Periodic service (every 10,000 km) covers oil, filters, brake cleaning, and wash. Complete/major service at 40,000 km+ adds spark plugs, belts, and deeper inspection.</p>'
-                .'<p class="md-body-md"><a href="/services/complete-car-servicing-in-pune">Book complete car servicing in Pune</a></p></div>',
+                .'<p class="md-body-md"><a href="/services/complete-car-servicing">Book complete car servicing in Pune</a></p></div>',
             ),
             array(
                 'blog/doorstep-car-service-pune-worth-it',

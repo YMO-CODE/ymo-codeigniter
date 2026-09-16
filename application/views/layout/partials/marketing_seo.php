@@ -3,9 +3,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $ci = &get_instance();
 $brand = $ci->config->item('ymo_brand_name');
 $title = isset($title) ? $title : $brand;
+$title_has_brand = stripos((string) $title, (string) $brand) !== FALSE
+    || preg_match('/(?:\||-|—)\s*YMO\s*$/iu', trim((string) $title));
 $page_title = !empty($meta_title)
     ? $meta_title
-    : (isset($title) && $title !== $brand ? $title.' - '.$brand : $title);
+    : (isset($title) && $title !== $brand && !$title_has_brand ? $title.' - '.$brand : $title);
 $description = isset($meta_description) ? $meta_description : 'Book car servicing online with '.$brand;
 $canonical = marketing_canonical_url(isset($canonical_path) ? $canonical_path : '');
 $page_meta = array(

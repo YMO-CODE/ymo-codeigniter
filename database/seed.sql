@@ -38,7 +38,7 @@ ON DUPLICATE KEY UPDATE `sort_order` = VALUES(`sort_order`);
 -- ---------------------------------------------------------------------------
 INSERT INTO `service_packages` (`id`, `name`, `slug`, `summary`, `price`, `sort_order`)
 VALUES
-    (1, 'Basic Service',     'basic-service',     'Quick health check and essential top-ups to keep your car running smoothly.',  2499.00, 10),
+    (1, 'Basic Service',     'basic-service',     'Periodic maintenance with oil and filter change, essential checks, wash, and vacuum.', 2499.00, 10),
     (2, 'Standard Service',  'standard-service',  'Comprehensive periodic maintenance - recommended every 6 months / 10,000 km.', 4999.00, 20),
     (3, 'Premium Service',   'premium-service',   'Full deep-dive servicing including AC, brakes and interior detailing.',        8499.00, 30),
     (4, 'AC Service Special','ac-service',        'Dedicated air-conditioning service - gas top-up, leak check, vent clean.',     1999.00, 40)
@@ -50,11 +50,12 @@ ON DUPLICATE KEY UPDATE
 
 INSERT INTO `service_package_features` (`package_id`, `feature_text`, `sort_order`) VALUES
     -- Basic
-    (1, 'Engine oil top-up', 10),
-    (1, 'Air filter cleaning', 20),
-    (1, 'Battery health check', 30),
-    (1, 'Tyre pressure check', 40),
-    (1, '15-point safety inspection', 50),
+    (1, 'Engine oil & filter change', 10),
+    (1, 'Air and AC filter cleaning', 20),
+    (1, 'Front and rear brake cleaning', 30),
+    (1, 'Coolant, brake fluid & battery water top-up', 40),
+    (1, 'Exterior wash + interior vacuum', 50),
+    (1, '15-point safety inspection', 60),
     -- Standard
     (2, 'Engine oil & filter change', 10),
     (2, 'Air filter replacement', 20),

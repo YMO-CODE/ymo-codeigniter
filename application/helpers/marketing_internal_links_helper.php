@@ -9,12 +9,17 @@ if (!function_exists('marketing_enforce_canonical_path')) {
     /** Redirect trailing-slash URLs to no-slash canonical (301). */
     function marketing_enforce_canonical_path()
     {
-        $ci = &get_instance();
-        $uri = (string) $ci->uri->uri_string();
-        if ($uri === '' || substr($uri, -1) !== '/') {
+        $request_uri = isset($_SERVER['REQUEST_URI']) ? (string) $_SERVER['REQUEST_URI'] : '';
+        $request_path = (string) parse_url($request_uri, PHP_URL_PATH);
+        if ($request_path === '' || $request_path === '/' || substr($request_path, -1) !== '/') {
             return;
         }
-        marketing_redirect_to(marketing_normalize_path($uri), 301);
+        $target = marketing_normalize_path($request_path);
+        $query = (string) parse_url($request_uri, PHP_URL_QUERY);
+        if ($query !== '') {
+            $target .= '?'.$query;
+        }
+        marketing_redirect_to($target, 301);
     }
 }
 
@@ -93,8 +98,18 @@ if (!function_exists('marketing_locality_internal_links_html')) {
                 .html_escape($city_name).'</a></li>';
         }
 
-        $siblings = array();
+        $featured = array(
+            'car-servicing-in-aundh' => array('car-brake-repair-in-aundh', 'Car brake repair in Aundh'),
+            'affordable-car-services-viman-nagar-pune' => array('car-ac-repair-in-viman-nagar', 'Car AC repair in Viman Nagar'),
+            'best-car-services-hinjewadi-pune' => array('car-polishing-in-hinjewadi', 'Car polishing in Hinjewadi'),
+        );
         $current = marketing_normalize_path($path);
+        if (isset($featured[$current])) {
+            $html .= '<li class="mb-2"><a href="/'.html_escape($featured[$current][0]).'">'
+                .html_escape($featured[$current][1]).'</a></li>';
+        }
+
+        $siblings = array();
         if (!empty($city['localities']) && is_array($city['localities'])) {
             foreach ($city['localities'] as $loc) {
                 if (empty($loc['slug']) || marketing_normalize_path($loc['slug']) === $current) {

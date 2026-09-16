@@ -264,7 +264,10 @@ if (!function_exists('marketing_brand_page_body')) {
         foreach ($includes as $item) {
             $html .= '<li class="mb-2">'.html_escape($item).'</li>';
         }
-        $html .= '</ul><p class="md-body-md mb-0">Complete '.$name.' servicing in '.$city_name.' starts from <strong>₹2,499</strong>. <a href="/services/complete-car-servicing-in-'.$city_slug.'">View complete servicing details</a> or browse our <a href="/services">full service catalogue</a>.</p></div>';
+        $service_path = $city_slug === 'pune'
+            ? 'services/complete-car-servicing'
+            : 'services/complete-car-servicing-in-'.$city_slug;
+        $html .= '</ul><p class="md-body-md mb-0">Complete '.$name.' servicing in '.$city_name.' starts from <strong>₹2,499</strong>. <a href="/'.$service_path.'">View complete servicing details</a> or browse our <a href="/services">full service catalogue</a>.</p></div>';
 
         if ($issues !== array()) {
             $html .= '<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">Common '.$name.' issues we fix</h2><div class="row g-4">';

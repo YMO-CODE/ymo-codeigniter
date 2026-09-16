@@ -9,7 +9,10 @@ CONFIG = ROOT / "application" / "config"
 HELPERS = ROOT / "application" / "helpers"
 
 cities = (CONFIG / "marketing_cities.php").read_text(encoding="utf-8")
-loc_slugs = re.findall(r"'slug'\s*=>\s*'([^']+)'", cities)
+loc_slugs = re.findall(
+    r"array\(\s*'label'\s*=>\s*'[^']+'\s*,\s*'slug'\s*=>\s*'([^']+)'",
+    cities,
+)
 
 sources = [
     CONFIG / "marketing_pages_data.php",

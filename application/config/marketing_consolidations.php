@@ -46,6 +46,12 @@ return array(
     'services/ceramic-coating-in-pune/' => 'services/car-rubbing-and-polishing-in-pune-6500',
     'services/car-tyre-and-wheel-services' => 'services/complete-car-servicing',
     'services/car-tyre-and-wheel-services/' => 'services/complete-car-servicing',
+    'services/complete-car-servicing-in-pune' => 'services/complete-car-servicing',
+    'services/complete-car-servicing-in-pune/' => 'services/complete-car-servicing',
+    'services/car-brake-repair-in-pune' => 'services/car-brake-repair',
+    'services/car-brake-repair-in-pune/' => 'services/car-brake-repair',
+    'services/car-denting-and-painting-in-pune-3000' => 'services/car-denting-and-painting-3000',
+    'services/car-denting-and-painting-in-pune-3000/' => 'services/car-denting-and-painting-3000',
 
     // Interior cleaning price slug update (₹2000 → ₹2500)
     'services/car-interior-cleaning-in-indore-2000' => 'services/car-interior-cleaning-in-indore-2500',

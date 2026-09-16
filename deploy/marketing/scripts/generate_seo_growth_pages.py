@@ -472,7 +472,7 @@ def main():
             "<li>Brake cleaning and greasing</li><li>AC filter cleaning</li><li>Coolant and fluid top-ups</li>"
             "<li>Interior vacuum and exterior wash</li><li>Free pick-up and delivery across Pune</li></ul>"
             '<p class="md-body-md">Read more: <a href="/maruti-suzuki-car-service-in-pune">Maruti Suzuki car service in Pune</a> · '
-            '<a href="/services/complete-car-servicing-in-pune">Complete car servicing</a></p></div>',
+            '<a href="/services/complete-car-servicing">Complete car servicing</a></p></div>',
         ),
         (
             "blog/car-ac-gas-recharge-cost-pune-2026",
@@ -545,7 +545,7 @@ def main():
             "<li>Deeper brake and suspension inspection</li>"
             "<li>Transmission fluid check where applicable</li></ul>"
             '<p class="md-body-md mt-3">YMO recommends the right package based on your odometer. '
-            '<a href="/services/complete-car-servicing-in-pune">Book complete car servicing in Pune</a></p></div>',
+            '<a href="/services/complete-car-servicing">Book complete car servicing in Pune</a></p></div>',
         ),
         (
             "blog/doorstep-car-service-pune-worth-it",

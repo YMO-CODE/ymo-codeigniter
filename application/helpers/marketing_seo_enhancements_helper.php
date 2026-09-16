@@ -63,7 +63,7 @@ if (!function_exists('marketing_service_pricing_tiers')) {
             'denting' => array(
                 array('label' => 'Single panel (dent + paint)', 'price' => '₹4,500'),
                 array('label' => 'Bumper (front or rear)', 'price' => '₹3,500'),
-                array('label' => 'Full body (estimate)', 'price' => 'From ₹18,000'),
+                array('label' => 'Full-body repaint (estimate)', 'price' => 'From ₹40,000'),
                 array('label' => 'Luxury / Premium', 'price' => 'On request'),
             ),
             'engine' => array(
@@ -267,10 +267,10 @@ if (!function_exists('marketing_enrich_page')) {
         if (!empty($page['page_type']) && $page['page_type'] === 'locality' && !empty($page['locality_label'])) {
             $label = $page['locality_label'];
             if (empty($page['meta_title'])) {
-                $page['meta_title'] = 'Car Service in '.$label.', Pune | Free Pickup | YMO';
+                $page['meta_title'] = 'Car Service in '.$label.', '.$city_name.' | Free Pickup | YMO';
             }
             if (strpos($page['meta_description'] ?? '', 'Book now fo!') !== FALSE) {
-                $page['meta_description'] = 'Expert car servicing & repair in '.$label.', Pune. Free doorstep pickup, transparent pricing, trained mechanics. Book online with YMO.';
+                $page['meta_description'] = 'Expert car servicing & repair in '.$label.', '.$city_name.'. Free doorstep pickup, transparent pricing, trained mechanics. Book online with YMO.';
             }
         }
 
