@@ -246,7 +246,10 @@ if (!function_exists('marketing_enrich_page')) {
             if ($price > 0) {
                 $short = marketing_service_short_title($svc['key'], $svc['title']);
                 $page['meta_title'] = $short.' in '.$city_name.' | From ₹'.number_format($price).' | YMO';
-                if (empty($page['title']) || strlen($page['title']) > 65) {
+                $legacy_title = isset($page['title']) ? (string) $page['title'] : '';
+                if ($legacy_title === ''
+                    || strpos($legacy_title, 'Your Mechanic Online') !== false
+                    || (function_exists('mb_strlen') ? mb_strlen($legacy_title, 'UTF-8') : strlen($legacy_title)) > 60) {
                     $page['title'] = $page['meta_title'];
                 }
             }
@@ -286,8 +289,15 @@ if (!function_exists('marketing_enrich_page')) {
 
         if (!empty($page['page_type']) && $page['page_type'] === 'locality' && !empty($page['locality_label'])) {
             $label = $page['locality_label'];
+            $locality_title = $label.', '.$city_name.' | Car Service From ₹2,499 | YMO';
             if (empty($page['meta_title'])) {
-                $page['meta_title'] = 'Car Service in '.$label.', '.$city_name.' | Free Pickup | YMO';
+                $page['meta_title'] = $locality_title;
+            } elseif ((function_exists('mb_strlen') ? mb_strlen($page['meta_title'], 'UTF-8') : strlen($page['meta_title'])) > 60) {
+                $page['meta_title'] = $locality_title;
+            }
+            if (!empty($page['meta_title'])
+                && (empty($page['title']) || (function_exists('mb_strlen') ? mb_strlen($page['title'], 'UTF-8') : strlen($page['title'])) > 60)) {
+                $page['title'] = $page['meta_title'];
             }
             if (strpos($page['meta_description'] ?? '', 'Book now fo!') !== FALSE) {
                 $page['meta_description'] = 'Expert car servicing & repair in '.$label.', '.$city_name.'. Free doorstep pickup, transparent pricing, trained mechanics. Book online with YMO.';

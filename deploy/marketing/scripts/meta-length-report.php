@@ -13,13 +13,15 @@ foreach ($pages as $path => $page) {
     }
     $title = !empty($page['meta_title']) ? $page['meta_title'] : (isset($page['title']) ? $page['title'] : '');
     $desc = isset($page['meta_description']) ? $page['meta_description'] : '';
-    if (strlen($title) > 60) {
+    $title_len = function_exists('mb_strlen') ? mb_strlen($title, 'UTF-8') : strlen($title);
+    $desc_len = function_exists('mb_strlen') ? mb_strlen($desc, 'UTF-8') : strlen($desc);
+    if ($title_len > 60) {
         $long_titles++;
-        echo 'TITLE '.strlen($title)." | /{$path} | {$title}\n";
+        echo 'TITLE '.$title_len." | /{$path} | {$title}\n";
     }
-    if (strlen($desc) > 155) {
+    if ($desc_len > 155) {
         $long_desc++;
-        echo 'DESC  '.strlen($desc)." | /{$path} | {$desc}\n";
+        echo 'DESC  '.$desc_len." | /{$path} | {$desc}\n";
     }
 }
 echo "\nSummary: {$long_titles} titles > 60, {$long_desc} descriptions > 155\n";

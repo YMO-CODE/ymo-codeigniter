@@ -324,7 +324,7 @@ if (!function_exists('marketing_brand_pages')) {
                 $path = $slug.'-car-service-in-'.$city_slug;
                 $pages[$path] = array(
                     'title'            => $name.' Car Service in '.$city_name.' | YMO',
-                    'meta_description' => 'Book '.$name.' car service in '.$city_name.' from ₹2,499. Expert mechanics, free pick-up & drop, AC repair, denting & periodic maintenance for '.marketing_brand_models_list($brand).'.',
+                    'meta_description' => $name.' car service in '.$city_name.' from ₹2,499. Free pick-up, AC repair, denting & periodic maintenance. Book YMO online.',
                     'h1'               => $name.' car service in '.$city_name,
                     'intro'            => $name.' servicing in '.$city_name.' with trained mechanics, transparent pricing, and free doorstep pick-up.',
                     'quick_answer'     => 'YMO offers '.$name.' car service in '.$city_name.' from ₹2,499 - periodic maintenance, AC repair, and body work with free pick-up and drop.',

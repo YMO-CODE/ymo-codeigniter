@@ -7,17 +7,34 @@ $pages = marketing_cli_pages_data();
 $paths = array_keys($pages);
 $inlinks = array_fill_keys($paths, 0);
 
-foreach ($pages as $from => $page) {
-    if (!is_array($page)) {
-        continue;
-    }
-    $blob = json_encode($page);
-    foreach ($paths as $target) {
-        if ($from === $target) {
+if (function_exists('marketing_internal_link_outbound_map')) {
+    $map = marketing_internal_link_outbound_map();
+    foreach ($map as $target => $sources) {
+        $target = trim((string) $target, '/');
+        if ($target === '' || !isset($inlinks[$target])) {
             continue;
         }
-        if (strpos($blob, '"'.$target.'"') !== false || strpos($blob, '/'.$target) !== false) {
-            $inlinks[$target]++;
+        $inlinks[$target] = count($sources);
+    }
+} else {
+    foreach ($pages as $from => $page) {
+        if (!is_array($page)) {
+            continue;
+        }
+        $body = isset($page['body']) ? (string) $page['body'] : '';
+        if (function_exists('marketing_page_internal_links_append')) {
+            $body = marketing_page_internal_links_append($from, $page, $body);
+        }
+        $blob = json_encode($page, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE).$body;
+        foreach ($paths as $target) {
+            if ($from === $target) {
+                continue;
+            }
+            if (strpos($blob, '"'.$target.'"') !== false
+                || strpos($blob, '/'.$target) !== false
+                || strpos($body, 'href="/'.$target.'"') !== false) {
+                $inlinks[$target]++;
+            }
         }
     }
 }
@@ -30,5 +47,5 @@ foreach ($inlinks as $path => $count) {
         echo "INLINKS {$count} | /{$path}\n";
     }
 }
-echo "\n{$fail} URLs with fewer than {$min} inlinks (see Phase 5 hub/service/blog links).\n";
+echo "\n{$fail} URLs with fewer than {$min} inlinks (nav, footer, hubs, and contextual body links).\n";
 exit($fail ? 1 : 0);
