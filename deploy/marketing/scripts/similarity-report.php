@@ -4,18 +4,12 @@
  * Pairwise 5-word Jaccard similarity on marketing page intro+body (same page_type).
  * Flags pairs > 40%. Requires BASE_URL reachable (local docker or production).
  */
+require __DIR__.'/_marketing_cli_bootstrap.php';
+
 $base = getenv('BASE') ?: 'https://www.yourmechaniconline.com';
 $threshold = (float) (getenv('THRESHOLD') ?: 0.4);
 
-define('BASEPATH', __DIR__.'/../../../system/');
-define('APPPATH', __DIR__.'/../../../application/');
-require APPPATH.'helpers/marketing_helper.php';
-require APPPATH.'helpers/marketing_seo_growth_helper.php';
-require APPPATH.'helpers/marketing_seo_enhancements_helper.php';
-require APPPATH.'helpers/marketing_seo_project_helper.php';
-require APPPATH.'helpers/marketing_internal_links_helper.php';
-
-$pages = marketing_pages_data();
+$pages = marketing_cli_pages_data();
 
 function shingles5($text) {
     $text = strtolower(strip_tags($text));
@@ -42,7 +36,7 @@ foreach ($pages as $path => $page) {
     if (!is_array($page)) {
         continue;
     }
-    $type = isset($page['page_type']) ? $page['page_type'] : 'other';
+    $type = isset($page['page_type']) ? $page['page_type'] : 'unknown';
     $text = (isset($page['intro']) ? $page['intro'] : '').' '.(isset($page['body']) ? $page['body'] : '');
     $by_type[$type][$path] = shingles5($text);
 }
@@ -61,5 +55,5 @@ foreach ($by_type as $type => $map) {
         }
     }
 }
-echo $fail ? "\n{$fail} pairs above ".($threshold * 100)."% (fill {{TODO}} locality/brand fields).\n" : "\nNo pairs above threshold.\n";
+echo $fail ? "\n{$fail} pairs above ".($threshold * 100)."% (fill locality/brand fields).\n" : "\nNo pairs above threshold.\n";
 exit($fail ? 1 : 0);
