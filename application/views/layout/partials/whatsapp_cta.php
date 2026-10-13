@@ -10,7 +10,9 @@ if (!$wa_enabled && !$livechat_enabled) {
     return;
 }
 
-$wa_url = 'https://wa.me/917744065904?text='.rawurlencode('Hi YMO, I would like to book a car service');
+$wa_url = function_exists('marketing_business_whatsapp_url')
+    ? marketing_business_whatsapp_url('Hi YMO, I would like to book a car service')
+    : 'https://wa.me/917558783868?text='.rawurlencode('Hi YMO, I would like to book a car service');
 ?>
 <div class="ymo-floating-actions" aria-label="Contact options">
     <?php if ($wa_enabled): ?>

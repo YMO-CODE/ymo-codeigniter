@@ -558,6 +558,12 @@ if (!function_exists('marketing_seo_growth_blog_posts')) {
                     'og_image'         => '/assets/img/marketing/revslider/main/image_01.jpg',
                     'view'             => 'marketing/page',
                 );
+                if (!empty($entry['meta_title'])) {
+                    $pages[$slug]['meta_title'] = $entry['meta_title'];
+                }
+                if (!empty($entry['faq']) && is_array($entry['faq'])) {
+                    $pages[$slug]['faq'] = $entry['faq'];
+                }
             }
         }
         return $pages;

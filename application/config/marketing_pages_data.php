@@ -351,12 +351,20 @@ if (function_exists('marketing_blog_hub_body') && isset($pages['blog'])) {
     $pages['blog']['updated_at'] = '2026-08-27';
 }
 
+if (function_exists('marketing_trust_legal_pages')) {
+    $pages = array_merge($pages, marketing_trust_legal_pages());
+}
+
+if (function_exists('marketing_expansion_pages')) {
+    $pages = $pages + marketing_expansion_pages();
+}
+
 $option_a_file = __DIR__.'/marketing_pages_option_a.php';
 if (is_file($option_a_file)) {
     $option_a = require $option_a_file;
     if (is_array($option_a)) {
         // Tier-1 / hand-migrated entries in $pages must win over option_a stubs.
-        return $pages + $option_a;
+        $pages = $pages + $option_a;
     }
 }
 

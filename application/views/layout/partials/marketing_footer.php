@@ -33,6 +33,13 @@ foreach ($footer_sections as $section) {
                         <li><a href="<?= site_url('contact-us'); ?>">Contact</a></li>
                         <li><a href="<?= site_url('why-choose-ymo'); ?>">Why choose YMO</a></li>
                         <li><a href="<?= site_url('privacy-policy'); ?>">Privacy policy</a></li>
+                        <li><a href="<?= site_url('terms-and-conditions'); ?>">Terms</a></li>
+                        <li><a href="<?= site_url('refund-and-cancellation-policy'); ?>">Refunds</a></li>
+                        <li><a href="<?= site_url('warranty'); ?>">Warranty</a></li>
+                        <li><a href="<?= site_url('reviews'); ?>">Reviews</a></li>
+                        <li><a href="<?= site_url('pricing'); ?>">Pricing</a></li>
+                        <li><a href="<?= site_url('faq'); ?>">FAQ</a></li>
+                        <li><a href="<?= site_url('how-it-works'); ?>">How it works</a></li>
                     </ul>
                 </div>
                 <div class="ymo-footer-nav-col">

@@ -80,6 +80,24 @@ echo ymo_marketing_render_hero('', $hero_page, isset($booking_url) ? $booking_ur
 <?php endif; ?>
 
 <section class="container pb-5">
+    <h2 class="md-headline-md mb-3">How it works</h2>
+    <p class="md-body-md mb-4">Book online, get free pick-up, stay updated on WhatsApp, and receive your car back with invoice.</p>
+    <?= function_exists('marketing_how_it_works_steps_html') ? marketing_how_it_works_steps_html() : ''; ?>
+    <p class="md-body-md mt-3 mb-0"><a href="<?= site_url('how-it-works'); ?>">Full guide — how YMO works</a></p>
+</section>
+
+<section class="container pb-5">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
+        <div>
+            <h2 class="md-headline-md mb-1">What customers say</h2>
+            <p class="md-body-md mb-0">Recent feedback from Google reviews.</p>
+        </div>
+        <a href="<?= site_url('reviews'); ?>" class="md-btn md-btn--outlined md-btn--sm">All reviews</a>
+    </div>
+    <?= function_exists('marketing_render_reviews_cards') ? marketing_render_reviews_cards(3) : ''; ?>
+</section>
+
+<section class="container pb-5">
     <h2 class="md-headline-md mb-4">Why choose YMO?</h2>
     <div class="row g-4">
         <?php foreach ($benefits as $benefit): ?>

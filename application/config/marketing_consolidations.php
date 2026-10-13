@@ -20,17 +20,19 @@ return array(
     'ymo-car-spares-parts-india' => 'ymo-spares',
     'ymo-car-spares-parts-india/' => 'ymo-spares',
 
-    // Luxury brand × locality → single luxury hub
-    'the-best-audi-servicing-in-bavdhan' => 'premium-luxury-car-service-pune',
-    'the-best-audi-servicing-in-hinjewadi' => 'premium-luxury-car-service-pune',
-    'the-best-audi-servicing-in-wakad' => 'premium-luxury-car-service-pune',
-    'the-best-bmw-servicing-in-baner' => 'premium-luxury-car-service-pune',
-    'the-best-bmw-servicing-in-wakad' => 'premium-luxury-car-service-pune',
-    'the-best-mercedes-servicing-in-hinjewadi' => 'premium-luxury-car-service-pune',
-    'the-best-mercedes-servicing-in-wakad' => 'premium-luxury-car-service-pune',
-    'best-audi-servicing-in-aundh-pune' => 'premium-luxury-car-service-pune',
-    'best-bmw-servicing-in-hinjewadi-luxury-car-care' => 'premium-luxury-car-service-pune',
-    'ymo-car-servicing-locations-in-pune/the-best-mercedes-servicing-in-viman-nagar' => 'premium-luxury-car-service-pune',
+    // Luxury brand × locality → single luxury hub.
+    // Phase 3: repoint BMW/Audi/Mercedes (and tag/*bmw*|*audi*|*mercedes*) to
+    // /bmw-car-service-in-pune, /audi-car-service-in-pune, /mercedes-car-service-in-pune.
+    'the-best-audi-servicing-in-bavdhan' => 'audi-car-service-in-pune',
+    'the-best-audi-servicing-in-hinjewadi' => 'audi-car-service-in-pune',
+    'the-best-audi-servicing-in-wakad' => 'audi-car-service-in-pune',
+    'the-best-bmw-servicing-in-baner' => 'bmw-car-service-in-pune',
+    'the-best-bmw-servicing-in-wakad' => 'bmw-car-service-in-pune',
+    'the-best-mercedes-servicing-in-hinjewadi' => 'mercedes-car-service-in-pune',
+    'the-best-mercedes-servicing-in-wakad' => 'mercedes-car-service-in-pune',
+    'best-audi-servicing-in-aundh-pune' => 'audi-car-service-in-pune',
+    'best-bmw-servicing-in-hinjewadi-luxury-car-care' => 'bmw-car-service-in-pune',
+    'ymo-car-servicing-locations-in-pune/the-best-mercedes-servicing-in-viman-nagar' => 'mercedes-car-service-in-pune',
 
     // Nested WP hierarchy → flat locality or luxury hub
     'best-car-servicing-in-pune-ymo' => 'locations/pune',

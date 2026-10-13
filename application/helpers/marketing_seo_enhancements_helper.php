@@ -101,6 +101,23 @@ if (!function_exists('marketing_service_pricing_tiers')) {
     }
 }
 
+if (!function_exists('marketing_quote_only_pricing_tiers')) {
+    /**
+     * Pricing table for jobs where cost varies by make, model, and parts (no single "from" price).
+     *
+     * @return array<int,array{label:string,price:string}>
+     */
+    function marketing_quote_only_pricing_tiers()
+    {
+        return array(
+            array('label' => 'Hatchback / compact', 'price' => 'Quote after inspection'),
+            array('label' => 'Sedan', 'price' => 'Quote after inspection'),
+            array('label' => 'SUV / MUV', 'price' => 'Quote after inspection'),
+            array('label' => 'Luxury / premium', 'price' => 'Quote after inspection'),
+        );
+    }
+}
+
 if (!function_exists('marketing_locality_pricing_tiers')) {
     /**
      * Standard service price guide for locality and city hub pages.
@@ -215,7 +232,7 @@ if (!function_exists('marketing_enrich_page')) {
             }
         }
 
-        if ($svc) {
+        if ($svc && empty($page['price_on_quote'])) {
             if (empty($page['service_key'])) {
                 $page['service_key'] = $svc['key'];
             }
@@ -260,8 +277,11 @@ if (!function_exists('marketing_enrich_page')) {
         }
 
         if ($path === '') {
-            $page['meta_title'] = 'Car Servicing in Pune, Indore & Nashik | Free Pickup | YMO';
-            $page['meta_description'] = 'Expert car servicing and repair in Pune, Indore & Nashik. Free doorstep pickup, transparent pricing from ₹2,499. 4.8★ rated. Book online with YMO.';
+            $page['meta_title'] = 'Your Mechanic Online | Doorstep Car Service';
+            $page['meta_description'] = 'Online car mechanic & doorstep car service in Pune, Indore & Nashik. Free pick-up from ₹2,499. Call '.marketing_business_phone_display().'. Book YMO.';
+            if (!empty($page['h1']) || isset($page['h1'])) {
+                $page['h1'] = 'Your Mechanic Online — doorstep car service';
+            }
         }
 
         if (!empty($page['page_type']) && $page['page_type'] === 'locality' && !empty($page['locality_label'])) {
@@ -323,6 +343,9 @@ if (!function_exists('marketing_enrich_pages')) {
                 continue;
             }
             $pages[$path] = marketing_enrich_page($path, $page);
+        }
+        if (function_exists('marketing_seo_project_enrich_pages')) {
+            $pages = marketing_seo_project_enrich_pages($pages);
         }
         return $pages;
     }

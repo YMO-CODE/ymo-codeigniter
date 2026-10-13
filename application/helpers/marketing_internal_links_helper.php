@@ -6,7 +6,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  */
 
 if (!function_exists('marketing_enforce_canonical_path')) {
-    /** Redirect trailing-slash URLs to no-slash canonical (301). */
+    /**
+     * Redirect trailing-slash URLs to canonical (301).
+     * If the no-slash path has a legacy/consolidation 301, jump there in one hop
+     * (avoids slash-strip then content redirect chains).
+     */
     function marketing_enforce_canonical_path()
     {
         $request_uri = isset($_SERVER['REQUEST_URI']) ? (string) $_SERVER['REQUEST_URI'] : '';
@@ -14,8 +18,14 @@ if (!function_exists('marketing_enforce_canonical_path')) {
         if ($request_path === '' || $request_path === '/' || substr($request_path, -1) !== '/') {
             return;
         }
-        $target = marketing_normalize_path($request_path);
+        $normalized = marketing_normalize_path($request_path);
+        $consolidated = marketing_lookup_redirect($normalized);
+        if ($consolidated !== NULL && $consolidated !== '') {
+            marketing_redirect_to($consolidated, 301);
+            return;
+        }
         $query = (string) parse_url($request_uri, PHP_URL_QUERY);
+        $target = $normalized;
         if ($query !== '') {
             $target .= '?'.$query;
         }

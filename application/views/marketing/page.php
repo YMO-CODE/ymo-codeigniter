@@ -72,6 +72,11 @@ echo ymo_marketing_render_hero(
                 'body_faq_html' => isset($body_faq_html) ? $body_faq_html : '',
                 'aside_html'    => isset($aside_html) ? $aside_html : '',
             )); ?>
+            <?php if (!empty($page_type) && $page_type === 'service' && function_exists('marketing_warranty_badge_html')): ?>
+                <div class="md-card-outlined p-3 my-3">
+                    <?= marketing_warranty_badge_html(); ?>
+                </div>
+            <?php endif; ?>
             <div class="md-card-filled p-4 my-4">
                 <p class="md-body-md mb-3">Book your service online - same trusted team, faster scheduling.</p>
                 <div class="d-flex flex-wrap gap-2">

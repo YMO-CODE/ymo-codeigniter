@@ -9,30 +9,87 @@ return array(
     'blog' => array(
         'blog/car-service-cost-pune' => array(
             'title'            => 'Car Service Cost in Pune (2026) — Doorstep Prices | YMO',
+            'meta_title'       => 'Car Service Cost in Pune (2026) | YMO',
             'meta_description' => 'What does car servicing actually cost in Pune? A clear breakdown of periodic and comprehensive service prices, what affects them, and how doorstep pickup compares.',
             'h1'               => 'Car Service Cost in Pune (2026) — Doorstep Prices',
             'intro'            => 'If you\'re trying to work out what car servicing should cost in Pune, the honest answer is: it depends on your car, the type of service, and where you get it done — and most workshops won\'t tell you the range up front. Here\'s a straightforward breakdown so you can budget before you book.',
             'city_slug'        => 'pune',
+            'faq'              => array(
+                array(
+                    'q' => 'Is doorstep car service more expensive in Pune?',
+                    'a' => 'No — YMO\'s pricing is comparable to a workshop, and pick-up and drop is free, so you usually save on time and travel.',
+                ),
+                array(
+                    'q' => 'Are parts included in the service cost?',
+                    'a' => 'Standard consumables like engine oil and the oil filter are included in periodic service packages. Wear-and-tear parts are quoted separately and only replaced with your approval.',
+                ),
+                array(
+                    'q' => 'How long does a car service take in Pune?',
+                    'a' => 'A basic periodic service is usually completed the same day. A major interval service or extra repairs may take longer depending on what is found during inspection.',
+                ),
+                array(
+                    'q' => 'How much does Maruti or Hyundai servicing cost in Pune?',
+                    'a' => 'Popular hatchbacks typically start at the hatchback rates in the table below. Exact totals depend on oil grade, filters, and any parts that need replacement — we share a quote before work starts.',
+                ),
+            ),
             'body'             => <<<'HTML'
 <div class="ymo-content-section mb-5">
 <p class="md-body-md mb-3">If you're trying to work out what car servicing should cost in Pune, the honest answer is: it depends on your car, the type of service, and where you get it done — and most workshops won't tell you the range up front. Here's a straightforward breakdown so you can budget before you book.</p>
-<h2 class="md-headline-md mt-4 mb-3">Typical car service costs in Pune</h2>
-<ul class="md-body-md mb-3">
-<li class="mb-2">Basic / periodic service (oil, filter, general check): from ₹2,499</li>
-<li class="mb-2">Comprehensive / complete service (deeper inspection, more parts): from ₹4,999</li>
-<li class="mb-0">Hatchbacks sit at the lower end; sedans and SUVs at the higher end, mainly because of oil quantity and part sizes.</li>
-</ul>
-<p class="md-body-md mb-3">These are labour-and-standard-parts ranges. Consumables like brake pads, wipers, or a battery are extra and only replaced when actually needed — a good service tells you before replacing anything.</p>
+<p class="md-body-sm ymo-muted mb-4">Indicative YMO workshop prices for Pune. Wear parts and major-interval packages are quoted after inspection. Last updated October 2026.</p>
+
+<h2 class="md-headline-md mt-4 mb-3">Price table by car segment (Pune)</h2>
+<p class="md-body-md mb-3">Use this table to budget by body type. Luxury and complex jobs (clutch, suspension, etc.) need an inspection quote — see our <a href="/pricing">pricing guide</a> and individual service pages.</p>
+<div class="table-responsive mb-3">
+<table class="table md-body-md">
+<thead><tr><th>Service</th><th>Hatchback</th><th>Sedan</th><th>SUV / MUV</th><th>Luxury</th></tr></thead>
+<tbody>
+<tr><td>Complete / periodic car servicing</td><td>₹2,499</td><td>₹2,499</td><td>₹2,999</td><td>₹24,999</td></tr>
+<tr><td>Oil change</td><td>From ₹1,499</td><td>From ₹1,499</td><td>From ₹2,499</td><td>From ₹5,600</td></tr>
+<tr><td>AC service</td><td>From ₹999</td><td>From ₹1,299</td><td>From ₹1,599</td><td>From ₹9,999</td></tr>
+<tr><td>Brake service</td><td>From ₹499</td><td>From ₹499</td><td>From ₹899</td><td>From ₹2,999</td></tr>
+<tr><td>Denting (per panel)</td><td>From ₹4,500</td><td>From ₹4,500</td><td>From ₹5,500</td><td>From ₹6,999</td></tr>
+<tr><td>Interior deep cleaning</td><td>₹2,500</td><td>₹2,999</td><td>₹3,499</td><td>From ₹3,999</td></tr>
+<tr><td>Rubbing &amp; polishing</td><td>₹6,500</td><td>₹6,500</td><td>₹7,999</td><td>From ₹9,999</td></tr>
+<tr><td>Major / high-km service package</td><td colspan="4">Major / high-km interval service (e.g. 40,000 km): from ₹4,999 for hatchback — deeper checks and interval items beyond routine periodic service.</td></tr>
+</tbody>
+</table>
+</div>
+<p class="md-body-md mb-3">Battery, clutch, suspension, tyres, and insurance-assistance jobs are <strong>quote after inspection</strong> because parts and labour vary widely by model.</p>
+
+<h2 class="md-headline-md mt-4 mb-3">What's included in each package</h2>
+<p class="md-body-md mb-3"><strong>Periodic / complete car servicing</strong> (from ₹2,499 for hatchback and sedan in Pune) typically covers engine oil and filter change, brake cleaning, AC filter service, coolant top-up where needed, interior vacuum, and a general health check — with free doorstep pick-up and drop. See the full checklist on <a href="/services/complete-car-servicing">complete car servicing in Pune</a>.</p>
+<p class="md-body-md mb-3"><strong>Oil change</strong> is a faster visit focused on oil, filter, and basic under-bonnet checks — ideal between full services. Book via <a href="/services/car-oil-change">car oil change in Pune</a>.</p>
+<p class="md-body-md mb-3"><strong>AC, brakes, denting, and detailing</strong> are priced by segment in the table; inclusions are listed on each service page. Anything beyond standard consumables is approved by you on WhatsApp before it is fitted.</p>
+
 <h2 class="md-headline-md mt-4 mb-3">What affects the price</h2>
-<p class="md-body-md mb-3">The main drivers are your car's make and engine size (a premium sedan needs more oil and pricier filters than a small hatch), the service interval you're due for (a 40,000 km service is more involved than a routine oil change), and whether any wear items need replacing. Genuine vs aftermarket parts also shift the total.</p>
+<p class="md-body-md mb-3">The main drivers are your car's make and engine size (a premium sedan needs more oil and pricier filters than a small hatch), the service interval you're due for (a 40,000 km service is more involved than a routine oil change), and whether any wear items need replacing. We use OEM, OES, or brand-approved parts matched to your car; alternatives are explained on your estimate before fitment.</p>
+
+<h2 class="md-headline-md mt-4 mb-3">YMO vs authorised service centre (Pune)</h2>
+<div class="table-responsive mb-3">
+<table class="table md-body-md">
+<thead><tr><th></th><th>YMO (pick-up + workshop)</th><th>Typical authorised centre</th></tr></thead>
+<tbody>
+<tr><td>Doorstep pick-up &amp; drop</td><td>Free across Pune service areas</td><td>Usually you drive in and wait</td></tr>
+<tr><td>Quote before extra work</td><td>Yes — approval on WhatsApp</td><td>Varies; add-ons sometimes appear on final bill</td></tr>
+<tr><td>Workshop equipment</td><td>Full workshop for AC, body, brakes</td><td>Full workshop</td></tr>
+<tr><td>Periodic service (hatchback)</td><td>From ₹2,499 (see table)</td><td>Indicative authorised-dealer periodic service for popular hatchbacks often falls in the ₹4,500–₹8,000+ range depending on brand.</td></tr>
+<tr><td>Parts policy</td><td>OEM, OES, or brand-approved parts; customer-supplied parts on request where safe.</td><td>OEM parts; often higher labour rates</td></tr>
+</tbody>
+</table>
+</div>
+<p class="md-body-md mb-3">Authorised centres make sense when a warranty claim requires dealer records. For routine maintenance and repairs, many Pune owners prefer YMO when they want pick-up, transparent quotes, and workshop-grade work without losing a day at the service lane.</p>
+
 <h2 class="md-headline-md mt-4 mb-3">Why doorstep servicing in Pune is often better value</h2>
-<p class="md-body-md mb-3">With Your Mechanic Online, pickup and drop across Pune is free, so you're not paying for your time or fuel to reach a workshop and wait. You see the work in progress and approve any extra parts before they're fitted — no surprise additions to the bill. That transparency is the whole point: you know the cost before the spanner comes out.</p>
-<h2 class="md-headline-md mt-4 mb-3">FAQs</h2>
-<p class="md-body-md mb-3"><em>Is doorstep car service more expensive in Pune?</em> No — YMO's pricing is comparable to a workshop, and pickup/drop is free, so you usually save on time and travel.</p>
-<p class="md-body-md mb-3"><em>Are parts included in the service cost?</em> Standard consumables like engine oil and the oil filter are included in the service price. Wear-and-tear parts are quoted and only replaced with your approval.</p>
-<p class="md-body-md mb-3"><em>How long does a service take?</em> A basic service is usually done the same day; a comprehensive service may take longer depending on what's found.</p>
+<p class="md-body-md mb-3">With Your Mechanic Online, pick-up and drop across Pune is free, so you're not paying for your time or fuel to reach a workshop and wait. You see progress updates and approve any extra parts before they're fitted — no surprise additions to the bill.</p>
+
+<div class="md-card-outlined p-4 my-4 ymo-author-box">
+<h2 class="md-title-md mb-2">About this guide</h2>
+<p class="md-body-md mb-0">Draft — YMO service operations team, last reviewed October 2026.</p>
+</div>
+
 <p class="md-body-md mt-3 mb-0"><a href="/locations/pune">Car servicing in Pune</a> · <a href="/services/complete-car-servicing">Complete car servicing</a> · <a href="/services/car-air-conditioner-servicing-in-pune">AC servicing in Pune</a> · <a href="/blog/car-service-cost-indore">Car service cost in Indore</a> · <a href="/blog/car-service-cost-nashik">Car service cost in Nashik</a></p>
 </div>
+<!-- ymo-cost-guide-expanded -->
 HTML,
         ),
         'blog/car-service-cost-indore' => array(

@@ -138,6 +138,8 @@ if (!function_exists('marketing_pages_data')) {
             APPPATH.'config/marketing_brands.php',
             APPPATH.'helpers/marketing_seo_growth_helper.php',
             APPPATH.'helpers/marketing_internal_links_helper.php',
+            APPPATH.'helpers/marketing_seo_project_helper.php',
+            APPPATH.'config/marketing_business.php',
         );
         $max_mtime = 0;
         foreach ($source_files as $src) {
@@ -2138,7 +2140,12 @@ if (!function_exists('marketing_schema_graph')) {
     {
         $ci = &get_instance();
         $brand = $ci->config->item('ymo_brand_name');
-        $phone = $ci->config->item('ymo_support_phone');
+        $phone = function_exists('marketing_business_phone_schema')
+            ? marketing_business_phone_schema()
+            : $ci->config->item('ymo_support_phone');
+        if ($phone === '' || $phone === NULL) {
+            $phone = $ci->config->item('ymo_support_phone');
+        }
         $email = $ci->config->item('ymo_support_email');
         $path  = isset($page_meta['canonical_path']) ? $page_meta['canonical_path'] : '';
         $url   = marketing_canonical_url($path);
@@ -2159,10 +2166,17 @@ if (!function_exists('marketing_schema_graph')) {
             }
         }
 
+        $biz = function_exists('marketing_business_config') ? marketing_business_config() : array();
+        $hours = !empty($biz['opening_hours']) ? $biz['opening_hours'] : array(
+            'days' => array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'),
+            'opens' => '09:00',
+            'closes' => '19:00',
+        );
         $graph[] = array(
             '@type'       => array('AutoRepair', 'LocalBusiness'),
             '@id'         => marketing_canonical_url('').'#organization',
             'name'        => $brand,
+            'alternateName' => 'YMO',
             'url'         => marketing_canonical_url(''),
             'logo'        => marketing_canonical_url('assets/img/logo.png'),
             'telephone'   => $phone,
@@ -2172,9 +2186,9 @@ if (!function_exists('marketing_schema_graph')) {
             'openingHoursSpecification' => array(
                 array(
                     '@type'     => 'OpeningHoursSpecification',
-                    'dayOfWeek' => array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'),
-                    'opens'     => '09:00',
-                    'closes'    => '19:00',
+                    'dayOfWeek' => $hours['days'],
+                    'opens'     => $hours['opens'],
+                    'closes'    => $hours['closes'],
                 ),
             ),
         );
@@ -2183,7 +2197,7 @@ if (!function_exists('marketing_schema_graph')) {
         }
 
         $trust = marketing_trust_config();
-        if (!empty($trust['google_rating']) && !empty($trust['review_count'])) {
+        if ($path === '' && !empty($trust['google_rating']) && !empty($trust['review_count'])) {
             $graph[0]['aggregateRating'] = array(
                 '@type'       => 'AggregateRating',
                 'ratingValue' => (string) $trust['google_rating'],
@@ -2195,6 +2209,46 @@ if (!function_exists('marketing_schema_graph')) {
             $graph[0]['sameAs'] = array_values($trust['same_as']);
         } elseif (!empty($trust['gbp_share_url'])) {
             $graph[0]['sameAs'] = array($trust['gbp_share_url']);
+        }
+
+        if (!empty($biz['cities']) && is_array($biz['cities'])) {
+            foreach ($biz['cities'] as $slug => $city_biz) {
+                $city = marketing_city_by_slug($slug);
+                if (!$city || empty($city['hub_path'])) {
+                    continue;
+                }
+                $addr = isset($city['address']) ? $city['address'] : array();
+                if (!empty($city_biz['postal_code']) && strpos((string) $city_biz['postal_code'], '{{TODO') === FALSE) {
+                    $addr['postalCode'] = $city_biz['postal_code'];
+                }
+                $local_id = marketing_canonical_url($city['hub_path']).'#'.$slug;
+                $node = array(
+                    '@type'              => array('AutoRepair', 'LocalBusiness'),
+                    '@id'                => $local_id,
+                    'name'               => $brand.' — '.$city['name'],
+                    'url'                => marketing_canonical_url($city['hub_path']),
+                    'telephone'          => $phone,
+                    'email'              => $email,
+                    'address'            => $addr,
+                    'areaServed'         => array(array('@type' => 'City', 'name' => $city['name'])),
+                    'parentOrganization' => array('@id' => marketing_canonical_url('').'#organization'),
+                );
+                $geo_src = !empty($city_biz['geo']) ? $city_biz['geo'] : (isset($city['geo']) ? $city['geo'] : array());
+                if (!empty($geo_src['latitude']) && !empty($geo_src['longitude'])
+                    && strpos((string) $geo_src['latitude'], '{{TODO') === FALSE) {
+                    $node['geo'] = array(
+                        '@type'     => 'GeoCoordinates',
+                        'latitude'  => $geo_src['latitude'],
+                        'longitude' => $geo_src['longitude'],
+                    );
+                }
+                $gbp = !empty($city_biz['gbp_url']) ? $city_biz['gbp_url'] : (isset($city['gbp_url']) ? $city['gbp_url'] : '');
+                if ($gbp !== '' && strpos((string) $gbp, '{{TODO') === FALSE) {
+                    $node['hasMap'] = $gbp;
+                    $node['sameAs'] = array($gbp);
+                }
+                $graph[] = $node;
+            }
         }
 
         if ($path === '') {
@@ -2218,6 +2272,7 @@ if (!function_exists('marketing_schema_graph')) {
 
         $city_slug = isset($page_meta['city_slug']) ? $page_meta['city_slug'] : '';
         $locality_slug = isset($page_meta['locality_slug']) ? $page_meta['locality_slug'] : '';
+        $city = NULL;
         if ($city_slug !== '') {
             $city = marketing_city_by_slug($city_slug);
             if ($city) {
@@ -2228,30 +2283,7 @@ if (!function_exists('marketing_schema_graph')) {
                         : ucwords(str_replace(array('-', '_'), ' ', $locality_slug));
                     $area_name[] = array('@type' => 'Place', 'name' => $loc_label.', '.$city['name']);
                 }
-                $local = array(
-                    '@type'     => array('AutoRepair', 'LocalBusiness'),
-                    '@id'       => marketing_canonical_url($city['hub_path']).'#local',
-                    'name'      => $brand.' - '.$city['name'],
-                    'url'       => marketing_canonical_url($city['hub_path']),
-                    'telephone' => isset($city['phone']) ? $city['phone'] : $phone,
-                    'email'     => isset($city['email']) ? $city['email'] : $email,
-                    'address'   => isset($city['address']) ? $city['address'] : array(),
-                    'areaServed'=> $area_name,
-                );
-                if (!empty($city['geo'])) {
-                    $local['geo'] = array(
-                        '@type'     => 'GeoCoordinates',
-                        'latitude'  => $city['geo']['latitude'],
-                        'longitude' => $city['geo']['longitude'],
-                    );
-                }
-                if (!empty($city['gbp_url'])) {
-                    $local['sameAs'] = array($city['gbp_url']);
-                }
-                if ($og_url !== '') {
-                    $local['image'] = $og_url;
-                }
-                $graph[] = $local;
+                // City entity emitted once in @graph (#pune / #indore / #nashik) — page references that @id.
             }
         }
 
@@ -2275,26 +2307,31 @@ if (!function_exists('marketing_schema_graph')) {
                 'areaServed'  => $area_name,
                 'url'         => $url,
             );
+            if ($city_slug !== '' && is_array($city) && !empty($city['hub_path'])) {
+                $service_node['provider'] = array('@id' => marketing_canonical_url($city['hub_path']).'#'.$city_slug);
+            }
             if ($og_url !== '') {
                 $service_node['image'] = $og_url;
             }
             $offer_price = NULL;
-            if (!empty($page_meta['service_key'])) {
-                foreach (marketing_service_catalog() as $cat) {
-                    if ($cat['key'] === $page_meta['service_key'] && !empty($cat['price_from'])) {
-                        $offer_price = (int) $cat['price_from'];
-                        break;
+            if (empty($page_meta['price_on_quote'])) {
+                if (!empty($page_meta['service_key'])) {
+                    foreach (marketing_service_catalog() as $cat) {
+                        if ($cat['key'] === $page_meta['service_key'] && !empty($cat['price_from'])) {
+                            $offer_price = (int) $cat['price_from'];
+                            break;
+                        }
                     }
                 }
-            }
-            if ($offer_price === NULL && !empty($page_meta['pricing_tiers']) && is_array($page_meta['pricing_tiers'])) {
-                foreach ($page_meta['pricing_tiers'] as $tier) {
-                    if (empty($tier['price'])) {
-                        continue;
-                    }
-                    if (preg_match('/₹([\d,]+)/', (string) $tier['price'], $m)) {
-                        $offer_price = (int) str_replace(',', '', $m[1]);
-                        break;
+                if ($offer_price === NULL && !empty($page_meta['pricing_tiers']) && is_array($page_meta['pricing_tiers'])) {
+                    foreach ($page_meta['pricing_tiers'] as $tier) {
+                        if (empty($tier['price'])) {
+                            continue;
+                        }
+                        if (preg_match('/₹([\d,]+)/', (string) $tier['price'], $m)) {
+                            $offer_price = (int) str_replace(',', '', $m[1]);
+                            break;
+                        }
                     }
                 }
             }
@@ -2742,6 +2779,16 @@ if (!function_exists('marketing_public_nav_items')) {
                 );
             }
         }
+        $services[] = array(
+            'label' => 'Car oil change',
+            'slug'  => 'services/car-oil-change',
+            'icon'  => 'oil_barrel',
+        );
+        $services[] = array(
+            'label' => 'AMC plans',
+            'slug'  => 'car-amc-plans',
+            'icon'  => 'card_membership',
+        );
         $services[] = array(
             'label'    => 'View all services',
             'slug'     => 'services',
