@@ -11,7 +11,9 @@ foreach ($pages as $path => $page) {
     if (!is_array($page)) {
         continue;
     }
-    $title = !empty($page['meta_title']) ? $page['meta_title'] : (isset($page['title']) ? $page['title'] : '');
+    $title = function_exists('marketing_page_report_title')
+        ? marketing_page_report_title($page)
+        : (!empty($page['meta_title']) ? $page['meta_title'] : (isset($page['title']) ? $page['title'] : ''));
     $desc = isset($page['meta_description']) ? $page['meta_description'] : '';
     $title_len = function_exists('mb_strlen') ? mb_strlen($title, 'UTF-8') : strlen($title);
     $desc_len = function_exists('mb_strlen') ? mb_strlen($desc, 'UTF-8') : strlen($desc);

@@ -224,6 +224,14 @@ if (!function_exists('marketing_enrich_page')) {
     {
         $path = trim((string) $path, '/');
         $svc = marketing_service_for_path($path);
+        if ($svc === NULL && !empty($page['service_key'])) {
+            foreach (marketing_service_catalog() as $row) {
+                if (!empty($row['key']) && $row['key'] === $page['service_key']) {
+                    $svc = $row;
+                    break;
+                }
+            }
+        }
         $city_name = 'Pune';
         if (!empty($page['city_slug'])) {
             $city = marketing_city_by_slug($page['city_slug']);
@@ -243,15 +251,17 @@ if (!function_exists('marketing_enrich_page')) {
                 $page['city_slug'] = 'pune';
             }
             $price = !empty($svc['price_from']) ? (int) $svc['price_from'] : 0;
+            $short = marketing_service_short_title($svc['key'], $svc['title']);
             if ($price > 0) {
-                $short = marketing_service_short_title($svc['key'], $svc['title']);
                 $page['meta_title'] = $short.' in '.$city_name.' | From ₹'.number_format($price).' | YMO';
-                $legacy_title = isset($page['title']) ? (string) $page['title'] : '';
-                if ($legacy_title === ''
-                    || strpos($legacy_title, 'Your Mechanic Online') !== false
-                    || (function_exists('mb_strlen') ? mb_strlen($legacy_title, 'UTF-8') : strlen($legacy_title)) > 60) {
-                    $page['title'] = $page['meta_title'];
-                }
+            } else {
+                $page['meta_title'] = $short.' in '.$city_name.' | Upfront Quote | YMO';
+            }
+            $legacy_title = isset($page['title']) ? (string) $page['title'] : '';
+            if ($legacy_title === ''
+                || strpos($legacy_title, 'Your Mechanic Online') !== false
+                || (function_exists('mb_strlen') ? mb_strlen($legacy_title, 'UTF-8') : strlen($legacy_title)) > 60) {
+                $page['title'] = $page['meta_title'];
             }
             if (empty($page['faq']) || !is_array($page['faq'])) {
                 $page['faq'] = marketing_service_faqs($svc['key'], $city_name);
@@ -341,6 +351,21 @@ if (!function_exists('marketing_service_short_title')) {
             'lube'                   => 'Oil & Filter Change',
         );
         return isset($map[$key]) ? $map[$key] : $fallback;
+    }
+}
+
+if (!function_exists('marketing_page_report_title')) {
+    /** Title string used by SEO CLI reports (matches front-end meta preference). */
+    function marketing_page_report_title(array $page)
+    {
+        if (!empty($page['meta_title'])) {
+            return (string) $page['meta_title'];
+        }
+        $title = isset($page['title']) ? (string) $page['title'] : '';
+        if ($title !== '' && function_exists('marketing_trim_meta_title')) {
+            return marketing_trim_meta_title($title);
+        }
+        return $title;
     }
 }
 

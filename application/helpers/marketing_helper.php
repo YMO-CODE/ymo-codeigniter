@@ -136,6 +136,7 @@ if (!function_exists('marketing_pages_data')) {
             APPPATH.'config/marketing_pages_option_a.php',
             APPPATH.'config/marketing_cities.php',
             APPPATH.'config/marketing_brands.php',
+            APPPATH.'config/marketing_locality_facts.php',
             APPPATH.'helpers/marketing_seo_growth_helper.php',
             APPPATH.'helpers/marketing_internal_links_helper.php',
             APPPATH.'helpers/marketing_seo_project_helper.php',
@@ -152,6 +153,9 @@ if (!function_exists('marketing_pages_data')) {
             $cached = include $cache_file;
             if (is_array($cached)) {
                 $pages = $cached;
+                if (function_exists('marketing_refresh_hub_page_bodies')) {
+                    $pages = marketing_refresh_hub_page_bodies($pages);
+                }
                 if (function_exists('marketing_enrich_pages')) {
                     $pages = marketing_enrich_pages($pages);
                 }
@@ -161,6 +165,9 @@ if (!function_exists('marketing_pages_data')) {
 
         $file = APPPATH.'config/marketing_pages_data.php';
         $pages = is_file($file) ? require $file : array();
+        if (function_exists('marketing_refresh_hub_page_bodies')) {
+            $pages = marketing_refresh_hub_page_bodies($pages);
+        }
         if (function_exists('marketing_enrich_pages')) {
             $pages = marketing_enrich_pages($pages);
         }

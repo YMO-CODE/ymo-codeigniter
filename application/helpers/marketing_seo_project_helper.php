@@ -645,6 +645,16 @@ if (!function_exists('marketing_seo_project_enrich_page')) {
             $page = marketing_blog_cost_guide_outline($path, $page);
             $page['page_type'] = 'blog';
         }
+        if ($path === 'why-choose-ymo') {
+            $page['meta_title'] = 'Why Choose YMO Over Doorstep Mechanics | YMO';
+            $page['title'] = $page['meta_title'];
+        }
+        if ($path === 'blog/complete-vs-periodic-car-service') {
+            $page['meta_title'] = 'Complete vs Periodic Car Service | YMO Guide';
+            if (!empty($page['title']) && (function_exists('mb_strlen') ? mb_strlen($page['title'], 'UTF-8') : strlen($page['title'])) > 60) {
+                $page['title'] = $page['meta_title'];
+            }
+        }
         if ($path === '2023/07/18/know-the-benefits-of-regular-oil-changes-for-your-car-in-summer') {
             $page['suppress_body_h1'] = TRUE;
             $page['meta_title'] = 'Summer Oil Change Benefits for Your Car | YMO';

@@ -194,6 +194,34 @@ if (!function_exists('marketing_service_city_variant_links_html')) {
     }
 }
 
+if (!function_exists('marketing_refresh_hub_page_bodies')) {
+    /**
+     * Hub HTML is built in PHP helpers — refresh on every registry load so cache never stores empty /blog or /services bodies.
+     *
+     * @param array<string,array> $pages
+     * @return array<string,array>
+     */
+    function marketing_refresh_hub_page_bodies(array $pages)
+    {
+        if (!function_exists('marketing_services_hub_intro_body')) {
+            $helper = APPPATH.'helpers/marketing_internal_links_helper.php';
+            if (is_file($helper)) {
+                require_once $helper;
+            }
+        }
+        if (!function_exists('marketing_services_hub_intro_body')) {
+            return $pages;
+        }
+        if (isset($pages['services'])) {
+            $pages['services']['body'] = marketing_services_hub_intro_body();
+        }
+        if (isset($pages['blog']) && function_exists('marketing_blog_hub_body')) {
+            $pages['blog']['body'] = marketing_blog_hub_body();
+        }
+        return $pages;
+    }
+}
+
 if (!function_exists('marketing_services_hub_expansion_links_html')) {
     /** Quote-after-inspection and expansion services (Phase 3) — crawlable from /services hub. */
     function marketing_services_hub_expansion_links_html()
@@ -216,12 +244,25 @@ if (!function_exists('marketing_services_hub_expansion_links_html')) {
                 .'<a href="/'.html_escape($row[0]).'">'.html_escape($row[1]).'</a>'
                 .' <span class="ymo-muted md-body-sm">(Pune · quote after inspection)</span></li>';
         }
+        $extra_keys = array(
+            'battery-replacement'        => 'Battery',
+            'tyres-wheel-alignment'      => 'Tyres & alignment',
+            'clutch-repair'              => 'Clutch',
+            'suspension-repair'          => 'Suspension',
+            'car-wash-detailing'         => 'Detailing',
+            'insurance-claim-assistance' => 'Insurance help',
+            'pre-purchase-inspection'    => 'Pre-purchase inspection',
+            'towing-roadside-assistance' => 'Towing',
+            'oil-change'                 => 'Oil change',
+        );
         $city_links = '';
         foreach (array('indore', 'nashik') as $city) {
             $name = ucfirst($city);
-            $city_links .= '<li class="mb-2"><a href="/services/car-battery-replacement-in-'.$city.'">Battery · '.$name.'</a> · '
-                .'<a href="/services/car-clutch-repair-in-'.$city.'">Clutch · '.$name.'</a> · '
-                .'<a href="/services/car-oil-change-in-'.$city.'">Oil change · '.$name.'</a></li>';
+            $parts = array();
+            foreach ($extra_keys as $key => $label) {
+                $parts[] = '<a href="/services/car-'.$key.'-in-'.$city.'">'.html_escape($label).'</a>';
+            }
+            $city_links .= '<li class="mb-2"><strong>'.html_escape($name).':</strong> '.implode(' · ', $parts).'</li>';
         }
 
         return '<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">Specialist services</h2>'
@@ -377,6 +418,9 @@ if (!function_exists('marketing_footer_extra_link_sections')) {
             'title' => 'Resources',
             'links' => array(
                 array('label' => 'Blog', 'slug' => 'blog'),
+                array('label' => 'FAQ', 'slug' => 'faq'),
+                array('label' => 'Privacy policy', 'slug' => 'privacy-policy'),
+                array('label' => 'About us', 'slug' => 'about-us'),
                 array('label' => 'How it works', 'slug' => 'how-it-works'),
                 array('label' => 'All brands', 'slug' => 'brands'),
                 array('label' => 'Why choose YMO', 'slug' => 'why-choose-ymo'),
