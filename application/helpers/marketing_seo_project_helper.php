@@ -647,9 +647,16 @@ if (!function_exists('marketing_seo_project_enrich_page')) {
         }
         if ($path === '2023/07/18/know-the-benefits-of-regular-oil-changes-for-your-car-in-summer') {
             $page['suppress_body_h1'] = TRUE;
+            $page['meta_title'] = 'Summer Oil Change Benefits for Your Car | YMO';
+            $page['title'] = $page['meta_title'];
+            $page['meta_description'] = 'Why summer oil changes matter for engine cooling, fuel use, and wear — plus how to book an oil change in Pune with free pick-up from YMO.';
+            $page['meta_robots'] = 'noindex, follow';
             if (!empty($page['body'])) {
                 $page['body'] = preg_replace('/<h1[^>]*>.*?<\/h1>/is', '', $page['body'], 1);
             }
+            $page['body'] = ($page['body'] ?? '')
+                .'<p class="md-body-md mt-4"><a href="/blog/best-oil-change-service-in-pune">Read our updated oil change guide for Pune</a> · '
+                .'<a href="/services/car-oil-change">Book car oil change</a></p>';
         }
         if (!empty($page['meta_title'])) {
             $page['meta_title'] = marketing_trim_meta_title($page['meta_title']);
@@ -795,20 +802,76 @@ if (!function_exists('marketing_city_hub_discovery_links_html')) {
     }
 }
 
+if (!function_exists('marketing_locality_facts_config')) {
+    /** @return array<string,array<string,array>> */
+    function marketing_locality_facts_config()
+    {
+        static $facts = NULL;
+        if ($facts !== NULL) {
+            return $facts;
+        }
+        $file = APPPATH.'config/marketing_locality_facts.php';
+        $facts = is_file($file) ? require $file : array();
+        return is_array($facts) ? $facts : array();
+    }
+}
+
+if (!function_exists('marketing_locality_facts_for_page')) {
+    /**
+     * @return array{landmarks:string,drive_context:string,local_jobs:string}|null
+     */
+    function marketing_locality_facts_for_page(array $page)
+    {
+        $city_slug = !empty($page['city_slug']) ? $page['city_slug'] : '';
+        $loc_key = !empty($page['locality_slug']) ? $page['locality_slug'] : '';
+        if ($city_slug === '' || $loc_key === '') {
+            return NULL;
+        }
+        $cfg = marketing_locality_facts_config();
+        if (!isset($cfg[$city_slug][$loc_key]) || !is_array($cfg[$city_slug][$loc_key])) {
+            return NULL;
+        }
+        $row = $cfg[$city_slug][$loc_key];
+        $out = array(
+            'landmarks'     => isset($row['landmarks']) ? (string) $row['landmarks'] : '',
+            'drive_context' => isset($row['drive_context']) ? (string) $row['drive_context'] : '',
+            'local_jobs'    => isset($row['local_jobs']) ? (string) $row['local_jobs'] : '',
+        );
+        if ($out['landmarks'] === '' && $out['drive_context'] === '' && $out['local_jobs'] === '') {
+            return NULL;
+        }
+        return $out;
+    }
+}
+
 if (!function_exists('marketing_locality_uniqueness_placeholder_html')) {
     function marketing_locality_uniqueness_placeholder_html($path, array $page)
     {
+        if (strpos($page['body'] ?? '', 'ymo-locality-unique') !== FALSE) {
+            return '';
+        }
         $label = !empty($page['locality_label']) ? $page['locality_label'] : 'this area';
         $city_slug = !empty($page['city_slug']) ? $page['city_slug'] : 'pune';
         $city_name = ucfirst($city_slug);
-        $nearby = !empty($page['locality_slug']) ? $page['locality_slug'] : '';
-        return '<div class="ymo-content-section mb-5 ymo-locality-unique"><h2 class="md-headline-md mb-2">In '.$label.'</h2>'
-            .'<p class="md-body-md mb-3">We offer free pick-up and drop across '.$label.' and neighbouring streets in '.$city_name.'. '
-            .'Same-day slots Mon–Sat, 9 AM–8 PM; we call before collection and usually arrive within 60–90 minutes of your confirmed window.</p>'
-            .'<p class="md-body-md mb-3"><strong>Popular cars we service here:</strong> Maruti Swift and WagonR, Hyundai i20 and Creta, Tata Nexon, Honda City, and Mahindra SUVs — see all <a href="/brands">brands we service</a>.</p>'
-            .'<p class="md-body-md mb-3"><strong>Common jobs in '.$label.':</strong> periodic service before outstation trips, AC gas and cooling checks in summer, brake pad replacement after city driving, and single-panel denting from tight parking.</p>'
-            .'<p class="md-body-md mb-3"><strong>For pick-up:</strong> share your society, office, or shop name and a nearby landmark when we confirm — it helps our driver find you quickly.</p>'
-            .'<p class="md-body-md mb-0"><strong>More in '.$city_name.':</strong> <a href="/locations/'.$city_slug.'">All areas we serve in '.$city_name.'</a> · <a href="/services">Service catalogue</a>.</p></div>';
+        $facts = marketing_locality_facts_for_page($page);
+
+        $html = '<div class="ymo-content-section mb-5 ymo-locality-unique"><h2 class="md-headline-md mb-2">Car service in '.$label.'</h2>';
+        if ($facts !== NULL) {
+            $html .= '<p class="md-body-md mb-3"><strong>Landmarks we use for pick-up:</strong> '
+                .html_escape($facts['landmarks']).'. Share your society, office, or shop name plus a pin — our driver calls before arrival.</p>';
+            if ($facts['drive_context'] !== '') {
+                $html .= '<p class="md-body-md mb-3"><strong>Timing:</strong> '.html_escape($facts['drive_context']).' Same-day slots Mon–Sat, 9 AM–8 PM.</p>';
+            }
+            if ($facts['local_jobs'] !== '') {
+                $html .= '<p class="md-body-md mb-3"><strong>Often booked here:</strong> '.html_escape($facts['local_jobs']).'</p>';
+            }
+        } else {
+            $html .= '<p class="md-body-md mb-3">Free pick-up and drop across '.$label.' and nearby streets in '.$city_name.'. '
+                .'Same-day slots Mon–Sat, 9 AM–8 PM; we call before collection.</p>';
+        }
+        $html .= '<p class="md-body-md mb-0"><a href="/locations/'.$city_slug.'">All '.$city_name.' areas</a> · '
+            .'<a href="/services">Service catalogue</a> · <a href="/brands">Brands we service</a>.</p></div>';
+        return $html;
     }
 }
 

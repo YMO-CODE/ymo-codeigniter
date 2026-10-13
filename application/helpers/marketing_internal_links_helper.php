@@ -194,6 +194,44 @@ if (!function_exists('marketing_service_city_variant_links_html')) {
     }
 }
 
+if (!function_exists('marketing_services_hub_expansion_links_html')) {
+    /** Quote-after-inspection and expansion services (Phase 3) — crawlable from /services hub. */
+    function marketing_services_hub_expansion_links_html()
+    {
+        $pune = array(
+            array('services/car-battery-replacement', 'Battery replacement'),
+            array('services/car-tyres-wheel-alignment', 'Tyres & wheel alignment'),
+            array('services/car-clutch-repair', 'Clutch repair'),
+            array('services/car-suspension-repair', 'Suspension repair'),
+            array('services/car-car-wash-detailing', 'Car wash & detailing'),
+            array('services/car-ceramic-coating', 'Ceramic coating'),
+            array('services/car-insurance-claim-assistance', 'Insurance claim help'),
+            array('services/car-pre-purchase-inspection', 'Pre-purchase inspection'),
+            array('services/car-towing-roadside-assistance', 'Towing & roadside assist'),
+            array('services/car-oil-change', 'Express oil change'),
+        );
+        $items = '';
+        foreach ($pune as $i => $row) {
+            $items .= '<li class="'.($i < count($pune) - 1 ? 'mb-2' : 'mb-0').'">'
+                .'<a href="/'.html_escape($row[0]).'">'.html_escape($row[1]).'</a>'
+                .' <span class="ymo-muted md-body-sm">(Pune · quote after inspection)</span></li>';
+        }
+        $city_links = '';
+        foreach (array('indore', 'nashik') as $city) {
+            $name = ucfirst($city);
+            $city_links .= '<li class="mb-2"><a href="/services/car-battery-replacement-in-'.$city.'">Battery · '.$name.'</a> · '
+                .'<a href="/services/car-clutch-repair-in-'.$city.'">Clutch · '.$name.'</a> · '
+                .'<a href="/services/car-oil-change-in-'.$city.'">Oil change · '.$name.'</a></li>';
+        }
+
+        return '<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">Specialist services</h2>'
+            .'<p class="md-body-md mb-3">These jobs need a vehicle check first — we quote upfront before any work. Free pick-up in Pune, Indore, and Nashik.</p>'
+            .'<ul class="md-body-md mb-4">'.$items.'</ul>'
+            .'<h3 class="md-title-md mb-2">Same services in other cities</h3>'
+            .'<ul class="md-body-md mb-0">'.$city_links.'</ul></div>';
+    }
+}
+
 if (!function_exists('marketing_services_hub_intro_body')) {
     /** Crawlable intro block for /services hub. */
     function marketing_services_hub_intro_body()
@@ -204,10 +242,12 @@ if (!function_exists('marketing_services_hub_intro_body')) {
             .'<li class="mb-2"><a href="/locations/indore">Car servicing in Indore</a></li>'
             .'<li class="mb-2"><a href="/locations/nashik">Car servicing in Nashik</a></li>'
             .'<li class="mb-2"><a href="/brands">Car service by brand</a></li>'
+            .'<li class="mb-2"><a href="/car-amc-plans">Annual maintenance (AMC) plans</a></li>'
             .'<li class="mb-2"><a href="/blog/best-oil-change-service-in-pune">Oil change in Pune</a></li>'
             .'<li class="mb-2"><a href="/blog/car-denting-painting-cost-pune">Denting cost guide</a></li>'
             .'<li class="mb-0"><a href="/blog/doorstep-car-service-pune-worth-it">Doorstep service guide</a></li>'
-            .'</ul></div>';
+            .'</ul></div>'
+            .marketing_services_hub_expansion_links_html();
     }
 }
 

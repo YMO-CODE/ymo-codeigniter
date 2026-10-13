@@ -130,6 +130,9 @@ class Marketing_Controller extends MY_Controller
         $this->output->set_header('Cache-Control: no-cache, must-revalidate');
         $this->output->set_header('Pragma: no-cache');
         $data = array_merge($this->page_meta, $data);
+        if (!empty($data['meta_robots'])) {
+            $this->output->set_header('X-Robots-Tag: '.$data['meta_robots']);
+        }
         if (empty($data['canonical_path'])) {
             $data['canonical_path'] = trim($this->uri->uri_string(), '/');
         }

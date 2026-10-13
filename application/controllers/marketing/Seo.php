@@ -25,6 +25,9 @@ class Seo extends Marketing_Controller
             if (!is_array($page)) {
                 continue;
             }
+            if (!empty($page['meta_robots']) && stripos((string) $page['meta_robots'], 'noindex') !== FALSE) {
+                continue;
+            }
             $lastmod = !empty($page['updated_at']) ? $page['updated_at'] : '2026-08-01';
             $urls[] = array(
                 'loc'        => marketing_canonical_url($path),

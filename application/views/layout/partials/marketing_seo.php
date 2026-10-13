@@ -36,6 +36,9 @@ $og_image_alt = isset($h1) && $h1 !== '' ? $h1 : $page_title;
 $schema = marketing_schema_graph($page_meta);
 ?>
 <meta name="description" content="<?= html_escape($description); ?>">
+<?php if (!empty($meta_robots)) : ?>
+<meta name="robots" content="<?= html_escape($meta_robots); ?>">
+<?php endif; ?>
 <link rel="canonical" href="<?= html_escape($canonical); ?>">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="<?= html_escape($brand); ?>">

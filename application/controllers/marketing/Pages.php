@@ -50,6 +50,7 @@ class Pages extends Marketing_Controller
             'pricing_tiers'    => isset($page['pricing_tiers']) ? $page['pricing_tiers'] : array(),
             'og_image'         => isset($page['og_image']) ? $page['og_image'] : '',
             'updated_at'       => isset($page['updated_at']) ? $page['updated_at'] : '',
+            'meta_robots'      => isset($page['meta_robots']) ? $page['meta_robots'] : '',
         );
         $view = isset($page['view']) ? $page['view'] : 'marketing/page';
         $body = isset($page['body']) ? $page['body'] : '';
