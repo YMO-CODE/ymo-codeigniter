@@ -71,6 +71,7 @@ if (!function_exists('marketing_cli_load_helpers')) {
             'marketing_seo_enhancements_helper.php',
             'marketing_seo_project_helper.php',
             'marketing_internal_links_helper.php',
+            'marketing_similarity_helper.php',
         ) as $file) {
             $path = APPPATH.'helpers/'.$file;
             if (is_file($path)) {

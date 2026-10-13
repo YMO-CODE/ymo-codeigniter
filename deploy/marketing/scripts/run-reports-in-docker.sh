@@ -9,6 +9,8 @@ cd "$ROOT"
 COMPOSE="docker compose -f docker-compose.yml -f deploy/docker-compose.vps.yml -f deploy/docker-compose.prod.yml"
 PHP="${COMPOSE} exec -T app php"
 
+export SIMILARITY_MODE="${SIMILARITY_MODE:-strict}"
+
 for script in meta-length-report.php similarity-report.php inlinks-report.php; do
   path="/var/www/deploy/marketing/scripts/${script}"
   echo "==> ${script}"
