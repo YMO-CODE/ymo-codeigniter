@@ -553,6 +553,11 @@ if (!function_exists('marketing_expansion_pages')) {
             'meta_description' => 'Annual maintenance contracts for car servicing in Pune, Indore and Nashik — 2–3 scheduled visits per year with free pick-up. From ₹5,499/year. Book with Your Mechanic Online.',
             'h1'               => 'Car AMC plans',
             'intro'            => 'Save on periodic service with YMO maintenance plans — ideal if you prefer fixed annual budgeting over one-off bookings.',
+            'quick_answer'     => 'Annual maintenance plans for Pune, Indore, and Nashik — scheduled periodic visits, free pick-up each time, and upfront pricing from ₹5,499/year.',
+            'hero_split'       => TRUE,
+            'hero_eyebrow'     => 'Maintenance plans · Pune, Indore & Nashik',
+            'hero_eyebrow_icon'=> 'autorenew',
+            'og_image'         => '/assets/img/marketing/2022/03/complete-car-servicing-in-pune-1-scaled.jpg',
             'body'             => '<p class="md-body-md mb-4">Indicative annual plans for hatchback, sedan, and SUV owners in Pune, Indore, and Nashik. Final price depends on your car model and oil grade — we confirm before you pay.</p>'
                 .'<div class="row g-4">'
                 .'<div class="col-md-4"><div class="md-card-elevated p-4"><h3 class="md-title-md">Basic AMC</h3>'

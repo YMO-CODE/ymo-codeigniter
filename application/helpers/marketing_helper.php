@@ -1748,6 +1748,10 @@ if (!function_exists('marketing_hero_context')) {
             $hero_type = 'minimal';
         }
 
+        if (!empty($page['hero_split'])) {
+            $hero_type = 'hub';
+        }
+
         $h1 = isset($page['h1']) ? trim((string) $page['h1']) : '';
         if ($h1 === '' && isset($page['title'])) {
             $h1 = trim((string) $page['title']);
@@ -1821,14 +1825,19 @@ if (!function_exists('marketing_hero_context')) {
             $eyebrow = $locality_label;
             $eyebrow_icon = 'location_on';
         } elseif ($hero_type === 'hub') {
-            if ($city && !empty($city['name'])) {
+            if (!empty($page['hero_eyebrow'])) {
+                $eyebrow = trim((string) $page['hero_eyebrow']);
+                $eyebrow_icon = !empty($page['hero_eyebrow_icon']) ? (string) $page['hero_eyebrow_icon'] : 'directions_car';
+            } elseif ($city && !empty($city['name'])) {
                 $eyebrow = 'Car services · '.$city['name'];
+                $eyebrow_icon = 'directions_car';
             } elseif ($path === 'services') {
                 $eyebrow = 'Car services · Pune, Indore & Nashik';
+                $eyebrow_icon = 'directions_car';
             } else {
                 $eyebrow = 'Car services';
+                $eyebrow_icon = 'directions_car';
             }
-            $eyebrow_icon = 'directions_car';
         }
 
         $chips = array();
