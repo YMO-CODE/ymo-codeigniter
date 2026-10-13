@@ -70,9 +70,8 @@ if (!function_exists('marketing_similarity_should_compare')) {
                 return FALSE;
 
             case 'blog':
-                $city_a = marketing_similarity_blog_city_slug($path_a, $page_a);
-                $city_b = marketing_similarity_blog_city_slug($path_b, $page_b);
-                return $city_a === $city_b;
+                // Each post targets a different keyword (Swift cost vs AC cost vs denting) — not locality-style cannibalization.
+                return FALSE;
 
             case 'hub':
                 return FALSE;
