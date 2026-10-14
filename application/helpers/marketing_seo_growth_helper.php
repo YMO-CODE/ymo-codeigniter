@@ -152,12 +152,24 @@ if (!function_exists('marketing_seo_growth_neighbourhood_cards')) {
     /** @param array<int,array{0:string,1:string,2:string}> $items */
     function marketing_seo_growth_neighbourhood_cards(array $items)
     {
-        $html = '<div class="row g-4">';
+        $v2 = function_exists('marketing_is_theme_v2') && marketing_is_theme_v2('', array());
+        $html = '<div class="row g-4'.($v2 ? ' ymo-v2-card-grid' : '').'">';
         foreach ($items as $row) {
-            $html .= '<div class="col-md-6 col-lg-4"><a href="'.html_escape($row[1]).'" class="md-card-elevated h-100 d-block text-decoration-none marketing-service-card">'
-                .'<span class="mi mi-xl md-icon-primary">location_on</span>'
-                .'<h3 class="md-title-md mt-3 mb-1 text-dark">'.html_escape($row[0]).'</h3>'
-                .'<p class="md-body-md mb-0">'.html_escape($row[2]).'</p></a></div>';
+            $html .= '<div class="col-md-6 col-lg-4'.($v2 ? ' d-flex' : '').'">';
+            if ($v2) {
+                $face = '<span class="ymo-v2-card__icon" aria-hidden="true"><span class="mi">location_on</span></span>'
+                    .'<h3 class="ymo-v2-card__title md-title-md">'.html_escape($row[0]).'</h3>'
+                    .'<p class="ymo-v2-card__teaser md-body-md">'.html_escape($row[2]).'</p>'
+                    .'<span class="ymo-v2-card__arrow mi" aria-hidden="true">arrow_forward</span>';
+                $html .= '<a href="'.html_escape($row[1]).'" class="ymo-v2-card ymo-v2-card--interactive ymo-v2-card--duplex h-100 marketing-service-card">'
+                    .marketing_v2_duplex_faces_html($face).'</a>';
+            } else {
+                $html .= '<a href="'.html_escape($row[1]).'" class="md-card-elevated h-100 d-block text-decoration-none marketing-service-card">'
+                    .'<span class="mi mi-xl md-icon-primary">location_on</span>'
+                    .'<h3 class="md-title-md mt-3 mb-1 text-dark">'.html_escape($row[0]).'</h3>'
+                    .'<p class="md-body-md mb-0">'.html_escape($row[2]).'</p></a>';
+            }
+            $html .= '</div>';
         }
         return $html.'</div>';
     }
@@ -535,7 +547,7 @@ if (!function_exists('marketing_seo_growth_blog_posts')) {
                 'page_type'        => 'blog',
                 'city_slug'        => 'pune',
                 'updated_at'       => $today,
-                'og_image'         => '/assets/img/marketing/revslider/main/image_01.jpg',
+                'og_image'         => '/assets/img/marketing/2022/03/complete-car-servicing-in-pune-1-scaled.jpg',
                 'view'             => 'marketing/page',
             );
         }
@@ -555,7 +567,7 @@ if (!function_exists('marketing_seo_growth_blog_posts')) {
                     'page_type'        => 'blog',
                     'city_slug'        => !empty($entry['city_slug']) ? $entry['city_slug'] : 'pune',
                     'updated_at'       => $today,
-                    'og_image'         => '/assets/img/marketing/revslider/main/image_01.jpg',
+                    'og_image'         => '/assets/img/marketing/2022/03/complete-car-servicing-in-pune-1-scaled.jpg',
                     'view'             => 'marketing/page',
                 );
                 if (!empty($entry['meta_title'])) {
@@ -616,6 +628,9 @@ if (!function_exists('marketing_seo_growth_comparison_page')) {
             'h1'               => 'Why choose YMO?',
             'intro'            => 'Workshop-grade car care with the convenience of free pick-up - an honest comparison.',
             'quick_answer'     => 'YMO combines free pick-up with full workshop services - AC repair, denting, polishing, and luxury car care.',
+            'hero_split'       => TRUE,
+            'hero_eyebrow'     => 'Pick-up + workshop · Pune, Indore & Nashik',
+            'hero_eyebrow_icon'=> 'build',
             'body'             => $body,
             'page_type'        => 'minimal',
             'updated_at'       => $today,
@@ -624,7 +639,7 @@ if (!function_exists('marketing_seo_growth_comparison_page')) {
                 array('q' => 'Does YMO still offer doorstep convenience?', 'a' => 'Yes. We provide free pick-up and drop so you do not visit a garage or wait on-site.'),
                 array('q' => 'Can YMO service luxury cars?', 'a' => 'Yes. We offer premium and luxury car servicing including Mercedes, BMW, and Audi in Pune.'),
             ),
-            'og_image'         => '/assets/img/marketing/revslider/main/image_01.jpg',
+            'og_image'         => '/assets/img/marketing/2022/03/complete-car-servicing-in-pune-1-scaled.jpg',
             'view'             => 'marketing/page',
         );
     }

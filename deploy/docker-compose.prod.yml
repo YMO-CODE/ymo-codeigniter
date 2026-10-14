@@ -19,6 +19,8 @@ services:
       YMO_APP_URL: ${YMO_APP_URL:?Set YMO_APP_URL in .env}
       YMO_PUBLIC_APP_URL: ${YMO_PUBLIC_APP_URL:-${YMO_APP_URL}}
       YMO_MARKETING_APP_URL: ${YMO_MARKETING_APP_URL:?Set YMO_MARKETING_APP_URL in .env}
+      # Optional: force v2 (config marketing_theme.php v2_all=TRUE is default). Set v1 to roll back site-wide.
+      YMO_MARKETING_THEME: ${YMO_MARKETING_THEME:-}
       YMO_ADMIN_APP_URL: ${YMO_ADMIN_APP_URL:-}
       # Mail/SMS/CRM: loaded from env_file (.env) only — do not set empty defaults here
       # or they override env_file and break SMTP after recreate.

@@ -142,6 +142,23 @@ class Marketing_Controller extends MY_Controller
         if (isset($data['page']) && is_array($data['page'])) {
             $data['page']['og_image'] = $resolved_og;
         }
+        $path = isset($data['canonical_path']) ? (string) $data['canonical_path'] : '';
+        $page_row = (isset($data['page']) && is_array($data['page'])) ? $data['page'] : array();
+        $view = marketing_marketing_view($view, $path, $page_row);
+        $theme_v2 = marketing_is_theme_v2($path, $page_row);
+        $data['marketing_theme_v2'] = $theme_v2;
+        if (empty($data['page_class'])) {
+            $page_class = $theme_v2
+                ? 'ymo-marketing md-theme ymo-theme-v2'
+                : 'ymo-marketing md-theme';
+            if ($theme_v2 && function_exists('marketing_v2_card_skin') && marketing_v2_card_skin() === 'instrument') {
+                $page_class .= ' ymo-v2-skin-instrument';
+            }
+            $data['page_class'] = $page_class;
+        }
+        $data['marketing_card_skin'] = ($theme_v2 && function_exists('marketing_v2_card_skin'))
+            ? marketing_v2_card_skin()
+            : 'default';
         $data['content'] = $this->load->view($view, $data, TRUE);
         $this->load->view('layout/marketing', $data);
     }

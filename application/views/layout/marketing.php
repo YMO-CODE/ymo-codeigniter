@@ -22,7 +22,10 @@ $bs_js_v = (int) @filemtime(FCPATH.$bs_js_file);
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="icon" type="image/png" href="<?= base_url('assets/img/logo.png'); ?>">
     <meta name="theme-color" content="#3a6f37">
-    <?php $this->load->view('layout/partials/marketing_head_assets'); ?>
+    <?php $this->load->view('layout/partials/marketing_head_assets', array(
+        'marketing_theme_v2' => !empty($marketing_theme_v2),
+        'marketing_card_skin' => isset($marketing_card_skin) ? $marketing_card_skin : 'default',
+    )); ?>
     <?php $this->load->view('layout/partials/marketing_seo'); ?>
 </head>
 <body class="<?= html_escape($body_class); ?>"

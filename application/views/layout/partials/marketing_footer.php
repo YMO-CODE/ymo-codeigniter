@@ -16,15 +16,148 @@ foreach ($footer_sections as $section) {
         $footer_other_sections[] = $section;
     }
 }
+$footer_v2 = function_exists('marketing_is_theme_v2') && marketing_is_theme_v2('', array());
+$phone_tel = preg_replace('/[^+\d]/', '', (string) $phone);
 ?>
+<?php if ($footer_v2): ?>
+<footer class="ymo-footer ymo-v2-footer">
+    <div class="container ymo-v2-footer__inner">
+        <div class="ymo-v2-footer__masthead">
+            <div class="ymo-v2-footer__identity">
+                <?= function_exists('marketing_brand_logo_html')
+                    ? marketing_brand_logo_html(array('class' => 'ymo-footer-logo ymo-v2-footer__logo', 'width' => 140, 'height' => 52, 'lazy' => TRUE))
+                    : '<img src="'.html_escape(base_url('assets/img/logo.png')).'" alt="'.html_escape($brand).'" class="ymo-footer-logo ymo-v2-footer__logo" width="140" height="52" loading="lazy" decoding="async">'; ?>
+                <p class="ymo-v2-footer__tagline">Periodic service, AC repair, denting &amp; polishing — book online with free pick-up in Pune, Indore, and Nashik.</p>
+            </div>
+            <div class="ymo-v2-footer__reach" aria-label="Contact Your Mechanic Online">
+                <div class="ymo-v2-footer__reach-grid">
+                    <a class="ymo-v2-footer__reach-link" href="tel:<?= html_escape($phone_tel); ?>">
+                        <span class="mi" aria-hidden="true">call</span>
+                        <span class="ymo-v2-footer__reach-text">
+                            <span class="ymo-v2-footer__reach-label">Phone</span>
+                            <span class="ymo-v2-footer__reach-value"><?= html_escape($phone); ?></span>
+                        </span>
+                    </a>
+                    <a class="ymo-v2-footer__reach-link" href="mailto:<?= html_escape($mail); ?>">
+                        <span class="mi" aria-hidden="true">mail</span>
+                        <span class="ymo-v2-footer__reach-text">
+                            <span class="ymo-v2-footer__reach-label">Email</span>
+                            <span class="ymo-v2-footer__reach-value"><?= html_escape($mail); ?></span>
+                        </span>
+                    </a>
+                </div>
+                <?php if ($instagram !== ''): ?>
+                <p class="ymo-v2-footer__social">
+                    <a href="<?= html_escape($instagram); ?>" target="_blank" rel="noopener noreferrer">Instagram</a>
+                    <span aria-hidden="true">·</span>
+                    <a href="<?= html_escape($linkedin); ?>" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                </p>
+                <?php endif; ?>
+                <div class="ymo-v2-footer__actions">
+                    <a href="<?= html_escape(ymo_booking_url('quick-book')); ?>" class="md-btn md-btn--filled md-btn--sm">Quick book</a>
+                    <a href="<?= html_escape(ymo_booking_url('packages')); ?>" class="md-btn md-btn--outlined md-btn--sm">Packages</a>
+                </div>
+            </div>
+        </div>
+
+        <nav class="ymo-v2-footer__links" aria-label="Footer navigation">
+            <div class="ymo-v2-footer__col">
+                <p class="ymo-v2-footer__heading">Company</p>
+                <ul class="ymo-v2-footer__list">
+                    <li><a href="<?= site_url('about-us'); ?>">About</a></li>
+                    <li><a href="<?= site_url('contact-us'); ?>">Contact</a></li>
+                    <li><a href="<?= site_url('why-choose-ymo'); ?>">Why choose YMO</a></li>
+                    <li><a href="<?= site_url('pricing'); ?>">Pricing</a></li>
+                    <li><a href="<?= site_url('how-it-works'); ?>">How it works</a></li>
+                    <li><a href="<?= site_url('faq'); ?>">FAQ</a></li>
+                </ul>
+            </div>
+            <div class="ymo-v2-footer__col">
+                <p class="ymo-v2-footer__heading">Policies</p>
+                <ul class="ymo-v2-footer__list">
+                    <li><a href="<?= site_url('privacy-policy'); ?>">Privacy policy</a></li>
+                    <li><a href="<?= site_url('terms-and-conditions'); ?>">Terms</a></li>
+                    <li><a href="<?= site_url('refund-and-cancellation-policy'); ?>">Refunds</a></li>
+                    <li><a href="<?= site_url('warranty'); ?>">Warranty</a></li>
+                    <li><a href="<?= site_url('reviews'); ?>">Reviews</a></li>
+                </ul>
+            </div>
+            <div class="ymo-v2-footer__col">
+                <p class="ymo-v2-footer__heading">Cities &amp; brands</p>
+                <ul class="ymo-v2-footer__list">
+                    <li><a href="<?= site_url('locations/pune'); ?>">Pune</a></li>
+                    <li><a href="<?= site_url('locations/indore'); ?>">Indore</a></li>
+                    <li><a href="<?= site_url('locations/nashik'); ?>">Nashik</a></li>
+                    <li><a href="<?= site_url('brands'); ?>">All brands</a></li>
+                </ul>
+            </div>
+            <?php foreach ($footer_other_sections as $section): ?>
+            <div class="ymo-v2-footer__col">
+                <p class="ymo-v2-footer__heading"><?= html_escape($section['title']); ?></p>
+                <ul class="ymo-v2-footer__list">
+                    <?php foreach ($section['links'] as $link): ?>
+                    <li><a href="<?= site_url($link['slug']); ?>"><?= html_escape($link['label']); ?></a></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+            <?php endforeach; ?>
+        </nav>
+
+        <?php if ($footer_city_sections !== array()): ?>
+        <details class="ymo-footer-areas ymo-v2-footer__areas">
+            <summary class="ymo-footer-areas__summary">Browse service areas in Pune, Indore &amp; Nashik</summary>
+            <div class="ymo-footer-areas__body">
+                <div class="row g-3 g-lg-4">
+                    <?php foreach ($footer_city_sections as $section): ?>
+                    <div class="col-md-4">
+                        <p class="ymo-footer-areas__city"><?= html_escape($section['title']); ?></p>
+                        <ul class="ymo-footer-links ymo-footer-links--cols-2">
+                            <?php foreach ($section['links'] as $link): ?>
+                            <li class="<?= !empty($link['featured']) ? 'ymo-footer-links__hub' : ''; ?>">
+                                <a href="<?= site_url($link['slug']); ?>"><?= html_escape($link['label']); ?></a>
+                            </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </details>
+        <?php endif; ?>
+
+        <div class="ymo-v2-footer__bottom">
+            <span>&copy; <?= date('Y'); ?> <?= html_escape($brand); ?>. All rights reserved.</span>
+        </div>
+    </div>
+</footer>
+<?php else: ?>
 <footer class="ymo-footer">
     <div class="container">
         <div class="ymo-footer-main">
-            <div class="ymo-footer-brand">
-                <?= function_exists('marketing_brand_logo_html') ? marketing_brand_logo_html(array('class' => 'ymo-footer-logo mb-3', 'width' => 132, 'height' => 48, 'lazy' => TRUE)) : '<img src="'.html_escape(base_url('assets/img/logo.png')).'" alt="'.html_escape($brand).'" class="ymo-footer-logo mb-3" width="132" height="48" loading="lazy" decoding="async">'; ?>
-                <p class="ymo-footer-tagline mb-0">Periodic service, AC repair, denting &amp; polishing - book online in minutes.</p>
+            <div class="ymo-footer-top">
+                <div class="ymo-footer-brand">
+                    <?= function_exists('marketing_brand_logo_html') ? marketing_brand_logo_html(array('class' => 'ymo-footer-logo mb-3', 'width' => 132, 'height' => 48, 'lazy' => TRUE)) : '<img src="'.html_escape(base_url('assets/img/logo.png')).'" alt="'.html_escape($brand).'" class="ymo-footer-logo mb-3" width="132" height="48" loading="lazy" decoding="async">'; ?>
+                    <p class="ymo-footer-tagline mb-0">Periodic service, AC repair, denting &amp; polishing - book online in minutes.</p>
+                </div>
+                <div class="ymo-footer-aside">
+                    <p class="ymo-footer-heading">Need a hand?</p>
+                    <ul class="ymo-footer-links ymo-footer-links--contact">
+                        <li><a href="tel:<?= html_escape($phone_tel); ?>"><?= html_escape($phone); ?></a></li>
+                        <li><a href="mailto:<?= html_escape($mail); ?>"><?= html_escape($mail); ?></a></li>
+                    </ul>
+                    <?php if ($instagram !== ''): ?>
+                    <p class="ymo-footer-social">
+                        <a href="<?= html_escape($instagram); ?>" target="_blank" rel="noopener noreferrer">Instagram</a>
+                        <span aria-hidden="true"> · </span>
+                        <a href="<?= html_escape($linkedin); ?>" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                    </p>
+                    <?php endif; ?>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="<?= html_escape(ymo_booking_url('quick-book')); ?>" class="md-btn md-btn--filled md-btn--sm">Quick book</a>
+                        <a href="<?= html_escape(ymo_booking_url('packages')); ?>" class="md-btn md-btn--tonal md-btn--sm">Packages</a>
+                    </div>
+                </div>
             </div>
-
             <nav class="ymo-footer-nav" aria-label="Footer navigation">
                 <div class="ymo-footer-nav-col">
                     <p class="ymo-footer-heading">Company</p>
@@ -32,14 +165,9 @@ foreach ($footer_sections as $section) {
                         <li><a href="<?= site_url('about-us'); ?>">About</a></li>
                         <li><a href="<?= site_url('contact-us'); ?>">Contact</a></li>
                         <li><a href="<?= site_url('why-choose-ymo'); ?>">Why choose YMO</a></li>
-                        <li><a href="<?= site_url('privacy-policy'); ?>">Privacy policy</a></li>
-                        <li><a href="<?= site_url('terms-and-conditions'); ?>">Terms</a></li>
-                        <li><a href="<?= site_url('refund-and-cancellation-policy'); ?>">Refunds</a></li>
-                        <li><a href="<?= site_url('warranty'); ?>">Warranty</a></li>
-                        <li><a href="<?= site_url('reviews'); ?>">Reviews</a></li>
                         <li><a href="<?= site_url('pricing'); ?>">Pricing</a></li>
-                        <li><a href="<?= site_url('faq'); ?>">FAQ</a></li>
                         <li><a href="<?= site_url('how-it-works'); ?>">How it works</a></li>
+                        <li><a href="<?= site_url('faq'); ?>">FAQ</a></li>
                     </ul>
                 </div>
                 <div class="ymo-footer-nav-col">
@@ -62,27 +190,7 @@ foreach ($footer_sections as $section) {
                 </div>
                 <?php endforeach; ?>
             </nav>
-
-            <div class="ymo-footer-aside">
-                <p class="ymo-footer-heading">Need a hand?</p>
-                <ul class="ymo-footer-links ymo-footer-links--contact">
-                    <li><a href="tel:<?= html_escape(preg_replace('/[^+\d]/', '', $phone)); ?>"><?= html_escape($phone); ?></a></li>
-                    <li><a href="mailto:<?= html_escape($mail); ?>"><?= html_escape($mail); ?></a></li>
-                </ul>
-                <?php if ($instagram !== ''): ?>
-                <p class="ymo-footer-social">
-                    <a href="<?= html_escape($instagram); ?>" target="_blank" rel="noopener noreferrer">Instagram</a>
-                    <span aria-hidden="true"> · </span>
-                    <a href="<?= html_escape($linkedin); ?>" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-                </p>
-                <?php endif; ?>
-                <div class="d-flex flex-wrap gap-2">
-                    <a href="<?= html_escape(ymo_booking_url('quick-book')); ?>" class="md-btn md-btn--filled md-btn--sm">Quick book</a>
-                    <a href="<?= html_escape(ymo_booking_url('packages')); ?>" class="md-btn md-btn--tonal md-btn--sm">Packages</a>
-                </div>
-            </div>
         </div>
-
         <?php if ($footer_city_sections !== array()): ?>
         <details class="ymo-footer-areas">
             <summary class="ymo-footer-areas__summary">Browse service areas in Pune, Indore &amp; Nashik</summary>
@@ -104,9 +212,9 @@ foreach ($footer_sections as $section) {
             </div>
         </details>
         <?php endif; ?>
-
         <div class="ymo-footer-bottom">
             <span>&copy; <?= date('Y'); ?> <?= html_escape($brand); ?>. All rights reserved.</span>
         </div>
     </div>
 </footer>
+<?php endif; ?>

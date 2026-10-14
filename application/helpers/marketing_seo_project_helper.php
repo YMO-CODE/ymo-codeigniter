@@ -100,10 +100,15 @@ if (!function_exists('marketing_render_reviews_cards')) {
         if ($limit > 0) {
             $rows = array_slice($rows, 0, $limit);
         }
-        $html = '<div class="row g-4">';
+        $v2  = function_exists('marketing_is_theme_v2') && marketing_is_theme_v2('', array());
+        $html = '<div class="row g-4'.($v2 ? ' ymo-v2-card-grid' : '').'">';
         foreach ($rows as $row) {
             $stars = str_repeat('★', (int) ($row['rating'] ?? 5));
-            $html .= '<div class="col-md-4"><div class="md-card-elevated h-100 p-4">';
+            $review_card_class = 'md-card-elevated h-100 p-4';
+            if ($v2) {
+                $review_card_class .= ' ymo-v2-card ymo-v2-card--static ymo-v2-card--quote';
+            }
+            $html .= '<div class="col-md-4 d-flex"><div class="'.$review_card_class.'">';
             $html .= '<p class="md-label-lg mb-2" aria-label="'.html_escape((string) ($row['rating'] ?? 5)).' out of 5 stars">'.$stars.'</p>';
             $html .= '<p class="md-body-md mb-3">'.html_escape($row['text'] ?? '').'</p>';
             $html .= '<p class="md-body-sm ymo-muted mb-0">— '.html_escape($row['author'] ?? '').', '.html_escape($row['city'] ?? '').'</p>';
@@ -259,6 +264,9 @@ if (!function_exists('marketing_trust_legal_pages')) {
                 'meta_description' => 'Answers about booking, pick-up, pricing, warranty, and parts for Your Mechanic Online doorstep car service in Pune, Indore and Nashik.',
                 'h1'               => 'Frequently asked questions',
                 'intro'            => 'Quick answers about booking and servicing with YMO.',
+                'quick_answer'     => 'Quick answers about booking and servicing with YMO.',
+                'hero_split'       => TRUE,
+                'og_image'         => marketing_default_content_hero_image(),
                 'page_type'        => 'faq',
                 'updated_at'       => $today,
                 'faq'              => array_map(function ($row) {
@@ -273,6 +281,11 @@ if (!function_exists('marketing_trust_legal_pages')) {
                 'meta_description' => 'Book online, free pick-up, live WhatsApp updates, and delivery with invoice — how Your Mechanic Online car service works.',
                 'h1'               => 'How it works',
                 'intro'            => 'Four simple steps from booking to delivery.',
+                'quick_answer'     => 'Four simple steps from booking to delivery.',
+                'hero_split'       => TRUE,
+                'hero_eyebrow'     => 'Doorstep car service · 4 steps',
+                'hero_eyebrow_icon'=> 'route',
+                'og_image'         => marketing_default_content_hero_image(),
                 'page_type'        => 'minimal',
                 'updated_at'       => $today,
                 'body'             => marketing_how_it_works_steps_html(),
@@ -285,11 +298,17 @@ if (!function_exists('marketing_trust_legal_pages')) {
 if (!function_exists('marketing_how_it_works_steps_html')) {
     function marketing_how_it_works_steps_html()
     {
-        return '<div class="row g-4">'
-            .'<div class="col-md-6 col-lg-3"><div class="md-card-outlined p-4 h-100"><span class="md-label-lg d-block mb-2">1. Book</span><p class="md-body-md mb-0">Choose a service or package online and confirm your slot.</p></div></div>'
-            .'<div class="col-md-6 col-lg-3"><div class="md-card-outlined p-4 h-100"><span class="md-label-lg d-block mb-2">2. Free pick-up</span><p class="md-body-md mb-0">We collect your car from your doorstep at the scheduled time.</p></div></div>'
-            .'<div class="col-md-6 col-lg-3"><div class="md-card-outlined p-4 h-100"><span class="md-label-lg d-block mb-2">3. Updates &amp; approval</span><p class="md-body-md mb-0">WhatsApp photos and estimates — no surprise work without your OK.</p></div></div>'
-            .'<div class="col-md-6 col-lg-3"><div class="md-card-outlined p-4 h-100"><span class="md-label-lg d-block mb-2">4. Delivery</span><p class="md-body-md mb-0">We return your car with invoice and service summary.</p></div></div>'
+        $step_shell = 'md-card-outlined p-4 h-100';
+        $step_row   = 'row g-4';
+        if (function_exists('marketing_is_theme_v2') && marketing_is_theme_v2('', array())) {
+            $step_shell .= ' ymo-v2-card ymo-v2-card--static ymo-v2-card--step';
+            $step_row   .= ' ymo-v2-card-grid';
+        }
+        return '<div class="'.$step_row.'">'
+            .'<div class="col-md-6 col-lg-3 d-flex"><div class="'.$step_shell.'"><span class="ymo-v2-card__step md-label-lg d-block mb-2">1. Book</span><p class="md-body-md mb-0">Choose a service or package online and confirm your slot.</p></div></div>'
+            .'<div class="col-md-6 col-lg-3 d-flex"><div class="'.$step_shell.'"><span class="ymo-v2-card__step md-label-lg d-block mb-2">2. Free pick-up</span><p class="md-body-md mb-0">We collect your car from your doorstep at the scheduled time.</p></div></div>'
+            .'<div class="col-md-6 col-lg-3 d-flex"><div class="'.$step_shell.'"><span class="ymo-v2-card__step md-label-lg d-block mb-2">3. Updates &amp; approval</span><p class="md-body-md mb-0">WhatsApp photos and estimates — no surprise work without your OK.</p></div></div>'
+            .'<div class="col-md-6 col-lg-3 d-flex"><div class="'.$step_shell.'"><span class="ymo-v2-card__step md-label-lg d-block mb-2">4. Delivery</span><p class="md-body-md mb-0">We return your car with invoice and service summary.</p></div></div>'
             .'</div>';
     }
 }
@@ -306,21 +325,57 @@ if (!function_exists('marketing_pricing_matrix_html')) {
             'Interior cleaning'    => array('hatchback' => '₹2,500', 'sedan' => '₹2,999', 'suv' => '₹3,499', 'luxury' => 'From ₹3,999'),
             'Rubbing & polishing'  => array('hatchback' => '₹6,500', 'sedan' => '₹6,500', 'suv' => '₹7,999', 'luxury' => 'From ₹9,999'),
         );
-        $html = '<div class="table-responsive"><table class="table md-body-md"><thead><tr><th>Service</th><th>Hatchback</th><th>Sedan</th><th>SUV</th><th>Luxury</th></tr></thead><tbody>';
+        $quote_services = array(
+            'Battery replacement',
+            'Clutch repair',
+            'Suspension repair',
+            'Tyres & alignment',
+        );
+        $major_note = marketing_business_field('major_service_note');
+
+        $html = '<div class="ymo-v2-pricing-matrix">';
+        $html .= '<div class="table-responsive ymo-v2-pricing-matrix__scroll">';
+        $html .= '<table class="table ymo-v2-pricing-table__grid md-body-md">';
+        $html .= '<thead><tr>';
+        $html .= '<th scope="col" class="ymo-v2-pricing-table__service">Service</th>';
+        foreach (array('Hatchback', 'Sedan', 'SUV', 'Luxury') as $label) {
+            $html .= '<th scope="col" class="ymo-v2-pricing-table__price">'.html_escape($label).'</th>';
+        }
+        $html .= '</tr></thead><tbody>';
+        $vehicle_labels = array(
+            'hatchback' => 'Hatchback',
+            'sedan'     => 'Sedan',
+            'suv'       => 'SUV',
+            'luxury'    => 'Luxury',
+        );
         foreach ($services as $name => $cols) {
-            $html .= '<tr><td>'.html_escape($name).'</td>';
-            foreach ($cols as $price) {
-                $html .= '<td>'.html_escape($price).'</td>';
+            $html .= '<tr><th scope="row" class="ymo-v2-pricing-table__service">'.html_escape($name).'</th>';
+            foreach ($cols as $key => $price) {
+                $label = isset($vehicle_labels[$key]) ? $vehicle_labels[$key] : '';
+                $html .= '<td class="ymo-v2-pricing-table__price" data-label="'.html_escape($label).'">'
+                    .html_escape($price).'</td>';
             }
             $html .= '</tr>';
         }
-        $html .= '<tr><td>Major / high-km service</td><td colspan="4">'.html_escape(marketing_business_field('major_service_note')).'</td></tr>';
-        $quote_row = 'Quote after inspection';
-        foreach (array('Battery replacement', 'Clutch repair', 'Suspension repair', 'Tyres &amp; alignment') as $label) {
-            $html .= '<tr><td>'.html_escape($label).'</td><td>'.$quote_row.'</td><td>'.$quote_row.'</td><td>'.$quote_row.'</td><td>'.$quote_row.'</td></tr>';
-        }
         $html .= '</tbody></table></div>';
-        $html .= '<p class="md-body-sm ymo-muted">Same indicative prices apply across Pune, Indore, and Nashik unless noted on the service page.</p>';
+
+        $html .= '<div class="ymo-v2-pricing-matrix__callout">';
+        $html .= '<h3 class="md-title-md mb-2">Major / high-km service</h3>';
+        $html .= '<p class="md-body-md mb-0">'.html_escape($major_note).'</p>';
+        $html .= '</div>';
+
+        $html .= '<div class="ymo-v2-pricing-matrix__quoted">';
+        $html .= '<h3 class="md-title-md mb-1">Quoted after inspection</h3>';
+        $html .= '<p class="md-body-md ymo-muted mb-3">Same for all vehicle types — we diagnose first, then share an itemised estimate.</p>';
+        $html .= '<ul class="ymo-v2-pricing-matrix__quote-list md-body-md mb-0">';
+        foreach ($quote_services as $label) {
+            $html .= '<li>'.html_escape($label).'</li>';
+        }
+        $html .= '</ul></div>';
+
+        $html .= '</div>';
+        $html .= '<p class="md-body-sm ymo-muted ymo-v2-pricing-matrix__footnote">Same indicative prices apply across Pune, Indore, and Nashik unless noted on the service page.</p>';
+
         return $html;
     }
 }
@@ -439,6 +494,51 @@ if (!function_exists('marketing_luxury_brand_draft_body_html')) {
     }
 }
 
+if (!function_exists('marketing_oil_change_service_body_html')) {
+    /** @param string $city_slug pune|indore|nashik */
+    function marketing_oil_change_service_body_html($city_slug, $city_name = '')
+    {
+        $city_slug = trim((string) $city_slug);
+        if ($city_name === '') {
+            $city_name = ucfirst($city_slug);
+        }
+        $phone = marketing_business_phone_display();
+        $hub = 'locations/'.$city_slug;
+        $items = array(
+            'Engine oil and filter (grade matched to your car)',
+            'Sump drain and refill to manufacturer capacity',
+            'Visual check — belts, hoses, and fluid leaks',
+            'Tyre pressure set to door-plate spec',
+            'Coolant, brake fluid, and washer fluid top-up where low',
+            'Battery terminal visual check',
+            'WhatsApp photo update when the job is done',
+            'Used oil handled and disposed at our workshop',
+            'Typical turnaround 1–2 hours at our workshop',
+            'Free doorstep pick-up in '.$city_name,
+        );
+        $footer = '<div class="ymo-v2-supplement-meta">'
+            .'<p class="ymo-v2-supplement-meta__hours md-body-md mb-0">'
+            .'<span class="mi mi-sm mi-leading" aria-hidden="true">schedule</span>'
+            .'Open now slots: Mon–Sat 9 AM – 8 PM · Call '.html_escape($phone).'</p>'
+            .'<p class="ymo-v2-supplement-meta__links md-body-md mb-0">'
+            .'<a href="/'.$hub.'">Car service in '.$city_name.'</a> · '
+            .'<a href="/services/complete-car-servicing'.($city_slug === 'pune' ? '' : '-in-'.$city_slug).'">Complete servicing</a>'
+            .'</p></div>';
+        if (function_exists('marketing_build_v2_supplement_block')) {
+            return marketing_build_v2_supplement_block(
+                'What\'s included',
+                $items,
+                $footer,
+                'Express oil and filter service with workshop checks — ideal between full periodic services.'
+            );
+        }
+
+        return '<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">What\'s included</h2>'
+            .'<ul class="md-body-md"><li>'.implode('</li><li>', array_map('html_escape', $items)).'</li></ul>'
+            .$footer.'</div>';
+    }
+}
+
 if (!function_exists('marketing_expansion_pages')) {
     /**
      * Phase 3 — generated service, luxury brand, and AMC pages.
@@ -449,19 +549,6 @@ if (!function_exists('marketing_expansion_pages')) {
     {
         $today = '2026-10-05';
         $pages = array();
-        $phone = marketing_business_phone_display();
-
-        $oil_body = function ($city_name, $city_slug) use ($phone) {
-            $hub = 'locations/'.$city_slug;
-            return '<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">What\'s included</h2>'
-                .'<ul class="md-body-md"><li>Engine oil and filter (grade matched to your car)</li>'
-                .'<li>Basic health check — fluids, belts visual, tyre pressure</li>'
-                .'<li>Typical duration 1–2 hours at our workshop</li>'
-                .'<li>Free doorstep pick-up in '.$city_name.'</li></ul></div>'
-                .'<p class="md-body-md">Open now slots: Mon–Sat 9 AM – 8 PM · Call '.html_escape($phone).'</p>'
-                .'<p class="md-body-md"><a href="/'.$hub.'">Car service in '.$city_name.'</a> · <a href="/services/complete-car-servicing'.($city_slug === 'pune' ? '' : '-in-'.$city_slug).'">Complete servicing</a></p>';
-        };
-
         $oil_defs = array(
             'services/car-oil-change' => array('city' => 'pune', 'name' => 'Pune', 'from' => 1499),
             'services/car-oil-change-in-indore' => array('city' => 'indore', 'name' => 'Indore', 'from' => 1499),
@@ -474,7 +561,7 @@ if (!function_exists('marketing_expansion_pages')) {
                 'meta_description' => 'Doorstep oil change in '.$meta['name'].' from ₹'.$meta['from'].'. Oil, filter, checks — book online. Open Mon–Sat. Your Mechanic Online.',
                 'h1'               => 'Car oil change in '.$meta['name'],
                 'intro'            => 'Express oil and filter change with free pick-up — ideal for "oil change near me" bookings.',
-                'body'             => $oil_body($meta['name'], $meta['city']),
+                'body'             => marketing_oil_change_service_body_html($meta['city'], $meta['name']),
                 'page_type'        => 'service',
                 'city_slug'        => $meta['city'],
                 'service_key'      => 'lube',
@@ -593,6 +680,77 @@ if (!function_exists('marketing_complete_service_checklist_html')) {
     }
 }
 
+if (!function_exists('marketing_default_content_hero_image')) {
+    /** Workshop hero used on trust pages and blogs when no city-specific image is set. */
+    function marketing_default_content_hero_image()
+    {
+        return '/assets/img/marketing/2022/03/complete-car-servicing-in-pune-1-scaled.jpg';
+    }
+}
+
+if (!function_exists('marketing_apply_content_hero_split')) {
+    /**
+     * Split hero + og_image for FAQ, guides, blogs, and other content pages (not about/privacy).
+     *
+     * @param string $path
+     * @param array  $page
+     * @return array
+     */
+    function marketing_apply_content_hero_split($path, array $page)
+    {
+        $path = trim((string) $path, '/');
+        if (in_array($path, array('about-us', 'privacy-policy', ''), TRUE)) {
+            return $page;
+        }
+
+        $type = isset($page['page_type']) ? (string) $page['page_type'] : '';
+        $split_paths = array('faq', 'how-it-works', 'pricing', 'reviews', 'warranty', 'why-choose-ymo');
+        $wants_split = !empty($page['hero_split'])
+            || $type === 'blog'
+            || $type === 'faq'
+            || in_array($path, $split_paths, TRUE)
+            || strpos($path, 'blog/') === 0;
+
+        if (!$wants_split) {
+            return $page;
+        }
+
+        $page['hero_split'] = TRUE;
+
+        $og = !empty($page['og_image']) ? (string) $page['og_image'] : '';
+        if ($og === '' || strpos($og, 'revslider/main/image_01') !== FALSE) {
+            $city_slug = !empty($page['city_slug']) ? (string) $page['city_slug'] : '';
+            $city_img = $city_slug !== '' ? marketing_city_hero_og_image($city_slug) : '';
+            $page['og_image'] = $city_img !== '' ? $city_img : marketing_default_content_hero_image();
+        }
+
+        if (empty($page['hero_eyebrow'])) {
+            if ($path === 'faq') {
+                $page['hero_eyebrow'] = 'Help centre · YMO';
+                $page['hero_eyebrow_icon'] = 'help_outline';
+            } elseif ($path === 'how-it-works') {
+                $page['hero_eyebrow'] = 'Doorstep car service · 4 steps';
+                $page['hero_eyebrow_icon'] = 'route';
+            } elseif ($path === 'pricing') {
+                $page['hero_eyebrow'] = 'Transparent pricing · Pune, Indore & Nashik';
+                $page['hero_eyebrow_icon'] = 'payments';
+            } elseif ($type === 'blog' || strpos($path, 'blog/') === 0) {
+                $page['hero_eyebrow'] = 'Car service guide';
+                $page['hero_eyebrow_icon'] = 'menu_book';
+            }
+        }
+
+        if ($path === 'how-it-works' && empty($page['quick_answer']) && !empty($page['intro'])) {
+            $page['quick_answer'] = (string) $page['intro'];
+        }
+        if ($path === 'faq' && empty($page['quick_answer']) && !empty($page['intro'])) {
+            $page['quick_answer'] = (string) $page['intro'];
+        }
+
+        return $page;
+    }
+}
+
 if (!function_exists('marketing_seo_project_enrich_page')) {
     /** @return array */
     function marketing_seo_project_enrich_page($path, array $page)
@@ -604,6 +762,14 @@ if (!function_exists('marketing_seo_project_enrich_page')) {
         if (strpos($path, 'services/complete-car-servicing') === 0 && strpos($page['body'] ?? '', 'What\'s included') === FALSE) {
             $page['body'] = ($page['body'] ?? '').marketing_complete_service_checklist_html();
             $page['updated_at'] = '2026-10-05';
+        }
+        $oil_city_map = array(
+            'services/car-oil-change'           => array('pune', 'Pune'),
+            'services/car-oil-change-in-indore' => array('indore', 'Indore'),
+            'services/car-oil-change-in-nashik' => array('nashik', 'Nashik'),
+        );
+        if (isset($oil_city_map[$path]) && function_exists('marketing_oil_change_service_body_html')) {
+            $page['body'] = marketing_oil_change_service_body_html($oil_city_map[$path][0], $oil_city_map[$path][1]);
         }
         if ($path === 'premium-luxury-car-service-pune') {
             $page['pricing_tiers'] = array(
@@ -649,6 +815,7 @@ if (!function_exists('marketing_seo_project_enrich_page')) {
             $page['meta_title'] = 'Why Choose YMO Over Doorstep Mechanics | YMO';
             $page['title'] = $page['meta_title'];
         }
+        $page = marketing_apply_content_hero_split($path, $page);
         if ($path === 'blog/complete-vs-periodic-car-service') {
             $page['meta_title'] = 'Complete vs Periodic Car Service | YMO Guide';
             if (!empty($page['title']) && (function_exists('mb_strlen') ? mb_strlen($page['title'], 'UTF-8') : strlen($page['title'])) > 60) {

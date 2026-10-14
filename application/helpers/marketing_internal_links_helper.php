@@ -189,6 +189,10 @@ if (!function_exists('marketing_service_city_variant_links_html')) {
         if ($links === array()) {
             return '';
         }
+        if (function_exists('marketing_build_v2_internal_links_block')) {
+            return marketing_build_v2_internal_links_block('Also available in other cities', $links);
+        }
+
         return '<div class="ymo-content-section mb-5 ymo-internal-links"><h2 class="md-headline-md mb-3">Also available in other cities</h2>'
             .'<p class="md-body-md mb-0">'.implode(' · ', $links).'.</p></div>';
     }
@@ -415,22 +419,12 @@ if (!function_exists('marketing_footer_extra_link_sections')) {
             );
         }
         $sections[] = array(
-            'title' => 'Resources',
+            'title' => 'Explore',
             'links' => array(
-                array('label' => 'Blog', 'slug' => 'blog'),
-                array('label' => 'FAQ', 'slug' => 'faq'),
-                array('label' => 'Privacy policy', 'slug' => 'privacy-policy'),
-                array('label' => 'About us', 'slug' => 'about-us'),
-                array('label' => 'How it works', 'slug' => 'how-it-works'),
-                array('label' => 'All brands', 'slug' => 'brands'),
-                array('label' => 'Why choose YMO', 'slug' => 'why-choose-ymo'),
-                array('label' => 'Reviews', 'slug' => 'reviews'),
-                array('label' => 'Warranty', 'slug' => 'warranty'),
-                array('label' => 'Terms', 'slug' => 'terms-and-conditions'),
-                array('label' => 'Refund policy', 'slug' => 'refund-and-cancellation-policy'),
+                array('label' => 'Blog & guides', 'slug' => 'blog'),
                 array('label' => 'AMC plans', 'slug' => 'car-amc-plans'),
-                array('label' => 'Oil change in Pune', 'slug' => 'blog/best-oil-change-service-in-pune'),
-                array('label' => 'Luxury cars Pune', 'slug' => 'premium-luxury-car-service-pune'),
+                array('label' => 'Luxury car service', 'slug' => 'premium-luxury-car-service-pune'),
+                array('label' => 'Oil change guide', 'slug' => 'blog/best-oil-change-service-in-pune'),
                 array('label' => 'Car spare parts', 'slug' => 'ymo-spares'),
             ),
         );

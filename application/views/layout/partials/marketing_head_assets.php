@@ -4,6 +4,11 @@ $ymo_min = FCPATH.'assets/css/ymo.min.css';
 $ymo_css_v = (int) @filemtime(is_file($ymo_min) ? $ymo_min : FCPATH.'assets/css/ymo.css');
 $ymo_css_file = is_file($ymo_min) ? 'assets/css/ymo.min.css' : 'assets/css/ymo.css';
 $mk_css_v  = (int) @filemtime(FCPATH.'assets/css/marketing.css');
+$mk_v2_css_v = (int) @filemtime(FCPATH.'assets/css/marketing-v2.css');
+$mk_v2_instrument_css_v = (int) @filemtime(FCPATH.'assets/css/marketing-v2-instrument.css');
+$theme_v2 = !empty($marketing_theme_v2);
+$card_skin = isset($marketing_card_skin) ? (string) $marketing_card_skin : 'default';
+$instrument_skin = $theme_v2 && $card_skin === 'instrument';
 $bs_marketing = FCPATH.'assets/css/bootstrap-marketing.min.css';
 $bs_css_v  = is_file($bs_marketing)
     ? (int) @filemtime($bs_marketing)
@@ -15,6 +20,7 @@ $ymo_css_url = base_url($ymo_css_file.'?v='.$ymo_css_v);
 $mk_css_url  = base_url('assets/css/marketing.css?v='.$mk_css_v);
 $bs_css_url  = base_url($bs_css_file.'?v='.$bs_css_v);
 $fonts_icons   = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap';
+$fonts_instrument = 'https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap';
 
 $critical_css = '';
 $critical_file = FCPATH.'assets/css/marketing-critical-shell.min.css';
@@ -31,10 +37,24 @@ if (is_file($critical_file)) {
 <link rel="preload" href="<?= html_escape($bs_css_url); ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <link rel="preload" href="<?= html_escape($ymo_css_url); ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <link rel="preload" href="<?= html_escape($mk_css_url); ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<?php if ($theme_v2): ?>
+<link rel="preload" href="<?= html_escape(base_url('assets/css/marketing-v2.css?v='.$mk_v2_css_v)); ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<?php if ($instrument_skin): ?>
+<link rel="preload" href="<?= html_escape($fonts_instrument); ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<link rel="preload" href="<?= html_escape(base_url('assets/css/marketing-v2-instrument.css?v='.$mk_v2_instrument_css_v)); ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<?php endif; ?>
+<?php endif; ?>
 <noscript>
 <link rel="stylesheet" href="<?= html_escape($bs_css_url); ?>">
 <link rel="stylesheet" href="<?= html_escape($ymo_css_url); ?>">
 <link rel="stylesheet" href="<?= html_escape($mk_css_url); ?>">
+<?php if ($theme_v2): ?>
+<link rel="stylesheet" href="<?= html_escape(base_url('assets/css/marketing-v2.css?v='.$mk_v2_css_v)); ?>">
+<?php if ($instrument_skin): ?>
+<link rel="stylesheet" href="<?= html_escape($fonts_instrument); ?>">
+<link rel="stylesheet" href="<?= html_escape(base_url('assets/css/marketing-v2-instrument.css?v='.$mk_v2_instrument_css_v)); ?>">
+<?php endif; ?>
+<?php endif; ?>
 </noscript>
 <link rel="preload" href="<?= html_escape($fonts_icons); ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript>

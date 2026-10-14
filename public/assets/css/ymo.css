@@ -1007,6 +1007,10 @@ h1, h2, h3, h4, h5, h6 { font-weight: 700; letter-spacing: -0.01em; }
     padding-bottom: 1.5rem;
 }
 
+.ymo-footer-top {
+    display: contents;
+}
+
 .ymo-footer-brand {
     max-width: 18rem;
 }
@@ -1212,7 +1216,19 @@ h1, h2, h3, h4, h5, h6 { font-weight: 700; letter-spacing: -0.01em; }
         align-items: start;
     }
 
+    .ymo-footer-brand {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .ymo-footer-nav {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
     .ymo-footer-aside {
+        grid-column: 3;
+        grid-row: 1;
         padding: 1.45rem 1.65rem 1.55rem;
     }
 

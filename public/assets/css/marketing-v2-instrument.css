@@ -1,0 +1,249 @@
+/* =============================================================================
+   YMO marketing v2 — instrument / phosphor display card skin
+   Scoped to body.ymo-v2-skin-instrument (workshop diagnostic panel feel).
+   ============================================================================= */
+
+.ymo-v2-skin-instrument.ymo-theme-v2 {
+    --ymo-v2-phosphor: #6ee7a0;
+    --ymo-v2-phosphor-dim: #3cb371;
+    --ymo-v2-bezel: #2a3039;
+    --ymo-v2-bezel-deep: #12151a;
+    --ymo-v2-screen: #070809;
+    --ymo-v2-card-bg: linear-gradient(180deg, #151922 0%, #0b0d11 52%, #060708 100%);
+    --ymo-v2-card-border: 1px solid #434b58;
+    --ymo-v2-card-shadow:
+        0 0 0 2px var(--ymo-v2-bezel-deep),
+        0 0 0 5px var(--ymo-v2-bezel),
+        0 18px 40px -14px rgba(0, 0, 0, 0.65),
+        inset 0 1px 0 rgba(110, 231, 160, 0.12),
+        inset 0 -12px 24px rgba(0, 0, 0, 0.35);
+    --ymo-v2-card-shadow-hover:
+        0 0 0 2px var(--ymo-v2-bezel-deep),
+        0 0 0 5px color-mix(in srgb, var(--ymo-v2-phosphor) 35%, var(--ymo-v2-bezel)),
+        0 0 28px -4px color-mix(in srgb, var(--ymo-v2-phosphor) 55%, transparent),
+        0 24px 48px -16px rgba(0, 0, 0, 0.7),
+        inset 0 1px 0 rgba(110, 231, 160, 0.22);
+    --ymo-v2-card-accent: linear-gradient(
+        90deg,
+        transparent 0%,
+        var(--ymo-v2-phosphor-dim) 18%,
+        var(--ymo-v2-phosphor) 50%,
+        var(--ymo-v2-phosphor-dim) 82%,
+        transparent 100%
+    );
+}
+
+/* Page background unchanged — uses marketing-v2.css (--ymo-v2-surface-dim on .ymo-main) */
+
+/* CRT scanlines + status tick on all card shells */
+.ymo-v2-skin-instrument.ymo-marketing .ymo-v2-card,
+.ymo-v2-skin-instrument.ymo-marketing .marketing-body .row[class*="g-"] > [class*="col-"] > .md-card-elevated,
+.ymo-v2-skin-instrument.ymo-marketing .marketing-body .row[class*="g-"] > [class*="col-"] > .md-card-outlined,
+.ymo-v2-skin-instrument.ymo-marketing .marketing-body .row[class*="g-"] > [class*="col-"] > a.md-card-elevated,
+.ymo-v2-skin-instrument.ymo-marketing .marketing-body [class*="col-"] > .md-card-elevated,
+.ymo-v2-skin-instrument.ymo-marketing .marketing-body [class*="col-"] > .md-card-filled,
+.ymo-v2-skin-instrument.ymo-marketing .marketing-body [class*="col-"] > .md-card-outlined,
+.ymo-v2-skin-instrument.ymo-marketing a.md-card-elevated.marketing-service-card {
+    isolation: isolate;
+    padding-top: clamp(1.65rem, 3vw, 1.85rem);
+    font-family: "Share Tech Mono", ui-monospace, "Cascadia Mono", monospace;
+}
+
+.ymo-v2-skin-instrument.ymo-marketing .ymo-v2-card::after,
+.ymo-v2-skin-instrument.ymo-marketing .marketing-body .md-card-elevated::after,
+.ymo-v2-skin-instrument.ymo-marketing .marketing-body .md-card-outlined::after,
+.ymo-v2-skin-instrument.ymo-marketing a.md-card-elevated.marketing-service-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0) 0,
+        rgba(0, 0, 0, 0) 2px,
+        rgba(0, 0, 0, 0.16) 2px,
+        rgba(0, 0, 0, 0.16) 4px
+    );
+    opacity: 0.42;
+    mix-blend-mode: multiply;
+    z-index: 0;
+}
+
+.ymo-v2-skin-instrument.ymo-marketing .ymo-v2-card::before,
+.ymo-v2-skin-instrument.ymo-marketing .marketing-body .md-card-elevated::before,
+.ymo-v2-skin-instrument.ymo-marketing .marketing-body .md-card-outlined::before,
+.ymo-v2-skin-instrument.ymo-marketing a.md-card-elevated.marketing-service-card::before {
+    content: "";
+    position: absolute;
+    top: 0.65rem;
+    left: 0.85rem;
+    right: 0.85rem;
+    height: 6px;
+    border-radius: 1px;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.85;
+    background:
+        radial-gradient(circle at 4px 3px, var(--ymo-v2-phosphor) 0 2px, transparent 2px),
+        linear-gradient(90deg, var(--ymo-v2-phosphor-dim) 0 12px, transparent 12px 100%),
+        linear-gradient(90deg, transparent, rgba(110, 231, 160, 0.35) 12%, rgba(110, 231, 160, 0.35) 88%, transparent);
+    box-shadow: 0 1px 0 rgba(110, 231, 160, 0.2);
+}
+
+/* Corner rivets (bezel hardware) */
+.ymo-v2-skin-instrument.ymo-marketing .ymo-v2-card,
+.ymo-v2-skin-instrument.ymo-marketing .marketing-body .md-card-elevated,
+.ymo-v2-skin-instrument.ymo-marketing .marketing-body .md-card-outlined,
+.ymo-v2-skin-instrument.ymo-marketing a.md-card-elevated.marketing-service-card {
+    background-image:
+        radial-gradient(circle at 11px 11px, #5c6573 0 2.5px, #353b45 2.5px 3.5px, transparent 3.5px),
+        radial-gradient(circle at calc(100% - 11px) 11px, #5c6573 0 2.5px, #353b45 2.5px 3.5px, transparent 3.5px),
+        radial-gradient(circle at 11px calc(100% - 11px), #5c6573 0 2.5px, #353b45 2.5px 3.5px, transparent 3.5px),
+        radial-gradient(circle at calc(100% - 11px) calc(100% - 11px), #5c6573 0 2.5px, #353b45 2.5px 3.5px, transparent 3.5px),
+        var(--ymo-v2-card-bg);
+}
+
+.ymo-v2-skin-instrument.ymo-marketing .ymo-v2-card__title,
+.ymo-v2-skin-instrument.ymo-marketing .marketing-body .md-card-elevated .md-title-md,
+.ymo-v2-skin-instrument.ymo-marketing a.md-card-elevated.marketing-service-card .md-title-md {
+    position: relative;
+    z-index: 2;
+    color: var(--ymo-v2-phosphor);
+    text-shadow:
+        0 0 8px color-mix(in srgb, var(--ymo-v2-phosphor) 65%, transparent),
+        0 0 22px color-mix(in srgb, var(--ymo-v2-phosphor) 35%, transparent);
+    font-family: "Share Tech Mono", ui-monospace, monospace;
+    letter-spacing: 0.01em;
+}
+
+.ymo-v2-skin-instrument.ymo-marketing .ymo-v2-card__teaser,
+.ymo-v2-skin-instrument.ymo-marketing .marketing-body .md-card-elevated .md-body-md,
+.ymo-v2-skin-instrument.ymo-marketing a.md-card-elevated.marketing-service-card .md-body-md {
+    position: relative;
+    z-index: 2;
+    color: #9fb3a8;
+}
+
+.ymo-v2-skin-instrument.ymo-marketing .ymo-v2-card__icon {
+    position: relative;
+    z-index: 2;
+    background: linear-gradient(145deg, #0f1410 0%, #1a2420 100%);
+    color: var(--ymo-v2-phosphor);
+    border: 1px solid color-mix(in srgb, var(--ymo-v2-phosphor) 45%, #2a3530);
+    box-shadow:
+        0 0 12px color-mix(in srgb, var(--ymo-v2-phosphor) 40%, transparent),
+        inset 0 0 8px color-mix(in srgb, var(--ymo-v2-phosphor) 18%, transparent);
+}
+
+.ymo-v2-skin-instrument.ymo-marketing .marketing-body .md-card-elevated > .mi.mi-xl:first-child,
+.ymo-v2-skin-instrument.ymo-marketing a.md-card-elevated.marketing-service-card > .mi.mi-xl:first-child {
+    position: relative;
+    z-index: 2;
+    background: linear-gradient(145deg, #0f1410 0%, #1a2420 100%);
+    color: var(--ymo-v2-phosphor);
+    border: 1px solid color-mix(in srgb, var(--ymo-v2-phosphor) 45%, #2a3530);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--ymo-v2-phosphor) 40%, transparent);
+}
+
+.ymo-v2-skin-instrument.ymo-marketing a.ymo-v2-card--interactive:hover,
+.ymo-v2-skin-instrument.ymo-marketing a.ymo-v2-card--interactive:focus-visible,
+.ymo-v2-skin-instrument.ymo-marketing a.md-card-elevated.marketing-service-card:hover,
+.ymo-v2-skin-instrument.ymo-marketing a.md-card-elevated.marketing-service-card:focus-visible {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--ymo-v2-phosphor) 55%, #434b58);
+}
+
+.ymo-v2-skin-instrument.ymo-marketing a.ymo-v2-card--interactive:hover::before,
+.ymo-v2-skin-instrument.ymo-marketing a.ymo-v2-card--interactive:focus-visible::before,
+.ymo-v2-skin-instrument.ymo-marketing a.md-card-elevated.marketing-service-card:hover::before {
+    opacity: 1;
+    filter: brightness(1.15);
+}
+
+.ymo-v2-skin-instrument.ymo-marketing .ymo-v2-card__arrow {
+    color: var(--ymo-v2-phosphor);
+    text-shadow: 0 0 10px color-mix(in srgb, var(--ymo-v2-phosphor) 70%, transparent);
+}
+
+.ymo-v2-skin-instrument.ymo-marketing .ymo-v2-card--step .ymo-v2-card__step {
+    color: var(--ymo-v2-phosphor);
+    text-shadow: 0 0 10px color-mix(in srgb, var(--ymo-v2-phosphor) 50%, transparent);
+}
+
+.ymo-v2-skin-instrument.ymo-marketing .ymo-v2-card--quote .md-label-lg {
+    color: #fbbf24;
+    text-shadow: 0 0 10px rgba(251, 191, 36, 0.45);
+}
+
+.ymo-v2-skin-instrument.ymo-marketing .ymo-v2-card--quote .ymo-muted {
+    color: #8a9a90;
+}
+
+/* Section-scale panels (FAQ, pricing, contact) */
+.ymo-v2-skin-instrument.ymo-marketing .ymo-page-section,
+.ymo-v2-skin-instrument.ymo-marketing .ymo-faq-section,
+.ymo-v2-skin-instrument.ymo-marketing .ymo-v2-form-panel,
+.ymo-v2-skin-instrument.ymo-marketing .ymo-v2-band:not(.ymo-v2-spotlight) {
+    background-image:
+        radial-gradient(circle at 11px 11px, #5c6573 0 2.5px, #353b45 2.5px 3.5px, transparent 3.5px),
+        radial-gradient(circle at calc(100% - 11px) 11px, #5c6573 0 2.5px, #353b45 2.5px 3.5px, transparent 3.5px),
+        radial-gradient(circle at 11px calc(100% - 11px), #5c6573 0 2.5px, #353b45 2.5px 3.5px, transparent 3.5px),
+        radial-gradient(circle at calc(100% - 11px) calc(100% - 11px), #5c6573 0 2.5px, #353b45 2.5px 3.5px, transparent 3.5px),
+        var(--ymo-v2-card-bg);
+    color: #b8c4bc;
+}
+
+.ymo-v2-skin-instrument.ymo-marketing .ymo-page-section__title,
+.ymo-v2-skin-instrument.ymo-marketing .ymo-faq-card__question {
+    color: var(--ymo-v2-phosphor);
+    font-family: "Share Tech Mono", ui-monospace, monospace;
+    text-shadow: 0 0 12px color-mix(in srgb, var(--ymo-v2-phosphor) 40%, transparent);
+}
+
+.ymo-v2-skin-instrument.ymo-marketing .ymo-faq-card__answer,
+.ymo-v2-skin-instrument.ymo-marketing .ymo-page-section__note {
+    color: #9fb3a8;
+}
+
+.ymo-v2-skin-instrument.ymo-marketing .ymo-page-section__panel {
+    background: rgba(0, 0, 0, 0.28);
+    border: 1px solid rgba(110, 231, 160, 0.15);
+}
+
+.ymo-v2-skin-instrument.ymo-marketing .ymo-v2-spotlight {
+    background-image:
+        radial-gradient(circle at 11px 11px, #5c6573 0 2.5px, #353b45 2.5px 3.5px, transparent 3.5px),
+        radial-gradient(circle at calc(100% - 11px) 11px, #5c6573 0 2.5px, #353b45 2.5px 3.5px, transparent 3.5px),
+        linear-gradient(180deg, #151922 0%, #0b0d11 100%);
+    border-left-color: var(--ymo-v2-phosphor);
+    color: #c5d4cb;
+}
+
+.ymo-v2-skin-instrument.ymo-marketing .ymo-v2-spotlight .ymo-v2-display-sm {
+    color: var(--ymo-v2-phosphor);
+    text-shadow: 0 0 14px color-mix(in srgb, var(--ymo-v2-phosphor) 45%, transparent);
+}
+
+.ymo-v2-skin-instrument.ymo-marketing .marketing-body .md-card-filled,
+.ymo-v2-skin-instrument.ymo-marketing .marketing-body [class*="col-"] > .md-card-filled {
+    background: linear-gradient(180deg, #1a2420 0%, #0d1210 100%);
+    color: #b8c4bc;
+    border-color: color-mix(in srgb, var(--ymo-v2-phosphor) 35%, #434b58);
+}
+
+.ymo-v2-skin-instrument.ymo-marketing .marketing-body .md-card-filled .md-title-md,
+.ymo-v2-skin-instrument.ymo-marketing .marketing-body .md-card-filled strong {
+    color: var(--ymo-v2-phosphor);
+}
+
+.ymo-v2-skin-instrument.ymo-marketing a.md-card-elevated.marketing-service-card .text-dark {
+    color: var(--ymo-v2-phosphor) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ymo-v2-skin-instrument.ymo-marketing a.ymo-v2-card--interactive:hover,
+    .ymo-v2-skin-instrument.ymo-marketing a.md-card-elevated.marketing-service-card:hover {
+        transform: none;
+    }
+}

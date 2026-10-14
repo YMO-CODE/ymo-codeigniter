@@ -22,7 +22,7 @@ if [[ -n "${THRESHOLD}" ]]; then
   EXEC+=(-e "THRESHOLD=${THRESHOLD}")
 fi
 
-for script in meta-length-report.php similarity-report.php inlinks-report.php; do
+for script in meta-length-report.php similarity-report.php inlinks-report.php theme-content-snapshot.php; do
   path="/var/www/deploy/marketing/scripts/${script}"
   echo "==> ${script}"
   if ! ${COMPOSE} exec -T app test -f "${path}"; then

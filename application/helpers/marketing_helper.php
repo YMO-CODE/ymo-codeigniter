@@ -751,7 +751,7 @@ if (!function_exists('marketing_normalize_service_body')) {
      * @param string $body
      * @return string
      */
-    function marketing_normalize_service_body($body)
+    function marketing_normalize_service_body($body, array $page_faqs = array())
     {
         $body = trim((string) $body);
         if ($body === '') {
@@ -781,14 +781,198 @@ if (!function_exists('marketing_normalize_service_body')) {
         }
 
         $body = marketing_normalize_feature_item_body($body);
-        $body = marketing_normalize_service_why_faq($body);
+        $body = marketing_normalize_service_why_faq($body, $page_faqs);
         $body = marketing_simplify_accordion_markup($body);
+        $body = marketing_flatten_service_overview_vc_row($body);
         $body = marketing_strip_wp_service_chrome($body);
         $body = marketing_unwrap_wpb_text_columns($body);
         $body = marketing_remove_orphan_divs_before_section($body);
         $body = marketing_wrap_leading_overview($body);
+        $body = marketing_upgrade_leading_section_to_v2_overview($body);
+        $body = marketing_repair_v2_overview_section_boundaries($body);
+        $body = marketing_strip_orphan_closing_divs_between_sections($body);
+        $body = marketing_normalize_v2_checklist_grid_markup($body);
+        $body = marketing_normalize_v2_supplement_body($body);
 
         return trim($body);
+    }
+}
+
+if (!function_exists('marketing_with_why_faq_block_protected')) {
+    /**
+     * Temporarily replace the v2 why+FAQ block so body transforms do not strip or detach inline FAQs.
+     *
+     * @param string $body
+     * @param callable(string):string $transform
+     */
+    function marketing_with_why_faq_block_protected($body, callable $transform)
+    {
+        $body = (string) $body;
+        if (stripos($body, 'ymo-v2-why-faq') === FALSE) {
+            return $transform($body);
+        }
+
+        if (!preg_match(
+            '/(<div class="ymo-content-section ymo-v2-why-faq[^"]*"[^>]*>[\s\S]*?<!-- \/ymo-v2-why-faq -->)/i',
+            $body,
+            $match
+        )) {
+            return $transform($body);
+        }
+
+        $token = '%%YMO_V2_WHY_FAQ_BLOCK%%';
+        $protected = str_replace($match[1], $token, $body, $count);
+        if ($count !== 1) {
+            return $transform($body);
+        }
+
+        $protected = $transform($protected);
+
+        return str_replace($token, $match[1], $protected);
+    }
+}
+
+if (!function_exists('marketing_extract_html_ul_items')) {
+    /** @return array<int, string> */
+    function marketing_extract_html_ul_items($html)
+    {
+        $html = (string) $html;
+        if (!preg_match('/<ul[^>]*>([\s\S]*?)<\/ul>/i', $html, $ul)) {
+            return array();
+        }
+        if (!preg_match_all('/<li[^>]*>([\s\S]*?)<\/li>/i', $ul[1], $rows)) {
+            return array();
+        }
+        $items = array();
+        foreach ($rows[1] as $chunk) {
+            $text = trim(html_entity_decode(strip_tags($chunk), ENT_QUOTES, 'UTF-8'));
+            if ($text !== '') {
+                $items[] = $text;
+            }
+        }
+
+        return $items;
+    }
+}
+
+if (!function_exists('marketing_build_v2_service_overview_section')) {
+    /**
+     * Service overview: lead + side “includes” checklist + detail prose (v2 layout).
+     *
+     * @param string $inner HTML inside legacy wpb_wrapper
+     */
+    function marketing_build_v2_service_overview_section($inner)
+    {
+        $inner = (string) $inner;
+        $inner = preg_replace(
+            '/<header class="section-heading[^"]*"[^>]*>\s*(.*?)\s*<\/header>/is',
+            '<h2 class="ymo-v2-display-sm">$1</h2>',
+            $inner,
+            1
+        );
+
+        $lead = '';
+        if (preg_match('/^\s*<p[^>]*>([\s\S]*?)<\/p>/i', $inner, $lead_match)) {
+            $lead = trim(html_entity_decode(strip_tags($lead_match[1]), ENT_QUOTES, 'UTF-8'));
+            $inner = preg_replace('/^\s*<p[^>]*>[\s\S]*?<\/p>/i', '', $inner, 1);
+        }
+
+        $includes_heading = '';
+        if (preg_match('/^\s*<h2[^>]*>([\s\S]*?)<\/h2>/i', $inner, $heading_match)) {
+            $includes_heading = trim(html_entity_decode(strip_tags($heading_match[1]), ENT_QUOTES, 'UTF-8'));
+            $inner = preg_replace('/^\s*<h2[^>]*>[\s\S]*?<\/h2>/i', '', $inner, 1);
+        }
+
+        $includes = array();
+        while (preg_match('/<ul[^>]*>[\s\S]*?<\/ul>/i', $inner)) {
+            $includes = array_merge($includes, marketing_extract_html_ul_items($inner));
+            $inner = preg_replace('/<ul[^>]*>[\s\S]*?<\/ul>/i', '', $inner, 1);
+            $inner = preg_replace('/^\s*<p[^>]*>[\s\S]*?<\/p>\s*/i', '', $inner, 1);
+        }
+
+        $detail_parts = array();
+        if (preg_match_all('/<p[^>]*>([\s\S]*?)<\/p>/i', $inner, $paragraphs)) {
+            foreach ($paragraphs[1] as $chunk) {
+                $text = trim(html_entity_decode(strip_tags($chunk), ENT_QUOTES, 'UTF-8'));
+                if ($text !== '') {
+                    $detail_parts[] = $text;
+                }
+            }
+        }
+
+        $story_length = strlen($lead) + strlen(implode('', $detail_parts));
+        $layout_class = 'ymo-v2-overview-layout';
+        if ($includes !== array()
+            && count($includes) <= 7
+            && $story_length >= 480
+            && count($detail_parts) + ($lead !== '' ? 1 : 0) >= 2) {
+            $layout_class .= ' ymo-v2-overview-layout--split';
+        }
+
+        $html = '<div class="ymo-content-section ymo-v2-service-overview mb-5">';
+        $html .= '<div class="'.$layout_class.'">';
+
+        $html .= '<div class="ymo-v2-overview-layout__story">';
+        if ($lead !== '') {
+            $html .= '<p class="ymo-v2-lead ymo-v2-service-overview__lead">'.htmlspecialchars($lead, ENT_QUOTES, 'UTF-8').'</p>';
+        }
+        if ($includes_heading !== '') {
+            $html .= '<h2 class="ymo-v2-subhead ymo-v2-overview-layout__story-title">'
+                .htmlspecialchars($includes_heading, ENT_QUOTES, 'UTF-8').'</h2>';
+        }
+        foreach ($detail_parts as $paragraph) {
+            $html .= '<p class="ymo-v2-overview-layout__story-copy">'.htmlspecialchars($paragraph, ENT_QUOTES, 'UTF-8').'</p>';
+        }
+        $html .= '</div>';
+
+        if ($includes !== array()) {
+            $html .= '<aside class="ymo-v2-overview-layout__includes" aria-label="Included in this service">';
+            $html .= '<span class="ymo-v2-overview-layout__eyebrow md-label-lg">Included items</span>';
+            $html .= marketing_render_v2_checklist_grid($includes, 'grid-3');
+            $html .= '</aside>';
+        }
+
+        $html .= '</div></div>';
+
+        return $html;
+    }
+}
+
+if (!function_exists('marketing_flatten_service_overview_vc_row')) {
+    /** Unwrap legacy WPB row around the first service overview block. */
+    function marketing_flatten_service_overview_vc_row($body)
+    {
+        $body = (string) $body;
+        if (stripos($body, 'vc_row') === FALSE && stripos($body, 'wpb_wrapper') === FALSE) {
+            return $body;
+        }
+
+        return preg_replace_callback(
+            '/(<div class="ymo-content-section[^"]*">\s*)?<div class="vc_row[^"]*"[^>]*>\s*<div class="wpb_column[^"]*"[^>]*>\s*<div class="wpb_wrapper">\s*([\s\S]*?)\s*<\/div>\s*<\/div>\s*<\/div>\s*(?:<\/div>\s*)?/i',
+            function ($match) {
+                $inner = $match[2];
+                $v2 = function_exists('marketing_is_theme_v2') && marketing_is_theme_v2('', array());
+                if ($v2) {
+                    return marketing_build_v2_service_overview_section($inner);
+                }
+
+                $inner = preg_replace(
+                    '/<header class="section-heading[^"]*"[^>]*>\s*(.*?)\s*<\/header>/is',
+                    '<h2 class="ymo-v2-display-sm mt-2 mb-3">$1</h2>',
+                    $inner,
+                    1
+                );
+                if (preg_match('/<ul(?![^>]*\bclass=)/i', $inner)) {
+                    $inner = preg_replace('/<ul>/i', '<ul class="list iconList">', $inner, 1);
+                } elseif (preg_match('/<ul class="(?!list\b)/i', $inner)) {
+                    $inner = preg_replace('/<ul class="/i', '<ul class="list iconList ', $inner, 1);
+                }
+
+                return '<div class="ymo-content-section ymo-v2-service-overview mb-5">'.$inner.'</div>';
+            },
+            $body,
+            1
+        );
     }
 }
 
@@ -1027,9 +1211,9 @@ if (!function_exists('marketing_render_pricing_section_html')) {
 
         $html = '<section class="ymo-page-section ymo-pricing-section">';
         $html .= '<h2 class="ymo-page-section__title">Transparent pricing</h2>';
-        $html .= '<div class="ymo-page-section__panel ymo-pricing-table">';
-        $html .= '<table><thead><tr>';
-        $html .= '<th scope="col">Car type / variant</th>';
+        $html .= '<div class="ymo-page-section__panel ymo-pricing-table ymo-pricing-table--hub">';
+        $html .= '<table class="ymo-pricing-table__grid ymo-pricing-table__grid--hub md-body-md"><thead><tr>';
+        $html .= '<th scope="col" class="ymo-pricing-table__service">Car type / variant</th>';
         $html .= '<th scope="col" class="ymo-pricing-table__price">Price (from)</th>';
         $html .= '</tr></thead><tbody>';
 
@@ -1038,8 +1222,10 @@ if (!function_exists('marketing_render_pricing_section_html')) {
                 continue;
             }
             $html .= '<tr>';
-            $html .= '<td>'.htmlspecialchars((string) $tier['label'], ENT_QUOTES, 'UTF-8').'</td>';
-            $html .= '<td class="ymo-pricing-table__price">'.htmlspecialchars((string) ($tier['price'] ?? ''), ENT_QUOTES, 'UTF-8').'</td>';
+            $html .= '<th scope="row" class="ymo-pricing-table__service">'
+                .htmlspecialchars((string) $tier['label'], ENT_QUOTES, 'UTF-8').'</th>';
+            $html .= '<td class="ymo-pricing-table__price">'
+                .htmlspecialchars((string) ($tier['price'] ?? ''), ENT_QUOTES, 'UTF-8').'</td>';
             $html .= '</tr>';
         }
 
@@ -1124,18 +1310,22 @@ if (!function_exists('marketing_detach_faq_sections_from_body')) {
         $body = (string) $body;
         $sections = array();
 
-        if ($body !== '' && preg_match_all(
-            '/<section class="ymo-page-section ymo-faq-section">[\s\S]*?<\/section>|<section class="ymo-faq-section">[\s\S]*?<\/section>/i',
-            $body,
-            $matches
-        )) {
-            $sections = $matches[0];
-            $body = preg_replace(
+        $body = marketing_with_why_faq_block_protected($body, function ($inner) use (&$sections) {
+            if ($inner !== '' && preg_match_all(
                 '/<section class="ymo-page-section ymo-faq-section">[\s\S]*?<\/section>|<section class="ymo-faq-section">[\s\S]*?<\/section>/i',
-                '',
-                $body
-            );
-        }
+                $inner,
+                $matches
+            )) {
+                $sections = $matches[0];
+                $inner = preg_replace(
+                    '/<section class="ymo-page-section ymo-faq-section">[\s\S]*?<\/section>|<section class="ymo-faq-section">[\s\S]*?<\/section>/i',
+                    '',
+                    $inner
+                );
+            }
+
+            return $inner;
+        });
 
         return array(
             'body'     => trim($body),
@@ -1205,25 +1395,27 @@ if (!function_exists('marketing_strip_embedded_faq_from_body')) {
             return $body;
         }
 
-        $body = preg_replace('/<section class="ymo-page-section ymo-faq-section">[\s\S]*?<\/section>/i', '', $body);
-        $body = preg_replace('/<section class="ymo-faq-section">[\s\S]*?<\/section>/i', '', $body);
-        $body = preg_replace(
-            '/<div class="col-lg-6">\s*<h2 class="md-headline-md mb-3">Popular questions<\/h2>\s*<div class="ymo-faq-list">[\s\S]*?<\/div>\s*<\/div>/i',
-            '',
-            $body
-        );
+        return marketing_with_why_faq_block_protected($body, function ($inner) {
+            $inner = preg_replace('/<section class="ymo-page-section ymo-faq-section">[\s\S]*?<\/section>/i', '', $inner);
+            $inner = preg_replace('/<section class="ymo-faq-section">[\s\S]*?<\/section>/i', '', $inner);
+            $inner = preg_replace(
+                '/<div class="col-lg-6">\s*<h2 class="md-headline-md mb-3">Popular questions<\/h2>\s*<div class="ymo-faq-list">[\s\S]*?<\/div>\s*<\/div>/i',
+                '',
+                $inner
+            );
 
-        $patterns = array(
-            '/<h([234])[^>]*>\s*Popular questions\s*<\/h\1>\s*<ul class="accordion[^"]*">[\s\S]*?<\/ul>/i',
-            '/<h([234])[^>]*>\s*Frequently asked questions\s*<\/h\1>\s*<ul class="accordion[^"]*">[\s\S]*?<\/ul>/i',
-            '/<h([234])[^>]*>\s*POPULAR QUESTIONS\s*<\/h\1>\s*<ul class="accordion[^"]*">[\s\S]*?<\/ul>/i',
-        );
+            $patterns = array(
+                '/<h([234])[^>]*>\s*Popular questions\s*<\/h\1>\s*<ul class="accordion[^"]*">[\s\S]*?<\/ul>/i',
+                '/<h([234])[^>]*>\s*Frequently asked questions\s*<\/h\1>\s*<ul class="accordion[^"]*">[\s\S]*?<\/ul>/i',
+                '/<h([234])[^>]*>\s*POPULAR QUESTIONS\s*<\/h\1>\s*<ul class="accordion[^"]*">[\s\S]*?<\/ul>/i',
+            );
 
-        foreach ($patterns as $pattern) {
-            $body = preg_replace($pattern, '', $body);
-        }
+            foreach ($patterns as $pattern) {
+                $inner = preg_replace($pattern, '', $inner);
+            }
 
-        return trim($body);
+            return trim($inner);
+        });
     }
 }
 
@@ -1243,19 +1435,235 @@ if (!function_exists('marketing_render_template_bullet_list')) {
     }
 }
 
+if (!function_exists('marketing_render_v2_checklist_grid')) {
+    /**
+     * @param array<int, string> $items
+     * @param string $layout grid-3|stack (stack = single column; rarely used)
+     */
+    function marketing_render_v2_checklist_grid(array $items, $layout = 'grid-3')
+    {
+        if ($items === array()) {
+            return '';
+        }
+
+        if ($layout === 'grid') {
+            $layout = 'grid-3';
+        }
+
+        $col = '';
+        $list_class = 'ymo-v2-checklist ymo-v2-checklist--grid-3 list-unstyled mb-0';
+        if ($layout === 'stack') {
+            $col = 'col-12';
+            $list_class = 'ymo-v2-checklist row g-3 list-unstyled mb-0 ymo-v2-checklist--stack';
+        }
+
+        $html = '<ul class="'.$list_class.'">';
+        foreach ($items as $item) {
+            $li_class = $col !== '' ? $col.' d-flex' : 'ymo-v2-checklist__cell d-flex';
+            $html .= '<li class="'.$li_class.'"><div class="ymo-v2-checklist__tile">';
+            $html .= '<span class="ymo-v2-checklist__icon mi" aria-hidden="true">check_circle</span>';
+            $html .= '<span class="ymo-v2-checklist__text md-body-md">'.htmlspecialchars($item, ENT_QUOTES, 'UTF-8').'</span>';
+            $html .= '</div></li>';
+        }
+
+        return $html.'</ul>';
+    }
+}
+
+if (!function_exists('marketing_build_v2_supplement_block')) {
+    /**
+     * “What’s included” and similar supplement sections — checklist grid + optional footer meta.
+     *
+     * @param array<int, string> $items
+     */
+    function marketing_build_v2_supplement_block($heading, array $items, $footer_html = '', $lead = '')
+    {
+        $heading = trim((string) $heading);
+        $v2 = function_exists('marketing_is_theme_v2') && marketing_is_theme_v2('', array());
+        $wrap_class = 'ymo-content-section mb-5';
+        if ($v2) {
+            $wrap_class .= ' ymo-v2-supplement-block';
+        }
+
+        $html = '<div class="'.$wrap_class.'">';
+        if ($heading !== '') {
+            $h_class = $v2 ? 'ymo-v2-display-sm mb-3' : 'md-headline-md mb-3';
+            $html .= '<h2 class="'.$h_class.'">'.htmlspecialchars($heading, ENT_QUOTES, 'UTF-8').'</h2>';
+        }
+        if ($lead !== '') {
+            $lead_class = $v2 ? 'ymo-v2-lead mb-4' : 'md-body-md mb-3';
+            $html .= '<p class="'.$lead_class.'">'.htmlspecialchars($lead, ENT_QUOTES, 'UTF-8').'</p>';
+        }
+        if ($items !== array()) {
+            if ($v2 && function_exists('marketing_render_v2_checklist_grid')) {
+                $html .= marketing_render_v2_checklist_grid($items, 'grid-3');
+            } else {
+                $html .= '<ul class="md-body-md">';
+                foreach ($items as $item) {
+                    $html .= '<li>'.htmlspecialchars($item, ENT_QUOTES, 'UTF-8').'</li>';
+                }
+                $html .= '</ul>';
+            }
+        }
+        if ($footer_html !== '') {
+            $html .= $footer_html;
+        }
+        $html .= '</div>';
+
+        return $html;
+    }
+}
+
+if (!function_exists('marketing_build_v2_internal_links_block')) {
+    /** @param array<int, string> $link_html_fragments Full <a>...</a> strings */
+    function marketing_build_v2_internal_links_block($heading, array $link_html_fragments)
+    {
+        $heading = trim((string) $heading);
+        if ($link_html_fragments === array()) {
+            return '';
+        }
+        $v2 = function_exists('marketing_is_theme_v2') && marketing_is_theme_v2('', array());
+        $wrap_class = 'ymo-content-section mb-5 ymo-internal-links';
+        if ($v2) {
+            $wrap_class .= ' ymo-v2-supplement-block ymo-v2-supplement-block--links';
+        }
+
+        $html = '<div class="'.$wrap_class.'">';
+        $h_class = $v2 ? 'ymo-v2-display-sm mb-3' : 'md-headline-md mb-3';
+        $html .= '<h2 class="'.$h_class.'">'.htmlspecialchars($heading, ENT_QUOTES, 'UTF-8').'</h2>';
+        if ($v2) {
+            $html .= '<div class="ymo-v2-link-chip-grid">';
+            foreach ($link_html_fragments as $link) {
+                $html .= '<div class="ymo-v2-link-chip">'.$link.'</div>';
+            }
+            $html .= '</div>';
+        } else {
+            $html .= '<p class="md-body-md mb-0">'.implode(' · ', $link_html_fragments).'.</p>';
+        }
+        $html .= '</div>';
+
+        return $html;
+    }
+}
+
+if (!function_exists('marketing_normalize_v2_supplement_body')) {
+    /**
+     * Upgrade thin supplement sections (What's included, city links) for v2 theme.
+     *
+     * @param string $body
+     */
+    function marketing_normalize_v2_supplement_body($body)
+    {
+        $body = (string) $body;
+        if ($body === '') {
+            return $body;
+        }
+        if (!function_exists('marketing_is_theme_v2') || !marketing_is_theme_v2('', array())) {
+            return $body;
+        }
+
+        $body = preg_replace_callback(
+            '/<div class="ymo-content-section mb-5 ymo-internal-links"[^>]*>\s*<h2 class="md-headline-md[^"]*">\s*([^<]+)\s*<\/h2>\s*'
+            .'<p class="md-body-md mb-0">([\s\S]*?)<\/p>\s*<\/div>/i',
+            function ($match) {
+                if (!preg_match_all('/<a\s[^>]*>[\s\S]*?<\/a>/i', $match[2], $links)) {
+                    return $match[0];
+                }
+
+                return marketing_build_v2_internal_links_block($match[1], $links[0]);
+            },
+            $body
+        );
+
+        $body = preg_replace_callback(
+            '/<div class="ymo-content-section mb-5"(?![^>]*\bymo-v2-supplement-block\b)(?![^>]*\bymo-v2-service-overview\b)[^>]*>\s*'
+            .'<h2 class="md-headline-md[^"]*">\s*What\'s included\s*<\/h2>\s*<ul class="md-body-md">([\s\S]*?)<\/ul>\s*<\/div>/i',
+            function ($match) {
+                $items = marketing_extract_html_ul_items('<ul>'.$match[1].'</ul>');
+                if ($items === array()) {
+                    return $match[0];
+                }
+
+                return marketing_build_v2_supplement_block('What\'s included', $items);
+            },
+            $body
+        );
+
+        $body = preg_replace_callback(
+            '/(<div class="ymo-content-section mb-5 ymo-v2-supplement-block"[^>]*>[\s\S]*?<\/ul>\s*<\/div>)(\s*(?:<p class="md-body-md[^"]*"[^>]*>[\s\S]*?<\/p>\s*)+)(?=<div class="ymo-content-section|\s*$)/i',
+            function ($match) {
+                if (stripos($match[1], 'ymo-v2-supplement-meta') !== FALSE) {
+                    return $match[0];
+                }
+
+                return $match[1].'<div class="ymo-v2-supplement-meta">'.$match[2].'</div>';
+            },
+            $body
+        );
+
+        if (preg_match('/<h2 class="md-headline-md[^"]*">\s*What\'s included\s*<\/h2>\s*<ul class="md-body-md"/i', $body)
+            && stripos($body, 'ymo-v2-supplement-block') === FALSE) {
+            $body = preg_replace_callback(
+                '/<h2 class="md-headline-md[^"]*">\s*What\'s included\s*<\/h2>\s*([\s\S]*?)(?=<h2 class="md-headline-md|<div class="ymo-content-section|$)/i',
+                function ($match) {
+                    if (!preg_match('/<ul class="md-body-md">([\s\S]*?)<\/ul>/i', $match[1], $ul)) {
+                        return $match[0];
+                    }
+                    $items = marketing_extract_html_ul_items('<ul>'.$ul[1].'</ul>');
+                    $rest = preg_replace('/<ul class="md-body-md">[\s\S]*?<\/ul>/i', '', $match[1], 1);
+                    $block = marketing_build_v2_supplement_block('What\'s included', $items);
+                    if (trim($rest) !== '') {
+                        $block = preg_replace('/<\/div>\s*$/', '<div class="ymo-v2-supplement-meta">'.$rest.'</div></div>', $block, 1);
+                    }
+
+                    return $block;
+                },
+                $body,
+                1
+            );
+        }
+
+        return $body;
+    }
+}
+
 if (!function_exists('marketing_build_why_faq_section')) {
     /** @param array<int, string> $bullets @param array<int, array{q:string,a:string}> $faqs */
     function marketing_build_why_faq_section($intro, array $bullets, array $faqs)
     {
-        $html = '<div class="ymo-content-section"><div class="row g-4 g-lg-5">';
-        $html .= '<div class="col-lg-6"><h2 class="md-headline-md mb-3">Why choose YMO</h2>';
+        $v2 = function_exists('marketing_is_theme_v2') && marketing_is_theme_v2('', array());
+        $heading_class = $v2 ? 'ymo-v2-display-sm' : 'md-headline-md';
+
+        $html = '<div class="ymo-content-section ymo-v2-why-faq mb-5">';
+        $html .= '<div class="row g-4 g-lg-5 align-items-stretch ymo-v2-why-faq__row">';
+        $why_col = $v2 ? 'col-lg-6 d-flex' : 'col-lg-6';
+        $faq_col = $v2 ? 'col-lg-6 d-flex' : 'col-lg-6';
+        $why_panel = $v2 ? '<div class="ymo-v2-why-faq__panel">' : '';
+        $why_panel_end = $v2 ? '</div>' : '';
+        $html .= '<div class="'.$why_col.'">';
+        $html .= $why_panel;
+        $html .= '<h2 class="'.$heading_class.' mb-3">Why choose YMO</h2>';
         if ($intro !== '') {
-            $html .= '<p class="md-body-md mb-3">'.htmlspecialchars($intro, ENT_QUOTES, 'UTF-8').'</p>';
+            $intro_class = $v2 ? 'ymo-v2-lead mb-4' : 'md-body-md mb-4';
+            $html .= '<p class="'.$intro_class.'">'.htmlspecialchars($intro, ENT_QUOTES, 'UTF-8').'</p>';
         }
-        $html .= marketing_render_template_bullet_list($bullets);
-        $html .= '</div></div>';
-        $html .= marketing_render_faq_section_html('Popular questions', $faqs);
+        if ($v2) {
+            $html .= marketing_render_v2_checklist_grid($bullets);
+        } else {
+            $html .= marketing_render_template_bullet_list($bullets);
+        }
+        $html .= $why_panel_end;
         $html .= '</div>';
+        $html .= '<div class="'.$faq_col.'">';
+        if ($v2) {
+            $html .= '<div class="ymo-v2-why-faq__panel ymo-v2-why-faq__panel--faq w-100">';
+        }
+        $html .= marketing_render_faq_section_html('Popular questions', $faqs);
+        if ($v2) {
+            $html .= '</div>';
+        }
+        $html .= '</div>';
+        $html .= '</div></div><!-- /ymo-v2-why-faq -->';
 
         return $html;
     }
@@ -1263,7 +1671,7 @@ if (!function_exists('marketing_build_why_faq_section')) {
 
 if (!function_exists('marketing_normalize_service_why_faq')) {
     /** @return string */
-    function marketing_normalize_service_why_faq($body)
+    function marketing_normalize_service_why_faq($body, array $page_faqs = array())
     {
         $body = (string) $body;
         if (stripos($body, 'WHY CHOOSE US') === FALSE || stripos($body, 'POPULAR QUESTIONS') === FALSE) {
@@ -1283,10 +1691,14 @@ if (!function_exists('marketing_normalize_service_why_faq')) {
             $intro = trim(html_entity_decode(strip_tags($paragraph[1]), ENT_QUOTES, 'UTF-8'));
         }
 
+        $faqs = $page_faqs !== array()
+            ? marketing_normalize_faq_items($page_faqs)
+            : marketing_extract_accordion_items($matches[2]);
+
         $section = marketing_build_why_faq_section(
             $intro,
             marketing_extract_template_bullets($matches[1]),
-            marketing_extract_accordion_items($matches[2])
+            $faqs
         );
 
         return preg_replace(
@@ -1401,6 +1813,178 @@ if (!function_exists('marketing_wrap_leading_overview')) {
         }
 
         return '<div class="ymo-content-section mb-5">'.$leading.'</div>'.substr($body, strlen($matches[1]));
+    }
+}
+
+if (!function_exists('marketing_upgrade_leading_section_to_v2_overview')) {
+    /**
+     * After WP chrome is stripped, the overview is often plain <p>/<ul> in a generic section.
+     * Rebuild it as ymo-v2-service-overview when theme v2 is active.
+     *
+     * @param string $body
+     */
+    function marketing_upgrade_leading_section_to_v2_overview($body)
+    {
+        if (!function_exists('marketing_is_theme_v2') || !marketing_is_theme_v2('', array())) {
+            return $body;
+        }
+
+        $body = trim((string) $body);
+        if ($body === '' || stripos($body, 'ymo-v2-service-overview') !== FALSE) {
+            return $body;
+        }
+
+        $pattern = '/^<div class="ymo-content-section mb-5"(?![^>]*\bymo-v2-why-faq\b)(?![^>]*\bymo-v2-service-overview\b)[^>]*>([\s\S]*?)<\/div>\s*(?=<div class="ymo-content-section)/i';
+        if (!preg_match($pattern, $body, $match)) {
+            return $body;
+        }
+
+        $built = marketing_build_v2_service_overview_section($match[1]);
+        if ($built === '') {
+            return $body;
+        }
+
+        return preg_replace($pattern, $built, $body, 1);
+    }
+}
+
+if (!function_exists('marketing_repair_v2_overview_section_boundaries')) {
+    /**
+     * Close ymo-v2-service-overview before the why/FAQ block when a </div> was dropped during migration.
+     *
+     * @param string $body
+     */
+    function marketing_repair_v2_overview_section_boundaries($body)
+    {
+        $body = (string) $body;
+        if (stripos($body, 'ymo-v2-service-overview') === FALSE
+            || stripos($body, 'ymo-v2-why-faq') === FALSE) {
+            return $body;
+        }
+
+        if (!preg_match(
+            '/<div class="ymo-content-section ymo-v2-service-overview[^>]*>[\s\S]*<div class="ymo-content-section ymo-v2-why-faq/i',
+            $body
+        )) {
+            return $body;
+        }
+
+        if (preg_match(
+            '/<\/aside>\s*<\/div>\s*<\/div>\s*<\/div>\s*<div class="ymo-content-section ymo-v2-why-faq/i',
+            $body
+        )) {
+            return preg_replace(
+                '/(<\/aside>\s*<\/div>\s*<\/div>)\s*<\/div>\s*(<div class="ymo-content-section ymo-v2-why-faq)/i',
+                '$1$2',
+                $body,
+                1
+            );
+        }
+
+        if (preg_match(
+            '/<\/aside>\s*<\/div>\s*<\/div>\s*<div class="ymo-content-section ymo-v2-why-faq/i',
+            $body
+        )) {
+            return $body;
+        }
+
+        if (preg_match('/<\/aside>\s*<\/div>\s*<div class="ymo-content-section ymo-v2-why-faq/i', $body)) {
+            return preg_replace(
+                '/(<\/aside>\s*<\/div>)(\s*<div class="ymo-content-section ymo-v2-why-faq)/i',
+                '$1</div>$2',
+                $body,
+                1
+            );
+        }
+
+        if (preg_match(
+            '/<div class="ymo-v2-overview-layout[^"]*">[\s\S]*<\/div>\s*<\/div>\s*<div class="ymo-content-section ymo-v2-why-faq/i',
+            $body
+        )) {
+            return $body;
+        }
+
+        return preg_replace(
+            '/(<div class="ymo-v2-overview-layout[^"]*">[\s\S]*<\/div>)(\s*<div class="ymo-content-section ymo-v2-why-faq)/i',
+            '$1</div>$2',
+            $body,
+            1
+        );
+    }
+}
+
+if (!function_exists('marketing_strip_orphan_closing_divs_between_sections')) {
+    /**
+     * WPBakery service bodies often keep stray </div> closures after we strip vc_row open tags.
+     * Those closings break the v2 page column (first block narrow, later blocks full width).
+     *
+     * @param string $body
+     */
+    function marketing_strip_orphan_closing_divs_between_sections($body)
+    {
+        $body = (string) $body;
+        if ($body === '' || stripos($body, 'ymo-content-section') === FALSE) {
+            return $body;
+        }
+
+        $pattern = '/(<div class="ymo-content-section[^"]*"[^>]*>[\s\S]*?<\/div>)\s*(?:<\/div>\s*){1,8}(?=<div class="ymo-content-section)/i';
+        $prev = NULL;
+        while ($prev !== $body) {
+            $prev = $body;
+            $body = preg_replace_callback(
+                $pattern,
+                function ($match) {
+                    if (stripos($match[1], 'ymo-v2-service-overview') !== FALSE
+                        || stripos($match[1], 'ymo-v2-why-faq') !== FALSE) {
+                        return $match[0];
+                    }
+
+                    return $match[1];
+                },
+                $body
+            );
+        }
+
+        return $body;
+    }
+}
+
+if (!function_exists('marketing_normalize_v2_checklist_grid_markup')) {
+    /**
+     * Use the same 2/3-column tile grid for every v2 checklist (includes, Why YMO, etc.).
+     *
+     * @param string $body
+     */
+    function marketing_normalize_v2_checklist_grid_markup($body)
+    {
+        $body = (string) $body;
+        if ($body === '' || stripos($body, 'ymo-v2-checklist') === FALSE) {
+            return $body;
+        }
+
+        if (!function_exists('marketing_is_theme_v2') || !marketing_is_theme_v2('', array())) {
+            return $body;
+        }
+
+        return preg_replace_callback(
+            '/<ul class="([^"]*\bymo-v2-checklist\b[^"]*)"[^>]*>([\s\S]*?)<\/ul>/i',
+            function ($match) {
+                $inner = preg_replace(
+                    '/<li class="col-(?:sm-6|12) d-flex">/i',
+                    '<li class="ymo-v2-checklist__cell d-flex">',
+                    $match[2]
+                );
+                if (stripos($match[1], 'ymo-v2-checklist--stack') !== FALSE) {
+                    return '<ul class="ymo-v2-checklist ymo-v2-checklist--grid-3 list-unstyled mb-0">'.$inner.'</ul>';
+                }
+                if (stripos($match[1], 'ymo-v2-checklist--grid-3') !== FALSE) {
+                    return '<ul class="ymo-v2-checklist ymo-v2-checklist--grid-3 list-unstyled mb-0">'.$inner.'</ul>';
+                }
+
+                return '<ul class="ymo-v2-checklist ymo-v2-checklist--grid-3 list-unstyled mb-0">'.$inner.'</ul>';
+            },
+            $body
+        );
     }
 }
 
@@ -1943,7 +2527,7 @@ if (!function_exists('marketing_hero_context')) {
         $image = NULL;
         $slides = NULL;
         $slider_interval_ms = 6000;
-        if ($hero_type !== 'minimal') {
+        if ($hero_type !== 'minimal' || !empty($page['hero_split']) || !empty($page['og_image'])) {
             if (!empty($page['slider'])) {
                 $slider_cfg = ymo_marketing_slider((string) $page['slider']);
                 if ($slider_cfg && !empty($slider_cfg['slides'])) {
@@ -2039,7 +2623,11 @@ if (!function_exists('ymo_marketing_render_hero')) {
         if ($hero['h1'] === '') {
             return '';
         }
-        return $ci->load->view('marketing/partials/hero', array('hero' => $hero), TRUE);
+        $theme_v2 = marketing_is_theme_v2($path, $page);
+        return $ci->load->view('marketing/partials/hero', array(
+            'hero'               => $hero,
+            'marketing_theme_v2'   => $theme_v2,
+        ), TRUE);
     }
 }
 
@@ -3243,6 +3831,12 @@ if (!function_exists('marketing_build_feature_card_grid')) {
             $col = 'col-md-6';
         }
 
+        $v2_cards = function_exists('marketing_is_theme_v2') && marketing_is_theme_v2('', array());
+        $shell    = 'md-card-elevated h-100';
+        if ($v2_cards) {
+            $shell .= ' ymo-v2-card ymo-v2-card--static';
+        }
+
         $cards = '';
         foreach ($items as $i => $item) {
             $title = isset($item['title']) ? $item['title'] : '';
@@ -3254,13 +3848,25 @@ if (!function_exists('marketing_build_feature_card_grid')) {
             }
 
             $icon = marketing_feature_item_icon($html, $i, $title);
-            $cards .= '<div class="'.$col.'"><div class="md-card-elevated h-100">';
-            $cards .= '<span class="mi mi-xl md-icon-primary">'.htmlspecialchars($icon, ENT_QUOTES, 'UTF-8').'</span>';
-            if ($title !== '') {
-                $cards .= '<h3 class="md-title-md mt-3 mb-2">'.htmlspecialchars($title, ENT_QUOTES, 'UTF-8').'</h3>';
-                $cards .= '<p class="md-body-md mb-0">'.htmlspecialchars($text, ENT_QUOTES, 'UTF-8').'</p>';
+            $col_class = $col.($v2_cards ? ' d-flex' : '');
+            $cards .= '<div class="'.$col_class.'"><div class="'.$shell.'">';
+            if ($v2_cards) {
+                $cards .= '<span class="ymo-v2-card__icon" aria-hidden="true"><span class="mi">'
+                    .htmlspecialchars($icon, ENT_QUOTES, 'UTF-8').'</span></span>';
             } else {
-                $cards .= '<p class="md-body-md mb-0 mt-3">'.htmlspecialchars($text, ENT_QUOTES, 'UTF-8').'</p>';
+                $cards .= '<span class="mi mi-xl md-icon-primary">'.htmlspecialchars($icon, ENT_QUOTES, 'UTF-8').'</span>';
+            }
+            if ($title !== '') {
+                if ($v2_cards) {
+                    $cards .= '<h3 class="ymo-v2-card__title md-title-md">'.htmlspecialchars($title, ENT_QUOTES, 'UTF-8').'</h3>';
+                    $cards .= '<p class="ymo-v2-card__teaser md-body-md">'.htmlspecialchars($text, ENT_QUOTES, 'UTF-8').'</p>';
+                } else {
+                    $cards .= '<h3 class="md-title-md mt-3 mb-2">'.htmlspecialchars($title, ENT_QUOTES, 'UTF-8').'</h3>';
+                    $cards .= '<p class="md-body-md mb-0">'.htmlspecialchars($text, ENT_QUOTES, 'UTF-8').'</p>';
+                }
+            } else {
+                $cards .= '<p class="md-body-md mb-0'.($v2_cards ? ' ymo-v2-card__teaser' : ' mt-3').'">'
+                    .htmlspecialchars($text, ENT_QUOTES, 'UTF-8').'</p>';
             }
             $cards .= '</div></div>';
         }
@@ -3269,9 +3875,10 @@ if (!function_exists('marketing_build_feature_card_grid')) {
             return '';
         }
 
+        $row_class = 'row g-4'.($v2_cards ? ' ymo-v2-card-grid' : '');
         return '<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">'
             .htmlspecialchars($heading, ENT_QUOTES, 'UTF-8')
-            .'</h2><div class="row g-4">'.$cards.'</div></div>';
+            .'</h2><div class="'.$row_class.'">'.$cards.'</div></div>';
     }
 }
 
@@ -3305,6 +3912,244 @@ if (!function_exists('marketing_normalize_feature_item_body')) {
             },
             $body
         );
+    }
+}
+
+if (!function_exists('marketing_v2_trust_page_paths')) {
+    /** @return array<int, string> */
+    function marketing_v2_trust_page_paths()
+    {
+        return array(
+            'warranty',
+            'refund-and-cancellation-policy',
+            'terms-and-conditions',
+            'privacy-policy',
+            'reviews',
+            'pricing',
+        );
+    }
+}
+
+if (!function_exists('marketing_build_v2_trust_related_strip')) {
+    function marketing_build_v2_trust_related_strip($path)
+    {
+        $path = trim((string) $path, '/');
+        $map = array(
+            'warranty' => array(
+                'Refund & cancellation' => 'refund-and-cancellation-policy',
+                'Terms & conditions'    => 'terms-and-conditions',
+                'FAQ'                   => 'faq',
+            ),
+            'refund-and-cancellation-policy' => array(
+                'Service warranty'   => 'warranty',
+                'Terms & conditions' => 'terms-and-conditions',
+                'Contact us'         => 'contact-us',
+            ),
+            'terms-and-conditions' => array(
+                'Refund & cancellation' => 'refund-and-cancellation-policy',
+                'Service warranty'      => 'warranty',
+                'FAQ'                   => 'faq',
+            ),
+            'reviews' => array(
+                'Book a service' => 'locations/pune',
+                'All services'   => 'services',
+                'Why choose YMO' => 'why-choose-ymo',
+            ),
+            'pricing' => array(
+                'Service catalogue' => 'services',
+                'FAQ'               => 'faq',
+                'Book now'          => 'locations/pune',
+            ),
+            'privacy-policy' => array(
+                'Terms & conditions' => 'terms-and-conditions',
+                'Contact us'         => 'contact-us',
+                'FAQ'                => 'faq',
+            ),
+        );
+        if (empty($map[$path])) {
+            return '';
+        }
+        $chips = '';
+        foreach ($map[$path] as $label => $slug) {
+            $chips .= '<a href="'.html_escape(site_url($slug)).'" class="md-chip md-chip--outlined text-decoration-none">'
+                .html_escape($label).'</a>';
+        }
+
+        return '<div class="ymo-content-section mb-2 ymo-v2-trust-page__related">'
+            .'<p class="md-label-lg mb-2">Related</p>'
+            .'<div class="d-flex flex-wrap gap-2">'.$chips.'</div></div>';
+    }
+}
+
+if (!function_exists('marketing_normalize_v2_policy_sections_body')) {
+    /**
+     * Flat h2 + paragraph legal copy → v2 card grid.
+     *
+     * @param string $body
+     * @param string $path
+     */
+    function marketing_normalize_v2_policy_sections_body($body, $path)
+    {
+        $parts = preg_split('/(?=<h2\b)/i', $body, -1, PREG_SPLIT_NO_EMPTY);
+        if ($parts === FALSE || $parts === array()) {
+            return $body;
+        }
+
+        $meta = '';
+        $sections = array();
+        foreach ($parts as $part) {
+            $part = trim($part);
+            if ($part === '') {
+                continue;
+            }
+            if (!preg_match('/^<h2\b/i', $part)) {
+                $meta .= $part;
+                continue;
+            }
+            if (!preg_match('/<h2[^>]*>(.*?)<\/h2>(.*)/is', $part, $match)) {
+                continue;
+            }
+            $sections[] = array(
+                'title' => trim(strip_tags($match[1])),
+                'html'  => trim($match[2]),
+            );
+        }
+
+        if ($sections === array()) {
+            return $body;
+        }
+
+        $count = count($sections);
+        if ($count === 1) {
+            $col = 'col-12';
+        } elseif ($count >= 4) {
+            $col = 'col-md-6';
+        } else {
+            $col = 'col-md-6 col-lg-4';
+        }
+
+        $html = '<div class="ymo-content-section mb-5 ymo-v2-trust-page">';
+        if (trim($meta) !== '') {
+            $html .= '<div class="ymo-v2-trust-page__meta md-body-md ymo-muted mb-4">'.$meta.'</div>';
+        }
+        $html .= '<div class="row g-4 ymo-v2-card-grid">';
+        foreach ($sections as $section) {
+            $html .= '<div class="'.$col.' d-flex"><div class="ymo-v2-card ymo-v2-card--static h-100 w-100">';
+            $html .= '<h2 class="ymo-v2-card__title md-headline-md mb-2">'
+                .htmlspecialchars($section['title'], ENT_QUOTES, 'UTF-8').'</h2>';
+            $html .= '<div class="ymo-v2-trust-page__prose md-body-md">'.$section['html'].'</div>';
+            $html .= '</div></div>';
+        }
+        $html .= '</div></div>';
+        $html .= marketing_build_v2_trust_related_strip($path);
+
+        return $html;
+    }
+}
+
+if (!function_exists('marketing_normalize_v2_reviews_page_body')) {
+    function marketing_normalize_v2_reviews_page_body($body)
+    {
+        $cards = function_exists('marketing_render_reviews_cards')
+            ? marketing_render_reviews_cards(0)
+            : trim((string) $body);
+
+        $link_fragments = array();
+        if (preg_match_all('/<a\s[^>]+>[\s\S]*?<\/a>/i', (string) $body, $found) && !empty($found[0])) {
+            $link_fragments = $found[0];
+        }
+        if ($link_fragments === array() && function_exists('marketing_gbp_url_for_city')) {
+            foreach (array('pune' => 'Pune', 'indore' => 'Indore', 'nashik' => 'Nashik') as $slug => $name) {
+                $url = marketing_gbp_url_for_city($slug);
+                if ($url === '') {
+                    continue;
+                }
+                $link_fragments[] = '<a href="'.html_escape($url).'" target="_blank" rel="noopener">'
+                    .html_escape($name).' — Google reviews</a>';
+            }
+        }
+
+        $html = '<div class="ymo-content-section mb-5 ymo-v2-trust-page ymo-v2-trust-page--reviews">';
+        $html .= '<div class="ymo-v2-section-head mb-4"><div>';
+        $html .= '<h2 class="ymo-v2-display-sm mb-1">Recent reviews</h2>';
+        $html .= '<p class="ymo-v2-prose mb-0">Feedback from car owners in Pune, Indore, and Nashik.</p>';
+        $html .= '</div></div>';
+        $html .= $cards;
+        $html .= '</div>';
+
+        if ($link_fragments !== array()) {
+            $html .= marketing_build_v2_internal_links_block('More reviews on Google', $link_fragments);
+        }
+
+        $html .= marketing_build_v2_trust_related_strip('reviews');
+
+        return $html;
+    }
+}
+
+if (!function_exists('marketing_normalize_v2_pricing_page_body')) {
+    function marketing_normalize_v2_pricing_page_body($body)
+    {
+        $body = trim((string) $body);
+        $table = $body;
+        $footnote = '';
+        if (preg_match('/^(<div class="ymo-v2-pricing-matrix"[\s\S]*?<\/div>\s*(?:<p class="md-body-sm[^"]*ymo-v2-pricing-matrix__footnote"[^>]*>[\s\S]*?<\/p>)?)\s*(.*)$/is', $body, $match)) {
+            $table = trim($match[1]);
+            $footnote = trim($match[2]);
+        } elseif (preg_match('/^(.*?)(<p class="md-body-(?:sm|md)[^>]*>[\s\S]*)$/is', $body, $match)) {
+            $table = trim($match[1]);
+            $footnote = trim($match[2]);
+        }
+
+        $html = '<div class="ymo-content-section mb-5 ymo-v2-trust-page ymo-v2-trust-page--pricing">';
+        $html .= '<div class="ymo-v2-section-head mb-4"><div>';
+        $html .= '<h2 class="ymo-v2-display-sm mb-1">Indicative prices</h2>';
+        $html .= '<p class="ymo-v2-prose mb-0">By vehicle type across Pune, Indore and Nashik — we confirm your quote after inspection.</p>';
+        $html .= '</div></div>';
+        $html .= '<div class="ymo-v2-band ymo-v2-trust-page__table-wrap">'.$table.'</div>';
+        if ($footnote !== '') {
+            $html .= '<div class="ymo-v2-trust-page__footnote md-body-sm ymo-muted mt-3">'.$footnote.'</div>';
+        }
+        $html .= '</div>';
+        $html .= marketing_build_v2_trust_related_strip('pricing');
+
+        return $html;
+    }
+}
+
+if (!function_exists('marketing_normalize_v2_trust_page_body')) {
+    /**
+     * Trust / legal / reviews pages — v2 card sections (flat h2 HTML in registry).
+     *
+     * @param string $body
+     * @param string $path
+     */
+    function marketing_normalize_v2_trust_page_body($body, $path = '')
+    {
+        $body = trim((string) $body);
+        if ($body === '') {
+            return $body;
+        }
+        if (!function_exists('marketing_is_theme_v2') || !marketing_is_theme_v2('', array())) {
+            return $body;
+        }
+
+        $path = trim((string) $path, '/');
+        if (!in_array($path, marketing_v2_trust_page_paths(), TRUE)) {
+            return $body;
+        }
+        if (stripos($body, 'ymo-v2-trust-page') !== FALSE) {
+            return $body;
+        }
+
+        if ($path === 'reviews') {
+            return marketing_normalize_v2_reviews_page_body($body);
+        }
+        if ($path === 'pricing') {
+            return marketing_normalize_v2_pricing_page_body($body);
+        }
+
+        return marketing_normalize_v2_policy_sections_body($body, $path);
     }
 }
 
@@ -3365,5 +4210,149 @@ if (!function_exists('marketing_locality_service_catalog_heading')) {
         }
 
         return 'Car services in '.$city_name;
+    }
+}
+
+if (!function_exists('marketing_v2_duplex_faces_html')) {
+    /**
+     * Wrap identical card inner HTML as front + back 3D faces (orbit-readable).
+     *
+     * @param string $inner_html
+     * @return string
+     */
+    function marketing_v2_duplex_faces_html($inner_html)
+    {
+        return '<span class="ymo-v2-card__faces">'
+            .'<span class="ymo-v2-card__face ymo-v2-card__face--front">'.$inner_html.'</span>'
+            .'<span class="ymo-v2-card__face ymo-v2-card__face--back" aria-hidden="true">'.$inner_html.'</span>'
+            .'</span>';
+    }
+}
+
+if (!function_exists('marketing_v2_card_skin')) {
+    /** @return string default|instrument */
+    function marketing_v2_card_skin()
+    {
+        $env = function_exists('ymo_env') ? ymo_env('YMO_MARKETING_CARD_SKIN') : getenv('YMO_MARKETING_CARD_SKIN');
+        if ($env !== FALSE && $env !== NULL && $env !== '') {
+            $skin = strtolower(trim((string) $env));
+            if (in_array($skin, array('default', 'instrument'), TRUE)) {
+                return $skin;
+            }
+        }
+        $cfg = marketing_theme_config();
+        $skin = isset($cfg['v2_card_skin']) ? strtolower(trim((string) $cfg['v2_card_skin'])) : 'default';
+        return in_array($skin, array('default', 'instrument'), TRUE) ? $skin : 'default';
+    }
+}
+
+if (!function_exists('marketing_theme_config')) {
+    /** @return array{v2_all:bool,v2_paths:array<int,string>} */
+    function marketing_theme_config()
+    {
+        static $cfg = NULL;
+        if ($cfg !== NULL) {
+            return $cfg;
+        }
+        $file = APPPATH.'config/marketing_theme.php';
+        $cfg = is_file($file) ? require $file : array();
+        if (!is_array($cfg)) {
+            $cfg = array();
+        }
+        if (!isset($cfg['v2_paths']) || !is_array($cfg['v2_paths'])) {
+            $cfg['v2_paths'] = array();
+        }
+        if (!isset($cfg['v2_prefixes']) || !is_array($cfg['v2_prefixes'])) {
+            $cfg['v2_prefixes'] = array();
+        }
+        $cfg['v2_all'] = !empty($cfg['v2_all']);
+        return $cfg;
+    }
+}
+
+if (!function_exists('marketing_is_theme_v2')) {
+    /**
+     * @param string $path Canonical marketing path (no leading slash; '' = home)
+     * @param array  $page Page registry row or merged view data
+     */
+    function marketing_is_theme_v2($path, array $page = array())
+    {
+        if (!empty($page['theme']) && (string) $page['theme'] === 'v2') {
+            return TRUE;
+        }
+        if (!empty($page['theme']) && (string) $page['theme'] === 'v1') {
+            return FALSE;
+        }
+
+        $env = function_exists('ymo_env') ? ymo_env('YMO_MARKETING_THEME') : getenv('YMO_MARKETING_THEME');
+        if ($env !== FALSE && $env !== NULL && $env !== '') {
+            $theme_env = strtolower(trim((string) $env));
+            if ($theme_env === 'v1') {
+                return FALSE;
+            }
+            if ($theme_env === 'v2') {
+                return TRUE;
+            }
+        }
+
+        $cfg = marketing_theme_config();
+        if (!empty($cfg['v2_all'])) {
+            return TRUE;
+        }
+
+        $path = trim((string) $path, '/');
+        if (in_array($path, $cfg['v2_paths'], TRUE)) {
+            return TRUE;
+        }
+        foreach ($cfg['v2_prefixes'] as $prefix) {
+            $prefix = (string) $prefix;
+            if ($prefix === '') {
+                continue;
+            }
+            if (strpos($path, $prefix) === 0) {
+                return TRUE;
+            }
+        }
+        return FALSE;
+    }
+}
+
+if (!function_exists('marketing_hero_v2_uses_split_layout')) {
+    /**
+     * v2 radical split hero (dark panel + optional image) for this hero context.
+     *
+     * @param array $hero marketing_hero_context()
+     * @return bool
+     */
+    function marketing_hero_v2_uses_split_layout(array $hero)
+    {
+        $type = isset($hero['type']) ? (string) $hero['type'] : '';
+        if (in_array($type, array('service', 'hub', 'locality', 'brand'), TRUE)) {
+            return TRUE;
+        }
+        return !empty($hero['image']) && is_array($hero['image']);
+    }
+}
+
+if (!function_exists('marketing_marketing_view')) {
+    /**
+     * Map v1 view names to v2 templates when theme v2 is active.
+     *
+     * @param string $view e.g. marketing/home
+     * @param string $path
+     * @param array  $page
+     * @return string
+     */
+    function marketing_marketing_view($view, $path, array $page = array())
+    {
+        if (!marketing_is_theme_v2($path, $page)) {
+            return $view;
+        }
+        $map = array(
+            'marketing/home'    => 'marketing/home_v2',
+            'marketing/page'    => 'marketing/page_v2',
+            'marketing/contact' => 'marketing/contact_v2',
+        );
+        return isset($map[$view]) ? $map[$view] : $view;
     }
 }

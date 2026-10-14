@@ -65,8 +65,11 @@ class Pages extends Marketing_Controller
         $service_catalog = !empty($page['service_catalog']) || $path === 'services';
         $service_catalog_heading = isset($page['service_catalog_heading']) ? $page['service_catalog_heading'] : '';
 
+        $page_faq = isset($page['faq']) && is_array($page['faq']) ? $page['faq'] : array();
+        $faq_in_why_block = FALSE;
+
         if ($page_type === 'service') {
-            $body = marketing_normalize_service_body($body);
+            $body = marketing_normalize_service_body($body, $page_faq);
         }
 
         if ($page_type === 'locality') {
@@ -101,11 +104,18 @@ class Pages extends Marketing_Controller
             $detached_about = marketing_detach_about_faq_row_from_body($body);
             $body = $detached_about['body'];
             $aside_html = $detached_about['aside_html'];
-            $page_faq = isset($page['faq']) && is_array($page['faq']) ? $page['faq'] : array();
             if ($page_faq !== array()) {
                 $body = marketing_strip_embedded_faq_from_body($body);
+                if ($page_type === 'service' && stripos($body, 'ymo-v2-why-faq') !== FALSE
+                    && stripos($body, 'ymo-faq-section') !== FALSE) {
+                    $faq_in_why_block = TRUE;
+                }
             } else {
                 $body = marketing_normalize_body_faq_sections($body);
+            }
+
+            if ($page_type === 'minimal') {
+                $body = marketing_normalize_v2_trust_page_body($body, $path);
             }
         }
 
@@ -115,6 +125,9 @@ class Pages extends Marketing_Controller
         $detached_faq = marketing_detach_faq_sections_from_body($body);
         $body = $detached_faq['body'];
         $body_faq_html = $detached_faq['faq_html'];
+        if (!empty($faq_in_why_block)) {
+            $body_faq_html = '';
+        }
 
         $this->render_marketing($view, array(
             'page'                    => $page,
@@ -122,6 +135,7 @@ class Pages extends Marketing_Controller
             'body'                    => $body,
             'body_faq_html'           => $body_faq_html,
             'aside_html'              => isset($aside_html) ? $aside_html : '',
+            'faq'                     => $faq_in_why_block ? array() : $page_faq,
             'pricing_tiers'           => isset($page['pricing_tiers']) ? $page['pricing_tiers'] : array(),
             'service_catalog'         => $service_catalog,
             'service_catalog_heading' => $service_catalog_heading,
