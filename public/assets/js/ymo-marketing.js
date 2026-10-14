@@ -273,12 +273,16 @@
         btn.addEventListener('click', loadLiveChat);
     })();
 
-    // v2 service card orbit — FLIP from orbit pose straight into grid (no center stack)
+    // v2 service card orbit — smooth flatten (View Transitions + fixed-position FLIP fallback)
     (function () {
         var mq = window.matchMedia('(min-width: 992px)');
         var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
         var FLIP_MS = 880;
         var FLIP_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
+
+        if (!reduceMotion.matches) {
+            document.documentElement.classList.add('ymo-orbit-ready');
+        }
 
         function getSlots(viewport) {
             return Array.prototype.slice.call(
@@ -316,61 +320,112 @@
             clearRingInline(ring);
         }
 
-        function runFlip(viewport, slots, firstRects) {
+        function clearSlotMotionStyles(slots) {
+            slots.forEach(function (el) {
+                el.style.position = '';
+                el.style.left = '';
+                el.style.top = '';
+                el.style.width = '';
+                el.style.height = '';
+                el.style.margin = '';
+                el.style.zIndex = '';
+                el.style.boxSizing = '';
+                el.style.transition = '';
+                el.style.transform = '';
+                el.style.transformOrigin = '';
+            });
+        }
+
+        function runFixedFlip(viewport, slots, firstRects, goingFlat, ring) {
             viewport.classList.add('is-orbit-flip');
+
+            if (goingFlat) {
+                viewport.classList.add('is-flat');
+                clearRingInline(ring);
+            } else {
+                viewport.classList.remove('is-flat');
+                if (ring) {
+                    ring.style.animation = 'none';
+                    ring.style.transform = 'rotateX(-14deg) rotateY(0deg)';
+                }
+            }
+            void viewport.offsetHeight;
+
             var lastRects = slots.map(function (el) {
                 return el.getBoundingClientRect();
             });
 
+            var moveProp = 'left ' + FLIP_MS + 'ms ' + FLIP_EASE + ', top ' + FLIP_MS + 'ms ' + FLIP_EASE
+                + ', width ' + FLIP_MS + 'ms ' + FLIP_EASE + ', height ' + FLIP_MS + 'ms ' + FLIP_EASE;
+
             slots.forEach(function (el, i) {
                 var f = firstRects[i];
-                var l = lastRects[i];
-                if (!f || !l || !l.width) {
+                if (!f || !f.width) {
                     return;
                 }
-                var dx = f.left - l.left;
-                var dy = f.top - l.top;
-                var sx = f.width / l.width;
-                var sy = f.height / l.height;
-                el.style.transformOrigin = '0 0';
+                el.style.boxSizing = 'border-box';
+                el.style.position = 'fixed';
+                el.style.left = f.left + 'px';
+                el.style.top = f.top + 'px';
+                el.style.width = f.width + 'px';
+                el.style.height = f.height + 'px';
+                el.style.margin = '0';
+                el.style.zIndex = '50';
+                el.style.transform = 'none';
                 el.style.transition = 'none';
-                el.style.transform = 'translate(' + dx + 'px, ' + dy + 'px) scale(' + sx + ', ' + sy + ')';
             });
+
+            void viewport.offsetHeight;
 
             window.requestAnimationFrame(function () {
                 window.requestAnimationFrame(function () {
-                    slots.forEach(function (el) {
-                        el.style.transition = 'transform ' + (FLIP_MS / 1000) + 's ' + FLIP_EASE;
-                        el.style.transform = 'translate(0, 0) scale(1, 1)';
+                    slots.forEach(function (el, i) {
+                        var l = lastRects[i];
+                        if (!l || !l.width) {
+                            return;
+                        }
+                        el.style.transition = moveProp;
+                        el.style.left = l.left + 'px';
+                        el.style.top = l.top + 'px';
+                        el.style.width = l.width + 'px';
+                        el.style.height = l.height + 'px';
                     });
                 });
             });
 
             return window.setTimeout(function () {
                 viewport.classList.remove('is-orbit-flip');
-                slots.forEach(function (el) {
-                    el.style.transition = '';
-                    el.style.transform = '';
-                    el.style.transformOrigin = '';
-                });
-            }, FLIP_MS + 60);
+                clearSlotMotionStyles(slots);
+                if (!goingFlat) {
+                    resumeRing(ring);
+                }
+            }, FLIP_MS + 80);
         }
 
-        function markOrbitJsReady() {
-            document.documentElement.classList.add('ymo-orbit-ready');
+        function runLayoutChange(viewport, ring, goingFlat, slots, firstRects) {
+            if (!slots.length || !firstRects) {
+                if (goingFlat) {
+                    viewport.classList.add('is-flat');
+                    clearRingInline(ring);
+                } else {
+                    viewport.classList.remove('is-flat');
+                    resumeRing(ring);
+                }
+                return undefined;
+            }
+
+            return runFixedFlip(viewport, slots, firstRects, goingFlat, ring);
         }
 
         function bindOrbitFlatten() {
             if (reduceMotion.matches) {
                 return;
             }
-            var boundAny = false;
             document.querySelectorAll('.ymo-v2-card-orbit-viewport--active').forEach(function (viewport) {
                 if (viewport.dataset.orbitFlattenBound === '1') {
                     return;
                 }
                 viewport.dataset.orbitFlattenBound = '1';
-                boundAny = true;
 
                 function flatten() {
                     if (!mq.matches) {
@@ -391,15 +446,14 @@
                         return el.getBoundingClientRect();
                     });
 
-                    viewport.classList.add('is-flat');
-                    clearRingInline(ring);
-                    void viewport.offsetHeight;
-
-                    viewport._orbitFlipTimer = runFlip(viewport, slots, first);
+                    var result = runLayoutChange(viewport, ring, true, slots, first);
+                    if (typeof result === 'number') {
+                        viewport._orbitFlipTimer = result;
+                    }
                 }
 
                 function unflatten() {
-                    if (!viewport.classList.contains('is-flat')) {
+                    if (!viewport.classList.contains('is-flat') || viewport.classList.contains('is-orbit-flip')) {
                         return;
                     }
                     window.clearTimeout(viewport._orbitFlipTimer);
@@ -415,17 +469,10 @@
                         return el.getBoundingClientRect();
                     });
 
-                    viewport.classList.remove('is-flat');
-                    if (ring) {
-                        ring.style.animation = 'none';
-                        ring.style.transform = 'rotateX(-14deg) rotateY(0deg)';
+                    var result = runLayoutChange(viewport, ring, false, slots, first);
+                    if (typeof result === 'number') {
+                        viewport._orbitFlipTimer = result;
                     }
-                    void viewport.offsetHeight;
-
-                    viewport._orbitFlipTimer = runFlip(viewport, slots, first);
-                    window.setTimeout(function () {
-                        resumeRing(ring);
-                    }, FLIP_MS + 80);
                 }
 
                 viewport.addEventListener('mouseenter', flatten);
@@ -437,9 +484,6 @@
                     }
                 });
             });
-            if (boundAny) {
-                markOrbitJsReady();
-            }
         }
 
         function initOrbitFlatten() {
