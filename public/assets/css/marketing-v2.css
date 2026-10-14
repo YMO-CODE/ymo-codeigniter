@@ -1694,6 +1694,19 @@
 }
 
 /* Home — CodePen-style roll lists (split gradient highlight) */
+.ymo-theme-v2.ymo-marketing .ymo-v2-section--roll {
+    padding-top: clamp(2rem, 4vw, 3rem);
+    padding-bottom: clamp(1.35rem, 3vw, 2rem);
+}
+
+.ymo-theme-v2.ymo-marketing .ymo-v2-section--roll + .ymo-v2-section--roll {
+    padding-top: clamp(1.15rem, 2.5vw, 1.75rem);
+}
+
+.ymo-theme-v2.ymo-marketing .ymo-v2-section--roll-tight-bottom {
+    padding-bottom: clamp(2rem, 4vw, 3rem);
+}
+
 .ymo-theme-v2.ymo-marketing .ymo-v2-roll-list-row > [class*="col-"] {
     display: flex;
     flex-direction: column;
@@ -1713,7 +1726,7 @@
     justify-content: center;
     flex: 1 1 auto;
     width: 100%;
-    min-height: clamp(11rem, 20vw, 13rem);
+    min-height: clamp(8.75rem, 16vw, 10.5rem);
 }
 
 .ymo-theme-v2.ymo-marketing .ymo-v2-roll-list-panel {
@@ -1723,7 +1736,7 @@
     --ymo-v2-roll-grid: color-mix(in srgb, var(--ymo-primary, #2d6a4f) 14%, transparent);
     --ymo-v2-roll-lead: #f4f4f5;
     width: 100%;
-    padding: clamp(1.5rem, 3vw, 2rem) clamp(1.35rem, 3vw, 1.85rem);
+    padding: clamp(1.05rem, 2.2vw, 1.35rem) clamp(1.15rem, 2.5vw, 1.5rem);
     border-radius: var(--ymo-v2-card-radius);
     background-color: var(--ymo-v2-roll-bg);
     background-image:
@@ -1740,8 +1753,8 @@
     display: grid;
     grid-template-columns: minmax(4.75rem, 6.25rem) minmax(0, 1fr);
     align-items: center;
-    column-gap: clamp(1.15rem, 2.8vw, 1.65rem);
-    min-height: clamp(9.5rem, 18vw, 11.25rem);
+    column-gap: clamp(0.85rem, 2vw, 1.25rem);
+    min-height: clamp(7.75rem, 14vw, 9rem);
 }
 
 .ymo-theme-v2.ymo-marketing .ymo-v2-roll-list__lead {
@@ -1756,7 +1769,7 @@
 
 .ymo-theme-v2.ymo-marketing .ymo-v2-roll-list__viewport {
     min-width: 0;
-    height: clamp(10.5rem, 22vw, 12.5rem);
+    height: clamp(8.25rem, 17vw, 10rem);
     overflow: hidden;
     mask-image: linear-gradient(
         to bottom,
@@ -1785,7 +1798,7 @@
 
 .ymo-theme-v2.ymo-marketing .ymo-v2-roll-list__item {
     margin: 0;
-    padding: 0.12rem 0;
+    padding: 0.05rem 0;
     line-height: 1.1;
 }
 
@@ -1802,7 +1815,7 @@
 
 .ymo-theme-v2.ymo-marketing .ymo-v2-roll-list__text {
     display: inline-block;
-    font-size: clamp(1.45rem, 3.2vw, 2rem);
+    font-size: clamp(1.3rem, 2.75vw, 1.75rem);
     font-weight: 600;
     letter-spacing: -0.035em;
     text-transform: lowercase;
@@ -1839,7 +1852,7 @@
 @media (max-width: 575.98px) {
     .ymo-theme-v2.ymo-marketing .ymo-v2-roll-list {
         grid-template-columns: 1fr;
-        row-gap: 0.85rem;
+        row-gap: 0.65rem;
         min-height: 0;
     }
 
@@ -1849,7 +1862,7 @@
 
     .ymo-theme-v2.ymo-marketing .ymo-v2-roll-list__viewport {
         width: 100%;
-        height: 10rem;
+        height: 8.5rem;
     }
 }
 

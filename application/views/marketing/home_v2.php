@@ -64,9 +64,9 @@ foreach ($city_strip as $city) {
     );
 }
 ?>
-<section class="ymo-v2-section ymo-v2-section--surface">
+<section class="ymo-v2-section ymo-v2-section--surface ymo-v2-section--roll">
     <div class="container">
-        <div class="row g-4 g-lg-5 align-items-stretch ymo-v2-roll-list-row">
+        <div class="row g-3 g-lg-4 align-items-stretch ymo-v2-roll-list-row">
             <div class="col-lg-5">
                 <div class="ymo-v2-roll-list-copy">
                     <h2 class="ymo-v2-display-sm mb-2">We serve Pune, Indore &amp; Nashik</h2>
@@ -103,13 +103,13 @@ foreach ($brand_cards as $brand) {
     );
 }
 ?>
-<section class="ymo-v2-section">
+<section class="ymo-v2-section ymo-v2-section--roll ymo-v2-section--roll-tight-bottom">
     <div class="container">
-        <div class="row g-4 g-lg-5 align-items-stretch ymo-v2-roll-list-row">
+        <div class="row g-3 g-lg-4 align-items-stretch ymo-v2-roll-list-row">
             <div class="col-lg-5">
                 <div class="ymo-v2-roll-list-copy">
                     <h2 class="ymo-v2-display-sm mb-2">Brands we service</h2>
-                    <p class="ymo-v2-prose mb-3 mb-lg-4">Maruti, Hyundai, Tata, Honda, and more - across Pune, Indore &amp; Nashik.</p>
+                    <p class="ymo-v2-prose mb-2 mb-lg-3">Maruti, Hyundai, Tata, Honda, and more - across Pune, Indore &amp; Nashik.</p>
                     <a href="<?= site_url('brands'); ?>" class="md-btn md-btn--outlined md-btn--sm align-self-start d-none d-lg-inline-flex">All brands</a>
                 </div>
             </div>
