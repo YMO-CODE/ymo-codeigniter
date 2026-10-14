@@ -2434,8 +2434,8 @@
     }
 
     .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active.is-flat,
-    .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active:hover,
-    .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active:focus-within {
+    html:not(.js) .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active:hover,
+    html:not(.js) .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active:focus-within {
         min-height: 0;
         perspective: none;
     }
@@ -2454,8 +2454,8 @@
     }
 
     .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active.is-flat .ymo-v2-card-grid--orbit.row,
-    .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active:hover .ymo-v2-card-grid--orbit.row,
-    .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active:focus-within .ymo-v2-card-grid--orbit.row {
+    html:not(.js) .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active:hover .ymo-v2-card-grid--orbit.row,
+    html:not(.js) .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active:focus-within .ymo-v2-card-grid--orbit.row {
         animation: none;
         transform: none;
         transform-style: flat;
@@ -2485,8 +2485,8 @@
     }
 
     .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active.is-flat .ymo-v2-card-grid--orbit > [class*="col-"],
-    .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active:hover .ymo-v2-card-grid--orbit > [class*="col-"],
-    .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active:focus-within .ymo-v2-card-grid--orbit > [class*="col-"] {
+    html:not(.js) .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active:hover .ymo-v2-card-grid--orbit > [class*="col-"],
+    html:not(.js) .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active:focus-within .ymo-v2-card-grid--orbit > [class*="col-"] {
         position: relative;
         top: auto;
         left: auto;
@@ -2496,14 +2496,13 @@
     }
 
     .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active.is-flat:not(.is-orbit-flip) .ymo-v2-card-grid--orbit > [class*="col-"],
-    .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active:hover:not(.is-orbit-flip) .ymo-v2-card-grid--orbit > [class*="col-"],
-    .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active:focus-within:not(.is-orbit-flip) .ymo-v2-card-grid--orbit > [class*="col-"] {
+    html:not(.js) .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active:hover .ymo-v2-card-grid--orbit > [class*="col-"],
+    html:not(.js) .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active:focus-within .ymo-v2-card-grid--orbit > [class*="col-"] {
         transform: none;
     }
 
     .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active.is-orbit-flip .ymo-v2-card-grid--orbit > [class*="col-"] {
         z-index: 2;
-        transform: none;
     }
 
     .ymo-theme-v2.ymo-marketing .ymo-v2-card-grid--orbit .ymo-v2-card--duplex .ymo-v2-card__face {

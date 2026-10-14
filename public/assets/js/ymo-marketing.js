@@ -2,6 +2,8 @@
 (function () {
     'use strict';
 
+    document.documentElement.classList.add('js');
+
     var bootstrapUrl = document.body.getAttribute('data-bootstrap-js') || '';
     var bootstrapLoading = false;
     var bootstrapQueue = [];
@@ -368,43 +370,50 @@
                 var anims = [];
 
                 viewport.classList.add('is-orbit-flip');
-                slots.forEach(function (el, i) {
-                    var f = first[i];
-                    var l = last[i];
-                    if (!f || !l || l.width < 1 || f.width < 1 || typeof el.animate !== 'function') {
-                        return;
-                    }
-                    var dx = f.left - l.left;
-                    var dy = f.top - l.top;
-                    var sx = f.width / l.width;
-                    var sy = f.height / l.height;
-                    anims.push(el.animate(
-                        [
-                            { transform: 'translate(' + dx + 'px, ' + dy + 'px) scale(' + sx + ', ' + sy + ')' },
-                            { transform: 'translate(0, 0) scale(1, 1)' }
-                        ],
-                        { duration: FLIP_MS, easing: FLIP_EASE, fill: 'forwards' }
-                    ));
+                window.requestAnimationFrame(function () {
+                    window.requestAnimationFrame(function () {
+                        slots.forEach(function (el, i) {
+                            var f = first[i];
+                            var l = last[i];
+                            if (!f || !l || l.width < 1 || f.width < 1 || typeof el.animate !== 'function') {
+                                return;
+                            }
+                            var dx = f.left - l.left;
+                            var dy = f.top - l.top;
+                            var sx = f.width / l.width;
+                            var sy = f.height / l.height;
+                            if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5 && Math.abs(sx - 1) < 0.01 && Math.abs(sy - 1) < 0.01) {
+                                return;
+                            }
+                            anims.push(el.animate(
+                                [
+                                    { transform: 'translate3d(' + dx + 'px, ' + dy + 'px, 0) scale(' + sx + ', ' + sy + ')' },
+                                    { transform: 'translate3d(0, 0, 0) scale(1, 1)' }
+                                ],
+                                { duration: FLIP_MS, easing: FLIP_EASE, fill: 'forwards' }
+                            ));
+                        });
+
+                        if (!anims.length) {
+                            endFlipPhase(viewport);
+                            return;
+                        }
+
+                        var flipDone = false;
+                        function finishMotion() {
+                            if (flipDone) {
+                                return;
+                            }
+                            flipDone = true;
+                            endFlipPhase(viewport);
+                        }
+
+                        viewport._orbitFlipTimer = window.setTimeout(finishMotion, FLIP_MS + 120);
+                        Promise.all(anims.map(function (a) {
+                            return a.finished;
+                        })).then(finishMotion).catch(finishMotion);
+                    });
                 });
-
-                if (!anims.length) {
-                    endFlipPhase(viewport);
-                    return;
-                }
-
-                var flipDone = false;
-                function finishMotion() {
-                    if (flipDone) {
-                        return;
-                    }
-                    flipDone = true;
-                    endFlipPhase(viewport);
-                }
-
-                viewport._orbitFlipTimer = window.setTimeout(finishMotion, FLIP_MS + 120);
-                Promise.all(anims.map(function (a) {
-                    return a.finished;
-                })).then(finishMotion).catch(finishMotion);
                 return;
             }
 
