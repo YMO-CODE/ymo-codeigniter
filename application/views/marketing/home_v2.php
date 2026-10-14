@@ -66,18 +66,22 @@ foreach ($city_strip as $city) {
 ?>
 <section class="ymo-v2-section ymo-v2-section--surface">
     <div class="container">
-        <div class="row g-4 g-lg-5 align-items-center">
+        <div class="row g-4 g-lg-5 align-items-stretch ymo-v2-roll-list-row">
             <div class="col-lg-5">
-                <h2 class="ymo-v2-display-sm mb-2">We serve Pune, Indore &amp; Nashik</h2>
-                <p class="ymo-v2-prose mb-0">Free doorstep pick-up and drop across all three cities - browse services and neighbourhoods on each city page.</p>
+                <div class="ymo-v2-roll-list-copy">
+                    <h2 class="ymo-v2-display-sm mb-2">We serve Pune, Indore &amp; Nashik</h2>
+                    <p class="ymo-v2-prose mb-0">Free doorstep pick-up and drop across all three cities - browse services and neighbourhoods on each city page.</p>
+                </div>
             </div>
             <div class="col-lg-7">
-                <div class="ymo-v2-roll-list-panel">
-                    <?php $this->load->view('marketing/partials/roll_list', array(
-                        'roll_lead'  => 'we serve',
-                        'roll_items' => $city_roll_items,
-                        'roll_loop'  => FALSE,
-                    )); ?>
+                <div class="ymo-v2-roll-list-panel-wrap">
+                    <div class="ymo-v2-roll-list-panel">
+                        <?php $this->load->view('marketing/partials/roll_list', array(
+                            'roll_lead'  => 'we serve',
+                            'roll_items' => $city_roll_items,
+                            'roll_loop'  => FALSE,
+                        )); ?>
+                    </div>
                 </div>
             </div>
         </div>
@@ -101,21 +105,25 @@ foreach ($brand_cards as $brand) {
 ?>
 <section class="ymo-v2-section">
     <div class="container">
-        <div class="row g-4 g-lg-5 align-items-end">
+        <div class="row g-4 g-lg-5 align-items-stretch ymo-v2-roll-list-row">
             <div class="col-lg-5">
-                <h2 class="ymo-v2-display-sm mb-1">Brands we service</h2>
-                <p class="ymo-v2-prose mb-3 mb-lg-0">Maruti, Hyundai, Tata, Honda, and more - across Pune, Indore &amp; Nashik.</p>
-                <a href="<?= site_url('brands'); ?>" class="md-btn md-btn--outlined md-btn--sm d-none d-lg-inline-flex">All brands</a>
+                <div class="ymo-v2-roll-list-copy">
+                    <h2 class="ymo-v2-display-sm mb-2">Brands we service</h2>
+                    <p class="ymo-v2-prose mb-3 mb-lg-4">Maruti, Hyundai, Tata, Honda, and more - across Pune, Indore &amp; Nashik.</p>
+                    <a href="<?= site_url('brands'); ?>" class="md-btn md-btn--outlined md-btn--sm align-self-start d-none d-lg-inline-flex">All brands</a>
+                </div>
             </div>
             <div class="col-lg-7">
-                <div class="ymo-v2-roll-list-panel">
-                    <?php $this->load->view('marketing/partials/roll_list', array(
-                        'roll_lead'  => 'including',
-                        'roll_items' => $brand_roll_items,
-                        'roll_loop'  => TRUE,
-                    )); ?>
+                <div class="ymo-v2-roll-list-panel-wrap">
+                    <div class="ymo-v2-roll-list-panel">
+                        <?php $this->load->view('marketing/partials/roll_list', array(
+                            'roll_lead'  => 'including',
+                            'roll_items' => $brand_roll_items,
+                            'roll_loop'  => TRUE,
+                        )); ?>
+                    </div>
                 </div>
-                <a href="<?= site_url('brands'); ?>" class="md-btn md-btn--outlined md-btn--sm mt-3 d-lg-none">All brands</a>
+                <a href="<?= site_url('brands'); ?>" class="md-btn md-btn--outlined md-btn--sm mt-3 align-self-start d-lg-none">All brands</a>
             </div>
         </div>
     </div>
