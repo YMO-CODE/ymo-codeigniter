@@ -54,36 +54,48 @@ echo ymo_marketing_render_hero('', $hero_page, isset($booking_url) ? $booking_ur
 </section>
 
 <?php if (!empty($city_strip)): ?>
-<section class="ymo-v2-section ymo-v2-section--surface">
+<section class="ymo-v2-section ymo-v2-section--surface ymo-v2-home-cities">
     <div class="container">
-        <div class="ymo-v2-band">
-            <h2 class="ymo-v2-display-sm mb-2">We serve Pune, Indore &amp; Nashik</h2>
-            <p class="ymo-v2-prose mb-3">Free doorstep pick-up and drop across all three cities - browse services and neighbourhoods on each city page.</p>
-            <div class="d-flex flex-wrap gap-2">
-                <?php foreach ($city_strip as $city): ?>
-                    <a href="<?= site_url($city['hub_path']); ?>" class="md-chip md-chip--filled">Car servicing in <?= html_escape($city['name']); ?></a>
-                <?php endforeach; ?>
-            </div>
+        <span class="md-label-lg d-block mb-2">Service areas</span>
+        <h2 class="ymo-v2-display-sm mb-2">We serve Pune, Indore &amp; Nashik</h2>
+        <p class="ymo-v2-prose ymo-v2-home-cities__intro mb-0">Free doorstep pick-up and drop across all three cities - browse services and neighbourhoods on each city page.</p>
+        <div class="ymo-v2-city-grid">
+            <?php foreach ($city_strip as $city): ?>
+                <a href="<?= site_url($city['hub_path']); ?>" class="ymo-v2-city-card ymo-v2-card--interactive">
+                    <span class="ymo-v2-city-card__icon mi md-icon-primary" aria-hidden="true">location_city</span>
+                    <span class="ymo-v2-city-card__body">
+                        <span class="ymo-v2-city-card__name"><?= html_escape($city['name']); ?></span>
+                        <span class="ymo-v2-city-card__meta">Car servicing in <?= html_escape($city['name']); ?> · pick-up &amp; drop</span>
+                    </span>
+                    <span class="ymo-v2-city-card__arrow mi" aria-hidden="true">arrow_forward</span>
+                </a>
+            <?php endforeach; ?>
         </div>
     </div>
 </section>
 <?php endif; ?>
 
 <?php if (!empty($brand_cards)): ?>
-<section class="ymo-v2-section">
+<section class="ymo-v2-section ymo-v2-home-brands">
     <div class="container">
         <div class="ymo-v2-section-head">
             <div>
+                <span class="md-label-lg d-block mb-2">All makes &amp; models</span>
                 <h2 class="ymo-v2-display-sm mb-1">Brands we service</h2>
                 <p class="ymo-v2-prose mb-0">Maruti, Hyundai, Tata, Honda, and more - across Pune, Indore &amp; Nashik.</p>
             </div>
             <a href="<?= site_url('brands'); ?>" class="md-btn md-btn--outlined md-btn--sm">All brands</a>
         </div>
-        <div class="row g-3">
+        <div class="ymo-v2-brand-grid">
             <?php foreach ($brand_cards as $brand): ?>
-                <div class="col-6 col-md-4 col-lg-3">
-                    <a href="<?= site_url($brand['slug']); ?>" class="md-chip md-chip--outlined w-100 text-center text-decoration-none d-block"><?= html_escape($brand['title']); ?></a>
-                </div>
+                <?php
+                $brand_title = isset($brand['title']) ? (string) $brand['title'] : '';
+                $brand_initial = $brand_title !== '' ? mb_strtoupper(mb_substr($brand_title, 0, 1, 'UTF-8'), 'UTF-8') : '';
+                ?>
+                <a href="<?= site_url($brand['slug']); ?>" class="ymo-v2-brand-card ymo-v2-card--interactive">
+                    <span class="ymo-v2-brand-card__mark" aria-hidden="true"><?= html_escape($brand_initial); ?></span>
+                    <span class="ymo-v2-brand-card__name"><?= html_escape($brand_title); ?></span>
+                </a>
             <?php endforeach; ?>
         </div>
     </div>

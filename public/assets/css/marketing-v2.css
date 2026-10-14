@@ -1693,7 +1693,145 @@
     font-size: clamp(1.375rem, 2.5vw, 1.75rem);
 }
 
+/* Home — city hubs + brand grid */
+.ymo-theme-v2.ymo-marketing .ymo-v2-home-cities__intro {
+    max-width: 40rem;
+    margin-bottom: clamp(1.35rem, 3vw, 1.75rem);
+}
 
+.ymo-theme-v2.ymo-marketing .ymo-v2-city-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(0.85rem, 2vw, 1.15rem);
+}
+
+.ymo-theme-v2.ymo-marketing .ymo-v2-city-card {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: clamp(1rem, 2.2vw, 1.25rem) clamp(1rem, 2.2vw, 1.35rem);
+    border-radius: var(--ymo-v2-card-radius);
+    background: var(--ymo-v2-card-bg);
+    border: var(--ymo-v2-card-border);
+    box-shadow: var(--ymo-v2-card-shadow);
+    text-decoration: none;
+    color: inherit;
+    transition:
+        transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ymo-theme-v2.ymo-marketing .ymo-v2-city-card:hover,
+.ymo-theme-v2.ymo-marketing .ymo-v2-city-card:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: var(--ymo-v2-card-shadow-hover);
+}
+
+.ymo-theme-v2.ymo-marketing .ymo-v2-city-card__icon {
+    flex-shrink: 0;
+    font-size: 1.65rem;
+    line-height: 1;
+}
+
+.ymo-theme-v2.ymo-marketing .ymo-v2-city-card__body {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.ymo-theme-v2.ymo-marketing .ymo-v2-city-card__name {
+    font-size: 1.0625rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--ymo-grey-900);
+}
+
+.ymo-theme-v2.ymo-marketing .ymo-v2-city-card__meta {
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: var(--ymo-v2-ink-subtle);
+}
+
+.ymo-theme-v2.ymo-marketing .ymo-v2-city-card__arrow {
+    flex-shrink: 0;
+    font-size: 1.25rem;
+    color: var(--ymo-primary);
+    opacity: 0.55;
+    transition: transform 0.22s ease, opacity 0.22s ease;
+}
+
+.ymo-theme-v2.ymo-marketing .ymo-v2-city-card:hover .ymo-v2-city-card__arrow,
+.ymo-theme-v2.ymo-marketing .ymo-v2-city-card:focus-visible .ymo-v2-city-card__arrow {
+    opacity: 1;
+    transform: translateX(3px);
+}
+
+.ymo-theme-v2.ymo-marketing .ymo-v2-brand-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9.25rem, 1fr));
+    gap: 0.65rem;
+}
+
+.ymo-theme-v2.ymo-marketing .ymo-v2-brand-card {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-height: 3.25rem;
+    padding: 0.65rem 0.85rem;
+    border-radius: var(--md-shape-corner-medium);
+    background: var(--ymo-v2-surface);
+    border: 1px solid color-mix(in srgb, var(--md-sys-color-outline-variant) 82%, transparent);
+    box-shadow: 0 1px 2px rgba(17, 20, 24, 0.04);
+    text-decoration: none;
+    color: inherit;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.ymo-theme-v2.ymo-marketing .ymo-v2-brand-card:hover,
+.ymo-theme-v2.ymo-marketing .ymo-v2-brand-card:focus-visible {
+    border-color: color-mix(in srgb, var(--ymo-primary) 28%, var(--md-sys-color-outline-variant));
+    box-shadow: 0 8px 24px -12px rgba(17, 20, 24, 0.2);
+    transform: translateY(-1px);
+}
+
+.ymo-theme-v2.ymo-marketing .ymo-v2-brand-card__mark {
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ymo-primary);
+    background: color-mix(in srgb, var(--md-sys-color-primary-container) 55%, var(--ymo-v2-surface));
+}
+
+.ymo-theme-v2.ymo-marketing .ymo-v2-brand-card__name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    color: var(--ymo-grey-900);
+}
+
+@media (max-width: 991.98px) {
+    .ymo-theme-v2.ymo-marketing .ymo-v2-city-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .ymo-theme-v2.ymo-marketing .ymo-v2-brand-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
 
 .ymo-theme-v2 .ymo-v2-cta-band--card .ymo-v2-cta-band__panel {
     max-width: none;
