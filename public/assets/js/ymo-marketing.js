@@ -273,16 +273,12 @@
         btn.addEventListener('click', loadLiveChat);
     })();
 
-    // v2 service card orbit — smooth flatten (View Transitions + fixed-position FLIP fallback)
+    // v2 service card orbit — flatten to grid on hover (WAAPI FLIP + reliable is-flat fallback)
     (function () {
         var mq = window.matchMedia('(min-width: 992px)');
         var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
         var FLIP_MS = 880;
         var FLIP_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
-
-        if (!reduceMotion.matches) {
-            document.documentElement.classList.add('ymo-orbit-ready');
-        }
 
         function getSlots(viewport) {
             return Array.prototype.slice.call(
@@ -320,25 +316,26 @@
             clearRingInline(ring);
         }
 
-        function clearSlotMotionStyles(slots) {
+        function cancelSlotAnimations(slots) {
             slots.forEach(function (el) {
-                el.style.position = '';
-                el.style.left = '';
-                el.style.top = '';
-                el.style.width = '';
-                el.style.height = '';
-                el.style.margin = '';
-                el.style.zIndex = '';
-                el.style.boxSizing = '';
-                el.style.transition = '';
-                el.style.transform = '';
-                el.style.transformOrigin = '';
+                try {
+                    if (typeof el.getAnimations === 'function') {
+                        el.getAnimations().forEach(function (anim) {
+                            anim.cancel();
+                        });
+                    }
+                } catch (e) {}
             });
         }
 
-        function runFixedFlip(viewport, slots, firstRects, goingFlat, ring) {
-            viewport.classList.add('is-orbit-flip');
+        function finishFlip(viewport, slots) {
+            window.clearTimeout(viewport._orbitFlipTimer);
+            viewport._orbitFlipTimer = null;
+            viewport.classList.remove('is-orbit-flip');
+            cancelSlotAnimations(slots);
+        }
 
+        function runWaapiFlip(viewport, slots, firstRects, goingFlat, ring) {
             if (goingFlat) {
                 viewport.classList.add('is-flat');
                 clearRingInline(ring);
@@ -354,67 +351,55 @@
             var lastRects = slots.map(function (el) {
                 return el.getBoundingClientRect();
             });
+            var anims = [];
 
-            var moveProp = 'left ' + FLIP_MS + 'ms ' + FLIP_EASE + ', top ' + FLIP_MS + 'ms ' + FLIP_EASE
-                + ', width ' + FLIP_MS + 'ms ' + FLIP_EASE + ', height ' + FLIP_MS + 'ms ' + FLIP_EASE;
-
+            viewport.classList.add('is-orbit-flip');
             slots.forEach(function (el, i) {
                 var f = firstRects[i];
-                if (!f || !f.width) {
+                var l = lastRects[i];
+                if (!f || !l || l.width < 1 || f.width < 1) {
                     return;
                 }
-                el.style.boxSizing = 'border-box';
-                el.style.position = 'fixed';
-                el.style.left = f.left + 'px';
-                el.style.top = f.top + 'px';
-                el.style.width = f.width + 'px';
-                el.style.height = f.height + 'px';
-                el.style.margin = '0';
-                el.style.zIndex = '50';
-                el.style.transform = 'none';
-                el.style.transition = 'none';
+                if (typeof el.animate !== 'function') {
+                    return;
+                }
+                var dx = f.left - l.left;
+                var dy = f.top - l.top;
+                var sx = f.width / l.width;
+                var sy = f.height / l.height;
+                anims.push(el.animate(
+                    [
+                        { transform: 'translate(' + dx + 'px, ' + dy + 'px) scale(' + sx + ', ' + sy + ')' },
+                        { transform: 'translate(0, 0) scale(1, 1)' }
+                    ],
+                    { duration: FLIP_MS, easing: FLIP_EASE, fill: 'both' }
+                ));
             });
 
-            void viewport.offsetHeight;
-
-            window.requestAnimationFrame(function () {
-                window.requestAnimationFrame(function () {
-                    slots.forEach(function (el, i) {
-                        var l = lastRects[i];
-                        if (!l || !l.width) {
-                            return;
-                        }
-                        el.style.transition = moveProp;
-                        el.style.left = l.left + 'px';
-                        el.style.top = l.top + 'px';
-                        el.style.width = l.width + 'px';
-                        el.style.height = l.height + 'px';
-                    });
-                });
-            });
-
-            return window.setTimeout(function () {
-                viewport.classList.remove('is-orbit-flip');
-                clearSlotMotionStyles(slots);
+            if (!anims.length) {
+                finishFlip(viewport, slots);
                 if (!goingFlat) {
                     resumeRing(ring);
                 }
-            }, FLIP_MS + 80);
-        }
-
-        function runLayoutChange(viewport, ring, goingFlat, slots, firstRects) {
-            if (!slots.length || !firstRects) {
-                if (goingFlat) {
-                    viewport.classList.add('is-flat');
-                    clearRingInline(ring);
-                } else {
-                    viewport.classList.remove('is-flat');
-                    resumeRing(ring);
-                }
-                return undefined;
+                return;
             }
 
-            return runFixedFlip(viewport, slots, firstRects, goingFlat, ring);
+            var flipDone = false;
+            function done() {
+                if (flipDone) {
+                    return;
+                }
+                flipDone = true;
+                finishFlip(viewport, slots);
+                if (!goingFlat) {
+                    resumeRing(ring);
+                }
+            }
+
+            viewport._orbitFlipTimer = window.setTimeout(done, FLIP_MS + 100);
+            Promise.all(anims.map(function (a) {
+                return a.finished;
+            })).then(done).catch(done);
         }
 
         function bindOrbitFlatten() {
@@ -427,17 +412,21 @@
                 }
                 viewport.dataset.orbitFlattenBound = '1';
 
+                var ring = viewport.querySelector('.ymo-v2-card-grid--orbit');
+
                 function flatten() {
-                    if (!mq.matches) {
+                    if (!mq.matches || viewport.classList.contains('is-flat')) {
                         return;
                     }
-                    if (viewport.classList.contains('is-flat') || viewport.classList.contains('is-orbit-flip')) {
+                    finishFlip(viewport, getSlots(viewport));
+                    if (!ring) {
+                        viewport.classList.add('is-flat');
                         return;
                     }
-                    window.clearTimeout(viewport._orbitFlipTimer);
-                    var ring = viewport.querySelector('.ymo-v2-card-grid--orbit');
                     var slots = getSlots(viewport);
                     if (!slots.length) {
+                        viewport.classList.add('is-flat');
+                        clearRingInline(ring);
                         return;
                     }
 
@@ -445,19 +434,18 @@
                     var first = slots.map(function (el) {
                         return el.getBoundingClientRect();
                     });
-
-                    var result = runLayoutChange(viewport, ring, true, slots, first);
-                    if (typeof result === 'number') {
-                        viewport._orbitFlipTimer = result;
-                    }
+                    runWaapiFlip(viewport, slots, first, true, ring);
                 }
 
                 function unflatten() {
-                    if (!viewport.classList.contains('is-flat') || viewport.classList.contains('is-orbit-flip')) {
+                    if (!viewport.classList.contains('is-flat')) {
                         return;
                     }
-                    window.clearTimeout(viewport._orbitFlipTimer);
-                    var ring = viewport.querySelector('.ymo-v2-card-grid--orbit');
+                    finishFlip(viewport, getSlots(viewport));
+                    if (!ring) {
+                        viewport.classList.remove('is-flat');
+                        return;
+                    }
                     var slots = getSlots(viewport);
                     if (!slots.length) {
                         viewport.classList.remove('is-flat');
@@ -468,21 +456,42 @@
                     var first = slots.map(function (el) {
                         return el.getBoundingClientRect();
                     });
+                    runWaapiFlip(viewport, slots, first, false, ring);
+                }
 
-                    var result = runLayoutChange(viewport, ring, false, slots, first);
-                    if (typeof result === 'number') {
-                        viewport._orbitFlipTimer = result;
+                var hoverDepth = 0;
+
+                function enter() {
+                    hoverDepth += 1;
+                    flatten();
+                }
+
+                function leave() {
+                    hoverDepth -= 1;
+                    if (hoverDepth <= 0) {
+                        hoverDepth = 0;
+                        unflatten();
                     }
                 }
 
-                viewport.addEventListener('mouseenter', flatten);
-                viewport.addEventListener('mouseleave', unflatten);
-                viewport.addEventListener('focusin', flatten);
-                viewport.addEventListener('focusout', function (e) {
-                    if (!viewport.contains(e.relatedTarget)) {
-                        unflatten();
+                function bindTarget(el) {
+                    if (!el || el.dataset.orbitHoverBound === '1') {
+                        return;
                     }
-                });
+                    el.dataset.orbitHoverBound = '1';
+                    el.addEventListener('mouseenter', enter);
+                    el.addEventListener('mouseleave', leave);
+                    el.addEventListener('focusin', enter);
+                    el.addEventListener('focusout', function (e) {
+                        if (!viewport.contains(e.relatedTarget)) {
+                            hoverDepth = 0;
+                            unflatten();
+                        }
+                    });
+                }
+
+                bindTarget(viewport);
+                bindTarget(ring);
             });
         }
 

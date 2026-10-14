@@ -2425,12 +2425,12 @@
         overflow: visible;
         perspective: 1200px;
         min-height: clamp(440px, 48vw, 600px);
-        margin-bottom: 0.5rem;
+        margin: -2rem -1.25rem 0.5rem;
+        padding: 2rem 1.25rem;
         display: flex;
         align-items: center;
         justify-content: center;
         transition: min-height var(--orbit-flatten-ms) cubic-bezier(0.22, 1, 0.36, 1);
-        view-transition-name: ymo-service-orbit;
     }
 
     .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active.is-flat {
@@ -2494,13 +2494,8 @@
     }
 
     .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active.is-orbit-flip .ymo-v2-card-grid--orbit > [class*="col-"] {
-        z-index: 50;
-        transition: none !important;
-    }
-
-    ::view-transition-group(ymo-service-orbit) {
-        animation-duration: var(--orbit-flatten-ms, 920ms);
-        animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+        z-index: 2;
+        transform: none;
     }
 
     .ymo-theme-v2.ymo-marketing .ymo-v2-card-grid--orbit .ymo-v2-card--duplex .ymo-v2-card__face {
