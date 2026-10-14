@@ -857,6 +857,98 @@ if (!function_exists('marketing_extract_html_ul_items')) {
     }
 }
 
+if (!function_exists('marketing_slice_balanced_div')) {
+    /**
+     * @param string $html
+     * @param int    $open_pos Byte offset of opening <div
+     */
+    function marketing_slice_balanced_div($html, $open_pos)
+    {
+        $html = (string) $html;
+        $open_pos = (int) $open_pos;
+        if ($open_pos < 0 || substr($html, $open_pos, 4) !== '<div') {
+            return '';
+        }
+
+        $depth = 0;
+        $len   = strlen($html);
+        $i     = $open_pos;
+
+        while ($i < $len && preg_match('/<\/?div\b/i', $html, $tag, PREG_OFFSET_CAPTURE, $i)) {
+            $pos = $tag[0][1];
+            if (stripos($tag[0][0], '</div') === 0) {
+                $depth--;
+                if ($depth === 0) {
+                    return substr($html, $open_pos, $pos + 6 - $open_pos);
+                }
+            } else {
+                $depth++;
+            }
+            $i = $pos + strlen($tag[0][0]);
+        }
+
+        return '';
+    }
+}
+
+if (!function_exists('marketing_v2_overview_sidebar_est_px')) {
+    /** Rough px height for split-layout includes column (2-col sidebar grid). */
+    function marketing_v2_overview_sidebar_est_px($include_count)
+    {
+        $include_count = max(0, (int) $include_count);
+
+        return 140 + (int) ceil($include_count / 2) * 92;
+    }
+}
+
+if (!function_exists('marketing_v2_overview_story_est_px')) {
+    /** Rough px height for overview story column from character count. */
+    function marketing_v2_overview_story_est_px($story_length)
+    {
+        return 32 + (int) (((int) $story_length) / 50) * 26;
+    }
+}
+
+if (!function_exists('marketing_extract_vc_col12_wrapper_inner')) {
+    /**
+     * Inner HTML of the main vc_col-sm-12 wpb_wrapper (preserves nested markup).
+     *
+     * @param string $row_html One WPB vc_row fragment
+     */
+    function marketing_extract_vc_col12_wrapper_inner($row_html)
+    {
+        $row_html = (string) $row_html;
+        if (!preg_match(
+            '/<div class="wpb_column vc_column_container vc_col-sm-12">\s*<div class="wpb_wrapper">/i',
+            $row_html,
+            $match,
+            PREG_OFFSET_CAPTURE
+        )) {
+            return '';
+        }
+
+        $content_start = $match[0][1] + strlen($match[0][0]);
+        $depth         = 1;
+        $len           = strlen($row_html);
+        $i             = $content_start;
+
+        while ($i < $len && preg_match('/<\/?div\b/i', $row_html, $tag, PREG_OFFSET_CAPTURE, $i)) {
+            $pos = $tag[0][1];
+            if (stripos($tag[0][0], '</div') === 0) {
+                $depth--;
+                if ($depth === 0) {
+                    return trim(substr($row_html, $content_start, $pos - $content_start));
+                }
+            } else {
+                $depth++;
+            }
+            $i = $pos + strlen($tag[0][0]);
+        }
+
+        return '';
+    }
+}
+
 if (!function_exists('marketing_build_v2_service_overview_section')) {
     /**
      * Service overview: lead + side “includes” checklist + detail prose (v2 layout).
@@ -917,30 +1009,25 @@ if (!function_exists('marketing_build_v2_service_overview_section')) {
         }
 
         $story_length = strlen($lead) + strlen(implode('', $detail_parts));
+        $include_count = count($includes);
+        $sidebar_est = marketing_v2_overview_sidebar_est_px($include_count);
+        $story_est   = marketing_v2_overview_story_est_px($story_length);
         $layout_class = 'ymo-v2-overview-layout';
+        // Side-by-side split only when story and includes are similar visual height; otherwise stack in one card.
         $use_split = $includes !== array()
-            && count($includes) <= 12
+            && $include_count <= 12
             && $story_length >= 320
-            && count($detail_parts) + ($lead !== '' ? 1 : 0) >= 1;
+            && count($detail_parts) + ($lead !== '' ? 1 : 0) >= 1
+            && $story_est >= (int) ($sidebar_est * 0.82);
         if ($use_split) {
             $layout_class .= ' ymo-v2-overview-layout--split';
-            // Short copy + tall includes sidebar: bottom-align panels without stretching the story card.
-            $include_slots = count($includes);
-            $sidebar_est_px = 140 + (int) ceil($include_slots / 2) * 92;
-            $story_est_px = 32 + (int) ($story_length / 50) * 26;
-            if ($story_est_px < $sidebar_est_px * 0.95) {
-                $layout_class .= ' ymo-v2-overview-layout--pair-end';
-            } else {
-                $layout_class .= ' ymo-v2-overview-layout--pair-start';
-            }
         }
 
         $shell_class = 'ymo-content-section ymo-v2-service-overview mb-5';
         if ($use_split) {
             $shell_class .= ' ymo-v2-service-overview--split';
-            if (strpos($layout_class, 'ymo-v2-overview-layout--pair-end') !== FALSE) {
-                $shell_class .= ' ymo-v2-service-overview--pair-end';
-            }
+        } elseif ($includes !== array()) {
+            $shell_class .= ' ymo-v2-service-overview--stacked';
         }
 
         $html = '<div class="'.$shell_class.'">';
@@ -998,9 +1085,26 @@ if (!function_exists('marketing_coalesce_service_overview_vc_rows')) {
         $why    = $match[3];
 
         $chunks = array();
-        if (preg_match_all('/<div class="wpb_wrapper">\s*([\s\S]*?)\s*<\/div>/i', $region, $wrappers)) {
-            foreach ($wrappers[1] as $chunk) {
-                $chunk = trim($chunk);
+        if (preg_match_all(
+            '/<div class="vc_row wpb_row vc_row-fluid page-margin-top(?:-section)?"/i',
+            $region,
+            $row_matches,
+            PREG_OFFSET_CAPTURE
+        )) {
+            $row_starts = $row_matches[0];
+            $row_count  = count($row_starts);
+            for ($i = 0; $i < $row_count; $i++) {
+                $start    = $row_starts[$i][1];
+                $end      = ($i + 1 < $row_count) ? $row_starts[$i + 1][1] : strlen($region);
+                $row_html = substr($region, $start, $end - $start);
+                $chunk    = marketing_extract_vc_col12_wrapper_inner($row_html);
+                if ($chunk === '' && preg_match(
+                    '/<div class="wpb_column vc_column_container vc_col-sm-12">\s*<div class="wpb_wrapper">([\s\S]*)/i',
+                    $row_html,
+                    $partial
+                )) {
+                    $chunk = trim($partial[1]);
+                }
                 if ($chunk !== '') {
                     $chunks[] = $chunk;
                 }
@@ -1021,6 +1125,32 @@ if (!function_exists('marketing_coalesce_service_overview_vc_rows')) {
     }
 }
 
+if (!function_exists('marketing_is_v2_service_overview_vc_inner')) {
+    /** True when wpb_wrapper content is the service overview (not hero image-only rows). */
+    function marketing_is_v2_service_overview_vc_inner($inner)
+    {
+        $inner = (string) $inner;
+        if ($inner === '') {
+            return FALSE;
+        }
+
+        if (!preg_match('/feature-item|service-blocks|iconList|<ul[\s>]|section-heading|box-header/i', $inner)) {
+            return FALSE;
+        }
+
+        if (stripos($inner, 'wpb_single_image') !== FALSE
+            && !preg_match('/feature-item|service-blocks|<ul[\s>]/i', $inner)) {
+            return FALSE;
+        }
+
+        if (stripos($inner, 'WHY CHOOSE US') !== FALSE || stripos($inner, 'POPULAR QUESTIONS') !== FALSE) {
+            return FALSE;
+        }
+
+        return TRUE;
+    }
+}
+
 if (!function_exists('marketing_flatten_service_overview_vc_row')) {
     /** Unwrap legacy WPB row around the first service overview block. */
     function marketing_flatten_service_overview_vc_row($body)
@@ -1030,32 +1160,47 @@ if (!function_exists('marketing_flatten_service_overview_vc_row')) {
             return $body;
         }
 
-        return preg_replace_callback(
-            '/(<div class="ymo-content-section[^"]*">\s*)?<div class="vc_row[^"]*"[^>]*>\s*<div class="wpb_column[^"]*"[^>]*>\s*<div class="wpb_wrapper">\s*([\s\S]*?)\s*<\/div>\s*<\/div>\s*<\/div>\s*(?:<\/div>\s*)?/i',
-            function ($match) {
-                $inner = $match[2];
-                $v2 = function_exists('marketing_is_theme_v2') && marketing_is_theme_v2('', array());
-                if ($v2) {
-                    return marketing_build_v2_service_overview_section($inner);
-                }
-
-                $inner = preg_replace(
-                    '/<header class="section-heading[^"]*"[^>]*>\s*(.*?)\s*<\/header>/is',
-                    '<h2 class="ymo-v2-display-sm mt-2 mb-3">$1</h2>',
-                    $inner,
-                    1
-                );
-                if (preg_match('/<ul(?![^>]*\bclass=)/i', $inner)) {
-                    $inner = preg_replace('/<ul>/i', '<ul class="list iconList">', $inner, 1);
-                } elseif (preg_match('/<ul class="(?!list\b)/i', $inner)) {
-                    $inner = preg_replace('/<ul class="/i', '<ul class="list iconList ', $inner, 1);
-                }
-
-                return '<div class="ymo-content-section ymo-v2-service-overview mb-5">'.$inner.'</div>';
-            },
+        if (preg_match_all(
+            '/<div class="vc_row wpb_row vc_row-fluid page-margin-top(?:-section)?"/i',
             $body,
-            1
-        );
+            $row_matches,
+            PREG_OFFSET_CAPTURE
+        )) {
+            $row_starts = $row_matches[0];
+            $row_count  = count($row_starts);
+            $v2         = function_exists('marketing_is_theme_v2') && marketing_is_theme_v2('', array());
+
+            for ($i = 0; $i < $row_count; $i++) {
+                $start    = $row_starts[$i][1];
+                $end      = ($i + 1 < $row_count) ? $row_starts[$i + 1][1] : strlen($body);
+                $row_html = substr($body, $start, $end - $start);
+                $inner    = marketing_extract_vc_col12_wrapper_inner($row_html);
+                if ($inner === '' || !marketing_is_v2_service_overview_vc_inner($inner)) {
+                    continue;
+                }
+
+                if ($v2) {
+                    $replacement = marketing_build_v2_service_overview_section($inner);
+                } else {
+                    $inner = preg_replace(
+                        '/<header class="section-heading[^"]*"[^>]*>\s*(.*?)\s*<\/header>/is',
+                        '<h2 class="ymo-v2-display-sm mt-2 mb-3">$1</h2>',
+                        $inner,
+                        1
+                    );
+                    if (preg_match('/<ul(?![^>]*\bclass=)/i', $inner)) {
+                        $inner = preg_replace('/<ul>/i', '<ul class="list iconList">', $inner, 1);
+                    } elseif (preg_match('/<ul class="(?!list\b)/i', $inner)) {
+                        $inner = preg_replace('/<ul class="/i', '<ul class="list iconList ', $inner, 1);
+                    }
+                    $replacement = '<div class="ymo-content-section ymo-v2-service-overview mb-5">'.$inner.'</div>';
+                }
+
+                return substr($body, 0, $start).$replacement.substr($body, $end);
+            }
+        }
+
+        return $body;
     }
 }
 

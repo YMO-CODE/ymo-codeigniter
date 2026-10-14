@@ -1141,6 +1141,11 @@
     box-shadow: none;
 }
 
+/* Story + includes stacked in one card when side-by-side would leave awkward gaps. */
+.ymo-theme-v2.ymo-marketing .ymo-v2-service-overview--stacked .ymo-v2-overview-layout__includes {
+    margin-top: clamp(0.25rem, 1vw, 0.5rem);
+}
+
 .ymo-theme-v2.ymo-marketing .ymo-v2-service-overview--split .ymo-v2-overview-layout__story {
     padding: clamp(1.25rem, 2.75vw, 1.65rem);
     border-radius: var(--ymo-v2-card-radius);
@@ -1185,23 +1190,6 @@
         grid-template-columns: minmax(0, 1.1fr) minmax(17rem, 26rem);
         gap: clamp(1.75rem, 3vw, 2.5rem);
         align-items: start;
-    }
-
-    /* Default split: panels hug content (no empty space inside the story card). */
-    .ymo-theme-v2.ymo-marketing .ymo-v2-overview-layout--split.ymo-v2-overview-layout--pair-start {
-        align-items: start;
-    }
-
-    /*
-     * Short story + tall includes (e.g. denting): bottom-align panel edges without
-     * stretching either card — whitespace sits above the story column, not inside it.
-     */
-    .ymo-theme-v2.ymo-marketing .ymo-v2-overview-layout--split.ymo-v2-overview-layout--pair-end {
-        align-items: end;
-    }
-
-    .ymo-theme-v2.ymo-marketing .ymo-v2-service-overview--pair-end .ymo-v2-overview-layout__story {
-        padding-block: clamp(1.1rem, 2.25vw, 1.45rem);
     }
 }
 

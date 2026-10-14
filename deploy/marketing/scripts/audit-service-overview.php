@@ -46,6 +46,7 @@ foreach ($paths as $path => $row) {
         isset($row['faqs']) ? $row['faqs'] : array()
     );
     $split = stripos($body, 'ymo-v2-service-overview--split') !== false;
+    $stacked = stripos($body, 'ymo-v2-service-overview--stacked') !== false;
     $overview = stripos($body, 'ymo-v2-service-overview') !== false;
     $includes = stripos($body, 'ymo-v2-overview-layout__includes') !== false;
     $why = stripos($body, 'ymo-v2-why-faq') !== false;
@@ -81,6 +82,7 @@ foreach ($paths as $path => $row) {
         'src=' . $pattern,
         'overview=' . (int) $overview,
         'split=' . (int) $split,
+        'stacked=' . (int) $stacked,
         'includes=' . (int) $includes,
         'items~' . $items,
         'why=' . (int) $why,
