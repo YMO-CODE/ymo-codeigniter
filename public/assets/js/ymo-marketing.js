@@ -290,9 +290,13 @@
             if (!ring) {
                 return;
             }
-            ring.getAnimations().forEach(function (anim) {
-                anim.pause();
-            });
+            try {
+                if (typeof ring.getAnimations === 'function') {
+                    ring.getAnimations().forEach(function (anim) {
+                        anim.pause();
+                    });
+                }
+            } catch (e) {}
             var matrix = window.getComputedStyle(ring).transform;
             if (matrix && matrix !== 'none') {
                 ring.style.animation = 'none';
@@ -352,15 +356,21 @@
             }, FLIP_MS + 60);
         }
 
+        function markOrbitJsReady() {
+            document.documentElement.classList.add('ymo-orbit-ready');
+        }
+
         function bindOrbitFlatten() {
             if (reduceMotion.matches) {
                 return;
             }
+            var boundAny = false;
             document.querySelectorAll('.ymo-v2-card-orbit-viewport--active').forEach(function (viewport) {
                 if (viewport.dataset.orbitFlattenBound === '1') {
                     return;
                 }
                 viewport.dataset.orbitFlattenBound = '1';
+                boundAny = true;
 
                 function flatten() {
                     if (!mq.matches) {
@@ -427,11 +437,31 @@
                     }
                 });
             });
+            if (boundAny) {
+                markOrbitJsReady();
+            }
         }
 
-        bindOrbitFlatten();
+        function initOrbitFlatten() {
+            bindOrbitFlatten();
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initOrbitFlatten);
+        } else {
+            initOrbitFlatten();
+        }
         if (typeof mq.addEventListener === 'function') {
             mq.addEventListener('change', bindOrbitFlatten);
+        }
+        if (typeof reduceMotion.addEventListener === 'function') {
+            reduceMotion.addEventListener('change', function () {
+                if (reduceMotion.matches) {
+                    document.documentElement.classList.remove('ymo-orbit-ready');
+                } else {
+                    initOrbitFlatten();
+                }
+            });
         }
     })();
 })();
