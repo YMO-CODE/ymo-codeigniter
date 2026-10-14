@@ -341,7 +341,7 @@
                 window.requestAnimationFrame(function () {
                     slots.forEach(function (el) {
                         el.style.transition = 'transform ' + (FLIP_MS / 1000) + 's ' + FLIP_EASE;
-                        el.style.transform = '';
+                        el.style.transform = 'translate(0, 0) scale(1, 1)';
                     });
                 });
             });

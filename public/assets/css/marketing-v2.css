@@ -2497,6 +2497,7 @@
 
     .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active.is-orbit-flip .ymo-v2-card-grid--orbit > [class*="col-"] {
         z-index: 2;
+        will-change: transform;
     }
 
     .ymo-theme-v2.ymo-marketing .ymo-v2-card-grid--orbit .ymo-v2-card--duplex .ymo-v2-card__face {
