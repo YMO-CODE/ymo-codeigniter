@@ -791,6 +791,7 @@ if (!function_exists('marketing_normalize_service_body')) {
         $body = marketing_upgrade_leading_section_to_v2_overview($body);
         $body = marketing_repair_v2_overview_section_boundaries($body);
         $body = marketing_strip_orphan_closing_divs_between_sections($body);
+        $body = marketing_repair_v2_overview_section_boundaries($body);
         $body = marketing_normalize_v2_checklist_grid_markup($body);
         $body = marketing_normalize_v2_supplement_body($body);
 
@@ -903,9 +904,9 @@ if (!function_exists('marketing_build_v2_service_overview_section')) {
         $story_length = strlen($lead) + strlen(implode('', $detail_parts));
         $layout_class = 'ymo-v2-overview-layout';
         if ($includes !== array()
-            && count($includes) <= 7
-            && $story_length >= 480
-            && count($detail_parts) + ($lead !== '' ? 1 : 0) >= 2) {
+            && count($includes) <= 12
+            && $story_length >= 320
+            && count($detail_parts) + ($lead !== '' ? 1 : 0) >= 1) {
             $layout_class .= ' ymo-v2-overview-layout--split';
         }
 
@@ -1892,6 +1893,18 @@ if (!function_exists('marketing_repair_v2_overview_section_boundaries')) {
             return preg_replace(
                 '/(<\/aside>\s*<\/div>)(\s*<div class="ymo-content-section ymo-v2-why-faq)/i',
                 '$1</div>$2',
+                $body,
+                1
+            );
+        }
+
+        if (preg_match(
+            '/<div class="ymo-v2-overview-layout__story">[\s\S]*?<\/div>\s*<div class="ymo-content-section ymo-v2-why-faq/i',
+            $body
+        ) && stripos($body, 'ymo-v2-overview-layout__includes') === FALSE) {
+            return preg_replace(
+                '/(<div class="ymo-v2-overview-layout__story">[\s\S]*?<\/div>)(\s*<div class="ymo-content-section ymo-v2-why-faq)/i',
+                '$1</div></div>$2',
                 $body,
                 1
             );
