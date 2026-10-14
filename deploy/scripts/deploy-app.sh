@@ -35,6 +35,9 @@ if [[ ! -d vendor/dompdf ]] && command -v docker >/dev/null 2>&1; then
   docker run --rm -v "$ROOT:/app" -w /app composer:2 install --no-dev --no-interaction
 fi
 
+echo "==> Removing stale precompressed marketing JS (nginx gzip_static served old orbit code)..."
+rm -f "$ROOT/public/assets/js/ymo-marketing.js.gz"
+
 echo "==> Building and starting containers..."
 $COMPOSE up -d --build
 

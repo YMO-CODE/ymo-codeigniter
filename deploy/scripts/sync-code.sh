@@ -49,6 +49,15 @@ $COMPOSE exec -T app grep -q "Customers" /var/www/application/views/admin/contac
 $COMPOSE exec -T app grep -q "hot_lead" /var/www/application/models/Crm_lead_model.php
 echo "    Container: OK"
 
+echo "==> Removing stale precompressed marketing JS (nginx must not serve old .gz)..."
+rm -f "$ROOT/public/assets/js/ymo-marketing.js.gz"
+
+if ! grep -q "getFlipEls" "$ROOT/public/assets/js/ymo-marketing.js"; then
+  echo "WARN: public/assets/js/ymo-marketing.js missing orbit FLIP (getFlipEls). Git pull incomplete?" >&2
+else
+  echo "    Orbit JS on disk: OK"
+fi
+
 echo "==> Restarting app (clear opcache)..."
 $COMPOSE restart app
 
