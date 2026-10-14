@@ -2433,7 +2433,9 @@
         transition: min-height var(--orbit-flatten-ms) cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active.is-flat {
+    .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active.is-flat,
+    .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active:hover,
+    .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active:focus-within {
         min-height: 0;
         perspective: none;
     }
@@ -2451,7 +2453,9 @@
         will-change: transform;
     }
 
-    .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active.is-flat .ymo-v2-card-grid--orbit.row {
+    .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active.is-flat .ymo-v2-card-grid--orbit.row,
+    .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active:hover .ymo-v2-card-grid--orbit.row,
+    .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active:focus-within .ymo-v2-card-grid--orbit.row {
         animation: none;
         transform: none;
         transform-style: flat;
@@ -2480,7 +2484,9 @@
             rotateY(calc(var(--orbit-i) * (-360deg / var(--orbit-count, 9))));
     }
 
-    .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active.is-flat .ymo-v2-card-grid--orbit > [class*="col-"] {
+    .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active.is-flat .ymo-v2-card-grid--orbit > [class*="col-"],
+    .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active:hover .ymo-v2-card-grid--orbit > [class*="col-"],
+    .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active:focus-within .ymo-v2-card-grid--orbit > [class*="col-"] {
         position: relative;
         top: auto;
         left: auto;
@@ -2489,7 +2495,9 @@
         transform-style: flat;
     }
 
-    .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active.is-flat:not(.is-orbit-flip) .ymo-v2-card-grid--orbit > [class*="col-"] {
+    .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active.is-flat:not(.is-orbit-flip) .ymo-v2-card-grid--orbit > [class*="col-"],
+    .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active:hover:not(.is-orbit-flip) .ymo-v2-card-grid--orbit > [class*="col-"],
+    .ymo-theme-v2.ymo-marketing .ymo-v2-card-orbit-viewport--active:focus-within:not(.is-orbit-flip) .ymo-v2-card-grid--orbit > [class*="col-"] {
         transform: none;
     }
 
