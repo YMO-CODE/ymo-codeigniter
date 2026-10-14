@@ -318,8 +318,30 @@
             clearRingInline(ring);
         }
 
+        function getFlipEls(viewport) {
+            return Array.prototype.slice.call(
+                viewport.querySelectorAll('.ymo-v2-card-grid--orbit > [class*="col-"] .ymo-v2-card--interactive')
+            );
+        }
+
+        function clearFlipStyles(els) {
+            els.forEach(function (el) {
+                el.style.transition = '';
+                el.style.transform = '';
+                el.style.transformOrigin = '';
+                el.style.willChange = '';
+            });
+        }
+
         function cancelSlotAnimations(slots) {
-            slots.forEach(function (el) {
+            var cards = [];
+            slots.forEach(function (col) {
+                var card = col.querySelector('.ymo-v2-card--interactive');
+                if (card) {
+                    cards.push(card);
+                }
+            });
+            cards.forEach(function (el) {
                 try {
                     if (typeof el.getAnimations === 'function') {
                         el.getAnimations().forEach(function (anim) {
@@ -328,6 +350,7 @@
                     }
                 } catch (e) {}
             });
+            clearFlipStyles(cards);
         }
 
         function endFlipPhase(viewport) {
@@ -347,11 +370,21 @@
                 if (viewport.classList.contains('is-flat')) {
                     return;
                 }
+                var cards = getFlipEls(viewport);
                 cancelSlotAnimations(slots);
                 if (ring) {
                     freezeRing(ring);
                 }
-                var first = slots.map(function (el) {
+
+                if (reduceMotion.matches || !cards.length) {
+                    viewport.classList.add('is-flat');
+                    if (ring) {
+                        clearRingInline(ring);
+                    }
+                    return;
+                }
+
+                var first = cards.map(function (el) {
                     return el.getBoundingClientRect();
                 });
                 viewport.classList.add('is-flat');
@@ -360,60 +393,53 @@
                 }
                 void viewport.offsetHeight;
 
-                if (reduceMotion.matches || !slots.length) {
+                var last = cards.map(function (el) {
+                    return el.getBoundingClientRect();
+                });
+
+                viewport.classList.add('is-orbit-flip');
+                var flipEls = [];
+                var i;
+                for (i = 0; i < cards.length; i += 1) {
+                    var f = first[i];
+                    var l = last[i];
+                    var card = cards[i];
+                    if (!f || !l || !card || l.width < 1 || f.width < 1) {
+                        continue;
+                    }
+                    var dx = f.left - l.left;
+                    var dy = f.top - l.top;
+                    var sx = f.width / l.width;
+                    var sy = f.height / l.height;
+                    if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5 && Math.abs(sx - 1) < 0.01 && Math.abs(sy - 1) < 0.01) {
+                        continue;
+                    }
+                    card.style.transformOrigin = '0 0';
+                    card.style.transition = 'none';
+                    card.style.transform = 'translate3d(' + dx + 'px, ' + dy + 'px, 0) scale(' + sx + ', ' + sy + ')';
+                    flipEls.push(card);
+                }
+
+                if (!flipEls.length) {
+                    endFlipPhase(viewport);
                     return;
                 }
 
-                var last = slots.map(function (el) {
-                    return el.getBoundingClientRect();
-                });
-                var anims = [];
+                void viewport.offsetHeight;
 
-                viewport.classList.add('is-orbit-flip');
                 window.requestAnimationFrame(function () {
                     window.requestAnimationFrame(function () {
-                        slots.forEach(function (el, i) {
-                            var f = first[i];
-                            var l = last[i];
-                            if (!f || !l || l.width < 1 || f.width < 1 || typeof el.animate !== 'function') {
-                                return;
-                            }
-                            var dx = f.left - l.left;
-                            var dy = f.top - l.top;
-                            var sx = f.width / l.width;
-                            var sy = f.height / l.height;
-                            if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5 && Math.abs(sx - 1) < 0.01 && Math.abs(sy - 1) < 0.01) {
-                                return;
-                            }
-                            anims.push(el.animate(
-                                [
-                                    { transform: 'translate3d(' + dx + 'px, ' + dy + 'px, 0) scale(' + sx + ', ' + sy + ')' },
-                                    { transform: 'translate3d(0, 0, 0) scale(1, 1)' }
-                                ],
-                                { duration: FLIP_MS, easing: FLIP_EASE, fill: 'forwards' }
-                            ));
+                        flipEls.forEach(function (card) {
+                            card.style.transition = 'transform ' + (FLIP_MS / 1000) + 's ' + FLIP_EASE;
+                            card.style.transform = 'translate3d(0, 0, 0) scale(1, 1)';
                         });
-
-                        if (!anims.length) {
-                            endFlipPhase(viewport);
-                            return;
-                        }
-
-                        var flipDone = false;
-                        function finishMotion() {
-                            if (flipDone) {
-                                return;
-                            }
-                            flipDone = true;
-                            endFlipPhase(viewport);
-                        }
-
-                        viewport._orbitFlipTimer = window.setTimeout(finishMotion, FLIP_MS + 120);
-                        Promise.all(anims.map(function (a) {
-                            return a.finished;
-                        })).then(finishMotion).catch(finishMotion);
                     });
                 });
+
+                viewport._orbitFlipTimer = window.setTimeout(function () {
+                    endFlipPhase(viewport);
+                    clearFlipStyles(flipEls);
+                }, FLIP_MS + 100);
                 return;
             }
 
