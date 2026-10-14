@@ -1152,15 +1152,6 @@
 @media (min-width: 992px) {
     .ymo-theme-v2.ymo-marketing .ymo-v2-service-overview--split .ymo-v2-overview-layout--split {
         gap: clamp(1.25rem, 2.5vw, 1.75rem);
-        align-items: stretch;
-    }
-
-    .ymo-theme-v2.ymo-marketing .ymo-v2-service-overview--split .ymo-v2-overview-layout__story,
-    .ymo-theme-v2.ymo-marketing .ymo-v2-service-overview--split .ymo-v2-overview-layout__includes {
-        display: flex;
-        flex-direction: column;
-        min-height: 100%;
-        box-sizing: border-box;
     }
 }
 
@@ -1193,7 +1184,24 @@
         display: grid;
         grid-template-columns: minmax(0, 1.1fr) minmax(17rem, 26rem);
         gap: clamp(1.75rem, 3vw, 2.5rem);
-        align-items: stretch;
+        align-items: start;
+    }
+
+    /* Default split: panels hug content (no empty space inside the story card). */
+    .ymo-theme-v2.ymo-marketing .ymo-v2-overview-layout--split.ymo-v2-overview-layout--pair-start {
+        align-items: start;
+    }
+
+    /*
+     * Short story + tall includes (e.g. denting): bottom-align panel edges without
+     * stretching either card — whitespace sits above the story column, not inside it.
+     */
+    .ymo-theme-v2.ymo-marketing .ymo-v2-overview-layout--split.ymo-v2-overview-layout--pair-end {
+        align-items: end;
+    }
+
+    .ymo-theme-v2.ymo-marketing .ymo-v2-service-overview--pair-end .ymo-v2-overview-layout__story {
+        padding-block: clamp(1.1rem, 2.25vw, 1.45rem);
     }
 }
 

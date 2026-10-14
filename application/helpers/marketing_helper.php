@@ -924,11 +924,23 @@ if (!function_exists('marketing_build_v2_service_overview_section')) {
             && count($detail_parts) + ($lead !== '' ? 1 : 0) >= 1;
         if ($use_split) {
             $layout_class .= ' ymo-v2-overview-layout--split';
+            // Short copy + tall includes sidebar: bottom-align panels without stretching the story card.
+            $include_slots = count($includes);
+            $sidebar_est_px = 140 + (int) ceil($include_slots / 2) * 92;
+            $story_est_px = 32 + (int) ($story_length / 50) * 26;
+            if ($story_est_px < $sidebar_est_px * 0.95) {
+                $layout_class .= ' ymo-v2-overview-layout--pair-end';
+            } else {
+                $layout_class .= ' ymo-v2-overview-layout--pair-start';
+            }
         }
 
         $shell_class = 'ymo-content-section ymo-v2-service-overview mb-5';
         if ($use_split) {
             $shell_class .= ' ymo-v2-service-overview--split';
+            if (strpos($layout_class, 'ymo-v2-overview-layout--pair-end') !== FALSE) {
+                $shell_class .= ' ymo-v2-service-overview--pair-end';
+            }
         }
 
         $html = '<div class="'.$shell_class.'">';
