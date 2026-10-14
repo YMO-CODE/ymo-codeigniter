@@ -49,13 +49,27 @@ $COMPOSE exec -T app grep -q "Customers" /var/www/application/views/admin/contac
 $COMPOSE exec -T app grep -q "hot_lead" /var/www/application/models/Crm_lead_model.php
 echo "    Container: OK"
 
-echo "==> Removing stale precompressed marketing JS (nginx must not serve old .gz)..."
+echo "==> Removing stale precompressed marketing assets (nginx must not serve old .gz)..."
 rm -f "$ROOT/public/assets/js/ymo-marketing.js.gz"
+rm -f "$ROOT/public/assets/css/marketing-v2.css.gz"
+rm -f "$ROOT/public/assets/css/marketing.css.gz"
 
 if ! grep -q "getFlipEls" "$ROOT/public/assets/js/ymo-marketing.js"; then
   echo "WARN: public/assets/js/ymo-marketing.js missing orbit FLIP (getFlipEls). Git pull incomplete?" >&2
 else
   echo "    Orbit JS on disk: OK"
+fi
+
+if ! grep -q "ymo-v2-service-overview--split" "$ROOT/public/assets/css/marketing-v2.css"; then
+  echo "WARN: marketing-v2.css missing service overview split styles. Git pull incomplete?" >&2
+else
+  echo "    Marketing v2 CSS on disk: OK"
+fi
+
+if ! grep -q "marketing_coalesce_service_overview_vc_rows" "$ROOT/application/helpers/marketing_helper.php"; then
+  echo "WARN: marketing_helper.php missing service overview coalesce. Git pull incomplete?" >&2
+else
+  echo "    Service overview PHP on disk: OK"
 fi
 
 echo "==> Restarting app (clear opcache)..."

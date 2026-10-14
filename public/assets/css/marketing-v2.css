@@ -1134,6 +1134,28 @@
     box-shadow: var(--ymo-v2-card-shadow);
 }
 
+.ymo-theme-v2.ymo-marketing .ymo-v2-service-overview--split {
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.ymo-theme-v2.ymo-marketing .ymo-v2-service-overview--split .ymo-v2-overview-layout__story {
+    padding: clamp(1.25rem, 2.75vw, 1.65rem);
+    border-radius: var(--ymo-v2-card-radius);
+    background: var(--ymo-v2-card-bg);
+    border: var(--ymo-v2-card-border);
+    box-shadow: var(--ymo-v2-card-shadow);
+}
+
+@media (min-width: 992px) {
+    .ymo-theme-v2.ymo-marketing .ymo-v2-service-overview--split .ymo-v2-overview-layout--split {
+        gap: clamp(1.25rem, 2.5vw, 1.75rem);
+        align-items: start;
+    }
+}
+
 .ymo-theme-v2.ymo-marketing .ymo-v2-service-overview__lead {
     max-width: none;
     margin: 0 0 0;

@@ -780,10 +780,11 @@ if (!function_exists('marketing_normalize_service_body')) {
             );
         }
 
-        $body = marketing_normalize_feature_item_body($body);
+        $body = marketing_coalesce_service_overview_vc_rows($body);
         $body = marketing_normalize_service_why_faq($body, $page_faqs);
         $body = marketing_simplify_accordion_markup($body);
         $body = marketing_flatten_service_overview_vc_row($body);
+        $body = marketing_normalize_feature_item_body($body);
         $body = marketing_strip_wp_service_chrome($body);
         $body = marketing_unwrap_wpb_text_columns($body);
         $body = marketing_remove_orphan_divs_before_section($body);
@@ -891,6 +892,20 @@ if (!function_exists('marketing_build_v2_service_overview_section')) {
             $inner = preg_replace('/^\s*<p[^>]*>[\s\S]*?<\/p>\s*/i', '', $inner, 1);
         }
 
+        if ($includes === array() && stripos($inner, 'feature-item') !== FALSE) {
+            foreach (marketing_extract_feature_items($inner) as $feature) {
+                $title = isset($feature['title']) ? trim((string) $feature['title']) : '';
+                $text  = isset($feature['text']) ? trim((string) $feature['text']) : '';
+                if ($title !== '' && $text !== '') {
+                    $includes[] = $title.' — '.$text;
+                } elseif ($text !== '') {
+                    $includes[] = $text;
+                } elseif ($title !== '') {
+                    $includes[] = $title;
+                }
+            }
+        }
+
         $detail_parts = array();
         if (preg_match_all('/<p[^>]*>([\s\S]*?)<\/p>/i', $inner, $paragraphs)) {
             foreach ($paragraphs[1] as $chunk) {
@@ -903,14 +918,20 @@ if (!function_exists('marketing_build_v2_service_overview_section')) {
 
         $story_length = strlen($lead) + strlen(implode('', $detail_parts));
         $layout_class = 'ymo-v2-overview-layout';
-        if ($includes !== array()
+        $use_split = $includes !== array()
             && count($includes) <= 12
             && $story_length >= 320
-            && count($detail_parts) + ($lead !== '' ? 1 : 0) >= 1) {
+            && count($detail_parts) + ($lead !== '' ? 1 : 0) >= 1;
+        if ($use_split) {
             $layout_class .= ' ymo-v2-overview-layout--split';
         }
 
-        $html = '<div class="ymo-content-section ymo-v2-service-overview mb-5">';
+        $shell_class = 'ymo-content-section ymo-v2-service-overview mb-5';
+        if ($use_split) {
+            $shell_class .= ' ymo-v2-service-overview--split';
+        }
+
+        $html = '<div class="'.$shell_class.'">';
         $html .= '<div class="'.$layout_class.'">';
 
         $html .= '<div class="ymo-v2-overview-layout__story">';
@@ -936,6 +957,55 @@ if (!function_exists('marketing_build_v2_service_overview_section')) {
         $html .= '</div></div>';
 
         return $html;
+    }
+}
+
+if (!function_exists('marketing_coalesce_service_overview_vc_rows')) {
+    /**
+     * Merge consecutive WP overview rows (intro + feature package, etc.) before v2 flatten.
+     *
+     * @param string $body
+     */
+    function marketing_coalesce_service_overview_vc_rows($body)
+    {
+        $body = (string) $body;
+        if (stripos($body, 'vc_row') === FALSE || stripos($body, 'WHY CHOOSE US') === FALSE) {
+            return $body;
+        }
+
+        if (!preg_match(
+            '/^(.*?)(<div class="vc_row wpb_row vc_row-fluid page-margin-top[\s\S]*?)(<div class="vc_row wpb_row vc_row-fluid page-margin-top">\s*<div class="wpb_column vc_column_container vc_col-sm-6">\s*<div class="wpb_wrapper">\s*<h4[^>]*>\s*WHY CHOOSE US)/is',
+            $body,
+            $match
+        )) {
+            return $body;
+        }
+
+        $prefix = $match[1];
+        $region = $match[2];
+        $why    = $match[3];
+
+        $chunks = array();
+        if (preg_match_all('/<div class="wpb_wrapper">\s*([\s\S]*?)\s*<\/div>/i', $region, $wrappers)) {
+            foreach ($wrappers[1] as $chunk) {
+                $chunk = trim($chunk);
+                if ($chunk !== '') {
+                    $chunks[] = $chunk;
+                }
+            }
+        }
+
+        if ($chunks === array()) {
+            return $body;
+        }
+
+        $merged = implode("\n", $chunks);
+        $single = '<div class="vc_row wpb_row vc_row-fluid page-margin-top">'
+            .'<div class="wpb_column vc_column_container vc_col-sm-12">'
+            .'<div class="wpb_wrapper">'.$merged.'</div>'
+            .'</div></div></div>';
+
+        return $prefix.$single.substr($body, strlen($match[1]) + strlen($match[2]));
     }
 }
 
