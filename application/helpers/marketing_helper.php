@@ -759,12 +759,6 @@ if (!function_exists('marketing_normalize_service_body')) {
         }
 
         $body = preg_replace('/<h3[^>]*>\s*SERVICE OVERVIEW\s*<\/h3>/iu', '', $body, 1);
-        $body = preg_replace(
-            '/<header class="section-heading[^"]*"[^>]*>\s*<p[^>]*>.*?<\/p>\s*<\/header>/is',
-            '',
-            $body,
-            1
-        );
 
         if (preg_match(
             '/<div class="service-blocks[^"]*"[^>]*>[\s\S]*?(<ul>[\s\S]*?<\/ul>)[\s\S]*?(?=<div class="wpb_text_column)/i',
@@ -781,9 +775,9 @@ if (!function_exists('marketing_normalize_service_body')) {
         }
 
         $body = marketing_coalesce_service_overview_vc_rows($body);
+        $body = marketing_flatten_service_overview_vc_row($body);
         $body = marketing_normalize_service_why_faq($body, $page_faqs);
         $body = marketing_simplify_accordion_markup($body);
-        $body = marketing_flatten_service_overview_vc_row($body);
         $body = marketing_normalize_feature_item_body($body);
         $body = marketing_strip_wp_service_chrome($body);
         $body = marketing_unwrap_wpb_text_columns($body);
@@ -966,7 +960,11 @@ if (!function_exists('marketing_build_v2_service_overview_section')) {
         );
 
         $lead = '';
-        if (preg_match('/^\s*<p[^>]*>([\s\S]*?)<\/p>/i', $inner, $lead_match)) {
+        if (preg_match('/<header class="section-heading[^"]*"[^>]*>\s*<p[^>]*>([\s\S]*?)<\/p>/is', $inner, $lead_match)) {
+            $lead = trim(html_entity_decode(strip_tags($lead_match[1]), ENT_QUOTES, 'UTF-8'));
+            $inner = preg_replace('/<header class="section-heading[^"]*"[^>]*>[\s\S]*?<\/header>/is', '', $inner, 1);
+        }
+        if ($lead === '' && preg_match('/^\s*<p[^>]*>([\s\S]*?)<\/p>/i', $inner, $lead_match)) {
             $lead = trim(html_entity_decode(strip_tags($lead_match[1]), ENT_QUOTES, 'UTF-8'));
             $inner = preg_replace('/^\s*<p[^>]*>[\s\S]*?<\/p>/i', '', $inner, 1);
         }
@@ -998,6 +996,13 @@ if (!function_exists('marketing_build_v2_service_overview_section')) {
             }
         }
 
+        if ($includes !== array() && stripos($inner, 'feature-item') !== FALSE) {
+            $inner = preg_replace('/<h3[^>]*class="[^"]*box-header[^"]*"[^>]*>[\s\S]*?<\/h3>/iu', '', $inner);
+            $inner = preg_replace('/<div class="feature-item">[\s\S]*?<\/div>\s*/i', '', $inner);
+            $inner = preg_replace('/<div class="vc_row wpb_row vc_inner[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/i', '', $inner);
+            $inner = preg_replace('/<div class="wpb_text_column[^"]*"[^>]*>\s*<div class="wpb_wrapper">\s*<\/div>\s*<\/div>/i', '', $inner);
+        }
+
         $detail_parts = array();
         if (preg_match_all('/<p[^>]*>([\s\S]*?)<\/p>/i', $inner, $paragraphs)) {
             foreach ($paragraphs[1] as $chunk) {
@@ -1005,6 +1010,21 @@ if (!function_exists('marketing_build_v2_service_overview_section')) {
                 if ($text !== '') {
                     $detail_parts[] = $text;
                 }
+            }
+        }
+
+        if ($includes !== array() && $detail_parts !== array()) {
+            $include_blurbs = array();
+            foreach ($includes as $line) {
+                $parts = preg_split('/\s—\s/u', $line, 2);
+                if (isset($parts[1]) && trim($parts[1]) !== '') {
+                    $include_blurbs[] = trim($parts[1]);
+                }
+            }
+            if ($include_blurbs !== array()) {
+                $detail_parts = array_values(array_filter($detail_parts, function ($paragraph) use ($include_blurbs) {
+                    return !in_array($paragraph, $include_blurbs, TRUE);
+                }));
             }
         }
 
@@ -1171,10 +1191,13 @@ if (!function_exists('marketing_flatten_service_overview_vc_row')) {
             $v2         = function_exists('marketing_is_theme_v2') && marketing_is_theme_v2('', array());
 
             for ($i = 0; $i < $row_count; $i++) {
-                $start    = $row_starts[$i][1];
-                $end      = ($i + 1 < $row_count) ? $row_starts[$i + 1][1] : strlen($body);
-                $row_html = substr($body, $start, $end - $start);
-                $inner    = marketing_extract_vc_col12_wrapper_inner($row_html);
+                $div_start = $row_starts[$i][1];
+                $row_html  = marketing_slice_balanced_div($body, $div_start);
+                if ($row_html === '') {
+                    continue;
+                }
+                $end   = $div_start + strlen($row_html);
+                $inner = marketing_extract_vc_col12_wrapper_inner($row_html);
                 if ($inner === '' || !marketing_is_v2_service_overview_vc_inner($inner)) {
                     continue;
                 }
@@ -1196,7 +1219,7 @@ if (!function_exists('marketing_flatten_service_overview_vc_row')) {
                     $replacement = '<div class="ymo-content-section ymo-v2-service-overview mb-5">'.$inner.'</div>';
                 }
 
-                return substr($body, 0, $start).$replacement.substr($body, $end);
+                return substr($body, 0, $div_start).$replacement.substr($body, $end);
             }
         }
 
@@ -4134,6 +4157,10 @@ if (!function_exists('marketing_normalize_feature_item_body')) {
         $body = trim((string) $body);
         if ($body === '' || stripos($body, 'feature-item') === FALSE) {
             return $body;
+        }
+
+        if (stripos($body, 'ymo-v2-service-overview') !== FALSE) {
+            return preg_replace('/<div class="feature-item">[\s\S]*?<\/div>\s*/i', '', $body);
         }
 
         return preg_replace_callback(
