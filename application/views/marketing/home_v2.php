@@ -54,23 +54,30 @@ echo ymo_marketing_render_hero('', $hero_page, isset($booking_url) ? $booking_ur
 </section>
 
 <?php if (!empty($city_strip)): ?>
+<?php
+$city_roll_items = array();
+foreach ($city_strip as $city) {
+    $city_roll_items[] = array(
+        'label' => $city['name'],
+        'href'  => site_url($city['hub_path']),
+        'aria'  => 'Car servicing in '.$city['name'],
+    );
+}
+?>
 <section class="ymo-v2-section ymo-v2-section--surface">
     <div class="container">
-        <div class="ymo-v2-band ymo-v2-home-locations">
-            <div class="row g-4 g-lg-5 align-items-start">
-                <div class="col-lg-5">
-                    <h2 class="ymo-v2-display-sm mb-2">We serve Pune, Indore &amp; Nashik</h2>
-                    <p class="ymo-v2-prose mb-0">Free doorstep pick-up and drop across all three cities - browse services and neighbourhoods on each city page.</p>
-                </div>
-                <div class="col-lg-7">
-                    <nav class="ymo-v2-city-nav" aria-label="City service hubs">
-                        <?php foreach ($city_strip as $city): ?>
-                            <a href="<?= site_url($city['hub_path']); ?>" class="ymo-v2-city-nav__link">
-                                <span class="ymo-v2-city-nav__label">Car servicing in <?= html_escape($city['name']); ?></span>
-                                <span class="mi ymo-v2-city-nav__icon" aria-hidden="true">north_east</span>
-                            </a>
-                        <?php endforeach; ?>
-                    </nav>
+        <div class="row g-4 g-lg-5 align-items-center">
+            <div class="col-lg-5">
+                <h2 class="ymo-v2-display-sm mb-2">We serve Pune, Indore &amp; Nashik</h2>
+                <p class="ymo-v2-prose mb-0">Free doorstep pick-up and drop across all three cities - browse services and neighbourhoods on each city page.</p>
+            </div>
+            <div class="col-lg-7">
+                <div class="ymo-v2-roll-list-panel">
+                    <?php $this->load->view('marketing/partials/roll_list', array(
+                        'roll_lead'  => 'we serve',
+                        'roll_items' => $city_roll_items,
+                        'roll_loop'  => FALSE,
+                    )); ?>
                 </div>
             </div>
         </div>
@@ -79,20 +86,36 @@ echo ymo_marketing_render_hero('', $hero_page, isset($booking_url) ? $booking_ur
 <?php endif; ?>
 
 <?php if (!empty($brand_cards)): ?>
+<?php
+$brand_roll_items = array();
+foreach ($brand_cards as $brand) {
+    if (empty($brand['slug']) || empty($brand['title'])) {
+        continue;
+    }
+    $brand_roll_items[] = array(
+        'label' => $brand['title'],
+        'href'  => site_url($brand['slug']),
+        'aria'  => $brand['title'].' car service',
+    );
+}
+?>
 <section class="ymo-v2-section">
     <div class="container">
-        <div class="ymo-v2-section-head">
-            <div>
+        <div class="row g-4 g-lg-5 align-items-end">
+            <div class="col-lg-5">
                 <h2 class="ymo-v2-display-sm mb-1">Brands we service</h2>
-                <p class="ymo-v2-prose mb-0">Maruti, Hyundai, Tata, Honda, and more - across Pune, Indore &amp; Nashik.</p>
+                <p class="ymo-v2-prose mb-3 mb-lg-0">Maruti, Hyundai, Tata, Honda, and more - across Pune, Indore &amp; Nashik.</p>
+                <a href="<?= site_url('brands'); ?>" class="md-btn md-btn--outlined md-btn--sm d-none d-lg-inline-flex">All brands</a>
             </div>
-            <a href="<?= site_url('brands'); ?>" class="md-btn md-btn--outlined md-btn--sm">All brands</a>
-        </div>
-        <div class="ymo-v2-brand-panel">
-            <div class="ymo-v2-brand-panel__links">
-                <?php foreach ($brand_cards as $brand): ?>
-                    <a href="<?= site_url($brand['slug']); ?>" class="ymo-v2-brand-link"><?= html_escape($brand['title']); ?></a>
-                <?php endforeach; ?>
+            <div class="col-lg-7">
+                <div class="ymo-v2-roll-list-panel">
+                    <?php $this->load->view('marketing/partials/roll_list', array(
+                        'roll_lead'  => 'including',
+                        'roll_items' => $brand_roll_items,
+                        'roll_loop'  => TRUE,
+                    )); ?>
+                </div>
+                <a href="<?= site_url('brands'); ?>" class="md-btn md-btn--outlined md-btn--sm mt-3 d-lg-none">All brands</a>
             </div>
         </div>
     </div>

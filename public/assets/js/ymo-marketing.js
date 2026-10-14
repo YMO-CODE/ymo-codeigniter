@@ -492,4 +492,88 @@
             mq.addEventListener('change', bindOrbitFlatten);
         }
     })();
+
+    // Home roll lists — split gradient vs viewport center (CodePen-style)
+    (function () {
+        var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+        function rollShiftForText(textEl, viewportEl) {
+            var vRect = viewportEl.getBoundingClientRect();
+            var tRect = textEl.getBoundingClientRect();
+            if (vRect.height < 1 || tRect.height < 1) {
+                return 50;
+            }
+            var bandCenter = vRect.top + vRect.height * 0.5;
+            var textCenter = tRect.top + tRect.height * 0.5;
+            var half = Math.max(tRect.height * 0.5, 1);
+            var shift = 50 + ((textCenter - bandCenter) / half) * 50;
+            if (shift < 0) { shift = 0; }
+            if (shift > 100) { shift = 100; }
+            return shift;
+        }
+
+        function tickRollList(root) {
+            var viewport = root.querySelector('.ymo-v2-roll-list__viewport');
+            if (!viewport) { return; }
+            root.querySelectorAll('.ymo-v2-roll-list__text').forEach(function (textEl) {
+                textEl.style.setProperty('--roll-shift', String(rollShiftForText(textEl, viewport)));
+            });
+        }
+
+        function initRollLists() {
+            if (reduceMotion.matches) { return; }
+
+            var roots = document.querySelectorAll('.ymo-v2-roll-list');
+            if (!roots.length) { return; }
+
+            var ticking = false;
+            function onFrame() {
+                ticking = false;
+                roots.forEach(tickRollList);
+            }
+            function schedule() {
+                if (ticking) { return; }
+                ticking = true;
+                window.requestAnimationFrame(onFrame);
+            }
+
+            roots.forEach(tickRollList);
+            window.addEventListener('scroll', schedule, { passive: true });
+            window.addEventListener('resize', schedule);
+
+            var hasLoop = false;
+            roots.forEach(function (root) {
+                if (root.getAttribute('data-roll-loop') === '1') {
+                    hasLoop = true;
+                }
+            });
+
+            if (typeof reduceMotion.addEventListener === 'function') {
+                reduceMotion.addEventListener('change', function () {
+                    if (reduceMotion.matches) {
+                        roots.forEach(function (root) {
+                            root.querySelectorAll('.ymo-v2-roll-list__text').forEach(function (textEl) {
+                                textEl.style.removeProperty('--roll-shift');
+                            });
+                        });
+                    } else {
+                        schedule();
+                    }
+                });
+            }
+
+            if (hasLoop) {
+                (function loop() {
+                    schedule();
+                    window.requestAnimationFrame(loop);
+                })();
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initRollLists);
+        } else {
+            initRollLists();
+        }
+    })();
 })();
