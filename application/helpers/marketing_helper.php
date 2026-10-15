@@ -1033,12 +1033,12 @@ if (!function_exists('marketing_build_v2_service_overview_section')) {
         $sidebar_est = marketing_v2_overview_sidebar_est_px($include_count);
         $story_est   = marketing_v2_overview_story_est_px($story_length);
         $layout_class = 'ymo-v2-overview-layout';
-        // Side-by-side split only when story and includes are similar visual height; otherwise stack in one card.
+        // Side-by-side split only when story is at least as tall as the includes column; else one stacked card.
         $use_split = $includes !== array()
             && $include_count <= 12
             && $story_length >= 320
             && count($detail_parts) + ($lead !== '' ? 1 : 0) >= 1
-            && $story_est >= (int) ($sidebar_est * 0.82);
+            && $story_est >= $sidebar_est;
         if ($use_split) {
             $layout_class .= ' ymo-v2-overview-layout--split';
         }
