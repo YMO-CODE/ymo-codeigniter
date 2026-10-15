@@ -4384,6 +4384,99 @@ if (!function_exists('marketing_normalize_v2_pricing_page_body')) {
     }
 }
 
+if (!function_exists('marketing_normalize_v2_spares_page_body')) {
+    /**
+     * YMO Spares — legacy WP announcement + feature-item blocks → v2 sections.
+     *
+     * @param string $body
+     */
+    function marketing_normalize_v2_spares_page_body($body)
+    {
+        $body = trim((string) $body);
+        if ($body === '' || stripos($body, 'ymo-v2-spares-page') !== FALSE) {
+            return $body;
+        }
+        if (!function_exists('marketing_is_theme_v2') || !marketing_is_theme_v2('', array())) {
+            return $body;
+        }
+
+        $cta_text = '';
+        if (preg_match('/<div class="announcement[^"]*"[\s\S]*?<h3>([\s\S]*?)<\/h3>/i', $body, $cta_match)) {
+            $cta_text = trim(html_entity_decode(strip_tags($cta_match[1]), ENT_QUOTES, 'UTF-8'));
+        }
+
+        $tel_href = 'tel:+917823015407';
+        if (preg_match('/href="(tel:[^"]+)"/i', $body, $tel_match)) {
+            $tel_href = html_entity_decode($tel_match[1], ENT_QUOTES, 'UTF-8');
+        }
+
+        $scrub = preg_replace('/<div class="announcement[\s\S]*?<\/div>\s*<\/div>\s*<\/div>\s*<\/div>/i', '', $body);
+        $scrub = preg_replace('/<h2 class="[^"]*box-header[^"]*"[^>]*>\s*YMO Spares\s*<\/h2>/iu', '', $scrub);
+        $scrub = preg_replace('/<h2 class="[^"]*box-header[^"]*"[^>]*>\s*Why Choose Us\?\s*<\/h2>/iu', '', $scrub);
+        $scrub = preg_replace('/<div class="feature-item">[\s\S]*?<\/div>\s*/i', '', $scrub);
+
+        $intro_paras = array();
+        if (preg_match_all('/<p(?:\s[^>]*)?>([\s\S]*?)<\/p>/i', $scrub, $paragraphs)) {
+            foreach ($paragraphs[1] as $chunk) {
+                if (stripos($chunk, 'feature-item') !== FALSE || preg_match('/<div[\s>]/i', $chunk)) {
+                    continue;
+                }
+                $text = trim(html_entity_decode(strip_tags($chunk), ENT_QUOTES, 'UTF-8'));
+                if ($text === '' || stripos($text, 'Choosing us means') !== FALSE) {
+                    continue;
+                }
+                if (strlen($text) >= 48) {
+                    $intro_paras[] = $text;
+                }
+            }
+        }
+        $intro_paras = array_values(array_unique($intro_paras));
+        $intro_paras = array_slice($intro_paras, 0, 3);
+
+        $why_lead = 'Choosing us means choosing reliability, affordability, and expertise.';
+        if (preg_match('/<p[^>]*text-align:\s*center[^>]*>([\s\S]*?)<\/p>/i', $body, $why_match)) {
+            $why_lead = trim(html_entity_decode(strip_tags($why_match[1]), ENT_QUOTES, 'UTF-8'));
+        }
+
+        $items = marketing_extract_feature_items($body);
+
+        $html = '<div class="ymo-v2-spares-page">';
+
+        if ($cta_text !== '') {
+            $html .= '<div class="ymo-content-section mb-4">';
+            $html .= '<div class="ymo-v2-spares-cta md-card-filled p-4 p-md-5 d-flex flex-column flex-md-row align-items-md-start align-items-md-center justify-content-between gap-3">';
+            $html .= '<p class="md-body-md mb-0 ymo-v2-spares-cta__copy">'
+                .htmlspecialchars($cta_text, ENT_QUOTES, 'UTF-8').'</p>';
+            $html .= '<a class="md-btn md-btn--filled flex-shrink-0" href="'
+                .htmlspecialchars($tel_href, ENT_QUOTES, 'UTF-8').'">Call now</a>';
+            $html .= '</div></div>';
+        }
+
+        if ($intro_paras !== array()) {
+            $html .= '<div class="ymo-content-section ymo-v2-service-overview mb-5 ymo-v2-service-overview--stacked">';
+            $html .= '<div class="ymo-v2-overview-layout"><div class="ymo-v2-overview-layout__story">';
+            foreach ($intro_paras as $paragraph) {
+                $html .= '<p class="ymo-v2-overview-layout__story-copy">'
+                    .htmlspecialchars($paragraph, ENT_QUOTES, 'UTF-8').'</p>';
+            }
+            $html .= '</div></div></div>';
+        }
+
+        if ($items !== array()) {
+            $html .= '<div class="ymo-content-section mb-5">';
+            $html .= '<div class="ymo-v2-section-head mb-4"><h2 class="ymo-v2-display-sm mb-2">Why choose us?</h2>';
+            $html .= '<p class="ymo-v2-lead md-body-md mb-0">'
+                .htmlspecialchars($why_lead, ENT_QUOTES, 'UTF-8').'</p></div>';
+            $html .= marketing_build_feature_card_grid('', $items);
+            $html .= '</div>';
+        }
+
+        $html .= '</div>';
+
+        return $html;
+    }
+}
+
 if (!function_exists('marketing_normalize_v2_trust_page_body')) {
     /**
      * Trust / legal / reviews pages — v2 card sections (flat h2 HTML in registry).

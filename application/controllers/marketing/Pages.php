@@ -115,7 +115,11 @@ class Pages extends Marketing_Controller
             }
 
             if ($page_type === 'minimal') {
-                $body = marketing_normalize_v2_trust_page_body($body, $path);
+                if ($path === 'ymo-spares' && function_exists('marketing_normalize_v2_spares_page_body')) {
+                    $body = marketing_normalize_v2_spares_page_body($body);
+                } else {
+                    $body = marketing_normalize_v2_trust_page_body($body, $path);
+                }
             }
         }
 
