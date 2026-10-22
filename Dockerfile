@@ -1,7 +1,8 @@
-# Local-dev image for the YMO booking app.
-# Apache + PHP 8.1 + extensions CI3 needs (mysqli, gd for image resize, etc.)
+# Local-dev and VPS image for the YMO booking app.
+# Apache + PHP 8.2.35 + extensions CI3 needs (mysqli, gd for image resize, etc.)
+# Pinned for CVE-2026-109618 and CVE-2026-109619. PHP 8.1 is end of life and has no fix.
 
-FROM php:8.1-apache
+FROM php:8.2.35-apache
 
 # System libraries needed by gd (image resize) and intl
 RUN apt-get update \
@@ -10,10 +11,10 @@ RUN apt-get update \
         ca-certificates curl git unzip \
  && rm -rf /var/lib/apt/lists/*
 
-# PHP extensions: mysqli + pdo_mysql for the DB; gd for image resize;
-# intl + opcache for general goodness
+# PHP extensions: mysqli + pdo_mysql for the DB; gd for image resize; intl.
+# The base image already enables OPcache.
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
- && docker-php-ext-install -j$(nproc) mysqli pdo_mysql gd intl opcache
+ && docker-php-ext-install -j$(nproc) mysqli pdo_mysql gd intl
 
 # Apache: enable mod_rewrite + allow .htaccess overrides under /var/www
 RUN a2enmod rewrite headers deflate expires \
@@ -29,6 +30,7 @@ RUN { \
         echo 'post_max_size = 16M'; \
         echo 'memory_limit = 256M'; \
         echo 'date.timezone = Asia/Kolkata'; \
+        echo 'expose_php = Off'; \
     } > /usr/local/etc/php/conf.d/ymo.ini
 
 WORKDIR /var/www/html
