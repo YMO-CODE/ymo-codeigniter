@@ -53,7 +53,14 @@
  *
  * NOTE: If you change these, also change the error_reporting() code below
  */
-	define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development');
+	// Apache/mod_php does not copy container env vars into $_SERVER unless
+	// PassEnv is set. getenv() still sees CI_ENV from Docker.
+	$ci_env = getenv('CI_ENV');
+	if ( ! is_string($ci_env) || $ci_env === '')
+	{
+		$ci_env = isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development';
+	}
+	define('ENVIRONMENT', $ci_env);
 
 /*
  *---------------------------------------------------------------
@@ -66,7 +73,9 @@
 switch (ENVIRONMENT)
 {
 	case 'development':
-		error_reporting(-1);
+		// PHP 8.2 deprecates CodeIgniter 3 dynamic properties. Printing those
+		// notices sends output before headers and breaks the response.
+		error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 		ini_set('display_errors', 1);
 	break;
 
