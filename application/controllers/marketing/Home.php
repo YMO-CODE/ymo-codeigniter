@@ -7,8 +7,8 @@ class Home extends Marketing_Controller
     {
         marketing_enforce_canonical_path();
         $this->page_meta = array(
-            'title'            => 'Your Mechanic Online — Doorstep Car Service',
-            'meta_title'       => 'Your Mechanic Online | Doorstep Car Service',
+            'title'            => 'Your Mechanic Online | Car Service in Pune, Indore & Nashik',
+            'meta_title'       => 'Your Mechanic Online | Car Service in Pune, Indore & Nashik',
             'meta_description' => 'Online car mechanic & doorstep car service in Pune, Indore & Nashik. Free pick-up from ₹2,499. Book Your Mechanic Online (YMO).',
             'h1'               => 'Your Mechanic Online — doorstep car service',
             'canonical_path'   => '',

@@ -18,7 +18,7 @@ return array(
             'local_jobs'    => 'Daily-driver periodic services for IT commuters, brake jobs after expressway runs, and interior cleaning after monsoon mud.',
         ),
         'hinjewadi' => array(
-            'landmarks'     => 'Rajiv Gandhi Infotech Park phases, Marunji Road, and Hinjewadi Gaon',
+            'landmarks'     => 'Rajiv Gandhi Infotech Park Phases 1–3, Marunji Road, and Hinjawadi Gaon',
             'drive_context' => 'We collect from tech-park gates and residential towers; off-peak workshop run is typically 20–35 minutes.',
             'local_jobs'    => 'Weekend slot demand from shift workers, AC performance checks before summer, and quick oil changes between project deadlines.',
         ),

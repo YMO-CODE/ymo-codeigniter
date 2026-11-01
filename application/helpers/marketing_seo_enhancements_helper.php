@@ -290,7 +290,7 @@ if (!function_exists('marketing_enrich_page')) {
         }
 
         if ($path === '') {
-            $page['meta_title'] = 'Your Mechanic Online | Doorstep Car Service';
+            $page['meta_title'] = 'Your Mechanic Online | Car Service in Pune, Indore & Nashik';
             $page['meta_description'] = 'Online car mechanic & doorstep car service in Pune, Indore & Nashik. Free pick-up from ₹2,499. Call '.marketing_business_phone_display().'. Book YMO.';
             if (!empty($page['h1']) || isset($page['h1'])) {
                 $page['h1'] = 'Your Mechanic Online — doorstep car service';

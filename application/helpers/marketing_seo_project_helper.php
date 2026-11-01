@@ -816,6 +816,7 @@ if (!function_exists('marketing_seo_project_enrich_page')) {
             $page['title'] = $page['meta_title'];
         }
         $page = marketing_apply_content_hero_split($path, $page);
+        $page = marketing_apply_location_titles($path, $page);
         if ($path === 'blog/complete-vs-periodic-car-service') {
             $page['meta_title'] = 'Complete vs Periodic Car Service | YMO Guide';
             if (!empty($page['title']) && (function_exists('mb_strlen') ? mb_strlen($page['title'], 'UTF-8') : strlen($page['title'])) > 60) {
@@ -849,11 +850,12 @@ if (!function_exists('marketing_trim_meta_title')) {
     function marketing_trim_meta_title($title)
     {
         $title = trim((string) $title);
-        if (strlen($title) <= 60) {
+        // Count characters, not bytes: ₹ and — are 3 bytes each and were truncating valid titles.
+        if (marketing_title_len($title) <= 60) {
             return $title;
         }
         $short = preg_replace('/\s*-\s*Your Mechanic Online\s*$/i', ' | YMO', $title);
-        if (strlen($short) <= 60) {
+        if (marketing_title_len($short) <= 60) {
             return $short;
         }
         return mb_substr($short, 0, 57).'…';
@@ -864,7 +866,7 @@ if (!function_exists('marketing_trim_meta_description')) {
     function marketing_trim_meta_description($desc)
     {
         $desc = trim((string) $desc);
-        if (strlen($desc) <= 155) {
+        if (marketing_title_len($desc) <= 155) {
             return $desc;
         }
         return mb_substr($desc, 0, 152).'…';
@@ -1062,5 +1064,134 @@ if (!function_exists('marketing_seo_project_enrich_pages')) {
             $pages[$path] = marketing_seo_project_enrich_page($path, $page);
         }
         return $pages;
+    }
+}
+if (!function_exists('marketing_title_len')) {
+    function marketing_title_len($s)
+    {
+        return function_exists('mb_strlen') ? mb_strlen((string) $s, 'UTF-8') : strlen((string) $s);
+    }
+}
+
+if (!function_exists('marketing_title_pick')) {
+    /** First candidate that fits in 60 characters (last one is returned as-is). */
+    function marketing_title_pick(array $candidates)
+    {
+        foreach ($candidates as $c) {
+            if (marketing_title_len($c) <= 60) {
+                return $c;
+            }
+        }
+        return end($candidates);
+    }
+}
+
+if (!function_exists('marketing_apply_location_titles')) {
+    /**
+     * Final title pass: every city / area page names its location in the <title>
+     * ("{Service} in {Area}, {City}"), and short titles use the spare space.
+     * Runs after all other enrichment so it has the last word.
+     */
+    function marketing_apply_location_titles($path, array $page)
+    {
+        $static = array(
+            'about-us'      => 'About YMO | Car Service in Pune, Indore & Nashik',
+            'pricing'       => 'Car Service Price List | Pune, Indore & Nashik | YMO',
+            'how-it-works'  => 'How Doorstep Car Service Works in Pune, Indore & Nashik',
+            'car-amc-plans' => 'Car AMC Plans in Pune, Indore & Nashik | YMO',
+            'reviews'       => 'Customer Reviews | Car Service in Pune, Indore & Nashik',
+            'faq'           => 'Car Service FAQ | Pune, Indore & Nashik | YMO',
+            'brands'        => 'Car Brands We Service in Pune, Indore & Nashik | YMO',
+            'blog'          => 'Car Care Blog & Cost Guides | Pune, Indore, Nashik | YMO',
+            'ymo-spares'    => 'Car Spare Parts Online in India | YMO Spares',
+        );
+        if (isset($static[$path])) {
+            $page['meta_title'] = $static[$path];
+            $page['title'] = $static[$path];
+            return $page;
+        }
+
+        if (!empty($page['title_locked'])) {
+            // Hand-written title (e.g. Hinjewadi / Hinjawadi spelling) — leave it alone.
+            return $page;
+        }
+
+        $type = isset($page['page_type']) ? $page['page_type'] : '';
+        $city_slug = isset($page['city_slug']) ? $page['city_slug'] : '';
+        if ($city_slug === '' || !in_array($type, array('locality', 'service', 'brand'), TRUE)) {
+            return $page;
+        }
+        $city = marketing_city_by_slug($city_slug);
+        if (!$city || empty($city['name'])) {
+            return $page;
+        }
+        $city_name = $city['name'];
+
+        $area = !empty($page['locality_label']) ? (string) $page['locality_label'] : '';
+        if ($area === '' && !empty($page['locality_slug']) && !empty($city['localities'][$page['locality_slug']]['label'])) {
+            $area = (string) $city['localities'][$page['locality_slug']]['label'];
+        }
+        $place = $area !== '' ? $area.', '.$city_name : $city_name;
+
+        // H1 should name the location too.
+        if (!empty($page['h1']) && stripos($page['h1'], $area !== '' ? $area : $city_name) === FALSE) {
+            $h1 = preg_replace('/\s*[|@].*$/u', '', (string) $page['h1']);
+            $page['h1'] = trim($h1).' in '.$place;
+        } elseif (!empty($page['h1']) && $area !== '' && stripos($page['h1'], $city_name) === FALSE) {
+            $h1 = preg_replace('/\s*[|@].*$/u', '', (string) $page['h1']);
+            $page['h1'] = preg_replace('/\b'.preg_quote($area, '/').'\b(?!,)/u', $area.', '.$city_name, trim($h1), 1);
+        }
+
+        $current = !empty($page['meta_title']) ? (string) $page['meta_title'] : (string) ($page['title'] ?? '');
+        // Without meta_title the layout appends " - Your Mechanic Online"; measure what actually renders.
+        $rendered = $current;
+        if (empty($page['meta_title']) && stripos($current, 'Your Mechanic Online') === FALSE
+            && !preg_match('/(?:\||-|—)\s*YMO\s*$/iu', $current)) {
+            $rendered = $current.' - Your Mechanic Online';
+        }
+        $has_place = stripos($current, 'in '.$place) !== FALSE;
+        if ($has_place && marketing_title_len($rendered) <= 60) {
+            // Already "… in {Area}, {City}" and fits: only pad very short brand titles.
+            if ($type === 'brand' && substr_count($current, '|') === 1) {
+                $padded = preg_replace('/\s*\|\s*YMO\s*$/u', ' | Free Pickup | YMO', $current);
+                if (marketing_title_len($padded) <= 60) {
+                    $page['meta_title'] = $page['title'] = $padded;
+                }
+            }
+            return $page;
+        }
+
+        $segments = array_map('trim', explode('|', $current));
+        $middle = count($segments) > 2 ? implode(' | ', array_slice($segments, 1, -1)) : '';
+
+        if ($type === 'locality') {
+            $core = 'Car Service in '.$place;
+            $middle = 'From ₹2,499';
+        } else {
+            // Service / brand label = first segment minus any trailing location words.
+            $label = $segments[0];
+            $strip = array_filter(array($area, $city_name));
+            foreach ($strip as $word) {
+                $label = preg_replace('/\s*(?:,|\bin\b)?\s*'.preg_quote($word, '/').'\s*$/iu', '', $label);
+            }
+            $label = preg_replace('/\s*(?:,|\bin\b)\s*$/iu', '', trim($label));
+            if ($type === 'service' && !preg_match('/\bcar\b/i', $label)) {
+                $label = 'Car '.$label;
+            }
+            $core = $label.' in '.$place;
+        }
+
+        $candidates = array();
+        if ($middle !== '') {
+            $candidates[] = $core.' | '.$middle.' | YMO';
+        } else {
+            $candidates[] = $core.' | Free Pickup | YMO';
+        }
+        $candidates[] = $core.' | YMO';
+        $candidates[] = $core;
+        $page['meta_title'] = marketing_title_pick($candidates);
+        $page['title'] = $page['meta_title'];
+
+        return $page;
     }
 }
