@@ -109,9 +109,9 @@ if (!function_exists('marketing_locality_internal_links_html')) {
         }
 
         $featured = array(
-            'car-servicing-in-aundh' => array('car-brake-repair-in-aundh', 'Car brake repair in Aundh'),
-            'affordable-car-services-viman-nagar-pune' => array('car-ac-repair-in-viman-nagar', 'Car AC repair in Viman Nagar'),
-            'best-car-services-hinjewadi-pune' => array('car-polishing-in-hinjewadi', 'Car polishing in Hinjewadi'),
+            'car-servicing-in-aundh' => array('services/car-brake-repair', 'Car brake repair in Pune'),
+            'affordable-car-services-viman-nagar-pune' => array('services/car-air-conditioner-servicing-in-pune', 'Car AC repair in Pune'),
+            'best-car-services-hinjewadi-pune' => array('services/car-rubbing-and-polishing-in-pune-6500', 'Car rubbing and polishing in Pune'),
         );
         $current = marketing_normalize_path($path);
         if (isset($featured[$current])) {

@@ -155,7 +155,7 @@ $pages = array(
             .'<p class="md-body-md mb-3">Phase 2 is a short drive from our workshop. We collect cars from the Infosys and Wipro campuses, other Phase 2 offices and the housing societies around them, and return them after the job, with WhatsApp updates while you work.</p>'
             .'<h3 id="phase-3" class="md-title-md mt-4 mb-2">Hinjewadi Phase 3</h3>'
             .'<p class="md-body-md mb-3">Phase 3 is the newest part of the IT park, home to TCS, Tech Mahindra and Capgemini campuses and large townships such as Megapolis near Maan. Public transport is thin out here, so free pick-up and drop saves you the trip.</p>'
-            .'<p class="md-body-md mb-0 mt-4">Popular in Hinjewadi: <a href="/car-polishing-in-hinjewadi">car polishing</a>, <a href="/services/complete-car-servicing">complete car servicing</a> and <a href="/services/car-oil-change">oil change</a>. Nearby areas: <a href="/affordable-car-servicing-in-wakad-pune">Wakad</a>, <a href="/the-best-car-servicing-in-baner">Baner</a> and <a href="/car-servicing-in-pimple-saudagar-pune">Pimple Saudagar</a>.</p></div>',
+            .'<p class="md-body-md mb-0 mt-4">Popular in Hinjewadi: <a href="/services/car-rubbing-and-polishing-in-pune-6500">car polishing</a>, <a href="/services/complete-car-servicing">complete car servicing</a> and <a href="/services/car-oil-change">oil change</a>. Nearby areas: <a href="/affordable-car-servicing-in-wakad-pune">Wakad</a>, <a href="/the-best-car-servicing-in-baner">Baner</a> and <a href="/car-servicing-in-pimple-saudagar-pune">Pimple Saudagar</a>.</p></div>',
         'page_type'            => 'locality',
         'city_slug'            => 'pune',
         'locality_slug'        => 'hinjewadi',

@@ -1209,7 +1209,7 @@ if (!function_exists('marketing_kw_section')) {
     /** One content block in the site's standard markup. */
     function marketing_kw_section($heading, array $paragraphs, $extra = '')
     {
-        $html = '<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">'.$heading.'</h2>';
+        $html = '<div class="ymo-content-section ymo-kw-section mb-5"><h2 class="md-headline-md mb-3">'.$heading.'</h2>';
         $last = count($paragraphs) - 1;
         foreach ($paragraphs as $i => $p) {
             $html .= '<p class="md-body-md '.($i === $last && $extra === '' ? 'mb-0' : 'mb-3').'">'.$p.'</p>';
@@ -1262,13 +1262,29 @@ if (!function_exists('marketing_kw_city_service_paths')) {
 
 if (!function_exists('marketing_apply_keyword_targets')) {
     /**
+     * Idempotent wrapper: marketing_pages_data() re-runs enrichment on pages loaded from the
+     * registry cache, so body sections added here must not be added a second time.
+     */
+    function marketing_apply_keyword_targets($path, array $page)
+    {
+        $orig = isset($page['body']) ? (string) $page['body'] : '';
+        $out = marketing_apply_keyword_targets_once($path, $page);
+        if (strpos($orig, 'ymo-kw-section') !== FALSE) {
+            $out['body'] = $orig;
+        }
+        return $out;
+    }
+}
+
+if (!function_exists('marketing_apply_keyword_targets_once')) {
+    /**
      * Keyword targeting from the Nov 2026 Keyword Planner research.
      * City hubs: car service / car garage / car repair / car mechanic / service center + city.
      * Services: wording people search ("car ac repair", "wheel alignment", "car detailing").
      * Pune areas with demand: "car garage {area}". Brand pages: "{brand} service center" alternative.
      * Indore/Nashik locality pages: noindex (no search demand); hubs carry those cities.
      */
-    function marketing_apply_keyword_targets($path, array $page)
+    function marketing_apply_keyword_targets_once($path, array $page)
     {
         $path = trim((string) $path, '/');
         $type = $page['page_type'] ?? '';
@@ -1425,6 +1441,15 @@ if (!function_exists('marketing_apply_keyword_targets')) {
         if ($city_name === '' || $type !== 'service') {
             return $page;
         }
+
+        // Indore/Nashik copies of quote-only services: city-swapped Pune text with no measurable
+        // search demand. Keep live for visitors, keep out of the index. Electrical, detailing, wheel
+        // alignment and towing stay indexed (Keyword Planner shows demand in both cities).
+        if (in_array($city_slug, array('indore', 'nashik'), TRUE)
+            && preg_match('#^services/car-(clutch-repair|suspension-repair|insurance-claim-assistance|pre-purchase-inspection|battery-replacement)-in-(indore|nashik)$#', $path)) {
+            $page['meta_robots'] = 'noindex, follow';
+            return $page;
+        }
         $sp = marketing_kw_city_service_paths($city_slug);
         $hub = $link('locations/'.$city_slug, 'car service in '.$city_name);
 
@@ -1516,6 +1541,52 @@ if (!function_exists('marketing_apply_keyword_targets')) {
                 $near.'wheel alignment near you? Pick-up and drop are free, and replacement tyres are quoted by size and brand before fitting. See all '.$hub.'.',
             ));
             $page['updated_at'] = '2026-11-01';
+            return $page;
+        }
+
+        // Car towing & roadside assistance (Pune): "towing service pune" 100-1K/month.
+        if ($city_slug === 'pune' && $path === $sp['towing']) {
+            $page = $lock($page, array(
+                'Car Towing Service in Pune | Roadside Assistance | YMO',
+                'Car Towing Service in Pune | YMO',
+            ));
+            $page['h1'] = 'Car Towing & Roadside Assistance in Pune';
+            $page['intro'] = 'Car towing and roadside help in Pune: breakdowns, accidents and cars that will not start, towed to our Hinjewadi workshop or a garage you choose.';
+            $page['quick_answer'] = 'YMO arranges car towing in Pune to our workshop in Hinjewadi Phase 1 or a garage you choose, and helps on the spot with jump-starts and flat tyres where it is safe. The towing charge is confirmed before help is sent.';
+            $page['meta_description'] = 'Car towing service in Pune: breakdown and accident towing to our Hinjewadi workshop or your garage, jump-starts and flat tyres. Charge confirmed upfront.';
+            $phone = function_exists('marketing_business_phone_display') ? marketing_business_phone_display() : '';
+            $cfg = marketing_cities_config();
+            $areas = array();
+            foreach (($cfg['pune']['localities'] ?? array()) as $loc) {
+                if (!empty($loc['slug']) && !empty($loc['label'])) {
+                    $areas[] = $link($loc['slug'], html_escape($loc['label']));
+                }
+            }
+            $steps = '<ol class="md-body-md mb-0">'
+                .'<li class="mb-2">Call us'.($phone !== '' ? ' on <strong>'.html_escape($phone).'</strong>' : '').' or message us on WhatsApp with your location pin and what happened.</li>'
+                .'<li class="mb-2">We confirm the towing charge before anyone is sent.</li>'
+                .'<li class="mb-2">If it is safe and simple, such as a flat battery or a flat tyre, we try to get you moving on the spot.</li>'
+                .'<li class="mb-2">Otherwise the car is towed to our workshop in Hinjewadi Phase 1, or to a garage you choose.</li>'
+                .'<li class="mb-0">At our workshop we diagnose the fault and send you the estimate with photos on WhatsApp before any repair starts.</li>'
+                .'</ol>';
+            $page['body'] = ($page['body'] ?? '')
+                .marketing_kw_section('Car towing service in Pune', array(
+                    'If your car breaks down, will not start, overheats, or cannot be driven after an accident, we arrange a tow so you are not left looking for help at the roadside. Cars are brought to our workshop in Rajiv Gandhi Infotech Park, Phase 1, Hinjewadi, where our mechanics find the fault and fix it, or to any garage you prefer.',
+                    'Common reasons people call us: a dead battery, a clutch or gearbox failure, an engine warning light with loss of power, overheating in traffic, a burst tyre without a usable spare, or accident damage. For simple problems, such as a flat battery or a tyre change, we help on the spot where it is safe.',
+                ))
+                .marketing_kw_section('How towing works', array(), $steps)
+                .marketing_kw_section('Where we tow from in Pune', array(
+                    'Towing and roadside help cover the same Pune areas as our car service: '.implode(', ', $areas).'.',
+                    'After the tow, related repairs are handled at the same workshop: '.$link($sp['battery'], 'battery replacement').', '.$link($sp['electrical'], 'electrical repair').', '.$link($sp['denting'], 'denting and painting').' and help with your '.$link($sp['insurance'], 'insurance claim').' after an accident. See all '.$hub.'.',
+                ));
+            $page = marketing_kw_add_faq($page, array(
+                array('q' => 'Where will my car be towed?', 'a' => 'To our workshop in Rajiv Gandhi Infotech Park, Phase 1, Hinjewadi, Pune, or to any garage you choose.'),
+                array('q' => 'How much does car towing cost in Pune?', 'a' => 'It depends mainly on the distance and your car. We confirm the towing charge before help is sent, so there are no surprises.'),
+                array('q' => 'Which areas in Pune do you cover for towing?', 'a' => 'The same areas as our car service, including Hinjewadi, Wakad, Baner, Aundh, Bavdhan, Kothrud, Warje, Pimple Saudagar, Viman Nagar, Kharadi, Koregaon Park, Kalyani Nagar, Hadapsar, Magarpatta and Wagholi.'),
+                array('q' => 'Can you jump-start my car instead of towing it?', 'a' => 'Often, yes. If the problem is a flat battery or a flat tyre and it is safe to work where the car is, we try to get you moving on the spot first.'),
+                array('q' => 'Will you repair the car after towing it?', 'a' => 'If it comes to our workshop, we diagnose the fault and send you an estimate with photos on WhatsApp. Nothing is repaired until you approve it.'),
+            ));
+            $page['updated_at'] = '2026-11-02';
             return $page;
         }
 

@@ -55,6 +55,13 @@ return array(
     'services/car-denting-and-painting-in-pune-3000' => 'services/car-denting-and-painting-3000',
     'services/car-denting-and-painting-in-pune-3000/' => 'services/car-denting-and-painting-3000',
 
+    // Area x service stubs retired Nov 2026 (thin, no search demand) → main service page
+    'car-ac-repair-in-baner' => 'services/car-air-conditioner-servicing-in-pune',
+    'car-ac-repair-in-viman-nagar' => 'services/car-air-conditioner-servicing-in-pune',
+    'car-polishing-in-hinjewadi' => 'services/car-rubbing-and-polishing-in-pune-6500',
+    'car-brake-repair-in-aundh' => 'services/car-brake-repair',
+    'car-denting-and-painting-in-wakad' => 'services/car-denting-and-painting-3000',
+
     // Interior cleaning price slug update (₹2000 → ₹2500)
     'services/car-interior-cleaning-in-indore-2000' => 'services/car-interior-cleaning-in-indore-2500',
     'services/car-interior-cleaning-in-indore-2000/' => 'services/car-interior-cleaning-in-indore-2500',

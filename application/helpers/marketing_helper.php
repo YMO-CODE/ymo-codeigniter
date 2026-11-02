@@ -152,13 +152,10 @@ if (!function_exists('marketing_pages_data')) {
             && is_file($cache_file) && filemtime($cache_file) >= $max_mtime) {
             $cached = include $cache_file;
             if (is_array($cached)) {
+                // The cache holds pages already refreshed and enriched (written below), so return
+                // them as-is. Re-running enrichment here appended sections a second time
+                // (cost-guide blog posts doubled, hub link lines repeated).
                 $pages = $cached;
-                if (function_exists('marketing_refresh_hub_page_bodies')) {
-                    $pages = marketing_refresh_hub_page_bodies($pages);
-                }
-                if (function_exists('marketing_enrich_pages')) {
-                    $pages = marketing_enrich_pages($pages);
-                }
                 return $pages;
             }
         }
