@@ -17,6 +17,7 @@ $bs_js_v = (int) @filemtime(FCPATH.$bs_js_file);
     <script>document.documentElement.classList.add('js');</script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <?php $this->load->view('layout/partials/google_tag'); ?>
     <?php $this->load->view('layout/partials/marketing_lcp_preload'); ?>
     <?php $this->load->view('layout/partials/marketing_font_preloads'); ?>
     <title><?= html_escape($page_title); ?></title>

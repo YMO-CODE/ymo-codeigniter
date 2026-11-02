@@ -14,6 +14,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 // --- Branding / contact -----------------------------------------------------
 $config['ymo_brand_name']     = 'Your Mechanic Online';
+$config['ymo_google_ads_tag_id'] = 'AW-767713505';
 $config['ymo_brand_short']    = 'YMO';
 $__ymo_biz = is_file(__DIR__.'/marketing_business.php') ? require __DIR__.'/marketing_business.php' : array();
 $config['ymo_support_phone']  = !empty($__ymo_biz['phone_display']) ? $__ymo_biz['phone_display'] : '+91 75587 83868';
