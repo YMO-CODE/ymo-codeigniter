@@ -272,7 +272,7 @@ if (!function_exists('marketing_enrich_page')) {
             }
             $desc_map = array(
                 'complete-car-servicing' => 'Periodic car maintenance from ₹2,499 in '.$city_name.'. Oil & filter change, brake check, AC filter, free pick-up. Book online with YMO.',
-                'ac'                     => 'AC gas recharge, compressor check & filter cleaning in '.$city_name.' from ₹999. Free pick-up included. Book online with YMO.',
+                'ac'                     => 'Car AC repair and service in '.$city_name.' from ₹999: gas recharge, leak and compressor checks, cooling fixes. Free pick-up. Book YMO.',
                 'brakes'                   => 'Brake pad replacement & inspection in '.$city_name.' from ₹499. Free pick-up, upfront pricing. Book online with YMO.',
                 'denting'                  => 'Panel denting & painting from ₹4,500 in '.$city_name.'. Colour match, paint warranty, free pick-up. Book with YMO.',
                 'engine'                   => 'Engine diagnostics, tune-ups & repair in '.$city_name.'. Expert mechanics, free pick-up, transparent pricing. Book with YMO.',
@@ -341,7 +341,7 @@ if (!function_exists('marketing_service_short_title')) {
     {
         $map = array(
             'complete-car-servicing' => 'Complete Car Servicing',
-            'ac'                     => 'Car AC Service',
+            'ac'                     => 'Car AC Repair & Service',
             'brakes'                 => 'Car Brake Repair',
             'denting'                => 'Car Denting & Painting',
             'engine'                 => 'Car Engine Service',

@@ -69,8 +69,9 @@ foreach ($city_strip as $city) {
         <div class="row g-3 g-lg-4 align-items-stretch ymo-v2-roll-list-row">
             <div class="col-lg-5">
                 <div class="ymo-v2-roll-list-copy">
-                    <h2 class="ymo-v2-display-sm mb-2">We serve Pune, Indore &amp; Nashik</h2>
-                    <p class="ymo-v2-prose mb-0">Free doorstep pick-up and drop across all three cities - browse services and neighbourhoods on each city page.</p>
+                    <h2 class="ymo-v2-display-sm mb-2">Car service &amp; car garage in Pune, Indore &amp; Nashik</h2>
+                    <p class="ymo-v2-prose mb-2">A multi-brand car garage with free pick-up and drop: <a href="<?= site_url('locations/pune'); ?>">car service in Pune</a> (workshop in Hinjewadi Phase 1), <a href="<?= site_url('locations/indore'); ?>">car service in Indore</a> and <a href="<?= site_url('locations/nashik'); ?>">car garage in Nashik</a>.</p>
+                    <p class="ymo-v2-prose mb-0">Popular: <a href="<?= site_url('services/car-air-conditioner-servicing-in-pune'); ?>">car AC repair</a>, <a href="<?= site_url('services/car-denting-and-painting-3000'); ?>">denting &amp; painting</a>, <a href="<?= site_url('services/car-car-wash-detailing'); ?>">car detailing</a>, <a href="<?= site_url('services/car-ceramic-coating'); ?>">ceramic coating</a> and <a href="<?= site_url('services/car-electrical-repair'); ?>">car electrical repair</a>.</p>
                 </div>
             </div>
             <div class="col-lg-7">

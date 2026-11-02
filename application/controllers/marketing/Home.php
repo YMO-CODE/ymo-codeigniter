@@ -9,7 +9,7 @@ class Home extends Marketing_Controller
         $this->page_meta = array(
             'title'            => 'Your Mechanic Online | Car Service in Pune, Indore & Nashik',
             'meta_title'       => 'Your Mechanic Online | Car Service in Pune, Indore & Nashik',
-            'meta_description' => 'Online car mechanic & doorstep car service in Pune, Indore & Nashik. Free pick-up from ₹2,499. Book Your Mechanic Online (YMO).',
+            'meta_description' => 'Online car mechanic and multi-brand car garage in Pune, Indore & Nashik. Car service and repair with free pick-up from ₹2,499. Book Your Mechanic Online.',
             'h1'               => 'Your Mechanic Online — doorstep car service',
             'canonical_path'   => '',
             'quick_answer'     => 'Your Mechanic Online offers doorstep car servicing across Pune, Indore, and Nashik with free pick-up and drop, trained mechanics, transparent pricing from ₹2,499, and support on '.marketing_business_phone_display().'.',

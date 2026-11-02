@@ -10,7 +10,7 @@ return array(
     // Google Place ID for review links (writereview URL). Set YMO_GBP_PLACE_ID in .env when known.
     'google_place_id' => '',
     'google_rating'  => 4.8,
-    'review_count'   => 306,
+    'review_count'   => 311,
     'years'          => 0,
     'cities'         => 3,
     'review_label'   => 'Google reviews',

@@ -62,7 +62,7 @@ return array(
 
             'gbp_url'     => 'https://share.google/zdztabyzbml7l1uvZ',
 
-            'geo'         => array('latitude' => '18.5204', 'longitude' => '73.8567'),
+            'geo'         => array('latitude' => '18.608087', 'longitude' => '73.722578'), // GBP plus code JP5F+62P (Phase 1, RGIP, Hinjawadi)
 
         ),
 

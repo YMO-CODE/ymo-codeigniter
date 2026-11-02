@@ -17,12 +17,13 @@ return array(
         'gbp_url'    => 'https://share.google/zdztabyzbml7l1uvZ',
         'address'    => array(
             '@type'           => 'PostalAddress',
-            'postalCode'      => '411045',
+            'streetAddress'   => 'Phase 1, Rajiv Gandhi Infotech Park, Hinjawadi',
+            'postalCode'      => '411057',
             'addressLocality' => 'Pune',
             'addressRegion'   => 'Maharashtra',
             'addressCountry'  => 'IN',
         ),
-        'geo'        => array('latitude' => '18.5204', 'longitude' => '73.8567'),
+        'geo'        => array('latitude' => '18.608087', 'longitude' => '73.722578'),
         'geo_match'  => array(
             'cities' => array('Pune', 'Pimpri', 'Chinchwad'),
         ),

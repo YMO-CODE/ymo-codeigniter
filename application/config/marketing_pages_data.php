@@ -146,7 +146,7 @@ $pages = array(
         'h1'               => 'Car Service in Hinjewadi (Hinjawadi) Phase 1, 2 & 3, Pune',
         'intro'            => 'Our workshop is in Hinjewadi Phase 1, inside Rajiv Gandhi Infotech Park, so cars from Hinjawadi Phase 1, 2 and 3, Marunji Road and Wakad reach us fast. Free pick-up and drop, upfront pricing from ₹2,499, and WhatsApp photo and video updates at every stage of the job.',
         'body'             => '<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">Our workshop in Hinjewadi Phase 1</h2>'
-            .'<p class="md-body-md mb-3">Your Mechanic Online&#039;s Pune workshop is in Rajiv Gandhi Infotech Park, Phase 1, Hinjewadi (often written Hinjawadi). We are in the middle of the IT park, not a long drive across the city.</p>'
+            .'<p class="md-body-md mb-3">Your Mechanic Online&#039;s Pune workshop, a full multi-brand car garage, is in Rajiv Gandhi Infotech Park, Phase 1, Hinjewadi (often written Hinjawadi). If you are searching for a car garage near you in Hinjewadi, we are in the middle of the IT park, not a long drive across the city.</p>'
             .'<p class="md-body-md mb-3">We collect your car from your office gate or housing society anywhere in Phase 1, 2 or 3, service it at our workshop, and drop it back. You get WhatsApp photos and videos at every stage, and you approve the estimate before any work starts.</p></div>'
             .'<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">Car service across Hinjewadi Phase 1, 2 and 3</h2>'
             .'<h3 id="phase-1" class="md-title-md mt-4 mb-2">Hinjewadi Phase 1</h3>'
@@ -168,6 +168,7 @@ $pages = array(
             array('q' => 'Is it Hinjewadi or Hinjawadi?', 'a' => 'Both spellings refer to the same area in west Pune, home to Rajiv Gandhi Infotech Park. Our workshop is in Phase 1, and we pick up cars from across Phase 1, 2 and 3.'),
             array('q' => 'How much does car servicing cost in Hinjewadi?', 'a' => 'Complete car servicing in Hinjewadi starts from ₹2,499 at YMO. You get an upfront estimate before any work begins.'),
             array('q' => 'Can you pick up my car from my office in Hinjawadi Phase 2 or Phase 3?', 'a' => 'Yes. Pick-up and drop are free across Hinjewadi Phase 1, 2 and 3, including the Infosys and Wipro campuses in Phase 2 and the TCS, Tech Mahindra and Megapolis area in Phase 3. Share your office gate or society name and our driver calls before arriving.'),
+            array('q' => 'Where is your car garage in Hinjewadi?', 'a' => 'Our car garage is inside Rajiv Gandhi Infotech Park, Phase 1, Hinjewadi (Hinjawadi), Pune 411057. You can drive in or book a free pick-up from anywhere in Phase 1, 2 or 3.'),
             array('q' => 'Which phase of Hinjewadi is your workshop in?', 'a' => 'Phase 1, inside Rajiv Gandhi Infotech Park. Cars from Phase 2 and Phase 3 are picked up and dropped back free of charge.'),
             array('q' => 'Will I get updates while my car is being serviced?', 'a' => 'Yes. We send WhatsApp photos and videos at every stage, so you can see the work and approve any extra jobs before we do them.'),
             array('q' => 'Do you service all car brands in Hinjewadi?', 'a' => 'Yes. Maruti, Hyundai, Tata, Honda, Toyota, Kia, BMW, Mercedes-Benz, Audi and more.'),

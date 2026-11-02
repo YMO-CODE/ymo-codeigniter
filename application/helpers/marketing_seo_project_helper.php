@@ -426,6 +426,13 @@ if (!function_exists('marketing_extra_service_checklist_html')) {
                 'Inspection under light for high spots',
                 'Maintenance visit guidance',
             ),
+            'electrical-repair' => array(
+                'Fault-code scan and electrical system diagnosis',
+                'Battery, starter motor and alternator checks',
+                'Wiring, fuse and connector repair',
+                'Lights, horn, power windows and central locking',
+                'Quote approved before any part is replaced',
+            ),
             'insurance-claim-assistance' => array(
                 'Document checklist for your insurer',
                 'Estimate and photos for surveyor / claim file',
@@ -603,6 +610,7 @@ if (!function_exists('marketing_expansion_pages')) {
             'suspension-repair'          => 'Suspension Repair',
             'car-wash-detailing'         => 'Car Wash & Detailing',
             'ceramic-coating'            => 'Ceramic Coating',
+            'electrical-repair'          => 'Car Electrical Repair',
             'insurance-claim-assistance' => 'Insurance Claim Assistance',
             'pre-purchase-inspection'    => 'Pre-Purchase Inspection',
             'towing-roadside-assistance' => 'Towing & Roadside Assistance',
@@ -816,6 +824,8 @@ if (!function_exists('marketing_seo_project_enrich_page')) {
             $page['title'] = $page['meta_title'];
         }
         $page = marketing_apply_content_hero_split($path, $page);
+        $page = marketing_apply_keyword_targets($path, $page);
+        $page = marketing_apply_keyword_blog_links($path, $page);
         $page = marketing_apply_location_titles($path, $page);
         if ($path === 'blog/complete-vs-periodic-car-service') {
             $page['meta_title'] = 'Complete vs Periodic Car Service | YMO Guide';
@@ -1192,6 +1202,376 @@ if (!function_exists('marketing_apply_location_titles')) {
         $page['meta_title'] = marketing_title_pick($candidates);
         $page['title'] = $page['meta_title'];
 
+        return $page;
+    }
+}
+if (!function_exists('marketing_kw_section')) {
+    /** One content block in the site's standard markup. */
+    function marketing_kw_section($heading, array $paragraphs, $extra = '')
+    {
+        $html = '<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">'.$heading.'</h2>';
+        $last = count($paragraphs) - 1;
+        foreach ($paragraphs as $i => $p) {
+            $html .= '<p class="md-body-md '.($i === $last && $extra === '' ? 'mb-0' : 'mb-3').'">'.$p.'</p>';
+        }
+        return $html.$extra.'</div>';
+    }
+}
+
+if (!function_exists('marketing_kw_add_faq')) {
+    /** Prepend FAQ items, skipping any whose question already exists. */
+    function marketing_kw_add_faq(array $page, array $items)
+    {
+        $existing = array();
+        foreach (($page['faq'] ?? array()) as $row) {
+            $existing[strtolower(trim($row['q'] ?? ''))] = TRUE;
+        }
+        $new = array();
+        foreach ($items as $row) {
+            if (!isset($existing[strtolower($row['q'])])) {
+                $new[] = $row;
+            }
+        }
+        $page['faq'] = array_merge($new, $page['faq'] ?? array());
+        return $page;
+    }
+}
+
+if (!function_exists('marketing_kw_city_service_paths')) {
+    /** Site paths of the main services for a city. */
+    function marketing_kw_city_service_paths($city)
+    {
+        $s = $city === 'pune' ? '' : '-in-'.$city;
+        return array(
+            'complete'   => $city === 'pune' ? 'services/complete-car-servicing' : 'services/complete-car-servicing-in-'.$city,
+            'ac'         => 'services/car-air-conditioner-servicing-in-'.$city,
+            'denting'    => $city === 'pune' ? 'services/car-denting-and-painting-3000' : 'services/car-denting-and-painting-in-'.$city.'-3000',
+            'detailing'  => 'services/car-car-wash-detailing'.$s,
+            'interior'   => 'services/car-interior-cleaning-in-'.$city.'-2500',
+            'polishing'  => 'services/car-rubbing-and-polishing-in-'.$city.'-6500',
+            'ceramic'    => $city === 'pune' ? 'services/car-ceramic-coating' : '',
+            'electrical' => 'services/car-electrical-repair'.$s,
+            'battery'    => 'services/car-battery-replacement'.$s,
+            'alignment'  => 'services/car-tyres-wheel-alignment'.$s,
+            'oil'        => 'services/car-oil-change'.$s,
+            'insurance'  => 'services/car-insurance-claim-assistance'.$s,
+            'towing'     => 'services/car-towing-roadside-assistance'.$s,
+        );
+    }
+}
+
+if (!function_exists('marketing_apply_keyword_targets')) {
+    /**
+     * Keyword targeting from the Nov 2026 Keyword Planner research.
+     * City hubs: car service / car garage / car repair / car mechanic / service center + city.
+     * Services: wording people search ("car ac repair", "wheel alignment", "car detailing").
+     * Pune areas with demand: "car garage {area}". Brand pages: "{brand} service center" alternative.
+     * Indore/Nashik locality pages: noindex (no search demand); hubs carry those cities.
+     */
+    function marketing_apply_keyword_targets($path, array $page)
+    {
+        $path = trim((string) $path, '/');
+        $type = $page['page_type'] ?? '';
+        $city_slug = $page['city_slug'] ?? '';
+        $names = array('pune' => 'Pune', 'indore' => 'Indore', 'nashik' => 'Nashik');
+        $city_name = $names[$city_slug] ?? '';
+        $workshop = array(
+            'pune'   => 'Our workshop is in Rajiv Gandhi Infotech Park, Phase 1, Hinjewadi (Hinjawadi)',
+            'indore' => 'Your car is serviced at our Indore workshop',
+            'nashik' => 'Your car is serviced at our Nashik workshop',
+        );
+        $link = function ($href, $text) {
+            return '<a href="/'.html_escape(ltrim($href, '/')).'">'.$text.'</a>';
+        };
+        $lock = function (array $page, array $candidates) {
+            $page['meta_title'] = marketing_title_pick($candidates);
+            $page['title'] = $page['meta_title'];
+            $page['title_locked'] = TRUE;
+            return $page;
+        };
+
+        // ---- City hubs ------------------------------------------------------------
+        if (preg_match('#^locations/(pune|indore|nashik)$#', $path, $m)) {
+            $c = $m[1];
+            $n = $names[$c];
+            $sp = marketing_kw_city_service_paths($c);
+            $garage_first = $c === 'nashik';
+            $page = $lock($page, $garage_first
+                ? array('Car Garage & Car Service in '.$n.' | From ₹2,499 | YMO', 'Car Garage & Car Service in '.$n.' | YMO')
+                : array('Car Service & Car Garage in '.$n.' | From ₹2,499 | YMO', 'Car Service & Car Garage in '.$n.' | YMO'));
+            $page['h1'] = $garage_first
+                ? 'Car garage, car service & repair in '.$n
+                : 'Car service, repair & car garage in '.$n;
+            $page['meta_description'] = $c === 'pune'
+                ? 'Car service, car repair and a full multi-brand car garage in Pune. Workshop in Hinjewadi Phase 1, free pick-up, WhatsApp updates, from ₹2,499.'
+                : ($garage_first ? 'Car garage and car service in '.$n : 'Car service and car garage in '.$n).'. Multi-brand car repair, AC, denting and more with free pick-up, WhatsApp updates and prices from ₹2,499.';
+            $page['intro'] = 'A multi-brand car garage and car service center for '.$n.': periodic service, car repair, AC, denting and electrical work, with free pick-up and drop.';
+            $page['quick_answer'] = 'Your Mechanic Online is a multi-brand car garage in '.$n.'. '.$workshop[$c].'. Free pick-up and drop, WhatsApp photo updates at every stage, and complete car service from ₹2,499.';
+
+            $services = array(
+                array($sp['complete'], 'Complete car service', 'from ₹2,499'),
+                array($sp['ac'], 'Car AC repair &amp; service', 'from ₹999'),
+                array($sp['denting'], 'Car denting &amp; painting', 'from ₹4,500 per panel'),
+                array($sp['electrical'], 'Car electrical repair', 'quote after diagnosis'),
+                array($sp['battery'], 'Car battery replacement', 'quote after test'),
+                array($sp['alignment'], 'Wheel alignment &amp; tyres', 'quote after inspection'),
+                array($sp['detailing'], 'Car detailing &amp; car wash', 'quote after inspection'),
+                array($sp['oil'], 'Car oil change', 'from ₹1,499'),
+            );
+            if ($sp['ceramic'] !== '') {
+                $services[] = array($sp['ceramic'], 'Ceramic coating', 'quote after inspection');
+            }
+            $items = '';
+            foreach ($services as $row) {
+                $items .= '<li class="mb-2">'.$link($row[0], $row[1]).' <span class="ymo-muted">('.$row[2].')</span></li>';
+            }
+            $area_line = $c === 'pune'
+                ? 'Free pick-up covers Hinjewadi, Wakad, Baner, Aundh, Kothrud, Pimple Saudagar, Kharadi, Hadapsar and the other neighbourhoods listed below.'
+                : 'Free pick-up covers the neighbourhoods listed below and nearby areas of '.$n.'.';
+            $section = marketing_kw_section(
+                ($garage_first ? 'Car garage and car service in ' : 'Car service, repair and car garage in ').$n,
+                array(
+                    'Your Mechanic Online is a multi-brand car garage and car service center for '.$n.'. '.$workshop[$c].'. We pick your car up from home or office, service or repair it at the workshop, and drop it back, with WhatsApp photos and videos at every stage and an estimate you approve before any work starts.',
+                    'Need a car mechanic in '.$n.' for a specific problem? Our mechanics handle periodic servicing, car repair, AC repair, denting and painting, electrical faults, batteries, wheel alignment and detailing for all major brands, from hatchbacks to luxury cars.',
+                    'Searching for a car garage or car service near you? '.$area_line,
+                ),
+                '<h3 class="md-title-md mb-2">Popular car services in '.$n.'</h3><ul class="md-body-md mb-0">'.$items.'</ul>'
+            );
+            $page['body'] = $section.($page['body'] ?? '');
+            $faq = array(
+                array('q' => 'Is Your Mechanic Online a car garage or a doorstep mechanic?', 'a' => 'A workshop-based car garage. We pick up your car, service or repair it at our '.$n.' workshop with proper equipment, and drop it back. Most jobs are done at the workshop, not in your parking.'),
+                array('q' => 'How much does car service cost in '.$n.'?', 'a' => 'Complete car service starts from ₹2,499. AC service starts from ₹999, brake work from ₹499 and denting from ₹4,500 per panel. You approve the estimate first, and on most bookings you pay after delivery.'),
+            );
+            if ($c === 'pune') {
+                array_unshift($faq, array('q' => 'Where is your car garage in Pune?', 'a' => 'Our workshop is in Rajiv Gandhi Infotech Park, Phase 1, Hinjewadi (Hinjawadi), Pune 411057. We pick up cars from across Pune and Pimpri-Chinchwad.'));
+            }
+            $page = marketing_kw_add_faq($page, $faq);
+            $page['updated_at'] = '2026-11-01';
+            return $page;
+        }
+
+        // ---- Older Pune area pages built without a locality label: name the area in the heading.
+        if ($type === 'locality' && $city_slug === 'pune' && !empty($page['locality_slug'])) {
+            $cfg = marketing_cities_config();
+            $label = $page['locality_label'] ?? ($cfg['pune']['localities'][$page['locality_slug']]['label'] ?? '');
+            if ($label !== '') {
+                $page['locality_label'] = $label;
+                $page['body'] = str_replace('>Car service in this area<', '>Car service in '.html_escape($label).'<', $page['body'] ?? '');
+            }
+        }
+
+        // ---- Indore / Nashik locality pages: noindex, point to the city hub -------------
+        if ($type === 'locality' && in_array($city_slug, array('indore', 'nashik'), TRUE)) {
+            $page['meta_robots'] = 'noindex, follow';
+            return $page;
+        }
+
+        // ---- Pune areas with "car garage {area}" demand ---------------------------------
+        $garage_areas = array(
+            'wakad'           => 'Wakad cars are picked up and serviced at our workshop in Hinjewadi Phase 1, a short drive away.',
+            'baner'           => 'Baner cars are picked up and serviced at our workshop, then dropped back.',
+            'kothrud'         => 'Kothrud cars are picked up and serviced at our workshop, then dropped back.',
+            'pimple_saudagar' => 'Pimple Saudagar cars are picked up and serviced at our workshop, then dropped back.',
+            'kharadi'         => 'Kharadi cars are picked up and serviced at our workshop, then dropped back.',
+            'hadapsar'        => 'Hadapsar cars are picked up and serviced at our workshop, then dropped back.',
+            'wagholi'         => 'Wagholi cars are picked up and serviced at our workshop, then dropped back.',
+        );
+        $loc = $page['locality_slug'] ?? '';
+        if ($type === 'locality' && $city_slug === 'pune' && isset($garage_areas[$loc])) {
+            $cities = marketing_cities_config();
+            $area = $page['locality_label'] ?? ($cities['pune']['localities'][$loc]['label'] ?? ucwords(str_replace('_', ' ', $loc)));
+            $sp = marketing_kw_city_service_paths('pune');
+            $page = $lock($page, array(
+                'Car Service & Garage in '.$area.', Pune | From ₹2,499 | YMO',
+                'Car Service & Garage in '.$area.', Pune | YMO',
+                'Car Garage & Service in '.$area.', Pune',
+            ));
+            $page['h1'] = 'Car service & car garage in '.$area.', Pune';
+            $page['intro'] = 'Car service, repair and a proper car garage for '.$area.': free pick-up and drop, upfront pricing from ₹2,499 and WhatsApp updates at every stage.';
+            $page['meta_description'] = 'Car garage and car service in '.$area.', Pune. Free pick-up, multi-brand repair, AC, denting and periodic service from ₹2,499. WhatsApp updates.';
+            $section = marketing_kw_section('Car garage near '.$area, array(
+                'Looking for a car garage near you in '.$area.'? '.$garage_areas[$loc].' You get WhatsApp photos and videos while the work is done, and you approve the estimate before anything starts.',
+                'Popular with '.$area.' customers: '.$link($sp['complete'], 'complete car service').', '.$link($sp['ac'], 'car AC repair').', '.$link($sp['denting'], 'denting and painting').' and '.$link($sp['electrical'], 'electrical repair').'. See all '.$link('locations/pune', 'car service in Pune').'.',
+            ));
+            $page['body'] = $section.($page['body'] ?? '');
+            $page = marketing_kw_add_faq($page, array(
+                array('q' => 'Is there a YMO car garage near '.$area.'?', 'a' => $garage_areas[$loc].' Pick-up and drop are free.'),
+            ));
+            $page['updated_at'] = '2026-11-01';
+            return $page;
+        }
+
+        // ---- Brand pages: independent alternative to the brand service center ---------------
+        $alt_brands = array('tata', 'maruti-suzuki', 'hyundai', 'kia', 'honda', 'toyota', 'mg', 'volkswagen', 'skoda', 'mahindra');
+        if ($type === 'brand' && $city_name !== '' && preg_match('#^([a-z-]+)-car-service-in-(pune|indore|nashik)$#', $path, $bm)
+            && in_array($bm[1], $alt_brands, TRUE)) {
+            $brand = $page['brand_name'] ?? ucwords(str_replace('-', ' ', $bm[1]));
+            $page = $lock($page, array(
+                $brand.' Car Service in '.$city_name.' | Multi-Brand Service Center',
+                $brand.' Service Center Alternative in '.$city_name.' | YMO',
+                $brand.' Car Service in '.$city_name.' | YMO',
+            ));
+            $page['meta_description'] = $brand.' car service in '.$city_name.' at an independent multi-brand garage, an alternative to the '.$brand.' service center. Free pick-up, upfront prices.';
+            $section = marketing_kw_section('Looking for a '.$brand.' service center in '.$city_name.'?', array(
+                'Your Mechanic Online is an independent multi-brand car garage, not an authorised '.$brand.' dealer. We service '.$brand.' cars to the manufacturer\'s schedule using OEM, OES or brand-approved parts, explained on your estimate before anything is fitted.',
+                'You get upfront pricing, free pick-up and drop, and WhatsApp photo updates at every stage. See '.$link('locations/'.$city_slug, 'car service in '.$city_name).' for everything else we do.',
+            ));
+            $page['body'] = $section.($page['body'] ?? '');
+            $page['updated_at'] = '2026-11-01';
+            return $page;
+        }
+
+        // ---- Service pages ------------------------------------------------------------
+        if ($city_name === '' || $type !== 'service') {
+            return $page;
+        }
+        $sp = marketing_kw_city_service_paths($city_slug);
+        $hub = $link('locations/'.$city_slug, 'car service in '.$city_name);
+
+        // Area service pages (e.g. car AC repair in Baner): name the area in the description too.
+        if (!empty($page['locality_label']) && !empty($page['meta_description'])
+            && stripos($page['meta_description'], $page['locality_label']) === FALSE) {
+            $page['meta_description'] = preg_replace('/ in '.preg_quote($city_name, '/').'\b/', ' in '.$page['locality_label'].', '.$city_name, $page['meta_description'], 1);
+        }
+        $near = 'Looking for ';
+
+        // Car AC (main city pages; area AC pages keep their own copy).
+        if (preg_match('#^services/car-air-conditioner-servicing-in-(pune|indore|nashik)$#', $path)) {
+            $page['h1'] = 'Car AC Repair & Service in '.$city_name;
+            $blog = $city_slug === 'pune'
+                ? ' Prices are broken down in our '.$link('blog/car-ac-service-cost-pune', 'car AC service cost guide').'.'
+                : '';
+            $page['body'] = ($page['body'] ?? '').marketing_kw_section('Car AC repair in '.$city_name, array(
+                'If your car AC is blowing warm air, cooling slowly, making a noise or smelling musty, bring it to our '.$city_name.' workshop. We find the cause first, whether it is a gas leak, the compressor, condenser, cooling coil, blower or an electrical fault, and quote before any repair. AC gas recharge and service start from ₹999.'.$blog,
+                $near.'car AC repair near you? Pick-up and drop are free. AC faults that turn out to be electrical are handled by our '.$link($sp['electrical'], 'car electrical repair').' team. See all '.$hub.'.',
+            ));
+            $page['updated_at'] = '2026-11-01';
+            return $page;
+        }
+
+        // Denting & painting.
+        if ($path === $sp['denting']) {
+            $blog = $city_slug === 'pune' ? $link('blog/car-denting-painting-cost-pune', 'denting and painting cost guide')
+                : $link('blog/car-denting-painting-cost-'.$city_slug, 'denting and painting cost guide');
+            $page['body'] = ($page['body'] ?? '').marketing_kw_section('Car dent repair and painting in '.$city_name, array(
+                'From parking dents and door dings to bumper damage and full-panel repaints, our '.$city_name.' workshop repairs the panel and refinishes it with colour-matched paint. Denting and painting starts from ₹4,500 per panel; see the '.$blog.' for typical prices.',
+                $near.'car dent repair near you? Pick-up is free, and for accident damage we help with your '.$link($sp['insurance'], 'insurance claim').'. See all '.$hub.'.',
+            ));
+            $page['updated_at'] = '2026-11-01';
+            return $page;
+        }
+
+        // Car wash & detailing.
+        if ($path === $sp['detailing']) {
+            $page = $lock($page, array(
+                'Car Detailing & Car Wash in '.$city_name.' | Free Pickup | YMO',
+                'Car Detailing & Car Wash in '.$city_name.' | YMO',
+            ));
+            $page['h1'] = 'Car Detailing & Car Wash in '.$city_name;
+            $page['meta_description'] = 'Car detailing and car wash in '.$city_name.': foam wash, interior deep cleaning, polishing'.($sp['ceramic'] ? ' and ceramic coating' : '').'. Free pick-up, quote after inspection.';
+            $ceramic = $sp['ceramic'] ? ', or protect it with '.$link($sp['ceramic'], 'ceramic coating') : '';
+            $page['body'] = ($page['body'] ?? '').marketing_kw_section('Car detailing in '.$city_name, array(
+                'Detailing goes further than a wash: '.$link($sp['interior'], 'interior deep cleaning').' of seats, carpets and roof lining, and '.$link($sp['polishing'], '3-stage rubbing and polishing').' (from ₹6,500) to bring back the gloss'.$ceramic.'.',
+            )).marketing_kw_section('Car wash in '.$city_name, array(
+                'An exterior foam wash with interior vacuum and glass cleaning can be booked on its own or added to any service visit. '.$near.'a car wash or car detailing near you? Pick-up and drop are free. See all '.$hub.'.',
+            ));
+            $page['updated_at'] = '2026-11-01';
+            return $page;
+        }
+
+        // Ceramic coating (Pune only).
+        if ($sp['ceramic'] !== '' && $path === $sp['ceramic']) {
+            $page = $lock($page, array('Ceramic Coating in Pune | Car Paint Protection | YMO', 'Ceramic Coating in Pune | YMO'));
+            $page['h1'] = 'Ceramic Coating in Pune';
+            $page['meta_description'] = 'Ceramic coating in Pune: paint decontamination, polish prep and ceramic layers for long-lasting gloss and protection. Free pick-up, quote after inspection.';
+            $page['body'] = ($page['body'] ?? '').marketing_kw_section('Ceramic coating for your car in Pune', array(
+                'A ceramic coating bonds to the paint and protects it from UV, bird droppings, tree sap and monsoon grime, and makes washing easier. Coating only works on clean, corrected paint, so we decontaminate first and usually start with '.$link($sp['polishing'], '3-stage rubbing and polishing').' (from ₹6,500).',
+                $near.'car polish or ceramic coating near you? Pick-up is free, and we quote after inspecting your paint. See '.$link($sp['detailing'], 'car detailing').' and all '.$hub.'.',
+            ));
+            $page['updated_at'] = '2026-11-01';
+            return $page;
+        }
+
+        // Battery replacement.
+        if ($path === $sp['battery']) {
+            $page['meta_description'] = 'Car battery replacement in '.$city_name.': battery and charging test first, the right battery for your car, old battery disposal. Free pick-up, upfront quote.';
+            $page['body'] = ($page['body'] ?? '').marketing_kw_section('Car battery replacement in '.$city_name, array(
+                'Slow starts, dim lights or a car that will not start in the morning usually point to the battery, but sometimes the alternator or a fault draining power. We test the battery and charging system first, so you only replace what has actually failed.',
+                $near.'a car battery shop near you? We quote the right battery for your model before fitting it. If the car will not start at all, see '.$link($sp['towing'], 'towing and roadside assistance').'. See all '.$hub.'.',
+            ));
+            $page['updated_at'] = '2026-11-01';
+            return $page;
+        }
+
+        // Wheel alignment & tyres.
+        if ($path === $sp['alignment']) {
+            $page = $lock($page, array(
+                'Wheel Alignment & Tyres in '.$city_name.' | Upfront Quote | YMO',
+                'Wheel Alignment & Tyres in '.$city_name.' | YMO',
+            ));
+            $page['h1'] = 'Wheel Alignment, Balancing & Tyres in '.$city_name;
+            $page['meta_description'] = 'Wheel alignment and balancing in '.$city_name.', plus tyre inspection and replacement quotes. Fix pulling, vibration and uneven wear. Free pick-up.';
+            $page['body'] = ($page['body'] ?? '').marketing_kw_section('Wheel alignment in '.$city_name, array(
+                'If your car pulls to one side, the steering wheel sits off-centre, or the tyres wear unevenly, the wheels need alignment. Vibration at speed usually means balancing. We align and balance at our '.$city_name.' workshop and check the tyres at the same time.',
+                $near.'wheel alignment near you? Pick-up and drop are free, and replacement tyres are quoted by size and brand before fitting. See all '.$hub.'.',
+            ));
+            $page['updated_at'] = '2026-11-01';
+            return $page;
+        }
+
+        // Car oil change: own title (it duplicated the lube/oil/filters page).
+        if ($path === $sp['oil']) {
+            $page = $lock($page, array(
+                'Car Oil Change in '.$city_name.' | From ₹1,499 | YMO',
+                'Car Oil Change in '.$city_name.' | YMO',
+            ));
+            return $page;
+        }
+
+        // Car electrical repair (new page).
+        if ($path === $sp['electrical']) {
+            $page = $lock($page, array(
+                'Car Electrical Repair in '.$city_name.' | Upfront Quote | YMO',
+                'Car Electrical Repair in '.$city_name.' | YMO',
+            ));
+            $page['h1'] = 'Car Electrical Repair in '.$city_name;
+            $page['intro'] = 'Car electrical repair in '.$city_name.': starting problems, warning lights, wiring faults and electrical accessories, diagnosed before we quote.';
+            $page['meta_description'] = 'Car electrical repair in '.$city_name.': starting problems, battery drain, warning lights, wiring, lights, power windows and sensors. Free pick-up, upfront quote.';
+            $page['body'] = ($page['body'] ?? '').marketing_kw_section('Car electrical problems we fix in '.$city_name, array(
+                'Modern cars rely on electrics for almost everything. We diagnose and repair cars that will not start or keep draining the battery, starter motor and alternator faults, dashboard warning lights, lights, horn, power windows and central locking that stop working, sensor faults, and wiring damaged by accidents or rodents.',
+                'We scan for fault codes and trace the fault first, then quote before any repair. '.$near.'a car electrician near you? Pick-up is free. Related: '.$link($sp['battery'], 'battery replacement').' and '.$link($sp['ac'], 'car AC repair').'. See all '.$hub.'.',
+            ));
+            $page['updated_at'] = '2026-11-01';
+            return $page;
+        }
+
+        return $page;
+    }
+}
+
+if (!function_exists('marketing_apply_keyword_blog_links')) {
+    /** Cost guides link to the service page they price, with keyword anchor text. */
+    function marketing_apply_keyword_blog_links($path, array $page)
+    {
+        $map = array(
+            'blog/car-ac-service-cost-pune'            => array('services/car-air-conditioner-servicing-in-pune', 'Book car AC repair in Pune'),
+            'blog/car-ac-gas-recharge-cost-pune-2026'  => array('services/car-air-conditioner-servicing-in-pune', 'Book car AC repair in Pune'),
+            'blog/car-denting-painting-cost-pune'      => array('services/car-denting-and-painting-3000', 'Book car denting and painting in Pune'),
+            'blog/car-denting-painting-cost-indore'    => array('services/car-denting-and-painting-in-indore-3000', 'Book car denting and painting in Indore'),
+            'blog/car-denting-painting-cost-nashik'    => array('services/car-denting-and-painting-in-nashik-3000', 'Book car denting and painting in Nashik'),
+            'blog/car-service-cost-pune'               => array('locations/pune', 'Car service and car garage in Pune'),
+            'blog/car-service-cost-indore'             => array('locations/indore', 'Car service and car garage in Indore'),
+            'blog/car-service-cost-nashik'             => array('locations/nashik', 'Car garage and car service in Nashik'),
+        );
+        $path = trim((string) $path, '/');
+        if (!isset($map[$path])) {
+            return $page;
+        }
+        list($href, $text) = $map[$path];
+        if (strpos($page['body'] ?? '', 'href="/'.$href.'"') !== FALSE && strpos($page['body'] ?? '', $text) !== FALSE) {
+            return $page;
+        }
+        $page['body'] = ($page['body'] ?? '').'<div class="md-card-filled p-4 my-4"><p class="md-body-md mb-0"><a href="/'.html_escape($href).'">'.html_escape($text).'</a></p></div>';
         return $page;
     }
 }
