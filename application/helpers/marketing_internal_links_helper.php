@@ -554,3 +554,65 @@ if (!function_exists('marketing_internal_link_orphans')) {
         return $orphans;
     }
 }
+
+if (!function_exists('marketing_city_variants_for_path')) {
+    /**
+     * Same page for each city (pune|indore|nashik => path), used by the city switcher.
+     * With $hub_fallback, cities without an equivalent page fall back to their city hub.
+     *
+     * @param string $path
+     * @param bool   $hub_fallback
+     * @return array<string,string>
+     */
+    function marketing_city_variants_for_path($path, $hub_fallback = TRUE)
+    {
+        static $memo = array();
+        $path = marketing_normalize_path($path);
+        $memo_key = $path.'|'.($hub_fallback ? '1' : '0');
+        if (isset($memo[$memo_key])) {
+            return $memo[$memo_key];
+        }
+        $cities = array('pune', 'indore', 'nashik');
+        $out = array();
+        if ($hub_fallback) {
+            foreach ($cities as $c) {
+                $out[$c] = 'locations/'.$c;
+            }
+        }
+
+        $pages = function_exists('marketing_pages_data') ? marketing_pages_data() : array();
+        $exists = function ($p) use ($pages) {
+            return $p !== '' && isset($pages[$p]);
+        };
+
+        $set = array();
+        $cfg = marketing_cities_config();
+        if (!empty($cfg['services']) && is_array($cfg['services'])) {
+            foreach ($cfg['services'] as $row) {
+                $cand = array(
+                    'pune'   => marketing_normalize_path(isset($row['pune_slug']) ? $row['pune_slug'] : ''),
+                    'indore' => marketing_normalize_path(str_replace('{city}', 'indore', isset($row['city_slug']) ? $row['city_slug'] : '')),
+                    'nashik' => marketing_normalize_path(str_replace('{city}', 'nashik', isset($row['city_slug']) ? $row['city_slug'] : '')),
+                );
+                if (in_array($path, $cand, TRUE)) {
+                    $set = $cand;
+                    break;
+                }
+            }
+        }
+        if ($set === array() && preg_match('#^services/(car-[a-z0-9-]+?)(?:-in-(indore|nashik))?$#', $path, $m)) {
+            $set = array(
+                'pune'   => 'services/'.$m[1],
+                'indore' => 'services/'.$m[1].'-in-indore',
+                'nashik' => 'services/'.$m[1].'-in-nashik',
+            );
+        }
+        foreach ($set as $c => $p) {
+            if ($exists($p)) {
+                $out[$c] = $p;
+            }
+        }
+
+        return $memo[$memo_key] = $out;
+    }
+}

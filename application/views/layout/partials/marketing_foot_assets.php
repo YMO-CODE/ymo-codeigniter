@@ -5,6 +5,7 @@ $bs_js_v = (int) @filemtime(FCPATH.'assets/vendor/bootstrap/js/bootstrap.bundle.
 $bs_js_url = base_url('assets/vendor/bootstrap/js/bootstrap.bundle.min.js?v='.$bs_js_v);
 ?>
 <script src="<?= base_url('assets/js/ymo-marketing.js?v='.$mk_js_v); ?>" defer></script>
+<script src="<?= base_url('assets/js/ymo-city.js?v='.(int) @filemtime(FCPATH.'assets/js/ymo-city.js')); ?>" defer></script>
 <?php
 $ci = &get_instance();
 $livechat_license = (int) $ci->config->item('livechat_license');

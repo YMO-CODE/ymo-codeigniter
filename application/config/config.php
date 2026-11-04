@@ -544,4 +544,8 @@ $config['rewrite_short_tags'] = FALSE;
 | Comma-separated:	'10.0.1.200,192.168.5.0/24'
 | Array:		array('10.0.1.200', '192.168.5.0/24')
 */
-$config['proxy_ips'] = '';
+// Behind host nginx (app bound to 127.0.0.1 only) — trust the loopback / docker bridge so
+// ip_address() returns the real visitor from X-Forwarded-For. Opt-in via YMO_TRUST_PROXY_HEADERS=1.
+$config['proxy_ips'] = (function_exists('ymo_trust_proxy_headers') && ymo_trust_proxy_headers())
+    ? '127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16'
+    : '';

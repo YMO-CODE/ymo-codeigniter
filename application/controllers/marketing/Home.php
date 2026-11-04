@@ -21,7 +21,7 @@ class Home extends Marketing_Controller
             'city_strip'    => marketing_home_city_strip(),
             'brand_cards'   => marketing_home_brand_cards(),
             'benefits'      => $this->benefits(),
-            'city_hint'     => marketing_city_hint_banner(),
+            'city_hint'     => NULL, // city hint now set client-side by assets/js/ymo-city.js
         ));
     }
 

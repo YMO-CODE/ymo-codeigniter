@@ -126,7 +126,7 @@ $phone_tel = preg_replace('/[^+\d]/', '', (string) $phone);
         <?php endif; ?>
 
         <div class="ymo-v2-footer__bottom">
-            <span>&copy; <?= date('Y'); ?> <?= html_escape($brand); ?>. All rights reserved.</span>
+            <span>&copy; <?= date('Y'); ?> <?= html_escape($brand); ?>. All rights reserved.</span> <span class="ymo-v2-footer__attribution">IP geolocation by <a href="https://db-ip.com" rel="noopener" target="_blank">DB-IP</a></span>
         </div>
     </div>
 </footer>
@@ -213,7 +213,7 @@ $phone_tel = preg_replace('/[^+\d]/', '', (string) $phone);
         </details>
         <?php endif; ?>
         <div class="ymo-footer-bottom">
-            <span>&copy; <?= date('Y'); ?> <?= html_escape($brand); ?>. All rights reserved.</span>
+            <span>&copy; <?= date('Y'); ?> <?= html_escape($brand); ?>. All rights reserved.</span> <span class="ymo-v2-footer__attribution">IP geolocation by <a href="https://db-ip.com" rel="noopener" target="_blank">DB-IP</a></span>
         </div>
     </div>
 </footer>

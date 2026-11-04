@@ -224,6 +224,7 @@ if (ymo_is_admin_host_request()) {
     $route['sitemap.xml']          = 'marketing/seo/sitemap';
     $route['robots.txt']           = 'marketing/seo/robots';
     $route['llms.txt']             = 'marketing/seo/llms';
+    $route['geo/city']             = 'marketing/geo/city';
     $route['contact-us']           = 'marketing/contact/index';
     $route['about-us']             = 'marketing/pages/show';
     $route['api/offers/active']    = 'api/offers/active';

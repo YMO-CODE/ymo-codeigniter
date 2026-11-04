@@ -79,7 +79,22 @@ $bookings_url = ymo_booking_url('account/bookings');
                 Trusted car servicing experts at your doorstep
             </span>
         </span>
-        <span>
+        <span class="d-flex align-items-center">
+            <?php if (!$booking_nav): ?>
+                <span class="ymo-city-switch" data-city-switch>
+                    <button type="button" class="ymo-city-switch__btn" data-city-switch-toggle aria-haspopup="true" aria-expanded="false" aria-label="Choose your city">
+                        <span class="mi mi-sm" aria-hidden="true">location_on</span>
+                        <span data-city-switch-label>Select city</span>
+                        <span class="mi mi-sm" aria-hidden="true">expand_more</span>
+                    </button>
+                    <span class="ymo-city-switch__menu" data-city-switch-menu role="menu" hidden>
+                        <a role="menuitem" href="/locations/pune" data-city-option="pune">Pune</a>
+                        <a role="menuitem" href="/locations/indore" data-city-option="indore">Indore</a>
+                        <a role="menuitem" href="/locations/nashik" data-city-option="nashik">Nashik</a>
+                    </span>
+                </span>
+                <span class="mx-2 opacity-50" aria-hidden="true">|</span>
+            <?php endif; ?>
             <a href="<?= html_escape($tel_href); ?>"><?= html_escape($phone); ?></a>
             <?php if ($booking_nav): ?>
                 <span class="mx-2 opacity-50">|</span>

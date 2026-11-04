@@ -10,6 +10,16 @@ $bs_js_file = is_file($bs_marketing_js)
     ? 'assets/js/bootstrap-marketing.min.js'
     : 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js';
 $bs_js_v = (int) @filemtime(FCPATH.$bs_js_file);
+// City switcher context: this page's own city and its equivalents in other cities.
+$ymo_page_path = function_exists('marketing_normalize_path') ? marketing_normalize_path((string) $ci->uri->uri_string()) : '';
+$ymo_pages_all = function_exists('marketing_pages_data') ? marketing_pages_data() : array();
+$ymo_page_city = ($ymo_page_path !== '' && isset($ymo_pages_all[$ymo_page_path]['city_slug']))
+    ? (string) $ymo_pages_all[$ymo_page_path]['city_slug'] : '';
+if (!in_array($ymo_page_city, array('pune', 'indore', 'nashik'), TRUE)) {
+    $ymo_page_city = '';
+}
+$ymo_city_variants = function_exists('marketing_city_variants_for_path')
+    ? marketing_city_variants_for_path($ymo_page_path, TRUE) : array();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -31,7 +41,9 @@ $bs_js_v = (int) @filemtime(FCPATH.$bs_js_file);
     <?php $this->load->view('layout/partials/marketing_seo'); ?>
 </head>
 <body class="<?= html_escape($body_class); ?>"
-      data-bootstrap-js="<?= html_escape(base_url($bs_js_file.'?v='.$bs_js_v)); ?>">
+      data-bootstrap-js="<?= html_escape(base_url($bs_js_file.'?v='.$bs_js_v)); ?>"
+      data-ymo-page-city="<?= html_escape($ymo_page_city); ?>"
+      data-ymo-city-variants="<?= html_escape(json_encode($ymo_city_variants)); ?>">
 
 <?php $this->load->view('layout/partials/marketing_header'); ?>
 

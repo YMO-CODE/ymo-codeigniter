@@ -2,18 +2,41 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * Lightweight IP / header geo lookup for marketing city-hint banner.
- * Never redirects — returns a city slug for optional UX only.
+ * Visitor city detection for the marketing site (Pune / Indore / Nashik).
+ *
+ * Order:
+ *   1. The visitor's own choice (ymo_city cookie, set by the header city switcher).
+ *   2. Cloudflare geo headers, if the site is ever put behind Cloudflare.
+ *   3. Local IP lookup in the DB-IP "IP to City Lite" database
+ *      (storage/geo/dbip-city-lite.mmdb, refreshed monthly by deploy/scripts/update-geoip.sh).
+ *      IP geolocation by DB-IP (https://db-ip.com), licensed CC BY 4.0.
+ *
+ * Never redirects and never changes server-rendered HTML: the result is consumed by
+ * /geo/city (JSON) and the browser script ymo-city.js, so pages stay cacheable and
+ * crawlers always see the same content.
  */
 class City_geo
 {
     const COOKIE_DISMISSED = 'ymo_city_hint_dismissed';
+    const COOKIE_CITY      = 'ymo_city';
+
+    /**
+     * City centres and catchment radius (km) used when the database returns a
+     * suburb or village name we do not list in geo_match.
+     *
+     * @var array<string, array{0: float, 1: float, 2: float}>
+     */
+    protected $centres = array(
+        'pune'   => array(18.5204, 73.8567, 60.0),
+        'indore' => array(22.7196, 75.8577, 50.0),
+        'nashik' => array(19.9975, 73.7898, 45.0),
+    );
 
     /** @var CI_Controller */
     protected $CI;
 
-    /** @var array<string, array{city:string,region:string,country:string}|null> */
-    protected $geo_cache = array();
+    /** @var \MaxMind\Db\Reader|false|null  null = not opened yet, false = unavailable */
+    protected $reader = NULL;
 
     public function __construct()
     {
@@ -22,45 +45,69 @@ class City_geo
     }
 
     /**
-     * City hint payload for homepage banner, or NULL when hidden / unknown.
+     * Visitor city, or NULL when unknown / outside our cities / crawler.
+     *
+     * @return array{slug:string, source:string}|null  source: choice|cdn|ip
+     */
+    public function detect()
+    {
+        $choice = $this->chosen_city();
+        if ($choice !== NULL) {
+            return array('slug' => $choice, 'source' => 'choice');
+        }
+        if ($this->is_bot()) {
+            return NULL;
+        }
+
+        $override = strtolower(trim((string) $this->CI->input->get('city_hint')));
+        if ($override !== '' && isset($this->centres[$override])) {
+            return array('slug' => $override, 'source' => 'override');
+        }
+
+        $geo = $this->resolve_geo();
+        if ($geo === NULL) {
+            return NULL;
+        }
+        $slug = $this->match_city_slug($geo['city'], $geo['region'], $geo['country'], $geo['lat'], $geo['lon']);
+        if ($slug === NULL) {
+            return NULL;
+        }
+        return array('slug' => $slug, 'source' => $geo['source']);
+    }
+
+    /**
+     * Kept for older callers: homepage banner payload (hidden when dismissed).
      *
      * @return array{slug:string,name:string,hub_path:string}|null
      */
     public function homepage_hint()
     {
-        if ($this->is_bot()) {
-            return NULL;
-        }
         if ($this->is_dismissed()) {
             return NULL;
         }
-
-        $slug = $this->detect_city_slug();
-        if ($slug === NULL) {
+        $hit = $this->detect();
+        if ($hit === NULL) {
             return NULL;
         }
-
-        $city = marketing_city_by_slug($slug);
+        $city = marketing_city_by_slug($hit['slug']);
         if ($city === NULL || empty($city['hub_path'])) {
             return NULL;
         }
+        return array('slug' => $hit['slug'], 'name' => $city['name'], 'hub_path' => $city['hub_path']);
+    }
 
-        return array(
-            'slug'     => $slug,
-            'name'     => $city['name'],
-            'hub_path' => $city['hub_path'],
-        );
+    /** @return string|null */
+    public function chosen_city()
+    {
+        $raw = isset($_COOKIE[self::COOKIE_CITY]) ? (string) $_COOKIE[self::COOKIE_CITY] : '';
+        $raw = strtolower(trim($raw));
+        return isset($this->centres[$raw]) ? $raw : NULL;
     }
 
     /** @return bool */
     public function is_dismissed()
     {
-        if (isset($_COOKIE[self::COOKIE_DISMISSED])) {
-            return (string) $_COOKIE[self::COOKIE_DISMISSED] === '1';
-        }
-
-        $cookie = $this->CI->input->cookie(self::COOKIE_DISMISSED);
-        return $cookie === '1' || $cookie === 1;
+        return isset($_COOKIE[self::COOKIE_DISMISSED]) && (string) $_COOKIE[self::COOKIE_DISMISSED] === '1';
     }
 
     /** @return bool */
@@ -70,39 +117,22 @@ class City_geo
         if ($ua === '') {
             return FALSE;
         }
-
         $bots = array(
-            'googlebot', 'bingbot', 'slurp', 'duckduckbot', 'baiduspider',
-            'yandexbot', 'facebot', 'ia_archiver', 'petalbot', 'semrushbot',
-            'ahrefsbot', 'dotbot', 'rogerbot', 'screaming frog',
+            'googlebot', 'google-inspectiontool', 'adsbot-google', 'mediapartners-google',
+            'bingbot', 'slurp', 'duckduckbot', 'baiduspider', 'yandexbot', 'facebot',
+            'facebookexternalhit', 'ia_archiver', 'petalbot', 'semrushbot', 'ahrefsbot',
+            'dotbot', 'rogerbot', 'screaming frog', 'gptbot', 'claudebot', 'bot/', 'spider', 'crawler',
         );
         foreach ($bots as $bot) {
             if (strpos($ua, $bot) !== FALSE) {
                 return TRUE;
             }
         }
-
         return FALSE;
     }
 
-    /** @return string|null */
-    protected function detect_city_slug()
-    {
-        $override = strtolower(trim((string) $this->CI->input->get('city_hint')));
-        if ($override !== '' && marketing_city_by_slug($override) !== NULL) {
-            return $override;
-        }
-
-        $geo = $this->resolve_geo();
-        if ($geo === NULL) {
-            return NULL;
-        }
-
-        return $this->match_city_slug($geo['city'], $geo['region'], $geo['country']);
-    }
-
     /**
-     * @return array{city:string,region:string,country:string}|null
+     * @return array{city:string,region:string,country:string,lat:float|null,lon:float|null,source:string}|null
      */
     protected function resolve_geo()
     {
@@ -111,123 +141,159 @@ class City_geo
         if ($cf_region === '') {
             $cf_region = $this->server_header('HTTP_CF_IPREGION');
         }
-        $cf_country = $this->server_header('HTTP_CF_IPCOUNTRY');
-
         if ($cf_city !== '' || $cf_region !== '') {
+            $lat = $this->server_header('HTTP_CF_IPLATITUDE');
+            $lon = $this->server_header('HTTP_CF_IPLONGITUDE');
+            $country = $this->server_header('HTTP_CF_IPCOUNTRY');
             return array(
                 'city'    => $cf_city,
                 'region'  => $cf_region,
-                'country' => $cf_country !== '' ? $cf_country : 'IN',
+                'country' => $country !== '' ? $country : 'IN',
+                'lat'     => $lat !== '' ? (float) $lat : NULL,
+                'lon'     => $lon !== '' ? (float) $lon : NULL,
+                'source'  => 'cdn',
             );
         }
 
-        $ip = $this->CI->input->ip_address();
+        $ip = (string) $this->CI->input->ip_address();
         if ($this->is_private_ip($ip)) {
             return NULL;
         }
+        return $this->lookup_db($ip);
+    }
 
-        return $this->lookup_ip_api($ip);
+    /** @return string */
+    public static function database_path()
+    {
+        $env = getenv('YMO_GEOIP_DB');
+        if ($env !== FALSE && trim((string) $env) !== '') {
+            return trim((string) $env);
+        }
+        return rtrim(FCPATH, '/\\').'/../storage/geo/dbip-city-lite.mmdb';
     }
 
     /**
      * @param string $ip
-     * @return array{city:string,region:string,country:string}|null
+     * @return array{city:string,region:string,country:string,lat:float|null,lon:float|null,source:string}|null
      */
-    protected function lookup_ip_api($ip)
+    public function lookup_db($ip)
     {
-        if (isset($this->geo_cache[$ip])) {
-            return $this->geo_cache[$ip];
-        }
-
-        $url = 'http://ip-api.com/json/'.rawurlencode($ip).'?fields=status,city,regionName,countryCode';
-        $ctx = stream_context_create(array(
-            'http' => array(
-                'timeout' => 2,
-                'header'  => "User-Agent: YMO-Marketing/1.0\r\n",
-            ),
-        ));
-
-        $raw = @file_get_contents($url, FALSE, $ctx);
-        if ($raw === FALSE) {
-            $this->geo_cache[$ip] = NULL;
+        $reader = $this->reader();
+        if (!$reader) {
             return NULL;
         }
-
-        $data = json_decode($raw, TRUE);
-        if (!is_array($data) || empty($data['status']) || $data['status'] !== 'success') {
-            $this->geo_cache[$ip] = NULL;
+        try {
+            $rec = $reader->get($ip);
+        } catch (\Throwable $e) {
             return NULL;
         }
-
-        $this->geo_cache[$ip] = array(
-            'city'    => isset($data['city']) ? (string) $data['city'] : '',
-            'region'  => isset($data['regionName']) ? (string) $data['regionName'] : '',
-            'country' => isset($data['countryCode']) ? (string) $data['countryCode'] : '',
+        if (!is_array($rec)) {
+            return NULL;
+        }
+        $name = function ($node) {
+            if (!is_array($node) || empty($node['names']) || !is_array($node['names'])) {
+                return '';
+            }
+            return isset($node['names']['en']) ? (string) $node['names']['en'] : (string) reset($node['names']);
+        };
+        return array(
+            'city'    => $name(isset($rec['city']) ? $rec['city'] : NULL),
+            'region'  => $name(isset($rec['subdivisions'][0]) ? $rec['subdivisions'][0] : NULL),
+            'country' => isset($rec['country']['iso_code']) ? (string) $rec['country']['iso_code'] : '',
+            'lat'     => isset($rec['location']['latitude']) ? (float) $rec['location']['latitude'] : NULL,
+            'lon'     => isset($rec['location']['longitude']) ? (float) $rec['location']['longitude'] : NULL,
+            'source'  => 'ip',
         );
+    }
 
-        return $this->geo_cache[$ip];
+    /** @return \MaxMind\Db\Reader|false */
+    protected function reader()
+    {
+        if ($this->reader !== NULL) {
+            return $this->reader;
+        }
+        $this->reader = FALSE;
+        $path = self::database_path();
+        if (!is_file($path) || !is_readable($path)) {
+            return FALSE;
+        }
+        $base = APPPATH.'third_party/MaxMind/Db/';
+        foreach (array('Reader/InvalidDatabaseException.php', 'Reader/Util.php', 'Reader/Decoder.php', 'Reader/Metadata.php', 'Reader.php') as $file) {
+            if (!is_file($base.$file)) {
+                return FALSE;
+            }
+            require_once $base.$file;
+        }
+        try {
+            $this->reader = new \MaxMind\Db\Reader($path);
+        } catch (\Throwable $e) {
+            log_message('error', 'City_geo: cannot open '.$path.': '.$e->getMessage());
+            $this->reader = FALSE;
+        }
+        return $this->reader;
     }
 
     /**
-     * @param string $city
-     * @param string $region
-     * @param string $country
-     * @return string|null
+     * @return string|null pune|indore|nashik
      */
-    protected function match_city_slug($city, $region, $country)
+    protected function match_city_slug($city, $region, $country, $lat, $lon)
     {
         if ($country !== '' && strtoupper($country) !== 'IN') {
             return NULL;
         }
 
-        $city_l = strtolower(trim($city));
-        $region_l = strtolower(trim($region));
-        $cfg = marketing_cities_config();
-
-        foreach (array('pune', 'indore', 'nashik') as $slug) {
-            if (!isset($cfg[$slug]['geo_match']) || !is_array($cfg[$slug]['geo_match'])) {
-                continue;
-            }
-            $match = $cfg[$slug]['geo_match'];
-
-            if (!empty($match['cities']) && is_array($match['cities'])) {
-                foreach ($match['cities'] as $needle) {
+        $city_l = strtolower(trim((string) $city));
+        if ($city_l !== '') {
+            $cfg = marketing_cities_config();
+            foreach (array_keys($this->centres) as $slug) {
+                $needles = isset($cfg[$slug]['geo_match']['cities']) && is_array($cfg[$slug]['geo_match']['cities'])
+                    ? $cfg[$slug]['geo_match']['cities'] : array($slug);
+                foreach ($needles as $needle) {
                     $needle_l = strtolower(trim((string) $needle));
-                    if ($needle_l === '' || $city_l === '') {
-                        continue;
-                    }
-                    if ($city_l === $needle_l || strpos($city_l, $needle_l) !== FALSE) {
+                    if ($needle_l !== '' && ($city_l === $needle_l || strpos($city_l, $needle_l) !== FALSE)) {
                         return $slug;
                     }
                 }
             }
         }
 
-        if ($region_l !== '' && strpos($region_l, 'madhya pradesh') !== FALSE && $city_l === 'indore') {
-            return 'indore';
+        // Suburbs and villages: nearest city centre within its catchment radius.
+        if ($lat !== NULL && $lon !== NULL) {
+            $best = NULL;
+            $best_km = INF;
+            foreach ($this->centres as $slug => $c) {
+                $km = $this->distance_km((float) $lat, (float) $lon, $c[0], $c[1]);
+                if ($km <= $c[2] && $km < $best_km) {
+                    $best = $slug;
+                    $best_km = $km;
+                }
+            }
+            return $best;
         }
 
         return NULL;
     }
 
+    /** @return float */
+    protected function distance_km($lat1, $lon1, $lat2, $lon2)
+    {
+        $r = 6371.0;
+        $d_lat = deg2rad($lat2 - $lat1);
+        $d_lon = deg2rad($lon2 - $lon1);
+        $a = sin($d_lat / 2) ** 2 + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * sin($d_lon / 2) ** 2;
+        return 2 * $r * asin(min(1.0, sqrt($a)));
+    }
+
     /** @param string $ip @return bool */
     protected function is_private_ip($ip)
     {
-        if ($ip === '' || $ip === '0.0.0.0') {
+        if ($ip === '' || $ip === '0.0.0.0' || $ip === '::1' || $ip === '127.0.0.1') {
             return TRUE;
         }
-        if ($ip === '::1' || $ip === '127.0.0.1') {
+        if (!filter_var($ip, FILTER_VALIDATE_IP)) {
             return TRUE;
         }
-        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-            return !filter_var(
-                $ip,
-                FILTER_VALIDATE_IP,
-                FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
-            );
-        }
-
-        return FALSE;
+        return !filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
     }
 
     /** @param string $key @return string */

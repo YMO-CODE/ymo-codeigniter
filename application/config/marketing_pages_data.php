@@ -45,7 +45,7 @@ $pages = array(
             .'<h2>Sharing with third parties</h2>'
             .'<p>We do not sell your personal information. We share data only with service providers who help us operate the platform, such as SMS gateways, email delivery, and hosting partners, under contracts that require them to protect your data. We may disclose information if required by law or to protect our rights, customers, or staff.</p>'
             .'<h2>Cookies</h2>'
-            .'<p>We use essential cookies for sessions and form security. Optional cookies may remember dismissed UI preferences (for example, <code>ymo_city_hint_dismissed</code>). You can clear cookies in your browser settings; some features may not work correctly without essential cookies.</p>'
+            .'<p>We use essential cookies for sessions and form security. Optional cookies may remember dismissed UI preferences (for example, <code>ymo_city_hint_dismissed</code>) and the city you pick in the header (<code>ymo_city</code>, kept for one year). To suggest your nearest city we look up your approximate city from your IP address in a local copy of the DB-IP database (<a href="https://db-ip.com" rel="noopener">IP geolocation by DB-IP</a>); the IP address is not stored or shared for this. You can clear cookies in your browser settings; some features may not work correctly without essential cookies.</p>'
             .'<h2>Data retention</h2>'
             .'<p>We retain booking and account records for as long as needed to provide services, resolve disputes, and meet legal or accounting requirements, then delete or anonymise them where appropriate.</p>'
             .'<h2>Security</h2>'
