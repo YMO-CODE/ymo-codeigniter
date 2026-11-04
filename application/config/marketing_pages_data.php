@@ -175,6 +175,43 @@ $pages = array(
         ),
         'view'             => 'marketing/page',
     ),
+    'car-servicing-in-warje-pune' => array(
+        // Second Pune workshop (GBP "YourMechanicOnline-Warje", Shelke Nagar, 411058).
+        'title'            => 'Car Service & Car Garage in Warje, Pune | YMO Workshop',
+        'meta_title'       => 'Car Service & Car Garage in Warje, Pune | YMO Workshop',
+        'meta_description' => 'YMO car garage in Shelke Nagar, Warje, Pune 411058. Car service, AC, denting & repairs for Warje, Karve Nagar & Sinhagad Road. From ₹2,499.',
+        'h1'               => 'Car Service & Car Garage in Warje, Pune',
+        'intro'            => 'Our Warje workshop is in Shelke Nagar, Warje, Pune 411058: a full multi-brand car garage for Warje, Karve Nagar, Kothrud, Sinhagad Road, Narhe, Dhayari and Nanded City. Drive in or book a free pick-up, approve an upfront estimate (complete service from ₹2,499), and get WhatsApp photo and video updates at every stage.',
+        'body'             => '<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">Our workshop in Warje</h2>'
+            .'<p class="md-body-md mb-3">Your Mechanic Online runs a multi-brand car garage in Shelke Nagar, Warje, Pune 411058 (Plus Code FQ9P+4G). It is our second Pune workshop, after Hinjewadi Phase 1, so cars from south-west Pune no longer have to cross the city for a service.</p>'
+            .'<p class="md-body-md mb-3">Drive in, or book a free pick-up from your home or office. We service or repair the car at the workshop, send you WhatsApp photos and videos as the work happens, and you approve the estimate before any job starts. For most bookings you pay after delivery.</p>'
+            .'<p class="md-body-md mb-0"><a href="https://share.google/lZb0ckzoHzb9NrFMV" target="_blank" rel="noopener">Get directions to our Warje workshop</a> · Call <a href="tel:+917558783868">+91 75587 83868</a></p></div>'
+            .'<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">Areas we cover from Warje</h2>'
+            .'<h3 id="warje-karve-nagar" class="md-title-md mt-4 mb-2">Warje, Karve Nagar and Shivane</h3>'
+            .'<p class="md-body-md mb-3">Warje Malwadi, Karve Nagar and Shivane are closest to the workshop. Drive in for quick jobs such as an oil change or AC check, or book a pick-up from your society.</p>'
+            .'<h3 id="sinhagad-road" class="md-title-md mt-4 mb-2">Sinhagad Road, Narhe, Dhayari and Nanded City</h3>'
+            .'<p class="md-body-md mb-3">For Sinhagad Road, Vadgaon, Narhe, Dhayari and Nanded City we collect the car from your gate and drop it back after the job, with WhatsApp updates while you get on with your day.</p>'
+            .'<h3 id="kothrud" class="md-title-md mt-4 mb-2">Kothrud, Erandwane and NDA Road</h3>'
+            .'<p class="md-body-md mb-3">Kothrud, Erandwane and the NDA Road side are also served from Warje, so these cars no longer travel to Hinjewadi for servicing, denting or AC work.</p>'
+            .'<p class="md-body-md mb-0 mt-4">Popular in Warje: <a href="/services/complete-car-servicing">complete car servicing</a>, <a href="/services/car-air-conditioner-servicing-in-pune">car AC repair</a>, <a href="/services/car-denting-and-painting-3000">denting and painting</a> and <a href="/services/car-brake-repair">brake repair</a>. Nearby areas: <a href="/car-servicing-in-kothrud-pune">Kothrud</a> and <a href="/best-car-servicing-in-bavdhan-pune-expert-care">Bavdhan</a>. West Pune and the IT parks are served from our <a href="/best-car-services-hinjewadi-pune">Hinjewadi workshop</a>.</p></div>',
+        'page_type'            => 'locality',
+        'city_slug'            => 'pune',
+        'locality_slug'        => 'warje',
+        'locality_label'       => 'Warje',
+        'title_locked'         => TRUE,
+        'updated_at'           => '2026-11-02',
+        'quick_answer'         => 'YMO has a car service workshop in Shelke Nagar, Warje, Pune 411058, covering Warje, Karve Nagar, Kothrud, Sinhagad Road, Narhe, Dhayari and Nanded City. Complete servicing from ₹2,499, free pick-up and drop, WhatsApp photo updates, AC repair, denting and brakes.',
+        'og_image'             => '/assets/img/marketing/2022/03/complete-car-servicing-in-pune-1-scaled.jpg',
+        'faq'                  => array(
+            array('q' => 'Where is your car garage in Warje?', 'a' => 'Our Warje workshop is in Shelke Nagar, Warje, Pune 411058 (Plus Code FQ9P+4G). You can drive in or book a free pick-up.'),
+            array('q' => 'Do you pick up cars from Sinhagad Road, Narhe and Dhayari?', 'a' => 'Yes. We pick up and drop cars across Sinhagad Road, Vadgaon, Narhe, Dhayari and Nanded City, as well as Warje, Karve Nagar, Shivane and Kothrud. Share your society or office name and our driver calls before arriving.'),
+            array('q' => 'How much does car servicing cost in Warje?', 'a' => 'Complete car servicing starts from ₹2,499. AC service starts from ₹999 and denting from ₹4,500 per panel. You get an upfront estimate before any work begins.'),
+            array('q' => 'Is the Warje workshop the same company as YMO Hinjewadi?', 'a' => 'Yes. Both are Your Mechanic Online workshops, with the same pricing, warranty, phone number and WhatsApp updates. Warje serves south-west Pune; Hinjewadi serves the IT parks and west Pune.'),
+            array('q' => 'Will I get updates while my car is being serviced?', 'a' => 'Yes. We send WhatsApp photos and videos at every stage, so you can see the work and approve any extra jobs before we do them.'),
+            array('q' => 'Do you service all car brands in Warje?', 'a' => 'Yes. Maruti, Hyundai, Tata, Honda, Toyota, Kia, Mahindra, Skoda, Volkswagen and luxury brands such as BMW, Mercedes-Benz and Audi.'),
+        ),
+        'view'             => 'marketing/page',
+    ),
     'premium-luxury-car-service-pune' => array(
         'title'            => 'Luxury Car Services in Pune | Premium Maintenance & Repairs',
         'meta_description' => 'Get expert maintenance for Mercedes, BMW, Audi & more. Original parts, affordable rates, trained mechanics. Book now for premium luxury car services in Pune!',

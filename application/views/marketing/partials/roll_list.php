@@ -21,7 +21,7 @@ $roll_loop = !empty($roll_loop);
                 ?>
                 <li class="ymo-v2-roll-list__item">
                     <a href="<?= html_escape($item['href']); ?>" aria-label="<?= html_escape($aria); ?>">
-                        <span class="ymo-v2-roll-list__text"><?= html_escape((string) $item['label']); ?>.</span>
+                        <span class="ymo-v2-roll-list__text"><?= html_escape((string) $item['label']); ?></span>
                     </a>
                 </li>
             <?php endforeach; ?>
@@ -35,7 +35,7 @@ $roll_loop = !empty($roll_loop);
                     ?>
                     <li class="ymo-v2-roll-list__item" aria-hidden="true">
                         <a href="<?= html_escape($item['href']); ?>" tabindex="-1">
-                            <span class="ymo-v2-roll-list__text"><?= html_escape((string) $item['label']); ?>.</span>
+                            <span class="ymo-v2-roll-list__text"><?= html_escape((string) $item['label']); ?></span>
                         </a>
                     </li>
                 <?php endforeach; ?>

@@ -64,6 +64,28 @@ return array(
 
             'geo'         => array('latitude' => '18.608087', 'longitude' => '73.722578'), // GBP plus code JP5F+62P (Phase 1, RGIP, Hinjawadi)
 
+            // Additional Pune workshops (each gets its own AutoRepair node in schema).
+
+            'branches'    => array(
+
+                'warje' => array(
+
+                    'name'        => 'Warje',
+
+                    'path'        => 'car-servicing-in-warje-pune',
+
+                    'street'      => 'Shelke Nagar, Warje',
+
+                    'postal_code' => '411058',
+
+                    'gbp_url'     => 'https://share.google/lZb0ckzoHzb9NrFMV',
+
+                    'geo'         => array('latitude' => '18.4678025', 'longitude' => '73.786272'), // GBP pin, plus code FQ9P+4G
+
+                ),
+
+            ),
+
         ),
 
         'indore' => array(

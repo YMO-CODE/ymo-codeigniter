@@ -78,9 +78,9 @@ return array(
             'local_jobs'    => 'Executive sedan servicing, pre-trip inspections, and insurance-claim dent assessments.',
         ),
         'warje' => array(
-            'landmarks'     => 'Warje Malwadi, Karvenagar bridge, and Sinhagad Road approach',
-            'drive_context' => 'Western Pune pick-ups via Karve Nagar — typically 25–40 minutes.',
-            'local_jobs'    => 'Hill-start clutch wear, monsoon brake checks, and engine diagnostics on high-mileage city taxis.',
+            'landmarks'     => 'Warje Malwadi, Karvenagar bridge, Shelke Nagar, and Sinhagad Road',
+            'drive_context' => 'Our Warje workshop is in Shelke Nagar, so pick-ups from Warje, Karve Nagar and Sinhagad Road are short local runs.',
+            'local_jobs'    => 'Monsoon brake checks, AC servicing before summer, and clutch wear from Sinhagad Road and Chandni Chowk traffic.',
         ),
     ),
     'indore' => array(

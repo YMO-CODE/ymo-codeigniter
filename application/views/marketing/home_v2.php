@@ -39,7 +39,7 @@ echo ymo_marketing_render_hero('', $hero_page, isset($booking_url) ? $booking_ur
         </div>
         <?php
         $home_orbit_count = count($services);
-        $home_orbit_ring  = $home_orbit_count >= 4;
+        $home_orbit_ring  = FALSE; // tilted orbit layout retired (hard to read)
         ?>
         <div class="ymo-v2-card-orbit-viewport<?= $home_orbit_ring ? ' ymo-v2-card-orbit-viewport--active' : ''; ?>">
             <div class="row g-4 ymo-v2-card-grid<?= $home_orbit_ring ? ' ymo-v2-card-grid--orbit' : ''; ?>"<?= $home_orbit_ring ? ' style="--orbit-count: '.(int) $home_orbit_count.';"' : ''; ?>>
@@ -78,7 +78,7 @@ foreach ($city_strip as $city) {
                 <div class="ymo-v2-roll-list-panel-wrap">
                     <div class="ymo-v2-roll-list-panel">
                         <?php $this->load->view('marketing/partials/roll_list', array(
-                            'roll_lead'  => 'we serve',
+                            'roll_lead'  => 'We serve',
                             'roll_items' => $city_roll_items,
                             'roll_loop'  => FALSE,
                         )); ?>
@@ -118,7 +118,7 @@ foreach ($brand_cards as $brand) {
                 <div class="ymo-v2-roll-list-panel-wrap">
                     <div class="ymo-v2-roll-list-panel">
                         <?php $this->load->view('marketing/partials/roll_list', array(
-                            'roll_lead'  => 'including',
+                            'roll_lead'  => 'Including',
                             'roll_items' => $brand_roll_items,
                             'roll_loop'  => TRUE,
                         )); ?>

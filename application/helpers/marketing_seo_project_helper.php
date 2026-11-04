@@ -1292,7 +1292,7 @@ if (!function_exists('marketing_apply_keyword_targets_once')) {
         $names = array('pune' => 'Pune', 'indore' => 'Indore', 'nashik' => 'Nashik');
         $city_name = $names[$city_slug] ?? '';
         $workshop = array(
-            'pune'   => 'Our workshop is in Rajiv Gandhi Infotech Park, Phase 1, Hinjewadi (Hinjawadi)',
+            'pune'   => 'Our workshops are in Rajiv Gandhi Infotech Park, Phase 1, Hinjewadi (Hinjawadi) and Shelke Nagar, Warje',
             'indore' => 'Your car is serviced at our Indore workshop',
             'nashik' => 'Your car is serviced at our Nashik workshop',
         );
@@ -1319,7 +1319,7 @@ if (!function_exists('marketing_apply_keyword_targets_once')) {
                 ? 'Car garage, car service & repair in '.$n
                 : 'Car service, repair & car garage in '.$n;
             $page['meta_description'] = $c === 'pune'
-                ? 'Car service, car repair and a full multi-brand car garage in Pune. Workshop in Hinjewadi Phase 1, free pick-up, WhatsApp updates, from ₹2,499.'
+                ? 'Car service, car repair and multi-brand car garages in Pune. Workshops in Hinjewadi Phase 1 and Warje, free pick-up, WhatsApp updates, from ₹2,499.'
                 : ($garage_first ? 'Car garage and car service in '.$n : 'Car service and car garage in '.$n).'. Multi-brand car repair, AC, denting and more with free pick-up, WhatsApp updates and prices from ₹2,499.';
             $page['intro'] = 'A multi-brand car garage and car service center for '.$n.': periodic service, car repair, AC, denting and electrical work, with free pick-up and drop.';
             $page['quick_answer'] = 'Your Mechanic Online is a multi-brand car garage in '.$n.'. '.$workshop[$c].'. Free pick-up and drop, WhatsApp photo updates at every stage, and complete car service from ₹2,499.';
@@ -1359,7 +1359,7 @@ if (!function_exists('marketing_apply_keyword_targets_once')) {
                 array('q' => 'How much does car service cost in '.$n.'?', 'a' => 'Complete car service starts from ₹2,499. AC service starts from ₹999, brake work from ₹499 and denting from ₹4,500 per panel. You approve the estimate first, and on most bookings you pay after delivery.'),
             );
             if ($c === 'pune') {
-                array_unshift($faq, array('q' => 'Where is your car garage in Pune?', 'a' => 'Our workshop is in Rajiv Gandhi Infotech Park, Phase 1, Hinjewadi (Hinjawadi), Pune 411057. We pick up cars from across Pune and Pimpri-Chinchwad.'));
+                array_unshift($faq, array('q' => 'Where is your car garage in Pune?', 'a' => 'We have two workshops: Rajiv Gandhi Infotech Park, Phase 1, Hinjewadi (Hinjawadi), Pune 411057, and Shelke Nagar, Warje, Pune 411058. We pick up cars from across Pune and Pimpri-Chinchwad.'));
             }
             $page = marketing_kw_add_faq($page, $faq);
             $page['updated_at'] = '2026-11-01';
@@ -1386,7 +1386,7 @@ if (!function_exists('marketing_apply_keyword_targets_once')) {
         $garage_areas = array(
             'wakad'           => 'Wakad cars are picked up and serviced at our workshop in Hinjewadi Phase 1, a short drive away.',
             'baner'           => 'Baner cars are picked up and serviced at our workshop, then dropped back.',
-            'kothrud'         => 'Kothrud cars are picked up and serviced at our workshop, then dropped back.',
+            'kothrud'         => 'Kothrud cars are picked up and serviced at our Warje workshop, close by, then dropped back.',
             'pimple_saudagar' => 'Pimple Saudagar cars are picked up and serviced at our workshop, then dropped back.',
             'kharadi'         => 'Kharadi cars are picked up and serviced at our workshop, then dropped back.',
             'hadapsar'        => 'Hadapsar cars are picked up and serviced at our workshop, then dropped back.',
@@ -1551,9 +1551,9 @@ if (!function_exists('marketing_apply_keyword_targets_once')) {
                 'Car Towing Service in Pune | YMO',
             ));
             $page['h1'] = 'Car Towing & Roadside Assistance in Pune';
-            $page['intro'] = 'Car towing and roadside help in Pune: breakdowns, accidents and cars that will not start, towed to our Hinjewadi workshop or a garage you choose.';
-            $page['quick_answer'] = 'YMO arranges car towing in Pune to our workshop in Hinjewadi Phase 1 or a garage you choose, and helps on the spot with jump-starts and flat tyres where it is safe. The towing charge is confirmed before help is sent.';
-            $page['meta_description'] = 'Car towing service in Pune: breakdown and accident towing to our Hinjewadi workshop or your garage, jump-starts and flat tyres. Charge confirmed upfront.';
+            $page['intro'] = 'Car towing and roadside help in Pune: breakdowns, accidents and cars that will not start, towed to our Hinjewadi or Warje workshop, or a garage you choose.';
+            $page['quick_answer'] = 'YMO arranges car towing in Pune to our workshops in Hinjewadi Phase 1 and Warje, or a garage you choose, and helps on the spot with jump-starts and flat tyres where it is safe. The towing charge is confirmed before help is sent.';
+            $page['meta_description'] = 'Car towing in Pune: breakdown and accident towing to our Hinjewadi or Warje workshop, jump-starts and flat tyres. Charge confirmed upfront.';
             $phone = function_exists('marketing_business_phone_display') ? marketing_business_phone_display() : '';
             $cfg = marketing_cities_config();
             $areas = array();
@@ -1566,12 +1566,12 @@ if (!function_exists('marketing_apply_keyword_targets_once')) {
                 .'<li class="mb-2">Call us'.($phone !== '' ? ' on <strong>'.html_escape($phone).'</strong>' : '').' or message us on WhatsApp with your location pin and what happened.</li>'
                 .'<li class="mb-2">We confirm the towing charge before anyone is sent.</li>'
                 .'<li class="mb-2">If it is safe and simple, such as a flat battery or a flat tyre, we try to get you moving on the spot.</li>'
-                .'<li class="mb-2">Otherwise the car is towed to our workshop in Hinjewadi Phase 1, or to a garage you choose.</li>'
+                .'<li class="mb-2">Otherwise the car is towed to the nearer of our workshops, Hinjewadi Phase 1 or Warje, or to a garage you choose.</li>'
                 .'<li class="mb-0">At our workshop we diagnose the fault and send you the estimate with photos on WhatsApp before any repair starts.</li>'
                 .'</ol>';
             $page['body'] = ($page['body'] ?? '')
                 .marketing_kw_section('Car towing service in Pune', array(
-                    'If your car breaks down, will not start, overheats, or cannot be driven after an accident, we arrange a tow so you are not left looking for help at the roadside. Cars are brought to our workshop in Rajiv Gandhi Infotech Park, Phase 1, Hinjewadi, where our mechanics find the fault and fix it, or to any garage you prefer.',
+                    'If your car breaks down, will not start, overheats, or cannot be driven after an accident, we arrange a tow so you are not left looking for help at the roadside. Cars are brought to the nearer of our workshops, in Rajiv Gandhi Infotech Park, Phase 1, Hinjewadi or Shelke Nagar, Warje, where our mechanics find the fault and fix it, or to any garage you prefer.',
                     'Common reasons people call us: a dead battery, a clutch or gearbox failure, an engine warning light with loss of power, overheating in traffic, a burst tyre without a usable spare, or accident damage. For simple problems, such as a flat battery or a tyre change, we help on the spot where it is safe.',
                 ))
                 .marketing_kw_section('How towing works', array(), $steps)
@@ -1580,7 +1580,7 @@ if (!function_exists('marketing_apply_keyword_targets_once')) {
                     'After the tow, related repairs are handled at the same workshop: '.$link($sp['battery'], 'battery replacement').', '.$link($sp['electrical'], 'electrical repair').', '.$link($sp['denting'], 'denting and painting').' and help with your '.$link($sp['insurance'], 'insurance claim').' after an accident. See all '.$hub.'.',
                 ));
             $page = marketing_kw_add_faq($page, array(
-                array('q' => 'Where will my car be towed?', 'a' => 'To our workshop in Rajiv Gandhi Infotech Park, Phase 1, Hinjewadi, Pune, or to any garage you choose.'),
+                array('q' => 'Where will my car be towed?', 'a' => 'To the nearer of our two Pune workshops (Rajiv Gandhi Infotech Park, Phase 1, Hinjewadi, or Shelke Nagar, Warje), or to any garage you choose.'),
                 array('q' => 'How much does car towing cost in Pune?', 'a' => 'It depends mainly on the distance and your car. We confirm the towing charge before help is sent, so there are no surprises.'),
                 array('q' => 'Which areas in Pune do you cover for towing?', 'a' => 'The same areas as our car service, including Hinjewadi, Wakad, Baner, Aundh, Bavdhan, Kothrud, Warje, Pimple Saudagar, Viman Nagar, Kharadi, Koregaon Park, Kalyani Nagar, Hadapsar, Magarpatta and Wagholi.'),
                 array('q' => 'Can you jump-start my car instead of towing it?', 'a' => 'Often, yes. If the problem is a flat battery or a flat tyre and it is safe to work where the car is, we try to get you moving on the spot first.'),

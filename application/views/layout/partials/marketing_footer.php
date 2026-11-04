@@ -42,7 +42,7 @@ $phone_tel = preg_replace('/[^+\d]/', '', (string) $phone);
                         <span class="mi" aria-hidden="true">mail</span>
                         <span class="ymo-v2-footer__reach-text">
                             <span class="ymo-v2-footer__reach-label">Email</span>
-                            <span class="ymo-v2-footer__reach-value"><?= html_escape($mail); ?></span>
+                            <span class="ymo-v2-footer__reach-value"><?= str_replace('@', '<wbr>@', html_escape($mail)); ?></span>
                         </span>
                     </a>
                 </div>

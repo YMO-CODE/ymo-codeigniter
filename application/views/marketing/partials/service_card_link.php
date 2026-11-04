@@ -12,7 +12,7 @@ $face_args = array('svc' => $svc, 'show_arrow' => TRUE);
             <?php $this->load->view('marketing/partials/service_card_face_content', $face_args); ?>
         </span>
         <span class="ymo-v2-card__face ymo-v2-card__face--back" aria-hidden="true">
-            <?php $this->load->view('marketing/partials/service_card_face_content', $face_args); ?>
+            <?php $this->load->view('marketing/partials/service_card_face_content', $face_args + array('as_heading' => FALSE)); ?>
         </span>
     </span>
 </a>

@@ -3,7 +3,7 @@
 
 <?php
 $orbit_count = count($services);
-$orbit_ring  = $orbit_count >= 4;
+$orbit_ring  = FALSE; // tilted orbit layout retired (hard to read)
 ?>
 <div class="ymo-v2-card-orbit-viewport<?= $orbit_ring ? ' ymo-v2-card-orbit-viewport--active' : ''; ?>">
     <div class="row g-4 ymo-v2-card-grid ymo-service-catalog<?= $orbit_ring ? ' ymo-v2-card-grid--orbit' : ''; ?>"<?= $orbit_ring ? ' style="--orbit-count: '.(int) $orbit_count.';"' : ''; ?>>

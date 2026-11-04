@@ -11,8 +11,8 @@
     --ymo-v2-surface: #ffffff;
     --ymo-v2-surface-dim: #f6f6f7;
     --ymo-v2-surface-muted: #ececee;
-    --ymo-v2-ink-muted: #52525b;
-    --ymo-v2-ink-subtle: #71717a;
+    --ymo-v2-ink-muted: #3f3f46;
+    --ymo-v2-ink-subtle: #5f5f68;
     --ymo-v2-radius-xl: 1.25rem;
     --ymo-v2-shadow-soft: 0 24px 48px -12px rgba(17, 20, 24, 0.12);
     --ymo-v2-shadow-media: 0 32px 64px -16px rgba(17, 20, 24, 0.18);
@@ -1854,7 +1854,7 @@
     letter-spacing: -0.03em;
     line-height: 1.15;
     color: var(--ymo-v2-roll-lead);
-    text-transform: lowercase;
+    text-transform: none;
     white-space: nowrap;
 }
 
@@ -1911,7 +1911,7 @@
     font-size: clamp(1.3rem, 2.75vw, 1.75rem);
     font-weight: 600;
     letter-spacing: -0.035em;
-    text-transform: lowercase;
+    text-transform: none;
     background: linear-gradient(
         to bottom,
         var(--ymo-v2-roll-dim) 0%,
@@ -2371,6 +2371,12 @@
     font-size: clamp(1.0625rem, 1.8vw, 1.25rem);
     line-height: 1.55;
     max-width: 34rem;
+}
+
+/* Dark hero: beat `.ymo-theme-v2.ymo-marketing .md-body-lg` (muted grey for light backgrounds). */
+.ymo-theme-v2.ymo-marketing .ymo-v2-hero-radical__copy .ymo-v2-hero-lead,
+.ymo-theme-v2.ymo-marketing .ymo-v2-hero-radical__copy .ymo-hero__lead {
+    color: rgba(255, 255, 255, 0.88);
 }
 
 .ymo-theme-v2 .ymo-v2-hero-pills {
@@ -2864,4 +2870,79 @@
         max-width: none;
         transform: none;
     }
+}
+
+/* =============================================================================
+   Typography system — Nov 2026
+   One scale for the whole marketing site; overrides earlier per-section sizes.
+   ============================================================================= */
+
+/* Poppins 500 was used (~50 places) but never loaded, so browsers faked it. */
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('../fonts/poppins-latin-500.woff2') format('woff2');
+}
+
+/* Section headings (h2): 24px mobile -> 32px desktop, everywhere. */
+.ymo-theme-v2 .ymo-v2-display-sm,
+.ymo-theme-v2.ymo-marketing .marketing-body h2.md-headline-md,
+.ymo-theme-v2.ymo-marketing .marketing-body h2.ymo-v2-subhead,
+.ymo-theme-v2.ymo-marketing .marketing-body h2.ymo-v2-display-sm,
+.ymo-theme-v2.ymo-marketing .marketing-body .ymo-content-section > h2.md-headline-md,
+.ymo-theme-v2.ymo-marketing .ymo-faq-section h2,
+.ymo-theme-v2.ymo-marketing .ymo-pricing-section h2 {
+    font-size: clamp(1.5rem, 2.4vw, 2rem) !important;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+}
+
+/* Sub-headings inside page content (h3): 18px -> 20px. */
+.ymo-theme-v2.ymo-marketing .marketing-body .ymo-content-section h3,
+.ymo-theme-v2.ymo-marketing .marketing-body .ymo-v2-prose-section h3 {
+    font-size: clamp(1.125rem, 1.6vw, 1.25rem) !important;
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: -0.012em;
+    margin-top: 1.5rem;
+}
+
+/* Card titles: 18px (was 17px). */
+.ymo-theme-v2.ymo-marketing .ymo-v2-card__title.md-title-md,
+.ymo-theme-v2.ymo-marketing .md-title-md {
+    font-size: 1.125rem;
+}
+
+/* Labels: 12px minimum (was 11px). */
+.ymo-theme-v2.ymo-marketing .md-label-lg,
+.ymo-theme-v2 .ymo-v2-footer__heading,
+.ymo-theme-v2 .ymo-v2-footer__reach-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.07em;
+}
+
+/* Comfortable line length: ~70-75 characters for running text. */
+.ymo-theme-v2.ymo-marketing .marketing-body p,
+.ymo-theme-v2.ymo-marketing .marketing-body .ymo-content-section > ul,
+.ymo-theme-v2.ymo-marketing .marketing-body .ymo-content-section > ol,
+.ymo-theme-v2.ymo-marketing .marketing-body .ymo-v2-inline-note,
+.ymo-theme-v2.ymo-marketing .ymo-v2-overview-layout__story p,
+.ymo-theme-v2.ymo-marketing .ymo-pricing-section p,
+.ymo-theme-v2.ymo-marketing .ymo-v2-cta-band__panel p {
+    max-width: 62ch !important; /* ~72 Poppins characters */
+}
+
+.ymo-theme-v2.ymo-marketing .text-center > p,
+.ymo-theme-v2.ymo-marketing .ymo-v2-cta-band__panel p {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Footer email: break only at the @ (a <wbr> is inserted there). */
+.ymo-theme-v2 .ymo-v2-footer__reach-value {
+    overflow-wrap: normal;
+    word-break: normal;
 }

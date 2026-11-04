@@ -3112,6 +3112,39 @@ if (!function_exists('marketing_schema_graph')) {
                     $node['sameAs'] = array($gbp);
                 }
                 $graph[] = $node;
+                if (!empty($city_biz['branches']) && is_array($city_biz['branches'])) {
+                    foreach ($city_biz['branches'] as $b_slug => $b) {
+                        if (empty($b['path']) || empty($b['street'])) {
+                            continue;
+                        }
+                        $b_node = array(
+                            '@type'              => array('AutoRepair', 'LocalBusiness'),
+                            '@id'                => marketing_canonical_url($b['path']).'#'.$b_slug,
+                            'name'               => $brand.' — '.(isset($b['name']) ? $b['name'] : ucfirst($b_slug)).', '.$city['name'],
+                            'url'                => marketing_canonical_url($b['path']),
+                            'telephone'          => $phone,
+                            'email'              => $email,
+                            'address'            => array(
+                                '@type'           => 'PostalAddress',
+                                'streetAddress'   => $b['street'],
+                                'postalCode'      => isset($b['postal_code']) ? $b['postal_code'] : '',
+                                'addressLocality' => $city['name'],
+                                'addressRegion'   => isset($addr['addressRegion']) ? $addr['addressRegion'] : '',
+                                'addressCountry'  => 'IN',
+                            ),
+                            'areaServed'         => array(array('@type' => 'City', 'name' => $city['name'])),
+                            'parentOrganization' => array('@id' => marketing_canonical_url('').'#organization'),
+                        );
+                        if (!empty($b['geo']['latitude']) && !empty($b['geo']['longitude'])) {
+                            $b_node['geo'] = array('@type' => 'GeoCoordinates', 'latitude' => $b['geo']['latitude'], 'longitude' => $b['geo']['longitude']);
+                        }
+                        if (!empty($b['gbp_url'])) {
+                            $b_node['hasMap'] = $b['gbp_url'];
+                            $b_node['sameAs'] = array($b['gbp_url']);
+                        }
+                        $graph[] = $b_node;
+                    }
+                }
             }
         }
 
@@ -3544,6 +3577,10 @@ if (!function_exists('marketing_body_fix_heading_order')) {
     {
         $html = (string) $html;
         if ($html === '' || !preg_match('/<h[3-6]\b/i', $html)) {
+            return $html;
+        }
+        // Bodies whose first heading is already an h2 have a correct outline; leave them alone.
+        if (preg_match('/<h([2-6])\b/i', $html, $first) && $first[1] === '2') {
             return $html;
         }
         return preg_replace_callback('/<\/?h([3-6])\b/i', function ($m) {
