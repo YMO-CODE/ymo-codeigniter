@@ -1,5 +1,6 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 <div class="d-flex justify-content-between mb-3">
+    <a href="<?= admin_url('tasks'); ?>" class="small"><span class="mi mi-sm mi-leading">arrow_back</span>My day</a>
     <?php if ($can_edit): ?>
         <a href="<?= admin_url('tasks/new'); ?>" class="btn btn-primary btn-sm">
             <span class="mi mi-sm mi-leading">add</span>Schedule follow-up
@@ -8,6 +9,7 @@
 </div>
 
 <form class="ymo-card mb-3" method="get" action="<?= admin_url('tasks'); ?>">
+    <input type="hidden" name="view" value="list">
     <div class="row g-2 align-items-end">
         <div class="col-md-2">
             <select name="status" class="form-select form-select-sm">

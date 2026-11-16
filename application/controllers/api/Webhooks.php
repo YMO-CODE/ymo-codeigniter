@@ -76,6 +76,18 @@ class Webhooks extends CI_Controller
         $data = json_decode($raw, TRUE);
         $is_meta_cloud = is_array($data) && crm_is_meta_whatsapp_cloud_payload($data);
 
+        // Meta signs Cloud API webhooks with the app secret (X-Hub-Signature-256).
+        // Only enforced when CRM_META_APP_SECRET is set.
+        $app_secret = (string) $this->config->item('crm_meta_app_secret');
+        if ($is_meta_cloud && $app_secret !== '') {
+            $hub = (string) $this->input->get_request_header('X-Hub-Signature-256', TRUE);
+            $expected = 'sha256='.hash_hmac('sha256', $raw, $app_secret);
+            if ($hub === '' || !hash_equals($expected, $hub)) {
+                $this->crm_integration_model->log('whatsapp', 'auth_failed', array('reason' => 'x-hub-signature'), 'inbound', 403);
+                return $this->_json(array('error' => 'Invalid signature'), 403);
+            }
+        }
+
         $sig = $this->input->get_request_header('X-CRM-Signature', TRUE);
         if ($this->config->item('crm_webhook_hmac_secret') && !$is_meta_cloud && !crm_verify_webhook_hmac($raw, $sig)) {
             $this->crm_integration_model->log('whatsapp', 'auth_failed', array(), 'inbound', 403);
@@ -86,9 +98,29 @@ class Webhooks extends CI_Controller
             return $this->_json(array('error' => 'Invalid JSON'), 400);
         }
 
+        $receipts = $is_meta_cloud ? $this->_whatsapp_apply_statuses($data) : 0;
+
         $messages = crm_normalize_whatsapp_payloads($data);
         if (empty($messages)) {
-            return $this->_json(array('ok' => TRUE, 'skipped' => 'no_text_messages'));
+            return $this->_json(array('ok' => TRUE, 'skipped' => 'no_text_messages', 'receipts' => $receipts));
+        }
+
+        $opted_out = 0;
+        if ($is_meta_cloud) {
+            $this->load->model('crm_wa_message_model');
+            foreach ($messages as $msg) {
+                $this->crm_wa_message_model->log(array(
+                    'wa_message_id' => $msg['message_id'] ?: NULL,
+                    'phone'         => $msg['from'],
+                    'direction'     => 'in',
+                    'kind'          => (string) ($msg['raw']['type'] ?? 'text'),
+                    'body'          => $msg['text'],
+                    'status'        => 'received',
+                ));
+                if (crm_whatsapp_is_opt_out($msg['text'])) {
+                    $opted_out += $this->_whatsapp_opt_out($msg['from']);
+                }
+            }
         }
 
         $lead_ids = array();
@@ -116,7 +148,41 @@ class Webhooks extends CI_Controller
 
         $this->crm_integration_model->log('whatsapp', 'message_received', $data, 'inbound', 200);
 
-        return $this->_json(array('ok' => TRUE, 'lead_ids' => array_values(array_unique($lead_ids))));
+        return $this->_json(array(
+            'ok'        => TRUE,
+            'lead_ids'  => array_values(array_unique($lead_ids)),
+            'receipts'  => $receipts,
+            'opted_out' => $opted_out,
+        ));
+    }
+
+    /** Delivery/read/failed receipts -> message log + campaign recipients. */
+    protected function _whatsapp_apply_statuses(array $data)
+    {
+        $statuses = crm_whatsapp_parse_statuses($data);
+        if (!$statuses) {
+            return 0;
+        }
+        $this->load->model(array('crm_wa_message_model', 'crm_campaign_model'));
+        $n = 0;
+        foreach ($statuses as $st) {
+            $n += $this->crm_wa_message_model->apply_status($st['id'], $st['status'], $st['error']);
+            $this->crm_campaign_model->apply_wa_status($st['id'], $st['status'], $st['error']);
+        }
+        return $n;
+    }
+
+    /** Customer replied STOP: flag every contact with that number. */
+    protected function _whatsapp_opt_out($from)
+    {
+        $last10 = substr(preg_replace('/\D/', '', (string) $from), -10);
+        if (strlen($last10) !== 10 || !$this->db->field_exists('whatsapp_opt_out', 'crm_contacts')) {
+            return 0;
+        }
+        $this->db->like('mobile', $last10, 'before')->update('crm_contacts', array('whatsapp_opt_out' => 1));
+        $n = (int) $this->db->affected_rows();
+        $this->crm_integration_model->log('whatsapp', 'opt_out', array('from' => $from, 'contacts' => $n), 'inbound', 200);
+        return $n;
     }
 
     protected function _meta_verify()

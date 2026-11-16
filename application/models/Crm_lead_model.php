@@ -11,79 +11,17 @@ class Crm_lead_model extends CI_Model
     }
 
     /**
-     * Compute time-based stage from next_follow_up_at (open leads only).
-     */
-    public function compute_stage_from_followup($next_follow_up_at)
-    {
-        if (!$next_follow_up_at) {
-            return 'later';
-        }
-        $due = strtotime((string) $next_follow_up_at);
-        if ($due === FALSE) {
-            return 'later';
-        }
-        $today = strtotime(date('Y-m-d'));
-        $due_day = strtotime(date('Y-m-d', $due));
-        $days = (int) round(($due_day - $today) / 86400);
-
-        if ($days <= 0) {
-            return 'hot_lead';
-        }
-        if ($days <= 7) {
-            return 'followup_next_week';
-        }
-        if ($days <= 30) {
-            return 'followup_next_month';
-        }
-        return 'later';
-    }
-
-    /**
-     * Recalculate stage for one lead when not locked and status is open.
-     *
-     * @param array|int $lead Row or id
-     * @return string|null New stage if updated, null if unchanged
+     * CRM v6: stages are set by people (log a call / book), never by dates.
+     * Kept as no-ops so older callers (cron) keep working.
      */
     public function recalculate_stage($lead)
     {
-        if (!is_array($lead)) {
-            $lead = $this->find((int) $lead);
-        }
-        if (!$lead || $lead['status'] !== 'open' || !empty($lead['stage_locked'])) {
-            return NULL;
-        }
-        if ($lead['stage'] === 'warm_lead') {
-            return NULL;
-        }
-        $new = $this->compute_stage_from_followup($lead['next_follow_up_at'] ?? NULL);
-        if ($new === $lead['stage']) {
-            return NULL;
-        }
-        $this->update((int) $lead['id'], array('stage' => $new));
-        return $new;
+        return NULL;
     }
 
-    /** Batch recalc for all open, unlocked leads (cron). */
     public function recalculate_open_stages($limit = 5000)
     {
-        $rows = $this->db
-            ->select('id, stage, next_follow_up_at, stage_locked, status')
-            ->from(self::TABLE)
-            ->where('deleted_at IS NULL', NULL, FALSE)
-            ->where('status', 'open')
-            ->where('stage_locked', 0)
-            ->where('stage !=', 'warm_lead')
-            ->limit((int) $limit)
-            ->get()
-            ->result_array();
-
-        $updated = 0;
-        foreach ($rows as $lead) {
-            if ($this->recalculate_stage($lead) !== NULL) {
-                $updated++;
-            }
-        }
-        return $updated;
+        return 0;
     }
 
     public function find($id)
@@ -118,6 +56,7 @@ class Crm_lead_model extends CI_Model
             ->join('crm_lead_sources s', 's.id = l.source_id', 'left')
             ->join('admin_users a', 'a.id = l.assigned_to', 'left')
             ->where('l.deleted_at IS NULL', NULL, FALSE)
+            ->order_by("FIELD(l.stage, 'new', 'contacted', 'quote_sent', 'booked', 'lost')", '', FALSE)
             ->order_by('l.priority', 'DESC')
             ->order_by('l.next_follow_up_at IS NULL', 'ASC', FALSE)
             ->order_by('l.next_follow_up_at', 'ASC')
@@ -140,6 +79,9 @@ class Crm_lead_model extends CI_Model
         foreach ($stages as $stage) {
             $f = $filters;
             $f['stage'] = $stage;
+            if (in_array($stage, array('booked', 'lost'), TRUE) && empty($f['closed_since'])) {
+                $f['closed_since'] = date('Y-m-d H:i:s', strtotime('-30 days'));
+            }
             $this->_apply_filters($f);
             $out[$stage] = $this->db
                 ->select('l.*, s.label AS source_label, a.name AS assignee_name', FALSE)
@@ -165,6 +107,9 @@ class Crm_lead_model extends CI_Model
         foreach ($stages as $stage) {
             $f = $filters;
             $f['stage'] = $stage;
+            if (in_array($stage, array('booked', 'lost'), TRUE) && !empty($filters['board']) && empty($f['closed_since'])) {
+                $f['closed_since'] = date('Y-m-d H:i:s', strtotime('-30 days'));
+            }
             $this->_apply_filters($f);
             $this->db->from(self::TABLE.' l')->where('l.deleted_at IS NULL', NULL, FALSE);
             $counts[$stage] = (int) $this->db->count_all_results();
@@ -172,36 +117,129 @@ class Crm_lead_model extends CI_Model
         return $counts;
     }
 
-    /** Open hot leads (for dashboard). */
-    public function count_hot_open($assigned_to = NULL)
+    /** New leads nobody has worked yet (oldest first). */
+    public function list_new($limit = 10, $assigned_to = NULL)
     {
         $this->db
-            ->from(self::TABLE)
-            ->where('deleted_at IS NULL', NULL, FALSE)
-            ->where('status', 'open')
-            ->where('stage', 'hot_lead');
+            ->select('l.id, l.name, l.mobile, l.created_at, l.assigned_to, s.label AS source_label, a.name AS assignee_name', FALSE)
+            ->from(self::TABLE.' l')
+            ->join('crm_lead_sources s', 's.id = l.source_id', 'left')
+            ->join('admin_users a', 'a.id = l.assigned_to', 'left')
+            ->where('l.deleted_at IS NULL', NULL, FALSE)
+            ->where('l.stage', 'new')
+            ->order_by('l.created_at', 'ASC')
+            ->limit((int) $limit);
         if ($assigned_to) {
-            $this->db->where('assigned_to', (int) $assigned_to);
+            $this->db->group_start()
+                ->where('l.assigned_to', (int) $assigned_to)
+                ->or_where('l.assigned_to IS NULL', NULL, FALSE)
+                ->group_end();
+        }
+        return $this->db->get()->result_array();
+    }
+
+    public function count_new($assigned_to = NULL)
+    {
+        $this->db->from(self::TABLE)->where('deleted_at IS NULL', NULL, FALSE)->where('stage', 'new');
+        if ($assigned_to) {
+            $this->db->group_start()
+                ->where('assigned_to', (int) $assigned_to)
+                ->or_where('assigned_to IS NULL', NULL, FALSE)
+                ->group_end();
         }
         return (int) $this->db->count_all_results();
     }
 
-    public function list_by_stage_bucket($stage, $limit = 10, $assigned_to = NULL)
+    /**
+     * Leads created since $from per source with how many got booked.
+     *
+     * @return array<int,array{label:string,leads:int,booked:int,lost:int}>
+     */
+    public function source_conversion($from)
     {
-        $this->db
-            ->select('l.id, l.name, l.mobile, l.stage, l.next_follow_up_at, s.label AS source_label', FALSE)
+        return $this->db
+            ->select("s.label, COUNT(l.id) AS leads,
+                      SUM(CASE WHEN l.stage = 'booked' THEN 1 ELSE 0 END) AS booked,
+                      SUM(CASE WHEN l.stage = 'lost' THEN 1 ELSE 0 END) AS lost", FALSE)
             ->from(self::TABLE.' l')
             ->join('crm_lead_sources s', 's.id = l.source_id', 'left')
             ->where('l.deleted_at IS NULL', NULL, FALSE)
-            ->where('l.status', 'open')
-            ->where('l.stage', $stage)
-            ->order_by('l.next_follow_up_at IS NULL', 'ASC', FALSE)
-            ->order_by('l.next_follow_up_at', 'ASC')
-            ->limit((int) $limit);
-        if ($assigned_to) {
-            $this->db->where('l.assigned_to', (int) $assigned_to);
+            ->where('l.created_at >=', $from)
+            ->group_by('s.id, s.label')
+            ->order_by('leads', 'DESC')
+            ->get()
+            ->result_array();
+    }
+
+    /** Most recent open lead for a mobile number (last 10 digits). */
+    public function find_open_by_mobile($mobile)
+    {
+        $m = crm_mobile10($mobile);
+        if (strlen($m) !== 10) {
+            return NULL;
         }
-        return $this->db->get()->result_array();
+        return $this->db
+            ->where('deleted_at IS NULL', NULL, FALSE)
+            ->where_in('stage', crm_lead_open_stages())
+            ->like('mobile', $m, 'before')
+            ->order_by('id', 'DESC')
+            ->limit(1)
+            ->get(self::TABLE)
+            ->row_array();
+    }
+
+    /** All leads (any stage) for a mobile number — customer history. */
+    public function for_mobile($mobile, $limit = 20)
+    {
+        $m = crm_mobile10($mobile);
+        if (strlen($m) !== 10) {
+            return array();
+        }
+        return $this->db
+            ->select('l.id, l.name, l.stage, l.created_at, l.booking_id, l.message, s.label AS source_label', FALSE)
+            ->from(self::TABLE.' l')
+            ->join('crm_lead_sources s', 's.id = l.source_id', 'left')
+            ->where('l.deleted_at IS NULL', NULL, FALSE)
+            ->like('l.mobile', $m, 'before')
+            ->order_by('l.id', 'DESC')
+            ->limit((int) $limit)
+            ->get()
+            ->result_array();
+    }
+
+    /**
+     * Move a lead to a stage; keeps the legacy status column in sync.
+     */
+    public function set_stage($id, $stage, $lost_reason = NULL)
+    {
+        $patch = array('stage' => $stage);
+        if ($stage === 'lost') {
+            $patch['lost_reason'] = $lost_reason ?: 'other';
+        } else {
+            $patch['lost_reason'] = NULL;
+        }
+        if (in_array($stage, array('booked', 'lost'), TRUE)) {
+            $patch['next_follow_up_at'] = NULL;
+        }
+        $this->update($id, $patch);
+    }
+
+    /** Lead turned into a booking: link everything together. */
+    public function mark_booked($id, $booking_id, $user_id = NULL, $contact_id = NULL)
+    {
+        $patch = array(
+            'stage'             => 'booked',
+            'lost_reason'       => NULL,
+            'booking_id'        => (int) $booking_id,
+            'next_follow_up_at' => NULL,
+        );
+        if ($user_id) {
+            $patch['converted_user_id'] = (int) $user_id;
+        }
+        if ($contact_id) {
+            $patch['converted_contact_id'] = (int) $contact_id;
+        }
+        $this->update($id, $patch);
     }
 
     public function create(array $payload)
@@ -210,25 +248,21 @@ class Crm_lead_model extends CI_Model
         $payload['created_at'] = date('Y-m-d H:i:s');
         $payload['updated_at'] = date('Y-m-d H:i:s');
         if (empty($payload['stage'])) {
-            $payload['stage'] = 'warm_lead';
+            $payload['stage'] = 'new';
         }
+        $payload['status'] = crm_lead_stage_status($payload['stage']);
         $this->db->insert(self::TABLE, $payload);
-        $id = (int) $this->db->insert_id();
-        $this->recalculate_stage($this->find($id));
-        return $id;
+        return (int) $this->db->insert_id();
     }
 
     public function update($id, array $payload)
     {
         $payload = $this->_filter_known_columns($this->_normalize_followup_payload($payload));
+        if (!empty($payload['stage'])) {
+            $payload['status'] = crm_lead_stage_status($payload['stage']);
+        }
         $payload['updated_at'] = date('Y-m-d H:i:s');
         $this->db->where('id', (int) $id)->update(self::TABLE, $payload);
-        if (array_key_exists('next_follow_up_at', $payload) && empty($payload['stage_locked'])) {
-            $lead = $this->find($id);
-            if ($lead && $lead['status'] === 'open' && empty($lead['stage_locked']) && $lead['stage'] !== 'warm_lead') {
-                $this->recalculate_stage($lead);
-            }
-        }
     }
 
     public function assign($id, $admin_id)
@@ -238,16 +272,7 @@ class Crm_lead_model extends CI_Model
 
     public function update_stage($id, $stage, $lock = NULL)
     {
-        $patch = array('stage' => $stage);
-        if ($lock !== NULL) {
-            $patch['stage_locked'] = $lock ? 1 : 0;
-        }
-        $this->update($id, $patch);
-    }
-
-    public function update_status($id, $status)
-    {
-        $this->update($id, array('status' => $status));
+        $this->set_stage($id, $stage);
     }
 
     public function soft_delete($id)
@@ -258,12 +283,10 @@ class Crm_lead_model extends CI_Model
         ));
     }
 
+    /** Link a lead to its customer record (no stage change). */
     public function mark_converted($id, $contact_id, $user_id = NULL)
     {
         $patch = array(
-            'status'               => 'converted',
-            'stage'                => 'quote_sent',
-            'stage_locked'         => 1,
             'converted_contact_id' => (int) $contact_id,
             'updated_at'           => date('Y-m-d H:i:s'),
         );
@@ -315,7 +338,8 @@ class Crm_lead_model extends CI_Model
             'address'           => $fields['address'] ?? NULL,
             'car_type'          => $fields['car_type'] ?? NULL,
             'message'           => $fields['message'] ?? NULL,
-            'stage'             => 'warm_lead',
+            'stage'             => 'new',
+            'status'            => 'open',
             'external_lead_id'  => $external_id,
             'external_provider' => $provider,
             'payload_json'      => !empty($fields['raw']) ? json_encode($fields['raw']) : NULL,
@@ -413,13 +437,6 @@ class Crm_lead_model extends CI_Model
                 $ts = strtotime(str_replace('T', ' ', $v));
                 $payload['next_follow_up_at'] = $ts ? date('Y-m-d H:i:s', $ts) : NULL;
             }
-            if (!empty($payload['next_follow_up_at']) && empty($payload['stage_locked'])) {
-                $manual = isset($payload['stage']) ? $payload['stage'] : NULL;
-                if (!in_array($manual, crm_lead_manual_stages(), TRUE)) {
-                    $payload['stage'] = $this->compute_stage_from_followup($payload['next_follow_up_at']);
-                    $payload['stage_locked'] = 0;
-                }
-            }
         }
         return $payload;
     }
@@ -492,7 +509,25 @@ class Crm_lead_model extends CI_Model
             $this->db->where('l.source_id', (int) $filters['source_id']);
         }
         if (!empty($filters['stage'])) {
-            $this->db->where('l.stage', $filters['stage']);
+            if ($filters['stage'] === 'open') {
+                $this->db->where_in('l.stage', crm_lead_open_stages());
+            } else {
+                $this->db->where('l.stage', $filters['stage']);
+            }
+        }
+        if (!empty($filters['closed_since'])) {
+            $this->db->where('l.updated_at >=', $filters['closed_since']);
+        }
+        if (!empty($filters['due'])) {
+            $this->db->where_in('l.stage', crm_lead_open_stages());
+            if ($filters['due'] === 'overdue') {
+                $this->db->where('l.next_follow_up_at <', date('Y-m-d 00:00:00'));
+            } elseif ($filters['due'] === 'today') {
+                $this->db->where('l.next_follow_up_at >=', date('Y-m-d 00:00:00'))
+                    ->where('l.next_follow_up_at <=', date('Y-m-d 23:59:59'));
+            } elseif ($filters['due'] === 'none') {
+                $this->db->where('l.next_follow_up_at IS NULL', NULL, FALSE);
+            }
         }
         if (!empty($filters['status'])) {
             $this->db->where('l.status', $filters['status']);

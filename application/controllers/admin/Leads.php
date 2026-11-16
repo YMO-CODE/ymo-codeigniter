@@ -14,6 +14,7 @@ class Leads extends Crm_Controller
             'crm_lead_activity_model',
             'crm_contact_model',
             'crm_tag_model',
+            'crm_task_model',
             'admin_model',
         ));
         $this->load->library('audit');
@@ -27,11 +28,17 @@ class Leads extends Crm_Controller
         $page    = max(1, (int) $this->input->get('page'));
         $offset  = ($page - 1) * $perPage;
 
+        $stage = $this->input->get('stage');
+        if ($stage === NULL) {
+            $stage = 'open'; // default tab: leads that still need work
+        }
         $filters = array(
             'q'           => $this->input->get('q'),
             'source_id'   => $this->input->get('source_id'),
             'source_slug' => $this->input->get('source'),
-            'stage'       => $this->input->get('stage'),
+            'stage'       => $stage === 'all' ? '' : $stage,
+            'stage_tab'   => $stage,
+            'due'         => $this->input->get('due'),
             'status'      => $this->input->get('status'),
             'assigned_to' => $this->input->get('assigned_to'),
             'priority'    => $this->input->get('priority'),
@@ -51,8 +58,13 @@ class Leads extends Crm_Controller
 
         $result = $this->crm_lead_model->paginate($filters, $perPage, $offset);
 
+        $tab_filters = $filters;
+        unset($tab_filters['stage']);
+        $tab_filters['board'] = 1;
+
         $this->render('admin/leads/index', array(
             'title'        => $source_label ? $source_label.' leads' : 'Leads',
+            'counts'       => $this->crm_lead_model->stage_counts(array_diff_key($tab_filters, array('board' => 1))),
             'rows'         => $result['rows'],
             'total'        => $result['total'],
             'page'         => $page,
@@ -71,19 +83,23 @@ class Leads extends Crm_Controller
         $this->require_perm('leads.view');
 
         $filters = array(
-            'status'      => $this->input->get('status') ?: 'open',
+            'q'           => $this->input->get('q'),
+            'source_slug' => $this->input->get('source'),
             'assigned_to' => $this->input->get('assigned_to'),
             'mine'        => $this->input->get('mine'),
             'admin_id'    => $this->admin['id'],
+            'board'       => 1,
         );
 
         $this->render('admin/leads/pipeline', array(
-            'title'        => 'Sales pipeline',
+            'title'        => 'Leads board',
             'columns'      => $this->crm_lead_model->for_pipeline($filters),
             'counts'       => $this->crm_lead_model->stage_counts($filters),
             'filters'      => $filters,
+            'sources'      => $this->crm_lead_model->list_sources(),
             'admins'       => $this->admin_model->list_active(),
             'stage_labels' => crm_lead_stages(),
+            'can_edit'     => crm_can('leads.edit'),
         ));
     }
 
@@ -127,13 +143,31 @@ class Leads extends Crm_Controller
         $lead = $this->crm_lead_model->find_detailed($id);
         if (!$lead) { show_404(); }
 
-        $contact = $this->crm_contact_model->find_by_lead($id);
+        $contact = !empty($lead['converted_contact_id'])
+            ? $this->crm_contact_model->find((int) $lead['converted_contact_id'])
+            : $this->crm_contact_model->find_by_lead($id);
+        if (!$contact && $lead['mobile'] !== '') {
+            $contact = $this->crm_contact_model->find_by_mobile($lead['mobile']);
+        }
+        $booking = NULL;
+        if (!empty($lead['booking_id'])) {
+            $this->load->model('booking_model');
+            $booking = $this->booking_model->find_detailed((int) $lead['booking_id']);
+        }
+        $other_leads = array_values(array_filter(
+            $this->crm_lead_model->for_mobile($lead['mobile'], 10),
+            function ($l) use ($id) { return (int) $l['id'] !== (int) $id; }
+        ));
 
         $activities = $this->crm_lead_activity_model->for_lead($id);
 
         $this->render('admin/leads/view', array(
             'title'      => $lead['name'],
             'lead'       => $lead,
+            'booking'    => $booking,
+            'other_leads'=> $other_leads,
+            'followup'   => $this->crm_task_model->pending_for_lead($id),
+            'can_book'   => crm_can('bookings.edit'),
             'activities' => $activities,
             'chat_messages' => crm_lead_chat_messages($activities),
             'chat_channel'  => crm_lead_chat_channel($lead),
@@ -154,6 +188,10 @@ class Leads extends Crm_Controller
 
         $assignee = (int) $this->input->post('assigned_to');
         $this->crm_lead_model->assign($id, $assignee ?: NULL);
+        $pending = $this->crm_task_model->pending_for_lead($id);
+        if ($pending && $assignee) {
+            $this->crm_task_model->update((int) $pending['id'], array('assignee_admin_id' => $assignee));
+        }
 
         $name = 'Unassigned';
         if ($assignee) {
@@ -244,6 +282,22 @@ class Leads extends Crm_Controller
             'text'       => $text,
         );
         $this->crm_lead_activity_model->add($id, $this->admin['id'], $activity_type, $text, $meta);
+        if ($channel === 'whatsapp') {
+            // Message log: delivery receipts (and Meta's "outside 24h window"
+            // failures) arrive later via the WhatsApp webhook.
+            $this->load->model('crm_wa_message_model');
+            $this->crm_wa_message_model->log(array(
+                'wa_message_id' => $result['message_id'] ?? NULL,
+                'phone'         => $recipient,
+                'direction'     => 'out',
+                'kind'          => 'text',
+                'body'          => $text,
+                'context_type'  => 'lead',
+                'context_id'    => (int) $id,
+                'status'        => 'sent',
+                'admin_id'      => (int) $this->admin['id'],
+            ));
+        }
         $this->crm_lead_model->update($id, array('updated_at' => date('Y-m-d H:i:s')));
 
         $this->audit->log('admin', $this->admin['id'], 'crm.lead.chat_send', 'crm_lead', $id, array(
@@ -255,63 +309,147 @@ class Leads extends Crm_Controller
         redirect(admin_url('leads/'.$id));
     }
 
+    /**
+     * One form for everything that happens on a call / chat / visit (CRM v6):
+     * outcome → stage, a note, and the next follow-up (one task per lead).
+     */
+    public function log_call($id)
+    {
+        $this->require_perm('leads.edit');
+        $lead = $this->crm_lead_model->find($id);
+        if (!$lead) { show_404(); }
+
+        $outcomes = crm_lead_call_outcomes();
+        $outcome  = (string) $this->input->post('outcome');
+        if (!isset($outcomes[$outcome])) {
+            $this->flash('error', 'Pick what happened.');
+            redirect(admin_url('leads/'.$id));
+        }
+        $channel = in_array($this->input->post('channel'), array('call', 'whatsapp', 'sms', 'email', 'note'), TRUE)
+            ? $this->input->post('channel') : 'call';
+        $note = trim((string) $this->input->post('note'));
+        $lost_reason = (string) $this->input->post('lost_reason');
+        if ($outcome === 'lost' && !isset(crm_lead_lost_reasons()[$lost_reason])) {
+            $this->flash('error', 'Pick why the lead is lost.');
+            redirect(admin_url('leads/'.$id));
+        }
+
+        if ($outcome === 'booked') {
+            if ($note !== '') {
+                $this->crm_lead_activity_model->add($id, $this->admin['id'], $channel, $note, array('outcome' => 'booked'));
+            }
+            if (empty($lead['assigned_to'])) {
+                $this->crm_lead_model->assign($id, (int) $this->admin['id']);
+            }
+            redirect(admin_url('bookings/new?lead_id='.$id)); // stage flips when the booking is saved
+        }
+
+        // 1. Timeline entry
+        $label = $outcomes[$outcome]['label'];
+        if ($outcome === 'lost') {
+            $label = 'Lost - '.crm_lead_lost_reasons()[$lost_reason];
+        }
+        $body = $outcome === 'note' ? $note : $label.($note !== '' ? "\n".$note : '');
+        if ($body === '') {
+            $this->flash('error', 'Write a note.');
+            redirect(admin_url('leads/'.$id));
+        }
+        $this->crm_lead_activity_model->add($id, $this->admin['id'], $outcome === 'note' ? 'note' : $channel, $body,
+            array('outcome' => $outcome));
+
+        // 2. Stage
+        $to = $outcomes[$outcome]['stage'];
+        if ($to === NULL && $lead['stage'] === 'new' && $outcome !== 'note') {
+            $to = 'contacted';
+        }
+        if ($to && $to !== $lead['stage']) {
+            $this->crm_lead_model->set_stage($id, $to, $outcome === 'lost' ? $lost_reason : NULL);
+        } else {
+            $this->crm_lead_model->update($id, array());
+        }
+        if (empty($lead['assigned_to'])) {
+            $this->crm_lead_model->assign($id, (int) $this->admin['id']);
+        }
+
+        // 3. Follow-up (lost → none)
+        if ($outcome === 'lost') {
+            $this->crm_task_model->close_lead_followups($id);
+        } else {
+            $when = trim((string) $this->input->post('follow_up'));
+            $due = $this->_followup_datetime($when, (string) $this->input->post('follow_up_date'));
+            if ($when === 'none') {
+                $this->crm_task_model->set_lead_followup($id, NULL, NULL);
+            } elseif ($due) {
+                $this->crm_task_model->set_lead_followup($id, $due, $lead['assigned_to'] ?: $this->admin['id'], $this->admin['id'],
+                    $note !== '' ? mb_substr($note, 0, 500) : NULL);
+            }
+        }
+
+        $this->audit->log('admin', $this->admin['id'], 'crm.lead.log', 'crm_lead', $id, array('outcome' => $outcome));
+        $msg = 'Saved.';
+        if ($to && $to !== $lead['stage']) {
+            $msg = 'Saved - lead is now '.crm_lead_stage_label($to).'.';
+        }
+        $this->flash('success', $msg);
+        redirect(admin_url('leads/'.$id));
+    }
+
+    /** Quick stage change (board / dropdown). */
     public function update_stage($id)
     {
         $this->require_perm('leads.edit');
         $lead = $this->crm_lead_model->find($id);
         if (!$lead) { show_404(); }
 
-        $stage  = $this->input->post('stage');
-        $status = $this->input->post('status');
-        $valid_stages  = array_keys(crm_lead_stages());
-        $valid_status  = array('open','converted','junk');
-
-        if (!in_array($stage, $valid_stages, TRUE)) {
+        $stage = (string) $this->input->post('stage');
+        if (!isset(crm_lead_stages()[$stage])) {
             $this->flash('error', 'Invalid stage.');
             redirect(admin_url('leads/'.$id));
         }
-
-        $patch = array('stage' => $stage);
-        if (in_array($stage, array('quote_sent', 'lost'), TRUE)) {
-            $patch['stage_locked'] = 1;
-        } elseif ($stage === 'warm_lead') {
-            $patch['stage_locked'] = 0;
-        } elseif ($this->input->post('next_follow_up_at') !== NULL) {
-            $patch['next_follow_up_at'] = $this->input->post('next_follow_up_at') ?: NULL;
-            if (!in_array($stage, crm_lead_manual_stages(), TRUE)) {
-                $patch['stage_locked'] = 0;
-            }
+        if ($stage === 'booked') {
+            redirect(admin_url('bookings/new?lead_id='.$id));
         }
-        if ($this->input->post('next_follow_up_at') !== NULL && empty($patch['stage_locked'])) {
-            $nf = trim(str_replace('T', ' ', (string) $this->input->post('next_follow_up_at')));
-            if ($nf !== '') {
-                $ts = strtotime($nf);
-                $patch['next_follow_up_at'] = $ts ? date('Y-m-d H:i:s', $ts) : NULL;
-            } else {
-                $patch['next_follow_up_at'] = NULL;
-            }
+        $reason = (string) $this->input->post('lost_reason');
+        if ($stage === 'lost' && !isset(crm_lead_lost_reasons()[$reason])) {
+            $reason = 'other';
         }
-        if ($status && in_array($status, $valid_status, TRUE)) {
-            $patch['status'] = $status;
+        $this->crm_lead_model->set_stage($id, $stage, $stage === 'lost' ? $reason : NULL);
+        if ($stage === 'lost') {
+            $this->crm_task_model->close_lead_followups($id);
         }
         if ($this->input->post('priority') !== NULL && $this->input->post('priority') !== '') {
-            $patch['priority'] = (int) $this->input->post('priority');
+            $this->crm_lead_model->update($id, array('priority' => (int) $this->input->post('priority')));
         }
+        $this->crm_lead_activity_model->add($id, $this->admin['id'], 'status_change',
+            'Stage: '.crm_lead_stage_label($lead['stage']).' → '.crm_lead_stage_label($stage)
+            .($stage === 'lost' ? ' ('.crm_lead_lost_reasons()[$reason].')' : ''),
+            array('stage' => $stage));
+        $this->audit->log('admin', $this->admin['id'], 'crm.lead.stage', 'crm_lead', $id, array('stage' => $stage));
 
-        $this->crm_lead_model->update($id, $patch);
-        if (empty($patch['stage_locked']) && $lead['stage'] !== 'warm_lead') {
-            $this->crm_lead_model->recalculate_stage($id);
+        $this->flash('success', 'Lead moved to '.crm_lead_stage_label($stage).'.');
+        $back = $this->input->post('back');
+        redirect($back === 'board' ? admin_url('leads/pipeline') : admin_url('leads/'.$id));
+    }
+
+    /**
+     * @param string $when today|tomorrow|3d|1w|2w|1m|custom|none
+     * @return string|null Y-m-d H:i:s
+     */
+    protected function _followup_datetime($when, $custom)
+    {
+        $at10 = function ($ts) { return date('Y-m-d 10:00:00', $ts); };
+        switch ($when) {
+            case 'today':    return date('Y-m-d H:i:s', max(time() + 3600, strtotime('today 17:00')));
+            case 'tomorrow': return $at10(strtotime('+1 day'));
+            case '3d':       return $at10(strtotime('+3 days'));
+            case '1w':       return $at10(strtotime('+7 days'));
+            case '2w':       return $at10(strtotime('+14 days'));
+            case '1m':       return $at10(strtotime('+1 month'));
+            case 'custom':
+                $ts = strtotime(str_replace('T', ' ', $custom));
+                return $ts ? date('Y-m-d H:i:s', $ts) : NULL;
         }
-
-        $msg = 'Stage updated to '.crm_lead_stage_label($stage);
-        if (!empty($patch['status']) && $patch['status'] !== $lead['status']) {
-            $msg .= '; status → '.$patch['status'];
-        }
-        $this->crm_lead_activity_model->add($id, $this->admin['id'], 'status_change', $msg, $patch);
-        $this->audit->log('admin', $this->admin['id'], 'crm.lead.stage', 'crm_lead', $id, $patch);
-
-        $this->flash('success', 'Lead updated.');
-        redirect(admin_url('leads/'.$id));
+        return NULL;
     }
 
     public function archive($id)
@@ -328,32 +466,10 @@ class Leads extends Crm_Controller
         redirect(admin_url('leads'));
     }
 
+    /** Legacy "Convert to customer": customers now come from bookings. */
     public function convert($id)
     {
-        $this->require_perm('contacts.edit');
-        $lead = $this->crm_lead_model->find_detailed($id);
-        if (!$lead) { show_404(); }
-
-        $existing = $this->crm_contact_model->find_by_lead($id);
-        if ($existing) {
-            $this->flash('info', 'This lead was already converted to a contact.');
-            redirect(admin_url('leads/'.$id));
-        }
-
-        $contact_id = $this->crm_contact_model->create_from_lead($lead);
-        $this->_copy_lead_tags_to_contact($id, $contact_id);
-        $this->crm_contact_model->link_user_if_exists($contact_id);
-        $contact = $this->crm_contact_model->find($contact_id);
-        $this->crm_lead_model->mark_converted($id, $contact_id, !empty($contact['user_id']) ? (int) $contact['user_id'] : NULL);
-        $this->crm_lead_activity_model->add($id, $this->admin['id'], 'system',
-            'Lead converted to contact #'.$contact_id
-        );
-        $this->audit->log('admin', $this->admin['id'], 'crm.lead.convert', 'crm_lead', $id, array(
-            'contact_id' => $contact_id,
-        ));
-
-        $this->flash('success', 'Lead converted to customer.');
-        redirect(admin_url('leads/'.$id));
+        redirect(admin_url('bookings/new?lead_id='.(int) $id));
     }
 
     protected function _copy_lead_tags_to_contact($lead_id, $contact_id)
@@ -382,7 +498,13 @@ class Leads extends Crm_Controller
             return;
         }
 
-        $id = $this->crm_lead_model->create($this->_payload_from_post());
+        $payload = $this->_payload_from_post();
+        $follow = $payload['next_follow_up_at'] ?? NULL;
+        unset($payload['next_follow_up_at']);
+        $id = $this->crm_lead_model->create($payload);
+        if ($follow) {
+            $this->crm_task_model->set_lead_followup($id, $follow, $payload['assigned_to'] ?? NULL, $this->admin['id']);
+        }
         $this->crm_lead_activity_model->add($id, $this->admin['id'], 'system', 'Lead created manually');
         $this->audit->log('admin', $this->admin['id'], 'crm.lead.create', 'crm_lead', $id, array());
 
@@ -403,7 +525,18 @@ class Leads extends Crm_Controller
             return;
         }
 
-        $this->crm_lead_model->update($id, $this->_payload_from_post());
+        $payload = $this->_payload_from_post();
+        $follow = array_key_exists('next_follow_up_at', $payload) ? $payload['next_follow_up_at'] : FALSE;
+        unset($payload['next_follow_up_at']);
+        if (isset($payload['stage']) && $payload['stage'] === 'booked' && $lead['stage'] !== 'booked') {
+            unset($payload['stage']); // booking is created from the Book service screen
+        }
+        $this->crm_lead_model->update($id, $payload);
+        if (isset($payload['stage']) && in_array($payload['stage'], array('booked', 'lost'), TRUE)) {
+            $this->crm_task_model->close_lead_followups($id);
+        } elseif ($follow !== FALSE && (string) $follow !== (string) $lead['next_follow_up_at']) {
+            $this->crm_task_model->set_lead_followup($id, $follow ?: NULL, $payload['assigned_to'] ?? $lead['assigned_to'], $this->admin['id']);
+        }
         $this->crm_lead_activity_model->add($id, $this->admin['id'], 'system', 'Lead details updated');
         $this->audit->log('admin', $this->admin['id'], 'crm.lead.update', 'crm_lead', $id, array());
 
@@ -422,7 +555,6 @@ class Leads extends Crm_Controller
         $this->form_validation->set_rules('source_id', 'Source', 'required|integer');
         $stage_list = implode(',', array_keys(crm_lead_stages()));
         $this->form_validation->set_rules('stage', 'Stage', 'in_list['.$stage_list.']');
-        $this->form_validation->set_rules('status', 'Status', 'in_list[open,converted,junk]');
         $this->form_validation->set_rules('next_follow_up_at', 'Next follow-up', 'trim');
         $this->form_validation->set_rules('priority', 'Priority', 'integer');
         if (crm_can('leads.assign')) {
@@ -432,7 +564,8 @@ class Leads extends Crm_Controller
 
     protected function _payload_from_post()
     {
-        $stage = $this->input->post('stage') ?: 'warm_lead';
+        $stage = $this->input->post('stage') ?: 'new';
+        $follow = trim(str_replace('T', ' ', (string) $this->input->post('next_follow_up_at')));
         $payload = array(
             'source_id' => (int) $this->input->post('source_id'),
             'name'      => $this->input->post('name'),
@@ -443,17 +576,10 @@ class Leads extends Crm_Controller
             'car_type'  => trim((string) $this->input->post('car_type')) ?: NULL,
             'message'   => $this->input->post('message') ?: NULL,
             'stage'     => $stage,
-            'status'    => $this->input->post('status') ?: 'open',
+            'lost_reason' => $stage === 'lost' ? ($this->input->post('lost_reason') ?: 'other') : NULL,
             'priority'  => (int) $this->input->post('priority'),
-            'next_follow_up_at' => $this->input->post('next_follow_up_at'),
+            'next_follow_up_at' => $follow !== '' && strtotime($follow) ? date('Y-m-d H:i:s', strtotime($follow)) : NULL,
         );
-        if (in_array($stage, array('quote_sent', 'lost'), TRUE)) {
-            $payload['stage_locked'] = 1;
-        } elseif ($stage === 'warm_lead') {
-            $payload['stage_locked'] = 0;
-        } else {
-            $payload['stage_locked'] = 0;
-        }
         if (crm_can('leads.assign')) {
             $assignee = (int) $this->input->post('assigned_to');
             $payload['assigned_to'] = $assignee > 0 ? $assignee : NULL;

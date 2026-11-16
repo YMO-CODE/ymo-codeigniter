@@ -42,11 +42,77 @@ class Crm_contact_model extends CI_Model
         if ($mobile === '') {
             return NULL;
         }
-        return $this->db
+        $row = $this->db
             ->where('mobile', $mobile)
             ->where('deleted_at IS NULL', NULL, FALSE)
             ->get(self::TABLE)
             ->row_array();
+        if ($row || strlen($mobile) < 10) {
+            return $row;
+        }
+        // 9876543210 vs 919876543210 vs +91 98765 43210
+        return $this->db
+            ->like('mobile', substr($mobile, -10), 'before')
+            ->where('deleted_at IS NULL', NULL, FALSE)
+            ->order_by('user_id IS NULL', 'ASC', FALSE)
+            ->order_by('id', 'ASC')
+            ->limit(1)
+            ->get(self::TABLE)
+            ->row_array();
+    }
+
+    public function find_by_user($user_id)
+    {
+        return $this->db
+            ->where('user_id', (int) $user_id)
+            ->where('deleted_at IS NULL', NULL, FALSE)
+            ->order_by('id', 'ASC')
+            ->limit(1)
+            ->get(self::TABLE)
+            ->row_array();
+    }
+
+    /**
+     * One customer record per person (CRM v6): returns the contact for a
+     * website account, linking an existing contact with the same mobile or
+     * creating one. Safe to call repeatedly.
+     *
+     * @return int Contact id (0 when the CRM tables are missing)
+     */
+    public function ensure_for_user($user_id, $lead_id = NULL)
+    {
+        if (!$this->db->table_exists(self::TABLE)) {
+            return 0;
+        }
+        $this->load->model('user_model');
+        $user = $this->user_model->find((int) $user_id);
+        if (!$user) {
+            return 0;
+        }
+        $contact = $this->find_by_user($user['id']);
+        if (!$contact) {
+            $contact = $this->find_by_mobile($user['mobile']);
+            if ($contact && !empty($contact['user_id']) && (int) $contact['user_id'] !== (int) $user['id']) {
+                $contact = NULL; // belongs to someone else
+            }
+            if ($contact) {
+                $this->update((int) $contact['id'], array('user_id' => (int) $user['id']));
+            }
+        }
+        if ($contact) {
+            if ($lead_id && empty($contact['converted_from_lead_id'])) {
+                $this->update((int) $contact['id'], array('converted_from_lead_id' => (int) $lead_id));
+            }
+            return (int) $contact['id'];
+        }
+        $email = (string) $user['email'];
+        return $this->create(array(
+            'user_id'                => (int) $user['id'],
+            'name'                   => $user['name'],
+            'mobile'                 => $user['mobile'],
+            'email'                  => function_exists('ymo_is_placeholder_email') && ymo_is_placeholder_email($email) ? '' : $email,
+            'converted_from_lead_id' => $lead_id ? (int) $lead_id : NULL,
+        ));
     }
 
     public function find_by_email($email)
@@ -379,6 +445,13 @@ class Crm_contact_model extends CI_Model
         }
         if (!empty($filters['segment'])) {
             $this->_apply_segment($filters['segment']);
+        }
+        if (isset($filters['account']) && $filters['account'] !== '') {
+            if ($filters['account'] === 'yes') {
+                $this->db->where('c.user_id IS NOT NULL', NULL, FALSE);
+            } elseif ($filters['account'] === 'no') {
+                $this->db->where('c.user_id IS NULL', NULL, FALSE);
+            }
         }
     }
 

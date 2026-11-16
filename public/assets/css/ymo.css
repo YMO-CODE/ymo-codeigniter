@@ -2085,3 +2085,73 @@ table.ymo-table tbody tr:hover { background: var(--ymo-grey-100); }
     color: var(--ymo-grey-500);
     font-size: 0.75rem;
 }
+
+/* ---------------------------------------------------------------------------
+   CRM simple flow: stage tabs, source chips, My day rows, Log call box
+   --------------------------------------------------------------------------- */
+.ymo-tabs {
+    display: flex;
+    gap: .25rem;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--ymo-grey-300);
+    scrollbar-width: thin;
+}
+.ymo-tabs a {
+    padding: .5rem .85rem;
+    white-space: nowrap;
+    color: var(--ymo-grey-700);
+    text-decoration: none;
+    font-size: .9rem;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+}
+.ymo-tabs a:hover { color: var(--ymo-primary); }
+.ymo-tabs a.active {
+    color: var(--ymo-primary);
+    border-bottom-color: var(--ymo-primary);
+    font-weight: 600;
+}
+.ymo-tabs .count {
+    display: inline-block;
+    min-width: 1.4rem;
+    padding: 0 .35rem;
+    margin-left: .2rem;
+    border-radius: 999px;
+    background: var(--ymo-grey-100);
+    color: var(--ymo-grey-700);
+    font-size: .75rem;
+    text-align: center;
+    font-weight: 500;
+}
+.ymo-tabs a.active .count { background: var(--ymo-primary-soft); color: var(--ymo-primary-dark); }
+
+.ymo-chips { display: flex; flex-wrap: wrap; gap: .4rem; }
+.ymo-chips a {
+    padding: .2rem .7rem;
+    border: 1px solid var(--ymo-grey-300);
+    border-radius: 999px;
+    font-size: .8rem;
+    color: var(--ymo-grey-700);
+    text-decoration: none;
+    background: #fff;
+}
+.ymo-chips a:hover { border-color: var(--ymo-primary); color: var(--ymo-primary); }
+.ymo-chips a.active { background: var(--ymo-primary); border-color: var(--ymo-primary); color: #fff; }
+
+.ymo-myday-row {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .6rem .9rem;
+    border-bottom: 1px solid var(--ymo-grey-100);
+}
+.ymo-myday-row:last-child { border-bottom: 0; }
+@media (max-width: 575.98px) {
+    .ymo-myday-row { flex-wrap: wrap; }
+    .ymo-myday-row > .d-flex { width: 100%; justify-content: flex-start !important; }
+}
+
+.ymo-pipeline-card select.form-select-sm { font-size: .75rem; }
+
+.ymo-logcall .btn-check + .btn { font-size: .8rem; padding: .25rem .6rem; }
+.ymo-logcall .ymo-chips label { cursor: pointer; }

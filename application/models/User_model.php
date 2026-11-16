@@ -48,7 +48,14 @@ class User_model extends CI_Model
         unset($payload['password']);
         $payload['created_at'] = date('Y-m-d H:i:s');
         $this->db->insert(self::TABLE, $payload);
-        return (int) $this->db->insert_id();
+        $id = (int) $this->db->insert_id();
+
+        // One customer record per person: every account gets a CRM contact.
+        if ($id && $this->db->table_exists('crm_contacts')) {
+            $this->load->model('crm_contact_model');
+            $this->crm_contact_model->ensure_for_user($id);
+        }
+        return $id;
     }
 
     public function update($id, array $patch)

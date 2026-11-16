@@ -22,6 +22,7 @@ class Contacts extends Crm_Controller
             'q'       => $this->input->get('q'),
             'tag_id'  => $this->input->get('tag_id'),
             'segment' => $this->input->get('segment'),
+            'account' => $this->input->get('account'),
         );
         $result = $this->crm_contact_model->paginate($filters, $perPage, $offset);
 
@@ -62,17 +63,43 @@ class Contacts extends Crm_Controller
         $contact = $this->crm_contact_model->find_detailed($id);
         if (!$contact) { show_404(); }
 
-        $bookings = array();
+        $bookings = $vehicles = array();
+        $user = NULL;
         if (!empty($contact['user_id'])) {
+            $this->load->model('vehicle_model');
+            $user     = $this->user_model->find((int) $contact['user_id']);
             $bookings = $this->booking_model->for_user((int) $contact['user_id'], 20, 0);
+            $vehicles = $this->vehicle_model->for_user((int) $contact['user_id']);
         }
+        $this->load->model(array('crm_lead_model', 'crm_wa_message_model'));
+        $leads = $this->crm_lead_model->for_mobile($contact['mobile'], 20);
+        $wa = $this->crm_wa_message_model->table_ready() && $contact['mobile'] !== ''
+            ? $this->db->where('phone', crm_whatsapp_e164($contact['mobile']))->order_by('id', 'DESC')->limit(15)->get('crm_wa_messages')->result_array()
+            : array();
+
+        // Follow-ups for this customer or any of their leads.
+        $lead_ids = array_map(function ($l) { return (int) $l['id']; }, $leads);
+        $this->db->select('t.*, a.name AS assignee_name', FALSE)
+            ->from('crm_tasks t')
+            ->join('admin_users a', 'a.id = t.assignee_admin_id', 'left')
+            ->where('t.status', 'pending')
+            ->group_start()->where('t.contact_id', (int) $id);
+        if ($lead_ids) {
+            $this->db->or_where_in('t.lead_id', $lead_ids);
+        }
+        $tasks = $this->db->group_end()->order_by('t.due_at', 'ASC')->limit(10)->get()->result_array();
 
         $this->render('admin/contacts/view', array(
             'title'    => $contact['name'],
             'contact'  => $contact,
+            'user'     => $user,
             'tags'     => $this->crm_tag_model->for_contact($id),
             'bookings' => $bookings,
-            'tasks'    => $this->crm_task_model->paginate(array('contact_id' => $id), 10, 0)['rows'],
+            'vehicles' => $vehicles,
+            'leads'    => $leads,
+            'wa'       => $wa,
+            'can_book' => crm_can('bookings.edit'),
+            'tasks'    => $tasks,
             'can_edit' => crm_can('contacts.edit'),
             'link_users' => $this->crm_contact_model->search_users_for_link(
                 $contact['mobile'] ?: $contact['email'] ?: $contact['name']
@@ -464,6 +491,9 @@ class Contacts extends Crm_Controller
             'email_opt_out' => $this->input->post('email_opt_out') ? 1 : 0,
             'sms_opt_out'   => $this->input->post('sms_opt_out') ? 1 : 0,
         );
+        if ($this->db->field_exists('whatsapp_opt_out', 'crm_contacts')) {
+            $payload['whatsapp_opt_out'] = $this->input->post('whatsapp_opt_out') ? 1 : 0;
+        }
 
         if ($id) {
             $this->crm_contact_model->update($id, $payload);

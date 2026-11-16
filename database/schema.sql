@@ -394,14 +394,16 @@ CREATE TABLE IF NOT EXISTS `crm_leads` (
     `address`             VARCHAR(255) NULL,
     `car_type`            VARCHAR(120) NULL,
     `message`             TEXT NULL,
-    `stage`               ENUM('hot_lead','warm_lead','followup_next_week','followup_next_month','later','quote_sent','lost') NOT NULL DEFAULT 'warm_lead',
-    `status`              ENUM('open','converted','junk') NOT NULL DEFAULT 'open',
+    `stage`               ENUM('new','contacted','quote_sent','booked','lost') NOT NULL DEFAULT 'new',
+    `status`              ENUM('open','converted','junk') NOT NULL DEFAULT 'open',  -- mirrors stage (open / booked / lost)
+    `lost_reason`         VARCHAR(40) NULL,
     `priority`            TINYINT NOT NULL DEFAULT 0,
     `next_follow_up_at`   DATETIME NULL,
     `stage_locked`        TINYINT(1) NOT NULL DEFAULT 0,
     `assigned_to`         INT UNSIGNED NULL,
     `converted_user_id`   BIGINT UNSIGNED NULL,
     `converted_contact_id` BIGINT UNSIGNED NULL,
+    `booking_id`          BIGINT UNSIGNED NULL,
     `external_lead_id`    VARCHAR(160) NULL,
     `external_provider`   VARCHAR(40) NULL,
     `payload_json`        JSON NULL,
@@ -415,6 +417,7 @@ CREATE TABLE IF NOT EXISTS `crm_leads` (
     KEY `idx_crm_leads_created` (`created_at`),
     KEY `idx_crm_leads_followup` (`next_follow_up_at`, `status`),
     KEY `idx_crm_leads_ext` (`external_provider`,`external_lead_id`),
+    KEY `idx_crm_leads_booking` (`booking_id`),
     CONSTRAINT `fk_crm_leads_source_s` FOREIGN KEY (`source_id`) REFERENCES `crm_lead_sources` (`id`) ON DELETE RESTRICT,
     CONSTRAINT `fk_crm_leads_assign_s` FOREIGN KEY (`assigned_to`) REFERENCES `admin_users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -460,6 +463,7 @@ CREATE TABLE IF NOT EXISTS `crm_contacts` (
     `notes`          TEXT NULL,
     `email_opt_out`  TINYINT(1) NOT NULL DEFAULT 0,
     `sms_opt_out`    TINYINT(1) NOT NULL DEFAULT 0,
+    `whatsapp_opt_out` TINYINT(1) NOT NULL DEFAULT 0,
     `converted_from_lead_id` BIGINT UNSIGNED NULL,
     `created_at`     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -506,10 +510,12 @@ CREATE TABLE IF NOT EXISTS `crm_tasks` (
 CREATE TABLE IF NOT EXISTS `crm_campaigns` (
     `id`             BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `name`           VARCHAR(160) NOT NULL,
-    `channel`        ENUM('email','sms','both') NOT NULL DEFAULT 'email',
+    `channel`        ENUM('email','sms','both','whatsapp') NOT NULL DEFAULT 'email',
     `subject`        VARCHAR(200) NULL,
     `body`           TEXT NOT NULL,
     `segment_json`   JSON NULL,
+    `wa_template_id` INT UNSIGNED NULL,
+    `wa_params_json` JSON NULL,
     `status`         ENUM('draft','scheduled','sending','completed','cancelled','failed') NOT NULL DEFAULT 'draft',
     `scheduled_at`   DATETIME NULL,
     `created_by`     INT UNSIGNED NULL,
@@ -523,17 +529,62 @@ CREATE TABLE IF NOT EXISTS `crm_campaigns` (
 CREATE TABLE IF NOT EXISTS `crm_campaign_recipients` (
     `id`           BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `campaign_id`  BIGINT UNSIGNED NOT NULL,
-    `channel`      ENUM('email','sms') NOT NULL,
+    `channel`      ENUM('email','sms','whatsapp') NOT NULL,
     `email`        VARCHAR(180) NOT NULL DEFAULT '',
     `mobile`       VARCHAR(20)  NOT NULL DEFAULT '',
     `name`         VARCHAR(120) NOT NULL DEFAULT '',
     `status`       ENUM('pending','sent','failed','skipped') NOT NULL DEFAULT 'pending',
     `error_message` VARCHAR(500) NULL,
+    `wa_message_id` VARCHAR(128) NULL,
+    `delivery_status` ENUM('sent','delivered','read','failed') NULL,
     `sent_at`      DATETIME NULL,
+    `delivered_at` DATETIME NULL,
+    `read_at`      DATETIME NULL,
     `created_at`   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
     KEY `idx_ccr_camp` (`campaign_id`,`status`),
+    KEY `idx_ccr_wamid` (`wa_message_id`),
     CONSTRAINT `fk_ccr_camp_s` FOREIGN KEY (`campaign_id`) REFERENCES `crm_campaigns` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- WhatsApp Cloud API (CRM v5)
+CREATE TABLE IF NOT EXISTS `crm_wa_templates` (
+    `id`               INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `name`             VARCHAR(512) NOT NULL,
+    `language`         VARCHAR(15)  NOT NULL DEFAULT 'en',
+    `category`         VARCHAR(30)  NULL,
+    `status`           VARCHAR(30)  NOT NULL DEFAULT 'APPROVED',
+    `header_type`      VARCHAR(20)  NULL,
+    `body_text`        TEXT NULL,
+    `param_count`      TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    `components_json`  JSON NULL,
+    `meta_template_id` VARCHAR(64)  NULL,
+    `synced_at`        DATETIME NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uq_wa_tpl_name_lang` (`name`(191), `language`),
+    KEY `idx_wa_tpl_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `crm_wa_messages` (
+    `id`             BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `wa_message_id`  VARCHAR(128) NULL,
+    `phone`          VARCHAR(20)  NOT NULL,
+    `direction`      ENUM('in','out') NOT NULL DEFAULT 'out',
+    `kind`           VARCHAR(20)  NOT NULL DEFAULT 'text',
+    `template_name`  VARCHAR(512) NULL,
+    `body`           TEXT NULL,
+    `media_path`     VARCHAR(255) NULL,
+    `context_type`   VARCHAR(20)  NULL,
+    `context_id`     BIGINT UNSIGNED NULL,
+    `status`         ENUM('queued','sent','delivered','read','failed','received') NOT NULL DEFAULT 'queued',
+    `error`          VARCHAR(500) NULL,
+    `admin_id`       INT UNSIGNED NULL,
+    `created_at`     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at`     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_wa_msg_wamid` (`wa_message_id`),
+    KEY `idx_wa_msg_phone` (`phone`, `created_at`),
+    KEY `idx_wa_msg_context` (`context_type`, `context_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `crm_candidates` (

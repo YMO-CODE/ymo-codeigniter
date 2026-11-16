@@ -1,4 +1,5 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+<?php $this->load->view('admin/partials/messages_tabs', array('active' => 'campaigns')); ?>
 <?php if ($can_edit): ?>
     <a href="<?= admin_url('campaigns/new'); ?>" class="btn btn-primary btn-sm mb-3"><span class="mi mi-sm mi-leading">add</span>New campaign</a>
 <?php endif; ?>

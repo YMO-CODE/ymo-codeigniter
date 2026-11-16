@@ -26,3 +26,5 @@ node_modules/
 /storage/import/pending/*
 !/storage/import/pending/.gitkeep
 /storage/.session_epoch
+/storage/whatsapp/*
+!/storage/whatsapp/.gitkeep

@@ -362,3 +362,22 @@ if (!function_exists('ymo_sms_log')) {
         log_message('error', sprintf('[sms] %s fail template=%s to=%s err=%s', $context, $template_key, $mobile, $err));
     }
 }
+
+if (!function_exists('ymo_is_placeholder_email')) {
+    /**
+     * Customers booked by phone from the admin panel get a placeholder email
+     * (users.email is required + unique). Never send mail to it.
+     */
+    function ymo_is_placeholder_email($email)
+    {
+        $email = strtolower(trim((string) $email));
+        return $email === '' || substr($email, -8) === '.invalid';
+    }
+}
+
+if (!function_exists('ymo_placeholder_email')) {
+    function ymo_placeholder_email($mobile)
+    {
+        return 'm'.preg_replace('/\D+/', '', (string) $mobile).'@phone-booking.invalid';
+    }
+}

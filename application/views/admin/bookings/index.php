@@ -1,4 +1,9 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+<?php if (!function_exists('crm_can') || crm_can('bookings.edit')): ?>
+<div class="d-flex justify-content-end mb-2">
+    <a href="<?= admin_url('bookings/new'); ?>" class="btn btn-primary btn-sm"><span class="mi mi-sm mi-leading">add</span>New booking</a>
+</div>
+<?php endif; ?>
 <form class="ymo-card mb-3" method="get" action="<?= admin_url('bookings'); ?>">
     <div class="row g-2 align-items-end">
         <div class="col-md-3">

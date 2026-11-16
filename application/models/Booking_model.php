@@ -163,6 +163,35 @@ class Booking_model extends CI_Model
         );
     }
 
+    /**
+     * Today's workshop board: cars due today (pending/confirmed), cars in the
+     * workshop now, and unconfirmed bookings that need a call.
+     */
+    public function work_board($date = NULL, $limit = 15)
+    {
+        $date = $date ?: date('Y-m-d');
+        $base = function () {
+            $this->db->select('b.id, b.reference, b.status, b.preferred_date, b.created_at, u.name AS user_name, u.mobile AS user_mobile,
+                               v.vehicle_number, v.variant AS vehicle_variant, m.name AS vehicle_make, p.name AS package_name', FALSE)
+                     ->from(self::TABLE.' b')
+                     ->join('users u',           'u.id = b.user_id', 'left')
+                     ->join('vehicles v',        'v.id = b.vehicle_id', 'left')
+                     ->join('vehicle_makes m',   'm.id = v.make_id', 'left')
+                     ->join('service_packages p','p.id = b.package_id', 'left');
+        };
+        $base();
+        $due = $this->db->where('b.preferred_date', $date)->where_in('b.status', array('pending', 'confirmed'))
+                        ->order_by('b.id', 'ASC')->limit((int) $limit)->get()->result_array();
+        $base();
+        $in_progress = $this->db->where('b.status', 'in_progress')->order_by('b.updated_at', 'DESC')
+                                ->limit((int) $limit)->get()->result_array();
+        $base();
+        $unconfirmed = $this->db->where('b.status', 'pending')
+                                ->group_start()->where('b.preferred_date IS NULL', NULL, FALSE)->or_where('b.preferred_date !=', $date)->group_end()
+                                ->order_by('b.created_at', 'ASC')->limit((int) $limit)->get()->result_array();
+        return array('due' => $due, 'in_progress' => $in_progress, 'unconfirmed' => $unconfirmed);
+    }
+
     // --- internals ---------------------------------------------------------
 
     protected function _apply_filters(array $filters)

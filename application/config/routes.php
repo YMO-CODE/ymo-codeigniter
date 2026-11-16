@@ -24,12 +24,16 @@ if (ymo_is_admin_host_request()) {
     $route['dashboard'] = 'admin/dashboard';
 
     $route['bookings']                        = 'admin/bookings/index';
+    $route['bookings/new'] = 'admin/bookings/create';
+    $route['bookings/lookup'] = 'admin/bookings/lookup';
     $route['bookings/(:num)']                 = 'admin/bookings/view/$1';
     $route['bookings/(:num)/status']          = 'admin/bookings/update_status/$1';
     $route['bookings/(:num)/send-review']     = 'admin/bookings/send_review/$1';
     $route['bookings/(:num)/invoice']         = 'admin/bookings/create_invoice/$1';
     $route['bookings/(:num)/invoice/(:num)/edit'] = 'admin/bookings/edit_invoice/$1/$2';
     $route['bookings/(:num)/invoice/(:num)/pdf'] = 'admin/bookings/download_invoice/$1/$2';
+    $route['bookings/(:num)/whatsapp'] = 'admin/bookings/whatsapp_update/$1';
+    $route['bookings/(:num)/whatsapp/media/(:num)'] = 'admin/bookings/whatsapp_media/$1/$2';
 
     $route['online-accounts']                 = 'admin/online_accounts/index';
     $route['online-accounts/(:num)']          = 'admin/online_accounts/view/$1';
@@ -78,6 +82,7 @@ if (ymo_is_admin_host_request()) {
     $route['leads/(:num)/assign']              = 'admin/leads/assign/$1';
     $route['leads/(:num)/activity']            = 'admin/leads/add_activity/$1';
     $route['leads/(:num)/send-chat']           = 'admin/leads/send_chat/$1';
+    $route['leads/(:num)/log'] = 'admin/leads/log_call/$1';
     $route['leads/(:num)/stage']               = 'admin/leads/update_stage/$1';
     $route['leads/(:num)/archive']             = 'admin/leads/archive/$1';
     $route['leads/(:num)/convert']             = 'admin/leads/convert/$1';
@@ -85,6 +90,7 @@ if (ymo_is_admin_host_request()) {
     $route['tasks']                            = 'admin/tasks/index';
     $route['tasks/new']                        = 'admin/tasks/create';
     $route['tasks/(:num)/edit']                = 'admin/tasks/edit/$1';
+    $route['tasks/(:num)/snooze'] = 'admin/tasks/snooze/$1';
     $route['tasks/(:num)/done']                = 'admin/tasks/done/$1';
     $route['tasks/(:num)/skip']                = 'admin/tasks/skip/$1';
 
@@ -105,6 +111,8 @@ if (ymo_is_admin_host_request()) {
     $route['campaigns/(:num)/edit']            = 'admin/campaigns/edit/$1';
     $route['campaigns/(:num)/send']            = 'admin/campaigns/send/$1';
     $route['campaigns/(:num)/schedule']        = 'admin/campaigns/schedule/$1';
+    $route['whatsapp-templates'] = 'admin/wa_templates/index';
+    $route['whatsapp-templates/sync'] = 'admin/wa_templates/sync';
 
     $route['recruitment']                      = 'admin/recruitment/index';
     $route['recruitment/new']                  = 'admin/recruitment/create';
@@ -130,12 +138,16 @@ if (ymo_is_admin_host_request()) {
     $route['admin/logout']                    = 'admin/auth/logout';
     $route['admin/dashboard']                 = 'admin/dashboard';
     $route['admin/bookings']                   = 'admin/bookings/index';
+    $route['admin/bookings/new'] = 'admin/bookings/create';
+    $route['admin/bookings/lookup'] = 'admin/bookings/lookup';
     $route['admin/bookings/(:num)']            = 'admin/bookings/view/$1';
     $route['admin/bookings/(:num)/status']     = 'admin/bookings/update_status/$1';
     $route['admin/bookings/(:num)/send-review'] = 'admin/bookings/send_review/$1';
     $route['admin/bookings/(:num)/invoice'] = 'admin/bookings/create_invoice/$1';
     $route['admin/bookings/(:num)/invoice/(:num)/edit'] = 'admin/bookings/edit_invoice/$1/$2';
     $route['admin/bookings/(:num)/invoice/(:num)/pdf'] = 'admin/bookings/download_invoice/$1/$2';
+    $route['admin/bookings/(:num)/whatsapp'] = 'admin/bookings/whatsapp_update/$1';
+    $route['admin/bookings/(:num)/whatsapp/media/(:num)'] = 'admin/bookings/whatsapp_media/$1/$2';
     $route['admin/online-accounts']           = 'admin/online_accounts/index';
     $route['admin/online-accounts/(:num)']    = 'admin/online_accounts/view/$1';
     $route['admin/customers']                 = 'admin/contacts/index';
@@ -176,12 +188,14 @@ if (ymo_is_admin_host_request()) {
     $route['admin/leads/(:num)/assign']        = 'admin/leads/assign/$1';
     $route['admin/leads/(:num)/activity']      = 'admin/leads/add_activity/$1';
     $route['admin/leads/(:num)/send-chat']     = 'admin/leads/send_chat/$1';
+    $route['admin/leads/(:num)/log'] = 'admin/leads/log_call/$1';
     $route['admin/leads/(:num)/stage']         = 'admin/leads/update_stage/$1';
     $route['admin/leads/(:num)/archive']       = 'admin/leads/archive/$1';
     $route['admin/leads/(:num)/convert']       = 'admin/leads/convert/$1';
     $route['admin/tasks']                      = 'admin/tasks/index';
     $route['admin/tasks/new']                  = 'admin/tasks/create';
     $route['admin/tasks/(:num)/edit']          = 'admin/tasks/edit/$1';
+    $route['admin/tasks/(:num)/snooze'] = 'admin/tasks/snooze/$1';
     $route['admin/tasks/(:num)/done']          = 'admin/tasks/done/$1';
     $route['admin/tasks/(:num)/skip']          = 'admin/tasks/skip/$1';
     $route['admin/contacts']                   = 'admin/contacts/index';
@@ -200,6 +214,8 @@ if (ymo_is_admin_host_request()) {
     $route['admin/campaigns/(:num)/edit']      = 'admin/campaigns/edit/$1';
     $route['admin/campaigns/(:num)/send']      = 'admin/campaigns/send/$1';
     $route['admin/campaigns/(:num)/schedule']  = 'admin/campaigns/schedule/$1';
+    $route['admin/whatsapp-templates'] = 'admin/wa_templates/index';
+    $route['admin/whatsapp-templates/sync'] = 'admin/wa_templates/sync';
     $route['admin/recruitment']                = 'admin/recruitment/index';
     $route['admin/recruitment/new']            = 'admin/recruitment/create';
     $route['admin/recruitment/(:num)']         = 'admin/recruitment/view/$1';
@@ -307,12 +323,16 @@ if (ymo_is_admin_host_request()) {
     $route['admin/logout'] = 'admin/auth/logout';
     $route['admin/dashboard'] = 'admin/dashboard';
     $route['admin/bookings'] = 'admin/bookings/index';
+    $route['admin/bookings/new'] = 'admin/bookings/create';
+    $route['admin/bookings/lookup'] = 'admin/bookings/lookup';
     $route['admin/bookings/(:num)'] = 'admin/bookings/view/$1';
     $route['admin/bookings/(:num)/status'] = 'admin/bookings/update_status/$1';
     $route['admin/bookings/(:num)/send-review'] = 'admin/bookings/send_review/$1';
     $route['admin/bookings/(:num)/invoice'] = 'admin/bookings/create_invoice/$1';
     $route['admin/bookings/(:num)/invoice/(:num)/edit'] = 'admin/bookings/edit_invoice/$1/$2';
     $route['admin/bookings/(:num)/invoice/(:num)/pdf'] = 'admin/bookings/download_invoice/$1/$2';
+    $route['admin/bookings/(:num)/whatsapp'] = 'admin/bookings/whatsapp_update/$1';
+    $route['admin/bookings/(:num)/whatsapp/media/(:num)'] = 'admin/bookings/whatsapp_media/$1/$2';
     $route['admin/online-accounts'] = 'admin/online_accounts/index';
     $route['admin/online-accounts/(:num)'] = 'admin/online_accounts/view/$1';
     $route['admin/customers'] = 'admin/contacts/index';
@@ -353,12 +373,14 @@ if (ymo_is_admin_host_request()) {
     $route['admin/leads/(:num)/assign'] = 'admin/leads/assign/$1';
     $route['admin/leads/(:num)/activity'] = 'admin/leads/add_activity/$1';
     $route['admin/leads/(:num)/send-chat'] = 'admin/leads/send_chat/$1';
+    $route['admin/leads/(:num)/log'] = 'admin/leads/log_call/$1';
     $route['admin/leads/(:num)/stage'] = 'admin/leads/update_stage/$1';
     $route['admin/leads/(:num)/archive'] = 'admin/leads/archive/$1';
     $route['admin/leads/(:num)/convert'] = 'admin/leads/convert/$1';
     $route['admin/tasks'] = 'admin/tasks/index';
     $route['admin/tasks/new'] = 'admin/tasks/create';
     $route['admin/tasks/(:num)/edit'] = 'admin/tasks/edit/$1';
+    $route['admin/tasks/(:num)/snooze'] = 'admin/tasks/snooze/$1';
     $route['admin/tasks/(:num)/done'] = 'admin/tasks/done/$1';
     $route['admin/tasks/(:num)/skip'] = 'admin/tasks/skip/$1';
     $route['admin/contacts'] = 'admin/contacts/index';
@@ -377,6 +399,8 @@ if (ymo_is_admin_host_request()) {
     $route['admin/campaigns/(:num)/edit'] = 'admin/campaigns/edit/$1';
     $route['admin/campaigns/(:num)/send'] = 'admin/campaigns/send/$1';
     $route['admin/campaigns/(:num)/schedule'] = 'admin/campaigns/schedule/$1';
+    $route['admin/whatsapp-templates'] = 'admin/wa_templates/index';
+    $route['admin/whatsapp-templates/sync'] = 'admin/wa_templates/sync';
     $route['admin/recruitment'] = 'admin/recruitment/index';
     $route['admin/recruitment/new'] = 'admin/recruitment/create';
     $route['admin/recruitment/(:num)'] = 'admin/recruitment/view/$1';

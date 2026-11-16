@@ -15,7 +15,7 @@
 
 <div class="row g-3 mb-3">
     <div class="col-md-3"><div class="md-card-elevated"><p class="ymo-muted small mb-1">Total leads</p><h3><?= (int) $conversion['total']; ?></h3></div></div>
-    <div class="col-md-3"><div class="md-card-elevated"><p class="ymo-muted small mb-1">Converted</p><h3><?= (int) $conversion['converted']; ?></h3></div></div>
+    <div class="col-md-3"><div class="md-card-elevated"><p class="ymo-muted small mb-1">Booked</p><h3><?= (int) $conversion['converted']; ?></h3></div></div>
     <div class="col-md-3"><div class="md-card-elevated"><p class="ymo-muted small mb-1">Conversion rate</p><h3><?= html_escape($conversion['rate']); ?>%</h3></div></div>
     <div class="col-md-3"><div class="md-card-elevated"><p class="ymo-muted small mb-1">Revenue (invoices)</p><h3>₹<?= number_format((float) ($revenue['total'] ?? 0), 0); ?></h3></div></div>
 </div>
@@ -61,7 +61,7 @@
     <div class="col-lg-6">
         <div class="ymo-card">
             <h6>Lead sources</h6>
-            <table class="ymo-table"><thead><tr><th>Source</th><th>Leads</th><th>Converted</th></tr></thead>
+            <table class="ymo-table"><thead><tr><th>Source</th><th>Leads</th><th>Booked</th></tr></thead>
             <tbody>
             <?php foreach ($sources as $s): ?>
                 <tr><td><?= html_escape($s['label']); ?></td><td><?= (int) $s['total']; ?></td><td><?= (int) $s['converted']; ?></td></tr>
@@ -72,7 +72,7 @@
     <div class="col-lg-6">
         <div class="ymo-card">
             <h6>Team performance</h6>
-            <table class="ymo-table"><thead><tr><th>Member</th><th>Leads</th><th>Converted</th><th>Tasks done</th></tr></thead>
+            <table class="ymo-table"><thead><tr><th>Member</th><th>Leads</th><th>Booked</th><th>Tasks done</th></tr></thead>
             <tbody>
             <?php foreach ($team as $m): ?>
                 <tr><td><?= html_escape($m['name']); ?></td><td><?= (int) $m['leads']; ?></td><td><?= (int) $m['converted']; ?></td><td><?= (int) $m['tasks_done']; ?></td></tr>

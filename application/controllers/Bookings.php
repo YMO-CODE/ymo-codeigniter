@@ -245,6 +245,10 @@ class Bookings extends MY_Controller
 
         $this->session->unset_userdata(self::DRAFT_KEY);
 
+        // CRM: link to the customer record and mark a matching open lead Booked.
+        $this->load->library('crm_booking_service');
+        $this->crm_booking_service->link_booking($booking_id);
+
         $this->load->library(array('sms_gateway', 'mailer'));
         $booking = $this->booking_model->find_detailed($booking_id);
         $this->_notify_user_on_create($booking);
@@ -327,12 +331,12 @@ class Bookings extends MY_Controller
 
     protected function _notify_user_on_create(array $booking)
     {
-        $sms_ok = $this->sms_gateway->send_template($booking['user_mobile'], 'booking_confirmed', array(
+        $this->load->library('customer_notifier');
+        $this->customer_notifier->notify($booking['user_mobile'], 'booking_confirmed', array(
             'name'    => strtok($booking['user_name'], ' '),
             'ref'     => $booking['reference'],
             'package' => $booking['package_name'],
-        ));
-        ymo_sms_log('booking.create', 'booking_confirmed', $booking['user_mobile'], $sms_ok, $this->sms_gateway);
+        ), array('context' => 'booking.create', 'booking_id' => (int) $booking['id']));
 
         // Email confirmation
         $subject = 'Your booking is confirmed - '.$booking['reference'];

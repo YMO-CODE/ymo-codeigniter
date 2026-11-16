@@ -39,15 +39,89 @@ class Crm_campaign_model extends CI_Model
         $this->db->where('id', (int) $id)->update(self::TABLE, $payload);
     }
 
+    /**
+     * Campaigns cron should work on: scheduled ones that are due, plus ones
+     * left in 'sending' (e.g. "Send now" only dispatches the first batch
+     * from the web request; cron finishes the rest).
+     */
     public function due_scheduled($limit = 5)
     {
         return $this->db
-            ->where('status', 'scheduled')
-            ->where('scheduled_at <=', date('Y-m-d H:i:s'))
+            ->group_start()
+                ->where('status', 'sending')
+                ->or_group_start()
+                    ->where('status', 'scheduled')
+                    ->where('scheduled_at <=', date('Y-m-d H:i:s'))
+                ->group_end()
+            ->group_end()
             ->order_by('scheduled_at', 'ASC')
             ->limit((int) $limit)
             ->get(self::TABLE)
             ->result_array();
+    }
+
+    public function has_recipients($campaign_id)
+    {
+        return $this->db->where('campaign_id', (int) $campaign_id)->count_all_results(self::RECIP_TABLE) > 0;
+    }
+
+    /** WhatsApp delivery receipts: delivered / read / failed after send. */
+    public function delivery_stats($campaign_id)
+    {
+        $out = array('delivered' => 0, 'read' => 0, 'failed' => 0);
+        if (!$this->db->field_exists('delivery_status', self::RECIP_TABLE)) {
+            return $out;
+        }
+        $rows = $this->db
+            ->select('delivery_status, COUNT(*) AS cnt')
+            ->where('campaign_id', (int) $campaign_id)
+            ->where('delivery_status IS NOT NULL', NULL, FALSE)
+            ->group_by('delivery_status')
+            ->get(self::RECIP_TABLE)
+            ->result_array();
+        foreach ($rows as $r) {
+            if (isset($out[$r['delivery_status']])) {
+                $out[$r['delivery_status']] = (int) $r['cnt'];
+            }
+        }
+        // "read" implies delivered.
+        $out['delivered'] += $out['read'];
+        return $out;
+    }
+
+    /** Apply a WhatsApp webhook receipt to a campaign recipient row. */
+    public function apply_wa_status($wa_message_id, $status, $error = '')
+    {
+        if ($wa_message_id === '' || !$this->db->field_exists('wa_message_id', self::RECIP_TABLE)) {
+            return 0;
+        }
+        $row = $this->db->get_where(self::RECIP_TABLE, array('wa_message_id' => $wa_message_id))->row_array();
+        if (!$row) {
+            return 0;
+        }
+        $now = date('Y-m-d H:i:s');
+        $patch = array();
+        $cur = (string) $row['delivery_status'];
+        if ($status === 'delivered' && !in_array($cur, array('delivered', 'read'), TRUE)) {
+            $patch = array('delivery_status' => 'delivered', 'delivered_at' => $now);
+        } elseif ($status === 'read' && $cur !== 'read') {
+            $patch = array('delivery_status' => 'read', 'read_at' => $now);
+            if (empty($row['delivered_at'])) {
+                $patch['delivered_at'] = $now;
+            }
+        } elseif ($status === 'failed') {
+            $patch = array('delivery_status' => 'failed', 'status' => 'failed');
+            if ($error !== '') {
+                $patch['error_message'] = substr($error, 0, 500);
+            }
+        } elseif ($status === 'sent' && $cur === '') {
+            $patch = array('delivery_status' => 'sent');
+        }
+        if (!$patch) {
+            return 0;
+        }
+        $this->db->where('id', (int) $row['id'])->update(self::RECIP_TABLE, $patch);
+        return 1;
     }
 
     public function recipient_stats($campaign_id)
@@ -90,9 +164,13 @@ class Crm_campaign_model extends CI_Model
             ->result_array();
     }
 
-    public function mark_recipient($id, $status, $error = NULL)
+    public function mark_recipient($id, $status, $error = NULL, $wa_message_id = NULL)
     {
         $patch = array('status' => $status);
+        if ($wa_message_id) {
+            $patch['wa_message_id'] = (string) $wa_message_id;
+            $patch['delivery_status'] = 'sent';
+        }
         if ($status === 'sent') {
             $patch['sent_at'] = date('Y-m-d H:i:s');
         }
@@ -137,6 +215,7 @@ class Crm_campaign_model extends CI_Model
                     'mobile' => $l['mobile'],
                     'email_opt_out' => 0,
                     'sms_opt_out'   => 0,
+                    'whatsapp_opt_out' => 0,
                 );
             }
             return $this->_contacts_to_recipients($contacts, $channel);
@@ -158,6 +237,22 @@ class Crm_campaign_model extends CI_Model
         $ci = &get_instance();
         $batch = (int) $ci->config->item('crm_campaign_batch_size');
         $tpl   = $ci->config->item('crm_sms_campaign_tpl');
+
+        $wa_tpl = NULL;
+        $wa_params = array();
+        if ($camp['channel'] === 'whatsapp') {
+            $ci->load->library('crm_messaging');
+            $ci->load->model(array('crm_wa_template_model', 'crm_wa_message_model'));
+            $wa_tpl = !empty($camp['wa_template_id']) ? $ci->crm_wa_template_model->find($camp['wa_template_id']) : NULL;
+            $wa_cfg = $this->wa_config($camp);
+            $wa_params = $wa_cfg['params'];
+            if (!$wa_tpl || $wa_tpl['status'] !== 'APPROVED' || !$ci->crm_messaging->can_send_whatsapp()) {
+                // Do not burn the recipient list: leave everything pending and stop.
+                $this->update($campaign_id, array('status' => 'failed'));
+                log_message('error', '[crm_campaign] #'.$campaign_id.' WhatsApp template missing/not approved or WhatsApp not configured.');
+                return 0;
+            }
+        }
 
         $this->update($campaign_id, array('status' => 'sending'));
         $pending = $this->pending_recipients($campaign_id, $batch);
@@ -181,6 +276,32 @@ class Crm_campaign_model extends CI_Model
                 if (!$ok && !$err) {
                     $err = $sms->last_error();
                 }
+            } elseif ($r['channel'] === 'whatsapp' && !empty($r['mobile'])) {
+                $params = array();
+                foreach (array_slice(array_pad($wa_params, (int) $wa_tpl['param_count'], ''), 0, (int) $wa_tpl['param_count']) as $p) {
+                    $params[] = $this->_fill_wa_placeholders((string) $p, $r);
+                }
+                $res = $ci->crm_messaging->send_whatsapp_template(
+                    $r['mobile'], $wa_tpl['name'], $wa_tpl['language'], $params,
+                    $this->_campaign_wa_header($wa_tpl, $wa_cfg['header_link'])
+                );
+                $ok = $res['ok'];
+                $err = $ok ? '' : ($ci->crm_messaging->last_error() ?: 'WhatsApp send failed');
+                $ci->crm_wa_message_model->log(array(
+                    'wa_message_id' => $res['message_id'],
+                    'phone'         => $r['mobile'],
+                    'direction'     => 'out',
+                    'kind'          => 'template',
+                    'template_name' => $wa_tpl['name'],
+                    'body'          => implode(' | ', $params),
+                    'context_type'  => 'campaign',
+                    'context_id'    => (int) $campaign_id,
+                    'status'        => $ok ? 'sent' : 'failed',
+                    'error'         => $err ?: NULL,
+                ));
+                $this->mark_recipient($r['id'], $ok ? 'sent' : 'failed', $err ?: NULL, $res['message_id']);
+                if ($ok) { $sent++; }
+                continue;
             } else {
                 $err = 'Missing destination';
             }
@@ -195,10 +316,100 @@ class Crm_campaign_model extends CI_Model
         return $sent;
     }
 
+    /** {name} / {first_name} / {mobile} placeholders in campaign template variables. */
+    protected function _fill_wa_placeholders($value, array $recipient)
+    {
+        $name = trim((string) ($recipient['name'] ?? ''));
+        $first = $name !== '' ? strtok($name, ' ') : '';
+        $out = strtr($value, array(
+            '{name}'       => $name !== '' ? $name : 'there',
+            '{first_name}' => $first !== '' ? $first : 'there',
+            '{mobile}'     => (string) ($recipient['mobile'] ?? ''),
+        ));
+        return trim($out) !== '' ? $out : '-';
+    }
+
+    /**
+     * Decoded wa_params_json: {"params": ["{first_name}", "20% off"], "header_link": "https://…"}
+     *
+     * @return array{params:string[],header_link:string}
+     */
+    public function wa_config(array $camp)
+    {
+        $raw = json_decode((string) ($camp['wa_params_json'] ?? ''), TRUE);
+        if (!is_array($raw)) {
+            $raw = array();
+        }
+        $params = isset($raw['params']) && is_array($raw['params']) ? $raw['params'] : array_values(array_filter($raw, 'is_string'));
+        return array(
+            'params'      => array_map('strval', $params),
+            'header_link' => trim((string) ($raw['header_link'] ?? '')),
+        );
+    }
+
+    /** Media header for a WhatsApp campaign template (needs a public https link). */
+    protected function _campaign_wa_header(array $tpl, $link)
+    {
+        $type = (string) ($tpl['header_type'] ?? '');
+        if (!in_array($type, array('image', 'document', 'video'), TRUE) || $link === '') {
+            return NULL;
+        }
+        return array('type' => $type, 'link' => $link);
+    }
+
+    /** Last 10 digits of every number that replied STOP / was opted out of WhatsApp. */
+    protected function _whatsapp_opted_out_numbers()
+    {
+        if (!$this->db->field_exists('whatsapp_opt_out', 'crm_contacts')) {
+            return array();
+        }
+        $rows = $this->db->select('mobile')->where('whatsapp_opt_out', 1)->get('crm_contacts')->result_array();
+        $out = array();
+        foreach ($rows as $r) {
+            $d = substr(preg_replace('/\D/', '', (string) $r['mobile']), -10);
+            if ($d !== '') {
+                $out[$d] = TRUE;
+            }
+        }
+        // Numbers that sent STOP but aren't saved as contacts (e.g. open leads).
+        if ($this->db->table_exists('crm_wa_messages')) {
+            $words = (array) get_instance()->config->item('crm_whatsapp_opt_out_words');
+            if ($words) {
+                $rows = $this->db->select('phone')->distinct()
+                    ->where('direction', 'in')
+                    ->where('LOWER(TRIM(body)) IN ('.implode(',', array_map(array($this->db, 'escape'), $words)).')', NULL, FALSE)
+                    ->get('crm_wa_messages')->result_array();
+                foreach ($rows as $r) {
+                    $d = substr(preg_replace('/\D/', '', (string) $r['phone']), -10);
+                    if ($d !== '') {
+                        $out[$d] = TRUE;
+                    }
+                }
+            }
+        }
+        return $out;
+    }
+
     protected function _contacts_to_recipients(array $contacts, $channel)
     {
         $out = array();
+        $wa_seen = array();
+        $wa_blocked = $channel === 'whatsapp' ? $this->_whatsapp_opted_out_numbers() : array();
         foreach ($contacts as $c) {
+            if ($channel === 'whatsapp') {
+                $key = substr(preg_replace('/\D/', '', (string) ($c['mobile'] ?? '')), -10);
+                if (strlen($key) < 10 || !empty($c['whatsapp_opt_out']) || isset($wa_blocked[$key]) || isset($wa_seen[$key])) {
+                    continue;
+                }
+                $wa_seen[$key] = TRUE;
+                $out[] = array(
+                    'channel' => 'whatsapp',
+                    'email'   => $c['email'] ?? '',
+                    'mobile'  => $c['mobile'],
+                    'name'    => $c['name'],
+                );
+                continue;
+            }
             if (in_array($channel, array('email', 'both'), TRUE) && !empty($c['email']) && empty($c['email_opt_out'])) {
                 $out[] = array(
                     'channel' => 'email',

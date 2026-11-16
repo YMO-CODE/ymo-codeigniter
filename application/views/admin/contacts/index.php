@@ -41,6 +41,13 @@
                 <?php endforeach; ?>
             </select>
         </div>
+        <div class="col-md-3">
+            <select name="account" class="form-select">
+                <option value="">Any customer</option>
+                <option value="yes" <?= ($filters['account'] ?? '') === 'yes' ? 'selected' : ''; ?>>Has website account</option>
+                <option value="no" <?= ($filters['account'] ?? '') === 'no' ? 'selected' : ''; ?>>No website account</option>
+            </select>
+        </div>
         <div class="col-md-2"><button class="btn btn-primary w-100">Filter</button></div>
     </div>
 </form>
@@ -107,9 +114,9 @@
                 <?php if ($can_edit): ?>
                     <td><input type="checkbox" class="contact-row-check" name="contact_ids[]" value="<?= (int) $c['id']; ?>"></td>
                 <?php endif; ?>
-                <td><?= html_escape($c['name']); ?></td>
+                <td><a href="<?= admin_url('customers/'.$c['id']); ?>" class="fw-semibold"><?= html_escape($c['name']); ?></a><?php if (!empty($c['user_id'])): ?> <span class="badge bg-success-subtle text-success-emphasis border" title="Has a website account">Account</span><?php endif; ?></td>
                 <td class="small"><?= html_escape($c['mobile']); ?></td>
-                <td class="small"><?= html_escape($c['email']); ?></td>
+                <td class="small"><?= ymo_is_placeholder_email($c['email']) ? '' : html_escape($c['email']); ?></td>
                 <td class="small"><?= html_escape($c['company']); ?></td>
                 <td class="text-end"><a href="<?= admin_url('customers/'.$c['id']); ?>" class="btn btn-sm btn-outline-primary">Open</a></td>
             </tr>

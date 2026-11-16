@@ -12,7 +12,7 @@ class Bookings extends Admin_Controller
     {
         parent::__construct();
         $this->load->model(array('booking_model', 'reminder_model', 'package_model', 'booking_invoice_model'));
-        $this->load->library(array('sms_gateway', 'mailer', 'audit', 'invoice_pdf'));
+        $this->load->library(array('sms_gateway', 'mailer', 'audit', 'invoice_pdf', 'customer_notifier'));
     }
 
     public function index()
@@ -43,6 +43,157 @@ class Bookings extends Admin_Controller
         ));
     }
 
+    /**
+     * "Book service" for a phone / WhatsApp / walk-in customer (CRM v6).
+     *   bookings/new?lead_id=12      prefilled from a lead (lead → Booked)
+     *   bookings/new?contact_id=34   prefilled from a customer record
+     */
+    public function create()
+    {
+        $this->require_perm('bookings.edit');
+        $this->load->model(array('vehicle_model', 'user_model'));
+        $this->load->library('crm_booking_service');
+
+        $lead_id    = (int) ($this->input->post('lead_id') ?: $this->input->get('lead_id'));
+        $contact_id = (int) ($this->input->post('contact_id') ?: $this->input->get('contact_id'));
+        $lead = $contact = NULL;
+        if ($lead_id && $this->db->table_exists('crm_leads')) {
+            $this->load->model('crm_lead_model');
+            $lead = $this->crm_lead_model->find($lead_id);
+        }
+        if ($contact_id && $this->db->table_exists('crm_contacts')) {
+            $this->load->model('crm_contact_model');
+            $contact = $this->crm_contact_model->find($contact_id);
+        }
+
+        if ($this->input->method() === 'post') {
+            return $this->_store_admin_booking($lead, $contact);
+        }
+
+        $prefill = array(
+            'name'    => $lead['name'] ?? ($contact['name'] ?? ''),
+            'mobile'  => crm_mobile10($lead['mobile'] ?? ($contact['mobile'] ?? '')),
+            'email'   => $lead['email'] ?? ($contact['email'] ?? ''),
+            'area'    => $lead['address'] ?? '',
+            'remarks' => $lead ? trim(($lead['car_type'] ? 'Car: '.$lead['car_type']."\n" : '').($lead['message'] ?? '')) : '',
+        );
+        $user = NULL;
+        if (!empty($contact['user_id'])) {
+            $user = $this->user_model->find((int) $contact['user_id']);
+        }
+        if (!$user && $prefill['mobile'] !== '') {
+            $user = $this->crm_booking_service->find_user_by_mobile($prefill['mobile']);
+        }
+
+        $this->render('admin/bookings/create', array(
+            'title'    => 'Book service',
+            'lead'     => $lead,
+            'contact'  => $contact,
+            'prefill'  => $prefill,
+            'user'     => $user,
+            'vehicles' => $user ? $this->vehicle_model->for_user((int) $user['id']) : array(),
+            'makes'    => $this->vehicle_model->makes(),
+            'packages' => $this->package_model->list_active(FALSE),
+        ));
+    }
+
+    /** JSON: existing account + cars for a mobile (used by the Book service form). */
+    public function lookup()
+    {
+        $this->require_perm('bookings.edit');
+        $this->load->model('vehicle_model');
+        $this->load->library('crm_booking_service');
+        $user = $this->crm_booking_service->find_user_by_mobile((string) $this->input->get('mobile'));
+        $out = array('found' => FALSE);
+        if ($user) {
+            $cars = array();
+            foreach ($this->vehicle_model->for_user((int) $user['id']) as $v) {
+                $cars[] = array(
+                    'id'    => (int) $v['id'],
+                    'label' => trim($v['make_name'].' '.$v['variant']).' · '.$v['vehicle_number'],
+                );
+            }
+            $out = array(
+                'found'    => TRUE,
+                'name'     => $user['name'],
+                'email'    => ymo_is_placeholder_email($user['email']) ? '' : $user['email'],
+                'vehicles' => $cars,
+            );
+        }
+        $this->output->set_content_type('application/json')->set_output(json_encode($out));
+    }
+
+    protected function _store_admin_booking($lead, $contact)
+    {
+        $back = admin_url('bookings/new'.($lead ? '?lead_id='.$lead['id'] : ($contact ? '?contact_id='.$contact['id'] : '')));
+        $this->form_validation->set_rules('mobile', 'Mobile', 'trim|required|regex_match[/^[6-9]\d{9}$/]');
+        $this->form_validation->set_rules('name', 'Name', 'trim|required|max_length[120]');
+        $this->form_validation->set_rules('package_id', 'Package', 'required|is_natural_no_zero');
+        $this->form_validation->set_rules('preferred_date', 'Date', 'trim');
+        $this->form_validation->set_rules('remarks', 'Notes', 'trim|max_length[2000]');
+        if (!$this->form_validation->run()) {
+            $this->flash('error', strip_tags(validation_errors(' ', ' ')) ?: 'Check the form.');
+            redirect($back);
+        }
+
+        $mobile = $this->input->post('mobile');
+        $user = $this->crm_booking_service->find_user_by_mobile($mobile);
+        $new_account = FALSE;
+        if (!$user) {
+            $uid = $this->crm_booking_service->create_customer(
+                $this->input->post('name'), $mobile, $this->input->post('email'),
+                $this->input->post('area'), $this->input->post('city')
+            );
+            if (!$uid) {
+                $this->flash('error', $this->crm_booking_service->last_error());
+                redirect($back);
+            }
+            $user = $this->user_model->find($uid);
+            $new_account = TRUE;
+        }
+
+        $vehicle_id = (int) $this->input->post('vehicle_id');
+        $booking_id = $this->crm_booking_service->create_booking(array(
+            'user_id'        => (int) $user['id'],
+            'vehicle_id'     => $vehicle_id > 0 ? $vehicle_id : 0,
+            'make_id'        => (int) $this->input->post('make_id'),
+            'variant'        => $this->input->post('variant'),
+            'vehicle_number' => $this->input->post('vehicle_number'),
+            'package_id'     => (int) $this->input->post('package_id'),
+            'preferred_date' => $this->input->post('preferred_date'),
+            'remarks'        => $this->input->post('remarks'),
+            'status'         => $this->input->post('status') ?: 'confirmed',
+            'lead_id'        => $lead ? (int) $lead['id'] : NULL,
+            'admin_id'       => (int) $this->admin['id'],
+        ));
+        if (!$booking_id) {
+            $this->flash('error', $this->crm_booking_service->last_error());
+            redirect($back);
+        }
+
+        $booking = $this->booking_model->find_detailed($booking_id);
+        $notified = '';
+        if ($this->input->post('notify')) {
+            $ok = $this->customer_notifier->notify($booking['user_mobile'], 'booking_confirmed', array(
+                'name'    => strtok($booking['user_name'], ' '),
+                'ref'     => $booking['reference'],
+                'package' => $booking['package_name'],
+            ), array('context' => 'admin.booking_create', 'booking_id' => (int) $booking_id));
+            if (!ymo_is_placeholder_email($booking['user_email'])) {
+                $this->mailer->send_view($booking['user_email'], 'Your booking is confirmed - '.$booking['reference'],
+                    'emails/booking_confirmed', array('booking' => $booking));
+            }
+            $notified = $ok ? ' Confirmation sent by '.($this->customer_notifier->last_channel() === 'whatsapp' ? 'WhatsApp' : 'SMS').'.' : ' (Confirmation message failed.)';
+        }
+
+        $this->audit->log('admin', $this->admin['id'], 'booking.create_admin', 'booking', $booking_id, array(
+            'lead_id' => $lead ? (int) $lead['id'] : NULL,
+            'new_account' => $new_account,
+        ));
+        $this->flash('success', 'Booking '.$booking['reference'].' created'.($lead ? ' and the lead marked Booked' : '').'.'.$notified);
+        redirect(admin_url('bookings/'.$booking_id));
+    }
+
     public function view($id)
     {
         $this->require_perm('bookings.view');
@@ -61,6 +212,7 @@ class Bookings extends Admin_Controller
             'review_pending' => !empty($review),
             'review_eligible' => $this->_review_eligible($booking),
             'can_edit'  => function_exists('crm_can') ? crm_can('bookings.edit') : TRUE,
+            'wa'        => $this->_wa_panel_data($booking),
         ));
     }
 
@@ -138,11 +290,10 @@ class Bookings extends Admin_Controller
             redirect(admin_url('bookings/'.$id));
         }
 
-        $sms_ok = $this->sms_gateway->send_template($booking['user_mobile'], 'review_request', array(
+        $sms_ok = $this->customer_notifier->notify($booking['user_mobile'], 'review_request', array(
             'name' => strtok($booking['user_name'], ' '),
             'ref'  => $booking['reference'],
-        ));
-        ymo_sms_log('admin.review_request', 'review_request', $booking['user_mobile'], $sms_ok, $this->sms_gateway);
+        ), array('context' => 'admin.review_request', 'booking_id' => (int) $booking['id']));
         $this->load->helper('marketing');
         $mail_ok = $this->mailer->send_view(
             $booking['user_email'],
@@ -157,12 +308,12 @@ class Bookings extends Admin_Controller
                 $this->reminder_model->mark_sent($review['id']);
             } else {
                 $this->reminder_model->mark_failed($review['id'],
-                    'SMS: '.($this->sms_gateway->last_error() ?: 'fail').' / Mail: '.($this->mailer->last_error() ?: 'fail'));
+                    ($this->customer_notifier->last_error() ?: 'SMS: fail').' / Mail: '.($this->mailer->last_error() ?: 'fail'));
             }
         }
 
         $this->audit->log('admin', $this->admin['id'], 'booking.send_review', 'booking', $id, array(
-            'sms' => $sms_ok ? 'ok' : ($this->sms_gateway->last_error() ?: 'fail'),
+            'sms' => $sms_ok ? 'ok:'.$this->customer_notifier->last_channel() : ($this->customer_notifier->last_error() ?: 'fail'),
             'mail'=> $mail_ok ? 'ok' : ($this->mailer->last_error() ?: 'fail'),
         ));
         $this->flash($sms_ok || $mail_ok ? 'success' : 'error',
@@ -231,7 +382,280 @@ class Bookings extends Admin_Controller
         $this->_stream_invoice_pdf($invoice);
     }
 
+    /**
+     * WhatsApp update to the customer from the booking page: a message plus
+     * up to 5 photos and/or one PDF estimate.
+     *
+     * Inside the 24h customer-service window (customer messaged us recently)
+     * everything goes as free-form messages. Outside it, Meta only allows
+     * approved templates: photos go via `service_update` (image header) and
+     * a PDF via `estimate_sent` (document header).
+     */
+    public function whatsapp_update($id)
+    {
+        $this->require_perm('bookings.edit');
+        if ($this->input->method() !== 'post') { show_error('Method not allowed', 405); }
+        $back = admin_url('bookings/'.$id).'#wa-updates';
+
+        $booking = $this->booking_model->find_detailed($id);
+        if (!$booking) { show_404(); }
+
+        $this->load->library('crm_messaging');
+        $this->load->model('crm_wa_message_model');
+        if (!$this->crm_messaging->can_send_whatsapp()) {
+            $this->flash('error', 'WhatsApp Cloud API is not configured yet.');
+            redirect($back);
+        }
+        if (!$this->crm_wa_message_model->table_ready()) {
+            $this->flash('error', 'Run database/crm_migration_v5_whatsapp.sql first.');
+            redirect($back);
+        }
+        $phone = crm_whatsapp_e164($booking['user_mobile']);
+        if (strlen($phone) < 11) {
+            $this->flash('error', 'Customer has no valid mobile number.');
+            redirect($back);
+        }
+
+        $text = trim((string) $this->input->post('wa_message'));
+        if (mb_strlen($text) > 900) {
+            $this->flash('error', 'Keep the message under 900 characters.');
+            redirect($back);
+        }
+
+        $files = $this->_collect_wa_uploads((int) $booking['id']);
+        if ($files === NULL) {
+            redirect($back); // flash already set
+        }
+        if ($text === '' && !$files) {
+            $this->flash('error', 'Write a message or attach a photo / PDF.');
+            redirect($back);
+        }
+
+        $in_window = $this->crm_wa_message_model->in_service_window($phone);
+        $sent = 0;
+        $errors = array();
+
+        if ($in_window) {
+            $caption_used = FALSE;
+            $has_images = (bool) array_filter($files, function ($f) { return $f['type'] === 'image'; });
+            if ($text !== '' && !$has_images) {
+                $res = $this->crm_messaging->send_whatsapp_text($phone, $text);
+                $this->_log_wa_out($booking, $res, 'text', $text, NULL);
+                if ($res['ok']) {
+                    $sent++;
+                } else {
+                    $errors[] = $this->crm_messaging->last_error();
+                }
+                $caption_used = TRUE;
+            }
+            foreach ($files as $f) {
+                $media_id = $this->crm_messaging->upload_whatsapp_media($f['path'], $f['mime']);
+                if (!$media_id) {
+                    $errors[] = $f['name'].': '.$this->crm_messaging->last_error();
+                    continue;
+                }
+                $caption = '';
+                if (!$caption_used && $text !== '' && $f['type'] === 'image') {
+                    $caption = $text;
+                    $caption_used = TRUE;
+                }
+                $res = $this->crm_messaging->send_whatsapp_media($phone, $f['type'], $media_id, $caption,
+                    $f['type'] === 'document' ? $booking['reference'].'-estimate.pdf' : '');
+                $this->_log_wa_out($booking, $res, $f['type'], $caption !== '' ? $caption : $f['name'], $f['path']);
+                if ($res['ok']) {
+                    $sent++;
+                } else {
+                    $errors[] = $f['name'].': '.$this->crm_messaging->last_error();
+                }
+            }
+        } else {
+            $images = array_values(array_filter($files, function ($f) { return $f['type'] === 'image'; }));
+            $docs   = array_values(array_filter($files, function ($f) { return $f['type'] === 'document'; }));
+            if (!$images && !$docs) {
+                $this->flash('error', 'The customer has not messaged in the last 24 hours, so WhatsApp only allows approved templates. Attach at least one photo or the PDF estimate.');
+                redirect($back);
+            }
+            $n = count($images);
+            foreach ($images as $i => $f) {
+                $msg = $i === 0 ? ($text !== '' ? $text : 'Update on your car') : 'Photo '.($i + 1).' of '.$n;
+                $ok = $this->customer_notifier->notify($phone, 'service_update',
+                    array('ref' => $booking['reference'], 'msg' => $msg),
+                    array('image' => $f['path'], 'booking_id' => (int) $booking['id'], 'admin_id' => (int) $this->admin['id'],
+                          'force_whatsapp' => TRUE, 'sms_fallback' => FALSE, 'context' => 'admin.wa_service_update'));
+                if ($ok) {
+                    $sent++;
+                } else {
+                    $errors[] = $f['name'].': '.$this->customer_notifier->last_error();
+                }
+            }
+            foreach ($docs as $f) {
+                $ok = $this->customer_notifier->notify($phone, 'estimate_sent',
+                    array('ref' => $booking['reference'], 'msg' => ($text !== '' && !$images) ? $text : 'Estimate attached'),
+                    array('document' => $f['path'], 'document_name' => $booking['reference'].'-estimate.pdf',
+                          'booking_id' => (int) $booking['id'], 'admin_id' => (int) $this->admin['id'],
+                          'force_whatsapp' => TRUE, 'sms_fallback' => FALSE, 'context' => 'admin.wa_estimate'));
+                if ($ok) {
+                    $sent++;
+                } else {
+                    $errors[] = $f['name'].': '.$this->customer_notifier->last_error();
+                }
+            }
+        }
+
+        $this->audit->log('admin', $this->admin['id'], 'booking.whatsapp_update', 'booking', $id, array(
+            'files'     => count($files),
+            'in_window' => $in_window ? 'yes' : 'no',
+            'sent'      => $sent,
+            'errors'    => $errors,
+        ));
+
+        if ($sent && !$errors) {
+            $this->flash('success', 'WhatsApp update sent ('.$sent.' message'.($sent > 1 ? 's' : '').').');
+        } elseif ($sent) {
+            $this->flash('warning', 'Sent '.$sent.' message(s), but some failed: '.implode('; ', array_slice(array_filter($errors), 0, 3)));
+        } else {
+            $this->flash('error', 'WhatsApp update failed: '.implode('; ', array_slice(array_filter($errors), 0, 3)));
+        }
+        redirect($back);
+    }
+
+    /** Stream a photo/PDF that was sent from the booking page (admin only). */
+    public function whatsapp_media($booking_id, $message_id)
+    {
+        $this->require_perm('bookings.view');
+        $this->load->model('crm_wa_message_model');
+        $msg = $this->crm_wa_message_model->find($message_id);
+        if (!$msg || $msg['context_type'] !== 'booking' || (int) $msg['context_id'] !== (int) $booking_id || empty($msg['media_path'])) {
+            show_404();
+        }
+        $base = realpath((string) $this->config->item('crm_whatsapp_media_path'));
+        $file = realpath(FCPATH.'../'.$msg['media_path']);
+        if (!$base || !$file || strpos($file, $base.DIRECTORY_SEPARATOR) !== 0 || !is_file($file)) {
+            show_404();
+        }
+        $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+        $types = array('jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png', 'pdf' => 'application/pdf');
+        if (!isset($types[$ext])) {
+            show_404();
+        }
+        header('Content-Type: '.$types[$ext]);
+        header('Content-Disposition: inline; filename="'.basename($file).'"');
+        header('Content-Length: '.filesize($file));
+        header('X-Content-Type-Options: nosniff');
+        header('Cache-Control: private, max-age=86400');
+        readfile($file);
+        exit;
+    }
+
     // --- helpers -----------------------------------------------------------
+
+    /**
+     * Validate and store uploaded photos (wa_photos[]) + PDF (wa_pdf) under
+     * storage/whatsapp/booking_{id}/ (outside the public web root).
+     *
+     * @return array[]|null list of {path,mime,type,name}; NULL on validation error.
+     */
+    protected function _collect_wa_uploads($booking_id)
+    {
+        $max_bytes = (int) $this->config->item('crm_whatsapp_media_max_kb') * 1024;
+        $dir = rtrim((string) $this->config->item('crm_whatsapp_media_path'), '/\\').'/booking_'.(int) $booking_id.'/';
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $out = array();
+
+        $incoming = array();
+        if (!empty($_FILES['wa_photos']['name']) && is_array($_FILES['wa_photos']['name'])) {
+            foreach ($_FILES['wa_photos']['name'] as $i => $name) {
+                if ((int) $_FILES['wa_photos']['error'][$i] === UPLOAD_ERR_NO_FILE) {
+                    continue;
+                }
+                $incoming[] = array('name' => $name, 'tmp' => $_FILES['wa_photos']['tmp_name'][$i],
+                    'error' => (int) $_FILES['wa_photos']['error'][$i], 'size' => (int) $_FILES['wa_photos']['size'][$i],
+                    'allowed' => array('image/jpeg' => 'jpg', 'image/png' => 'png'), 'type' => 'image');
+            }
+        }
+        if (!empty($_FILES['wa_pdf']['name']) && (int) $_FILES['wa_pdf']['error'] !== UPLOAD_ERR_NO_FILE) {
+            $incoming[] = array('name' => $_FILES['wa_pdf']['name'], 'tmp' => $_FILES['wa_pdf']['tmp_name'],
+                'error' => (int) $_FILES['wa_pdf']['error'], 'size' => (int) $_FILES['wa_pdf']['size'],
+                'allowed' => array('application/pdf' => 'pdf'), 'type' => 'document');
+        }
+
+        $photo_count = count(array_filter($incoming, function ($f) { return $f['type'] === 'image'; }));
+        if ($photo_count > 5) {
+            $this->flash('error', 'Attach at most 5 photos at a time.');
+            return NULL;
+        }
+
+        foreach ($incoming as $f) {
+            $label = basename((string) $f['name']);
+            if ($f['error'] !== UPLOAD_ERR_OK || !is_uploaded_file($f['tmp'])) {
+                $this->flash('error', 'Upload failed for '.$label.' (error '.$f['error'].').');
+                return NULL;
+            }
+            if ($f['size'] > $max_bytes) {
+                $this->flash('error', $label.' is larger than '.(int) ($max_bytes / 1048576).' MB.');
+                return NULL;
+            }
+            $mime = $finfo->file($f['tmp']);
+            if (!isset($f['allowed'][$mime])) {
+                $this->flash('error', $label.': only JPG/PNG photos and PDF estimates are allowed.');
+                return NULL;
+            }
+            if (!is_dir($dir) && !@mkdir($dir, 0775, TRUE)) {
+                $this->flash('error', 'Cannot create storage folder for WhatsApp media (storage/whatsapp must be writable).');
+                return NULL;
+            }
+            $dest = $dir.date('Ymd-His').'-'.bin2hex(random_bytes(4)).'.'.$f['allowed'][$mime];
+            if (!move_uploaded_file($f['tmp'], $dest)) {
+                $this->flash('error', 'Could not save '.$label.'.');
+                return NULL;
+            }
+            $out[] = array('path' => $dest, 'mime' => $mime, 'type' => $f['type'], 'name' => basename((string) $f['name']));
+        }
+        return $out;
+    }
+
+    protected function _log_wa_out(array $booking, array $res, $kind, $body, $path)
+    {
+        $rel = NULL;
+        if ($path) {
+            $root = realpath(FCPATH.'..');
+            $real = realpath($path);
+            $rel = ($root && $real && strpos($real, $root) === 0)
+                ? ltrim(str_replace('\\', '/', substr($real, strlen($root))), '/')
+                : NULL;
+        }
+        $this->crm_wa_message_model->log(array(
+            'wa_message_id' => $res['message_id'] ?? NULL,
+            'phone'         => $booking['user_mobile'],
+            'direction'     => 'out',
+            'kind'          => $kind,
+            'body'          => $body,
+            'media_path'    => $rel,
+            'context_type'  => 'booking',
+            'context_id'    => (int) $booking['id'],
+            'status'        => !empty($res['ok']) ? 'sent' : 'failed',
+            'error'         => !empty($res['ok']) ? NULL : $this->crm_messaging->last_error(),
+            'admin_id'      => (int) $this->admin['id'],
+        ));
+    }
+
+    /** Data for the "WhatsApp update" card on the booking page. */
+    protected function _wa_panel_data(array $booking)
+    {
+        $this->load->library('crm_messaging');
+        $this->load->model('crm_wa_message_model');
+        $ready = $this->crm_messaging->can_send_whatsapp() && $this->crm_wa_message_model->table_ready();
+        $phone = crm_whatsapp_e164($booking['user_mobile']);
+        $this->config->load('whatsapp_template_library', TRUE);
+        return array(
+            'quick'     => (array) $this->config->item('wa_booking_quick_messages', 'whatsapp_template_library'),
+            'ready'     => $ready,
+            'migrated'  => $this->crm_wa_message_model->table_ready(),
+            'in_window' => $ready ? $this->crm_wa_message_model->in_service_window($phone) : FALSE,
+            'last_in'   => $ready ? $this->crm_wa_message_model->last_inbound_at($phone) : NULL,
+            'thread'    => $this->crm_wa_message_model->thread_for_booking($booking['id'], $phone, $booking['created_at'] ?? NULL, 30),
+        );
+    }
 
     protected function _review_eligible(array $booking)
     {
@@ -243,11 +667,10 @@ class Bookings extends Admin_Controller
 
     protected function _notify_customer_status(array $booking)
     {
-        $sms_ok = $this->sms_gateway->send_template($booking['user_mobile'], 'booking_status', array(
+        $this->customer_notifier->notify($booking['user_mobile'], 'booking_status', array(
             'ref'    => $booking['reference'],
             'status' => ymo_sms_status_label($booking['status']),
-        ));
-        ymo_sms_log('admin.booking_status', 'booking_status', $booking['user_mobile'], $sms_ok, $this->sms_gateway);
+        ), array('context' => 'admin.booking_status', 'booking_id' => (int) $booking['id']));
         $this->mailer->send_view(
             $booking['user_email'],
             'Booking update - '.$booking['reference'],
@@ -364,11 +787,16 @@ class Bookings extends Admin_Controller
 
         if ($notify) {
             $total_fmt = ymo_sms_dlt_number($invoice['grand_total']);
-            $sms_ok = $this->sms_gateway->send_template($booking['user_mobile'], 'invoice_sent', array(
+            $pdf_abs = (!empty($invoice['pdf_path']) && file_exists(FCPATH.$invoice['pdf_path'])) ? FCPATH.$invoice['pdf_path'] : '';
+            $sms_ok = $this->customer_notifier->notify($booking['user_mobile'], 'invoice_sent', array(
                 'ref'   => $booking['reference'],
                 'total' => $total_fmt,
+            ), array(
+                'context'       => 'admin.invoice_sent',
+                'booking_id'    => (int) $booking['id'],
+                'document'      => $pdf_abs,
+                'document_name' => $invoice['invoice_number'].'.pdf',
             ));
-            ymo_sms_log('admin.invoice_sent', 'invoice_sent', $booking['user_mobile'], $sms_ok, $this->sms_gateway);
             if ($sms_ok) {
                 $this->booking_invoice_model->mark_sms_sent($invoice['id']);
             }
@@ -399,7 +827,7 @@ class Bookings extends Admin_Controller
             'invoice_no' => $invoice['invoice_number'],
             'total'      => $invoice['grand_total'],
             'notify'     => $notify ? 'yes' : 'no',
-            'sms'        => $notify ? ($sms_ok ? 'ok' : ($this->sms_gateway->last_error() ?: 'fail')) : 'skip',
+            'sms'        => $notify ? ($sms_ok ? 'ok:'.$this->customer_notifier->last_channel() : ($this->customer_notifier->last_error() ?: 'fail')) : 'skip',
             'mail'       => $notify ? ($mail_ok ? 'ok' : ($this->mailer->last_error() ?: 'skip')) : 'skip',
         ));
 

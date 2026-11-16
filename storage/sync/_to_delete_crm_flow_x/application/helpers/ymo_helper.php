@@ -1,0 +1,383 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+/**
+ * YMO project helpers — small, dependency-free functions usable from any
+ * controller, library, model, or view.
+ *
+ * Autoloaded via application/config/autoload.php so they are available
+ * everywhere (web requests, CLI cron, etc.) without an explicit `load->helper`.
+ */
+
+if (!function_exists('ymo_user_is_verified')) {
+    /**
+     * Is this user "verified enough" to proceed past the OTP gate?
+     *
+     * In production: their `mobile_verified_at` column must be set.
+     * In development with `dev_auto_verify_otp` on: always TRUE — lets you
+     * test bookings without bouncing through SMS/OTP. The dev flag is
+     * hard-disabled in production, so this can never leak.
+     *
+     * @param array|null $user
+     * @return bool
+     */
+    function ymo_user_is_verified($user)
+    {
+        if (ENVIRONMENT !== 'production') {
+            $ci = &get_instance();
+            if ($ci->config->item('dev_auto_verify_otp')) {
+                return TRUE;
+            }
+        }
+        return !empty($user['mobile_verified_at']);
+    }
+}
+
+if (!function_exists('ymo_load_db_settings')) {
+    /**
+     * Overlay runtime values from the `settings` table on top of CI's config.
+     *
+     * The admin Settings page persists key/value rows to a DB table; without
+     * this loader those rows are never read back, so `$this->config->item('foo')`
+     * keeps returning the static default from `application/config/ymo.php`.
+     * Call this at the top of every entry path (web + CLI) and the saved
+     * values transparently win.
+     *
+     * Idempotent: querying the DB once per request is fine, and a static
+     * guard prevents repeats if a controller chain calls this twice.
+     */
+    function ymo_load_db_settings()
+    {
+        static $loaded = FALSE;
+        if ($loaded) {
+            return;
+        }
+        $loaded = TRUE;
+        $ci = &get_instance();
+        if (!isset($ci->db)) {
+            return;
+        }
+        try {
+            if (!$ci->db->table_exists('settings')) {
+                return;
+            }
+            $rows = ymo_get_cached_settings_rows($ci);
+            foreach ($rows as $r) {
+                $key = $r['setting_key'];
+                $val = $r['setting_value'];
+                if ($val === '' || $val === NULL) {
+                    continue;
+                }
+                if ($val === '0' || $val === '1' || ctype_digit((string) $val)) {
+                    $val = (int) $val;
+                }
+                $ci->config->set_item($key, $val);
+            }
+        } catch (Exception $e) {
+            log_message('error', 'ymo_load_db_settings: '.$e->getMessage());
+        }
+    }
+}
+
+if (!function_exists('ymo_get_cached_settings_rows')) {
+    /**
+     * Settings table rows, cached briefly to avoid a query on every request.
+     *
+     * @param CI_Controller $ci
+     * @return array
+     */
+    function ymo_get_cached_settings_rows($ci)
+    {
+        $cache_key = 'settings_rows';
+        $ci->load->driver('cache', array('adapter' => 'file', 'backup' => 'dummy'));
+        $rows = $ci->cache->get($cache_key);
+        if ($rows !== FALSE && is_array($rows)) {
+            return $rows;
+        }
+        $rows = $ci->db->get('settings')->result_array();
+        $ci->cache->save($cache_key, $rows, 120);
+        return $rows;
+    }
+}
+
+if (!function_exists('ymo_clear_settings_cache')) {
+    /** Drop cached settings after admin saves. */
+    function ymo_clear_settings_cache()
+    {
+        $ci = &get_instance();
+        $ci->load->driver('cache', array('adapter' => 'file', 'backup' => 'dummy'));
+        $ci->cache->delete('settings_rows');
+    }
+}
+
+if (!function_exists('ymo_clear_offers_cache')) {
+    /** Drop cached public offers payload after admin edits. */
+    function ymo_clear_offers_cache()
+    {
+        $ci = &get_instance();
+        $ci->load->driver('cache', array('adapter' => 'file', 'backup' => 'dummy'));
+        $ci->cache->delete('offers_active_public');
+    }
+}
+
+if (!function_exists('ymo_is_admin_host')) {
+    /**
+     * Is the current HTTP request served on the configured admin hostname?
+     * Always FALSE when YMO_ADMIN_APP_URL is unset (single-host local dev).
+     *
+     * @return bool
+     */
+    function ymo_is_admin_host()
+    {
+        return function_exists('ymo_is_admin_host_request') && ymo_is_admin_host_request();
+    }
+}
+
+if (!function_exists('ymo_is_marketing_host')) {
+    /**
+     * Is the current HTTP request served on the configured marketing hostname?
+     *
+     * @return bool
+     */
+    function ymo_is_marketing_host()
+    {
+        return function_exists('ymo_is_marketing_host_request') && ymo_is_marketing_host_request();
+    }
+}
+
+if (!function_exists('admin_url')) {
+    /**
+     * Build a URL into the admin panel. On the admin subdomain it uses
+     * site_url(short_path); on the booking host it uses YMO_ADMIN_APP_URL
+     * (absolute). When YMO_ADMIN_APP_URL is unset, falls back to /admin/*
+     * on the current origin (local dev).
+     *
+     * @param string $uri Path after the admin origin, e.g. "bookings/3" or "login"
+     * @return string
+     */
+    function admin_url($uri = '')
+    {
+        $uri = preg_replace('#^\s+|\s+$#', '', (string) $uri);
+        $uri = ltrim($uri, '/');
+
+        $admin_base = getenv('YMO_ADMIN_APP_URL');
+        if ($admin_base === FALSE || trim((string) $admin_base) === '') {
+            return $uri === '' ? site_url('admin') : site_url('admin/'.$uri);
+        }
+
+        if (function_exists('ymo_is_admin_host_request') && ymo_is_admin_host_request()) {
+            if ($uri === '') {
+                return site_url('dashboard');
+            }
+
+            return site_url($uri);
+        }
+
+        return rtrim(trim((string) $admin_base), '/').'/'.($uri === '' ? 'dashboard' : $uri);
+    }
+}
+
+if (!function_exists('ymo_admin_nav_path_normalized')) {
+    /**
+     * Normalized path for admin sidebar "active" highlighting: strips an
+     * optional leading "admin/" when someone still hits legacy paths on
+     * the admin hostname.
+     *
+     * @return string
+     */
+    function ymo_admin_nav_path_normalized()
+    {
+        $ci = &get_instance();
+        $path = strtolower(trim((string) $ci->uri->uri_string(), '/'));
+        if ($path === 'admin' || strpos($path, 'admin/') === 0) {
+            $path = preg_replace('#^admin/?#', '', $path);
+        }
+
+        return trim($path, '/');
+    }
+}
+
+if (!function_exists('admin_nav_active')) {
+    /**
+     * True when the current URI is this admin section (handles detail pages).
+     *
+     * @param string $section e.g. dashboard, bookings, customers, packages, settings
+     * @return bool
+     */
+    function admin_nav_active($section)
+    {
+        $section = strtolower(trim((string) $section, '/'));
+        $norm    = ymo_admin_nav_path_normalized();
+
+        if ($section === 'dashboard') {
+            return $norm === '' || $norm === 'dashboard';
+        }
+
+        if ($section === 'customers') {
+            return ($norm === 'customers' || strpos($norm, 'customers/') === 0)
+                || ($norm === 'contacts' || strpos($norm, 'contacts/') === 0);
+        }
+
+        if ($section === 'online-accounts') {
+            return ($norm === 'online-accounts' || strpos($norm, 'online-accounts/') === 0);
+        }
+
+        return ($norm === $section) || (strpos($norm, $section.'/') === 0);
+    }
+}
+
+if (!function_exists('ymo_deploy_session_epoch_path')) {
+    /** @return string */
+    function ymo_deploy_session_epoch_path()
+    {
+        return rtrim(FCPATH, '/\\').'/../storage/.session_epoch';
+    }
+}
+
+if (!function_exists('ymo_deploy_session_epoch')) {
+    /**
+     * Current deploy epoch (git commit). NULL if never set (local dev).
+     *
+     * @return string|null
+     */
+    function ymo_deploy_session_epoch()
+    {
+        $path = ymo_deploy_session_epoch_path();
+        if (!is_readable($path)) {
+            return NULL;
+        }
+        $v = trim((string) file_get_contents($path));
+        return $v !== '' ? $v : NULL;
+    }
+}
+
+if (!function_exists('ymo_stamp_admin_deploy_session')) {
+    /** Tag admin session with the active deploy epoch (call after admin login). */
+    function ymo_stamp_admin_deploy_session()
+    {
+        $epoch = ymo_deploy_session_epoch();
+        if ($epoch === NULL) {
+            return;
+        }
+        $ci = &get_instance();
+        if ($ci->session) {
+            $ci->session->set_userdata('_admin_deploy_epoch', $epoch);
+        }
+    }
+}
+
+if (!function_exists('ymo_stamp_deploy_session')) {
+    /** @deprecated Use ymo_stamp_admin_deploy_session() — customers are not invalidated on deploy. */
+    function ymo_stamp_deploy_session()
+    {
+        ymo_stamp_admin_deploy_session();
+    }
+}
+
+if (!function_exists('ymo_enforce_deploy_session')) {
+    /**
+     * Sign out admin sessions that predate the latest deploy.
+     * Customer (booking) sessions are kept across deploys.
+     */
+    function ymo_enforce_deploy_session()
+    {
+        $epoch = ymo_deploy_session_epoch();
+        if ($epoch === NULL) {
+            return;
+        }
+
+        $ci = &get_instance();
+        if (!$ci->session) {
+            return;
+        }
+
+        $uri = strtolower(trim((string) $ci->uri->uri_string(), '/'));
+        $skip = array('login', 'logout', 'signup', 'signup/verify', 'admin/login', 'admin/logout');
+        if (in_array($uri, $skip, TRUE) || strpos($uri, 'signup/') === 0) {
+            return;
+        }
+
+        if (empty($ci->session->userdata('admin'))) {
+            return;
+        }
+
+        $stored_epoch = $ci->session->userdata('_admin_deploy_epoch');
+        if ($stored_epoch === $epoch) {
+            return;
+        }
+
+        $ci->session->unset_userdata(array('admin', 'crm_import_file', '_admin_deploy_epoch', '_deploy_epoch'));
+        $ci->session->set_flashdata('info', 'You have been signed out because the app was updated. Please sign in again.');
+
+        $on_admin = (function_exists('ymo_is_admin_host_request') && ymo_is_admin_host_request())
+            || (function_exists('ymo_is_admin_host') && ymo_is_admin_host())
+            || strpos($uri, 'admin') === 0;
+        if ($on_admin) {
+            redirect(admin_url('login'));
+        }
+    }
+}
+
+if (!function_exists('ymo_sms_status_label')) {
+    /**
+     * Human-readable booking status for DLT SMS (alphanumeric tag — no underscores).
+     */
+    function ymo_sms_status_label($status)
+    {
+        $key = strtolower(str_replace(' ', '_', trim((string) $status)));
+        $map = array(
+            'pending'     => 'Pending',
+            'confirmed'   => 'Confirmed',
+            'in_progress' => 'In Progress',
+            'completed'   => 'Completed',
+            'cancelled'   => 'Cancelled',
+        );
+        return isset($map[$key]) ? $map[$key] : ucwords(str_replace('_', ' ', $key));
+    }
+}
+
+if (!function_exists('ymo_sms_dlt_number')) {
+    /**
+     * Format amounts for DLT {#number#} tags (digits; whole rupees without decimals).
+     */
+    function ymo_sms_dlt_number($amount)
+    {
+        $n = (float) $amount;
+        if ($n == floor($n)) {
+            return (string) (int) $n;
+        }
+        return number_format($n, 2, '.', '');
+    }
+}
+
+if (!function_exists('ymo_sms_log')) {
+    /** Log SMS dispatch result for ops debugging. */
+    function ymo_sms_log($context, $template_key, $mobile, $ok, $gateway = NULL)
+    {
+        if ($ok) {
+            log_message('info', sprintf('[sms] %s ok template=%s to=%s', $context, $template_key, $mobile));
+            return;
+        }
+        $err = ($gateway && method_exists($gateway, 'last_error')) ? $gateway->last_error() : 'unknown';
+        log_message('error', sprintf('[sms] %s fail template=%s to=%s err=%s', $context, $template_key, $mobile, $err));
+    }
+}
+
+if (!function_exists('ymo_is_placeholder_email')) {
+    /**
+     * Customers booked by phone from the admin panel get a placeholder email
+     * (users.email is required + unique). Never send mail to it.
+     */
+    function ymo_is_placeholder_email($email)
+    {
+        $email = strtolower(trim((string) $email));
+        return $email === '' || substr($email, -8) === '.invalid';
+    }
+}
+
+if (!function_exists('ymo_placeholder_email')) {
+    function ymo_placeholder_email($mobile)
+    {
+        return 'm'.preg_replace('/\D+/', '', (string) $mobile).'@phone-booking.invalid';
+    }
+}

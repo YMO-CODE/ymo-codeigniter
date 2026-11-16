@@ -26,7 +26,7 @@ $status_icons = array(
             <ul class="list-unstyled small mb-0">
                 <li class="mb-1"><span class="mi mi-sm mi-leading">phone</span><?= html_escape($user['mobile']); ?>
                     <?php if ($user['mobile_verified_at']): ?><span class="badge bg-success-subtle text-success ms-1"><span class="mi mi-sm">verified</span></span><?php endif; ?></li>
-                <li class="mb-1"><span class="mi mi-sm mi-leading">mail</span><?= html_escape($user['email']); ?>
+                <li class="mb-1"><span class="mi mi-sm mi-leading">mail</span><?= ymo_is_placeholder_email($user['email']) ? 'No email' : html_escape($user['email']); ?>
                     <?php if ($user['email_verified_at']): ?><span class="badge bg-success-subtle text-success ms-1"><span class="mi mi-sm">verified</span></span><?php endif; ?></li>
                 <li class="mb-1"><span class="mi mi-sm mi-leading">place</span><?= html_escape($user['area']); ?>, <?= html_escape($user['city']); ?></li>
             </ul>

@@ -20,7 +20,7 @@
             <tr>
                 <td><?= html_escape($u['name']); ?></td>
                 <td class="small"><?= html_escape($u['mobile']); ?></td>
-                <td class="small"><?= html_escape($u['email']); ?></td>
+                <td class="small"><?= ymo_is_placeholder_email($u['email']) ? '<span class="ymo-muted">-</span>' : html_escape($u['email']); ?></td>
                 <td class="small"><?= html_escape($u['city']); ?></td>
                 <td class="small"><?= html_escape(date('d M Y', strtotime($u['created_at']))); ?></td>
                 <td class="text-end"><a class="small" href="<?= admin_url('online-accounts/'.$u['id']); ?>">Open<span class="mi mi-sm mi-trailing">arrow_forward</span></a></td>

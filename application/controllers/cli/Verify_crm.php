@@ -112,29 +112,32 @@ class Verify_crm extends CI_Controller
 
     private function _check_nav_and_routes()
     {
-        $nav = FCPATH . '../application/views/layout/partials/admin_nav.php';
-        $crm = FCPATH . '../application/views/layout/partials/admin_crm_nav.php';
+        $nav = 'application/views/layout/partials/admin_nav.php';
         $routes = FCPATH . '../application/config/routes.php';
 
         foreach (array(
-            array($nav, 'Pipeline', 'Nav: Pipeline link'),
-            array($nav, "admin_url('customers')", 'Nav: Customers link'),
-            array($nav, "admin_url('online-accounts')", 'Nav: Online accounts link'),
-            array($nav, 'source=cold_call', 'Nav: Cold calling shortcut'),
-            array($nav, 'source=offline_marketing', 'Nav: Offline marketing shortcut'),
-            array($nav, 'source=instagram', 'Nav: Instagram shortcut'),
-            array($nav, 'source=referral', 'Nav: Referral shortcut'),
-            array($crm, "admin_url('reports')", 'Nav: Reports link'),
-            array($crm, "admin_url('tasks')", 'Nav: Follow-ups link'),
+            array($nav, "'Today'", 'Nav: Today'),
+            array($nav, "'Follow-ups'", 'Nav: Follow-ups'),
+            array($nav, "item('leads'", 'Nav: Leads'),
+            array($nav, "item('bookings'", 'Nav: Bookings'),
+            array($nav, "item('customers'", 'Nav: Customers'),
+            array($nav, "'Messages'", 'Nav: Messages'),
+            array($nav, "item('reports'", 'Nav: Reports'),
+            array($nav, '>Setup<', 'Nav: Setup group'),
         ) as $row) {
             $this->_file_contains($row[0], $row[1], $row[2]);
         }
+        $this->_file_contains('application/views/admin/leads/_toolbar.php', 'ymo-chips', 'Leads: source chips');
 
         $routes_content = file_get_contents($routes);
         foreach (array(
             "customers'",
             "online-accounts'",
             "leads/pipeline'",
+            "leads/(:num)/log'",
+            "bookings/new'",
+            "bookings/lookup'",
+            "tasks/(:num)/snooze'",
             "contacts'",
             "reports/export/revenue'",
             "reports/export/service-due'",
@@ -151,44 +154,28 @@ class Verify_crm extends CI_Controller
 
     private function _check_stage_logic()
     {
-        $this->load->model('crm_lead_model');
-        $m = $this->crm_lead_model;
-
-        $today = date('Y-m-d');
-        $cases = array(
-            array(date('Y-m-d H:i:s', strtotime('-1 day')), 'hot_lead', 'Past date → Hot Lead'),
-            array($today . ' 10:00:00', 'hot_lead', 'Today → Hot Lead'),
-            array(date('Y-m-d H:i:s', strtotime('+3 days')), 'followup_next_week', '+3 days → Next Week'),
-            array(date('Y-m-d H:i:s', strtotime('+7 days')), 'followup_next_week', '+7 days → Next Week'),
-            array(date('Y-m-d H:i:s', strtotime('+15 days')), 'followup_next_month', '+15 days → Next Month'),
-            array(date('Y-m-d H:i:s', strtotime('+30 days')), 'followup_next_month', '+30 days → Next Month'),
-            array(date('Y-m-d H:i:s', strtotime('+45 days')), 'later', '+45 days → Later'),
-            array(NULL, 'later', 'No date → Later'),
-        );
-
-        foreach ($cases as $c) {
-            $got = $m->compute_stage_from_followup($c[0]);
-            $this->_assert($got === $c[1], "{$c[2]} (got {$got})");
-        }
-
         $stages = crm_lead_stages();
-        $expected = array(
-            'hot_lead', 'warm_lead', 'followup_next_week', 'followup_next_month',
-            'later', 'quote_sent', 'lost',
-        );
-        $this->_assert(array_keys($stages) === $expected, 'crm_lead_stages() has 7 stages in order');
+        $this->_assert(array_keys($stages) === array('new', 'contacted', 'quote_sent', 'booked', 'lost'), 'crm_lead_stages(): new, contacted, quote_sent, booked, lost');
+        $this->_assert(crm_lead_open_stages() === array('new', 'contacted', 'quote_sent'), 'Open stages: new, contacted, quote_sent');
+        $this->_assert(crm_lead_stage_status('booked') === 'converted', 'booked keeps legacy status converted');
+        $this->_assert(crm_lead_stage_status('lost') === 'junk', 'lost keeps legacy status junk');
+        $this->_assert(crm_lead_stage_status('contacted') === 'open', 'contacted keeps legacy status open');
+        $this->_assert(isset(crm_lead_lost_reasons()['price']), 'Lost reasons include price');
+        $this->_assert(crm_lead_stage_label('hot_lead') !== 'hot_lead', 'Legacy stage slugs still get a label');
 
-        $manual = crm_lead_manual_stages();
-        $this->_assert($manual === array('warm_lead', 'quote_sent', 'lost'), 'Manual stages: warm, quote_sent, lost');
+        $this->load->model('crm_lead_model');
+        $this->_assert($this->crm_lead_model->recalculate_open_stages() === 0, 'Stage auto-recalculation is off');
     }
 
     private function _check_pipeline_views()
     {
-        $this->_file_contains('application/views/admin/leads/pipeline.php', 'ymo-pipeline', 'Pipeline kanban view');
+        $this->_file_contains('application/views/admin/leads/pipeline.php', 'ymo-pipeline', 'Leads board view');
         $this->_file_contains('application/views/admin/leads/form.php', 'next_follow_up_at', 'Lead form: next follow-up field');
-        $this->_file_contains('application/views/admin/leads/form.php', 'crm_lead_manual_stages', 'Lead form: manual stage dropdown');
-        $this->_file_contains('application/views/admin/leads/view.php', 'Convert to customer', 'Lead detail: convert button');
-        $this->_file_contains('application/views/admin/leads/index.php', 'leads/pipeline', 'Lead list: pipeline link');
+        $this->_file_contains('application/views/admin/leads/form.php', 'lost_reason', 'Lead form: lost reason');
+        $this->_file_contains('application/views/admin/leads/view.php', '/log', 'Lead detail: Log call box');
+        $this->_file_contains('application/views/admin/leads/view.php', 'Book service', 'Lead detail: Book service');
+        $this->_file_contains('application/views/admin/bookings/create.php', 'bookings/lookup', 'Admin booking form: customer lookup');
+        $this->_file_contains('application/views/admin/tasks/my_day.php', 'snooze', 'My day: snooze');
 
         $form = file_get_contents(FCPATH . '../application/views/admin/leads/form.php');
         $this->_assert(strpos($form, 'Workshop') !== FALSE, 'Lead form labels Workshop (not Company)');
@@ -197,11 +184,16 @@ class Verify_crm extends CI_Controller
     private function _check_customers()
     {
         $index = file_get_contents(FCPATH . '../application/views/admin/contacts/index.php');
-        foreach (array('Active', 'Due for service', 'Inactive', 'VIP', 'contacts-bulk-bar', 'bulk_apply_workshop') as $needle) {
+        foreach (array('contacts-bulk-bar', 'bulk_apply_workshop') as $needle) {
             $this->_assert(strpos($index, $needle) !== FALSE, "Customers index: {$needle}");
         }
+        foreach (array('Active', 'Due for service', 'Inactive', 'VIP') as $needle) {
+            $this->_file_contains('application/controllers/admin/Contacts.php', "'{$needle}'", "Customers segment: {$needle}");
+        }
 
-        $this->_file_contains('application/views/admin/contacts/view.php', 'Link online account', 'Customer detail: link online account');
+        $this->_file_contains('application/views/admin/contacts/view.php', 'Book service', 'Customer detail: Book service');
+        $this->_file_contains('application/views/admin/contacts/view.php', 'Enquiries', 'Customer detail: enquiries');
+        $this->_file_contains('application/views/admin/contacts/index.php', 'name="account"', 'Customers: website account filter');
         $this->_file_contains('application/views/admin/contacts/form.php', 'Cancel', 'Customer form: Cancel button');
         $this->_file_contains('application/views/admin/contacts/form.php', 'Workshop', 'Customer form: Workshop label');
 
@@ -220,10 +212,10 @@ class Verify_crm extends CI_Controller
 
     private function _check_dashboard()
     {
-        $this->_file_contains('application/views/admin/dashboard.php', 'dashboard_crm_panel', 'Dashboard loads CRM panel');
-        $this->_file_contains('application/views/admin/dashboard_crm_panel.php', "Today's CRM actions", 'CRM panel title');
-        $this->_file_contains('application/views/admin/dashboard_crm_panel.php', 'hot_leads', 'CRM panel: hot leads');
-        $this->_file_contains('application/views/admin/dashboard_crm_panel.php', 'service_due', 'CRM panel: service due');
+        $this->_file_contains('application/views/admin/dashboard.php', 'Calls to make', 'Today: calls to make');
+        $this->_file_contains('application/views/admin/dashboard.php', 'New leads, not contacted', 'Today: new leads');
+        $this->_file_contains('application/views/admin/dashboard.php', 'Workshop today', 'Today: workshop board');
+        $this->_file_contains('application/views/admin/dashboard.php', 'sources_month', 'Today: source to booked');
 
         if (!$this->db->table_exists('crm_leads')) {
             $this->_fail('Dashboard snapshot: crm_leads table missing (skip DB test)');
@@ -232,7 +224,8 @@ class Verify_crm extends CI_Controller
         $this->load->model('crm_report_model');
         $snap = $this->crm_report_model->dashboard_snapshot();
         $this->_assert(is_array($snap), 'dashboard_snapshot() returns array');
-        $this->_assert(isset($snap['hot_leads']), 'dashboard_snapshot has hot_leads count');
+        $this->_assert(isset($snap['my_day']['overdue']), 'dashboard_snapshot has my_day');
+        $this->_assert(isset($snap['stage_counts']['new']), 'dashboard_snapshot has stage counts');
         $this->_assert(isset($snap['service_due_count']), 'dashboard_snapshot has service_due_count');
     }
 
@@ -275,15 +268,14 @@ class Verify_crm extends CI_Controller
             $this->db->field_exists('next_follow_up_at', 'crm_leads'),
             'DB column: next_follow_up_at'
         );
-        $this->_assert(
-            $this->db->field_exists('stage_locked', 'crm_leads'),
-            'DB column: stage_locked'
-        );
+        foreach (array('lost_reason', 'booking_id') as $col) {
+            $this->_assert($this->db->field_exists($col, 'crm_leads'), "DB column: {$col} (run crm_migration_v6_simple_flow.sql)");
+        }
 
         $row = $this->db->query("SHOW COLUMNS FROM crm_leads LIKE 'stage'")->row_array();
         if ($row) {
             $type = (string) $row['Type'];
-            foreach (array('hot_lead', 'warm_lead', 'followup_next_week', 'followup_next_month', 'later', 'quote_sent', 'lost') as $st) {
+            foreach (array_keys(crm_lead_stages()) as $st) {
                 $this->_assert(strpos($type, $st) !== FALSE, "DB stage ENUM includes {$st}");
             }
         } else {

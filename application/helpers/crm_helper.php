@@ -165,26 +165,87 @@ if (!function_exists('crm_parse_contacts_csv')) {
 }
 
 if (!function_exists('crm_lead_stages')) {
-    /** @return array<string,string> slug => label */
+    /**
+     * The lead pipeline (CRM v6). Follow-up timing is NOT a stage — it lives
+     * in the lead's follow-up task.
+     *
+     * @return array<string,string> slug => label
+     */
     function crm_lead_stages()
     {
         return array(
-            'hot_lead'            => 'Hot Lead',
-            'warm_lead'           => 'Warm Lead',
-            'followup_next_week'  => 'Follow-up Next Week',
-            'followup_next_month' => 'Follow-up Next Month',
-            'later'               => 'Later',
-            'quote_sent'          => 'Quote Sent',
-            'lost'                => 'Lost',
+            'new'        => 'New',
+            'contacted'  => 'Contacted',
+            'quote_sent' => 'Quote sent',
+            'booked'     => 'Booked',
+            'lost'       => 'Lost',
         );
     }
 }
 
+if (!function_exists('crm_lead_open_stages')) {
+    /** Stages that still need work (shown in follow-ups and the board). */
+    function crm_lead_open_stages()
+    {
+        return array('new', 'contacted', 'quote_sent');
+    }
+}
+
 if (!function_exists('crm_lead_manual_stages')) {
-    /** Stages staff can set manually (override auto date-driven stages). */
+    /** Stages staff can pick by hand (all of them in v6). */
     function crm_lead_manual_stages()
     {
-        return array('warm_lead', 'quote_sent', 'lost');
+        return array_keys(crm_lead_stages());
+    }
+}
+
+if (!function_exists('crm_lead_stage_status')) {
+    /** Legacy status column value that mirrors a stage. */
+    function crm_lead_stage_status($stage)
+    {
+        if ($stage === 'booked') {
+            return 'converted';
+        }
+        if ($stage === 'lost') {
+            return 'junk';
+        }
+        return 'open';
+    }
+}
+
+if (!function_exists('crm_lead_lost_reasons')) {
+    /** @return array<string,string> */
+    function crm_lead_lost_reasons()
+    {
+        return array(
+            'not_interested' => 'Not interested',
+            'price'          => 'Price too high',
+            'no_response'    => 'No response',
+            'went_elsewhere' => 'Went elsewhere',
+            'out_of_area'    => 'Outside service area',
+            'spam'           => 'Spam / wrong number',
+            'other'          => 'Other',
+        );
+    }
+}
+
+if (!function_exists('crm_lead_call_outcomes')) {
+    /**
+     * "Log a call" outcomes → resulting stage (NULL = keep current stage,
+     * except a New lead becomes Contacted).
+     *
+     * @return array<string,array{label:string,stage:?string}>
+     */
+    function crm_lead_call_outcomes()
+    {
+        return array(
+            'no_answer'  => array('label' => 'No answer / busy',   'stage' => NULL),
+            'interested' => array('label' => 'Interested',         'stage' => 'contacted'),
+            'quote_sent' => array('label' => 'Quote sent',         'stage' => 'quote_sent'),
+            'booked'     => array('label' => 'Booked - create booking', 'stage' => 'booked'),
+            'lost'       => array('label' => 'Not going ahead',    'stage' => 'lost'),
+            'note'       => array('label' => 'Just a note',        'stage' => NULL),
+        );
     }
 }
 
@@ -192,7 +253,55 @@ if (!function_exists('crm_lead_stage_label')) {
     function crm_lead_stage_label($slug)
     {
         $stages = crm_lead_stages();
-        return isset($stages[$slug]) ? $stages[$slug] : ucwords(str_replace('_', ' ', (string) $slug));
+        $legacy = array(
+            'hot_lead' => 'Contacted', 'warm_lead' => 'New', 'followup_next_week' => 'Contacted',
+            'followup_next_month' => 'Contacted', 'later' => 'Contacted',
+        );
+        if (isset($stages[$slug])) {
+            return $stages[$slug];
+        }
+        return isset($legacy[$slug]) ? $legacy[$slug] : ucwords(str_replace('_', ' ', (string) $slug));
+    }
+}
+
+if (!function_exists('crm_lead_stage_badge')) {
+    /** Bootstrap badge classes per stage. */
+    function crm_lead_stage_badge($slug)
+    {
+        $map = array(
+            'new'        => 'bg-primary',
+            'contacted'  => 'bg-info text-dark',
+            'quote_sent' => 'bg-warning text-dark',
+            'booked'     => 'bg-success',
+            'lost'       => 'bg-secondary',
+        );
+        return isset($map[$slug]) ? $map[$slug] : 'bg-light text-dark';
+    }
+}
+
+if (!function_exists('crm_mobile10')) {
+    /** Last 10 digits of an Indian mobile (matching key across tables). */
+    function crm_mobile10($number)
+    {
+        $d = preg_replace('/\D+/', '', (string) $number);
+        return strlen($d) >= 10 ? substr($d, -10) : $d;
+    }
+}
+
+if (!function_exists('crm_tel_link')) {
+    function crm_tel_link($number)
+    {
+        $d = crm_mobile10($number);
+        return strlen($d) === 10 ? 'tel:+91'.$d : '';
+    }
+}
+
+if (!function_exists('crm_wa_link')) {
+    /** Click-to-chat link (opens WhatsApp on the staff member's phone/desktop). */
+    function crm_wa_link($number)
+    {
+        $d = crm_mobile10($number);
+        return strlen($d) === 10 ? 'https://wa.me/91'.$d : '';
     }
 }
 
@@ -241,11 +350,8 @@ if (!function_exists('crm_normalize_whatsapp_payloads')) {
                         }
                     }
                     foreach ($val['messages'] ?? array() as $msg) {
-                        if (($msg['type'] ?? 'text') !== 'text') {
-                            continue;
-                        }
                         $from = (string) ($msg['from'] ?? '');
-                        $text = (string) ($msg['text']['body'] ?? '');
+                        $text = crm_whatsapp_message_text($msg);
                         if ($from === '' || $text === '') {
                             continue;
                         }
@@ -277,6 +383,121 @@ if (!function_exists('crm_normalize_whatsapp_payloads')) {
         }
 
         return $out;
+    }
+}
+
+if (!function_exists('crm_whatsapp_message_text')) {
+    /**
+     * Readable text for an inbound WhatsApp Cloud API message: text body,
+     * quick-reply button / interactive reply title, or a media caption /
+     * placeholder (so photos customers send still reach the lead timeline).
+     */
+    function crm_whatsapp_message_text(array $msg)
+    {
+        $type = (string) ($msg['type'] ?? 'text');
+        switch ($type) {
+            case 'text':
+                return trim((string) ($msg['text']['body'] ?? ''));
+            case 'button':
+                return trim((string) ($msg['button']['text'] ?? ($msg['button']['payload'] ?? '')));
+            case 'interactive':
+                $i = $msg['interactive'] ?? array();
+                $r = $i['button_reply'] ?? ($i['list_reply'] ?? array());
+                return trim((string) ($r['title'] ?? ($r['id'] ?? '')));
+            case 'image':
+            case 'video':
+            case 'document':
+                $cap = trim((string) ($msg[$type]['caption'] ?? ''));
+                $label = '['.ucfirst($type).' received'.($type === 'document' && !empty($msg['document']['filename'])
+                    ? ': '.$msg['document']['filename'] : '').']';
+                return $cap !== '' ? $label.' '.$cap : $label;
+            case 'audio':
+                return '[Voice note received]';
+            case 'location':
+                $loc = $msg['location'] ?? array();
+                $parts = array_filter(array(
+                    $loc['name'] ?? '', $loc['address'] ?? '',
+                    (isset($loc['latitude'], $loc['longitude']) ? $loc['latitude'].','.$loc['longitude'] : ''),
+                ));
+                return '[Location] '.implode(' - ', $parts);
+            default:
+                return '';
+        }
+    }
+}
+
+if (!function_exists('crm_whatsapp_e164')) {
+    /**
+     * Normalise an Indian mobile to WhatsApp's digits-only E.164 form:
+     * 9876543210 / 09876543210 / +91 98765 43210 -> 919876543210.
+     */
+    function crm_whatsapp_e164($number)
+    {
+        $d = preg_replace('/\D+/', '', (string) $number);
+        if ($d === '') {
+            return '';
+        }
+        if (strlen($d) === 11 && $d[0] === '0') {
+            $d = substr($d, 1);
+        }
+        if (strlen($d) === 10) {
+            $d = '91'.$d;
+        }
+        return $d;
+    }
+}
+
+if (!function_exists('crm_whatsapp_parse_statuses')) {
+    /**
+     * Extract delivery receipts from a Meta WhatsApp Cloud API webhook.
+     *
+     * @return array<int,array{id:string,status:string,recipient:string,timestamp:int,error:string}>
+     */
+    function crm_whatsapp_parse_statuses(array $data)
+    {
+        $out = array();
+        foreach ($data['entry'] ?? array() as $entry) {
+            foreach ($entry['changes'] ?? array() as $change) {
+                if (($change['field'] ?? '') !== 'messages') {
+                    continue;
+                }
+                foreach ($change['value']['statuses'] ?? array() as $st) {
+                    $id = (string) ($st['id'] ?? '');
+                    if ($id === '') {
+                        continue;
+                    }
+                    $err = '';
+                    if (!empty($st['errors'][0])) {
+                        $e = $st['errors'][0];
+                        $err = trim(($e['code'] ?? '').' '.($e['title'] ?? '')
+                            .(!empty($e['error_data']['details']) ? ': '.$e['error_data']['details'] : ''));
+                    }
+                    $out[] = array(
+                        'id'        => $id,
+                        'status'    => strtolower((string) ($st['status'] ?? '')),
+                        'recipient' => (string) ($st['recipient_id'] ?? ''),
+                        'timestamp' => (int) ($st['timestamp'] ?? time()),
+                        'error'     => $err,
+                    );
+                }
+            }
+        }
+        return $out;
+    }
+}
+
+if (!function_exists('crm_whatsapp_is_opt_out')) {
+    /** True when an inbound WhatsApp text is an unsubscribe keyword (STOP etc.). */
+    function crm_whatsapp_is_opt_out($text)
+    {
+        $t = strtolower(trim(preg_replace('/[^a-zA-Z ]+/', ' ', (string) $text)));
+        $t = preg_replace('/\s+/', ' ', $t);
+        $ci = &get_instance();
+        $words = (array) $ci->config->item('crm_whatsapp_opt_out_words');
+        if (!$words) {
+            $words = array('stop', 'unsubscribe');
+        }
+        return $t !== '' && in_array($t, $words, TRUE);
     }
 }
 
@@ -623,5 +844,22 @@ if (!function_exists('crm_pagination_items')) {
         $items[] = 'ellipsis';
         $items[] = $total;
         return $items;
+    }
+}
+
+if (!function_exists('crm_time_ago')) {
+    /** "5 min ago", "3 h ago", "2 days ago", or a date for anything older than a week. */
+    function crm_time_ago($datetime)
+    {
+        $ts = is_numeric($datetime) ? (int) $datetime : strtotime((string) $datetime);
+        if (!$ts) {
+            return '';
+        }
+        $d = max(0, time() - $ts);
+        if ($d < 60)     { return 'just now'; }
+        if ($d < 3600)   { return floor($d / 60).' min ago'; }
+        if ($d < 86400)  { return floor($d / 3600).' h ago'; }
+        if ($d < 604800) { $n = (int) floor($d / 86400); return $n.' day'.($n === 1 ? '' : 's').' ago'; }
+        return date('d M', $ts);
     }
 }

@@ -72,13 +72,6 @@ $action  = $is_edit ? admin_url('leads/'.$lead['id'].'/edit') : admin_url('leads
                     </div>
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input class="form-control" id="ld_followup" type="datetime-local" name="next_follow_up_at"
-                                   value="<?= html_escape(set_value('next_follow_up_at', !empty($lead['next_follow_up_at']) ? date('Y-m-d\TH:i', strtotime($lead['next_follow_up_at'])) : '')); ?>">
-                            <label for="ld_followup">Next follow-up</label>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-floating">
                             <input class="form-control" id="ld_address" name="address" placeholder=" "
                                    value="<?= html_escape(set_value('address', $lead ? crm_lead_field($lead, 'address') : '')); ?>">
                             <label for="ld_address">Address</label>
@@ -91,7 +84,6 @@ $action  = $is_edit ? admin_url('leads/'.$lead['id'].'/edit') : admin_url('leads
                             <label for="ld_car_type">Car type</label>
                         </div>
                     </div>
-                    <p class="col-12 small ymo-muted mb-0">Follow-up date auto-updates pipeline stage (Hot / Next week / Next month / Later). Use manual stage for Warm, Quote sent, or Lost.</p>
                     <?php if (crm_can('leads.assign')): ?>
                     <div class="col-md-6">
                         <div class="form-floating">
@@ -111,35 +103,33 @@ $action  = $is_edit ? admin_url('leads/'.$lead['id'].'/edit') : admin_url('leads
                     <div class="col-md-4">
                         <div class="form-floating">
                             <select class="form-select" id="ld_stage" name="stage">
-                                <?php
-                                $manual = crm_lead_manual_stages();
-                                $all_stages = crm_lead_stages();
-                                foreach ($manual as $st):
-                                ?>
-                                    <option value="<?= $st; ?>" <?= set_value('stage', $lead['stage'] ?? 'warm_lead') === $st ? 'selected' : ''; ?>>
-                                        <?= html_escape($all_stages[$st]); ?>
-                                    </option>
+                                <?php $cur_stage = set_value('stage', $lead['stage'] ?? 'new');
+                                foreach (crm_lead_stages() as $st => $label):
+                                    if ($st === 'booked' && $cur_stage !== 'booked') { continue; } ?>
+                                    <option value="<?= $st; ?>" <?= $cur_stage === $st ? 'selected' : ''; ?>><?= html_escape($label); ?></option>
                                 <?php endforeach; ?>
-                                <option value="hot_lead" disabled <?= set_value('stage', $lead['stage'] ?? '') === 'hot_lead' ? 'selected' : ''; ?>>Hot Lead (auto from date)</option>
-                                <option value="followup_next_week" disabled>Follow-up Next Week (auto)</option>
-                                <option value="followup_next_month" disabled>Follow-up Next Month (auto)</option>
-                                <option value="later" disabled>Later (auto)</option>
                             </select>
-                            <label for="ld_stage">Manual stage</label>
+                            <label for="ld_stage">Stage</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4" id="ld_lost_wrap" <?= $cur_stage === 'lost' ? '' : 'hidden'; ?>>
+                        <div class="form-floating">
+                            <select class="form-select" id="ld_lost_reason" name="lost_reason">
+                                <?php foreach (crm_lead_lost_reasons() as $k => $label): ?>
+                                    <option value="<?= $k; ?>" <?= set_value('lost_reason', $lead['lost_reason'] ?? '') === $k ? 'selected' : ''; ?>><?= html_escape($label); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <label for="ld_lost_reason">Why lost?</label>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-floating">
-                            <select class="form-select" id="ld_status" name="status">
-                                <?php foreach (array('open','converted','junk') as $st): ?>
-                                    <option value="<?= $st; ?>" <?= set_value('status', $lead['status'] ?? 'open') === $st ? 'selected' : ''; ?>>
-                                        <?= ucfirst($st); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                            <label for="ld_status">Status</label>
+                            <input type="datetime-local" class="form-control" id="ld_follow" name="next_follow_up_at"
+                                   value="<?= html_escape(set_value('next_follow_up_at', !empty($lead['next_follow_up_at']) ? date('Y-m-d\TH:i', strtotime($lead['next_follow_up_at'])) : '')); ?>">
+                            <label for="ld_follow">Next follow-up</label>
                         </div>
                     </div>
+                    <p class="col-12 small ymo-muted mb-0">To book this customer, save and use <strong>Book service</strong> on the lead page.</p>
                     <div class="col-md-4">
                         <div class="form-floating">
                             <select class="form-select" id="ld_priority" name="priority">
@@ -165,3 +155,9 @@ $action  = $is_edit ? admin_url('leads/'.$lead['id'].'/edit') : admin_url('leads
         </div>
     </div>
 </div>
+<script>
+(function () {
+    var st = document.getElementById('ld_stage'), wrap = document.getElementById('ld_lost_wrap');
+    if (st && wrap) { st.addEventListener('change', function () { wrap.hidden = st.value !== 'lost'; }); }
+})();
+</script>

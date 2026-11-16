@@ -5,7 +5,27 @@
         <div class="md-card-elevated">
             <h2 class="h4"><?= html_escape($camp['name']); ?></h2>
             <p class="ymo-muted small"><?= strtoupper($camp['channel']); ?> · <?= html_escape($camp['status']); ?></p>
-            <div class="border rounded p-3 bg-light small"><?= nl2br(html_escape($camp['body'])); ?></div>
+            <?php if ($camp['channel'] === 'whatsapp'): ?>
+                <?php if (!empty($wa_tpl)): ?>
+                    <p class="small mb-1">Template: <strong><?= html_escape($wa_tpl['name']); ?></strong> (<?= html_escape($wa_tpl['language']); ?>)
+                        <?php if ($wa_tpl['status'] !== 'APPROVED'): ?><span class="badge bg-warning text-dark"><?= html_escape($wa_tpl['status']); ?></span><?php endif; ?></p>
+                    <div class="border rounded p-3 bg-light small" style="white-space:pre-wrap"><?= html_escape($wa_tpl['body_text']); ?></div>
+                    <?php if (!empty($wa_cfg['params'])): ?>
+                        <ul class="small mt-2 mb-0">
+                            <?php foreach ($wa_cfg['params'] as $i => $p): ?>
+                                <li><code>{{<?= $i + 1; ?>}}</code> = <?= html_escape($p); ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
+                    <?php if (!empty($wa_cfg['header_link'])): ?>
+                        <p class="small mt-1 mb-0">Header media: <a href="<?= html_escape($wa_cfg['header_link']); ?>" target="_blank" rel="noopener"><?= html_escape($wa_cfg['header_link']); ?></a></p>
+                    <?php endif; ?>
+                <?php else: ?>
+                    <div class="alert alert-warning small mb-0">No WhatsApp template selected - edit the campaign to pick one.</div>
+                <?php endif; ?>
+            <?php else: ?>
+                <div class="border rounded p-3 bg-light small"><?= nl2br(html_escape($camp['body'])); ?></div>
+            <?php endif; ?>
             <?php if ($can_send && in_array($camp['status'], array('draft','scheduled'), TRUE)): ?>
                 <div class="mt-3 d-flex gap-2 flex-wrap">
                     <?= form_open(admin_url('campaigns/'.$camp['id'].'/send'), array('class'=>'d-inline')); ?>
@@ -28,6 +48,18 @@
                 <li>Failed: <strong><?= (int) $stats['failed']; ?></strong></li>
                 <li>Skipped: <strong><?= (int) $stats['skipped']; ?></strong></li>
             </ul>
+            <?php if (!empty($delivery)): ?>
+                <h6 class="mt-3">WhatsApp receipts</h6>
+                <ul class="list-unstyled small mb-0">
+                    <li>Delivered: <strong><?= (int) $delivery['delivered']; ?></strong></li>
+                    <li>Read: <strong><?= (int) $delivery['read']; ?></strong></li>
+                    <li>Failed after send: <strong><?= (int) $delivery['failed']; ?></strong></li>
+                </ul>
+                <p class="small ymo-muted mt-2 mb-0">Receipts arrive via the WhatsApp webhook (statuses).</p>
+            <?php endif; ?>
+            <?php if ($camp['status'] === 'sending'): ?>
+                <p class="small ymo-muted mt-2 mb-0">Still sending - remaining recipients go out on the next cron run.</p>
+            <?php endif; ?>
         </div>
     </div>
 </div>

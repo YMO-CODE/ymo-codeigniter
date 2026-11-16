@@ -22,7 +22,7 @@ class Cron extends CI_Controller
         }
         ymo_load_db_settings();
         $this->load->model(array('reminder_model', 'otp_model'));
-        $this->load->library(array('sms_gateway', 'mailer'));
+        $this->load->library(array('sms_gateway', 'mailer', 'customer_notifier'));
         $this->load->helper('marketing');
     }
 
@@ -37,11 +37,10 @@ class Cron extends CI_Controller
             try {
                 $sms_ok = TRUE; $mail_ok = TRUE;
                 if (in_array($r['channel'], array('sms', 'both'))) {
-                    $sms_ok = $this->sms_gateway->send_template($r['user_mobile'], 'service_reminder', array(
+                    $sms_ok = $this->customer_notifier->notify($r['user_mobile'], 'service_reminder', array(
                         'name'    => strtok($r['user_name'], ' '),
                         'vehicle' => $r['vehicle_number'],
-                    ));
-                    ymo_sms_log('cron.service_reminder', 'service_reminder', $r['user_mobile'], $sms_ok, $this->sms_gateway);
+                    ), array('context' => 'cron.service_reminder', 'booking_id' => (int) ($r['booking_id'] ?? 0)));
                 }
                 if (in_array($r['channel'], array('email', 'both'))) {
                     $mail_ok = $this->mailer->send_view(
@@ -56,7 +55,7 @@ class Cron extends CI_Controller
                     $this->reminder_model->mark_sent($r['id']);
                     $sent++;
                 } else {
-                    $err = 'sms='.($this->sms_gateway->last_error() ?: 'fail').' mail='.($this->mailer->last_error() ?: 'fail');
+                    $err = 'msg='.($this->customer_notifier->last_error() ?: 'fail').' mail='.($this->mailer->last_error() ?: 'fail');
                     $this->reminder_model->mark_failed($r['id'], $err);
                     $failed++;
                 }
@@ -71,11 +70,10 @@ class Cron extends CI_Controller
             try {
                 $sms_ok = TRUE; $mail_ok = TRUE;
                 if (in_array($r['channel'], array('sms', 'both'))) {
-                    $sms_ok = $this->sms_gateway->send_template($r['user_mobile'], 'review_request', array(
+                    $sms_ok = $this->customer_notifier->notify($r['user_mobile'], 'review_request', array(
                         'name' => strtok($r['user_name'], ' '),
                         'ref'  => $r['reference'],
-                    ));
-                    ymo_sms_log('cron.review_request', 'review_request', $r['user_mobile'], $sms_ok, $this->sms_gateway);
+                    ), array('context' => 'cron.review_request', 'booking_id' => (int) ($r['booking_id'] ?? 0)));
                 }
                 if (in_array($r['channel'], array('email', 'both'))) {
                     $mail_ok = $this->mailer->send_view(
@@ -94,7 +92,7 @@ class Cron extends CI_Controller
                     $this->reminder_model->mark_sent($r['id']);
                     $sent++;
                 } else {
-                    $err = 'sms='.($this->sms_gateway->last_error() ?: 'fail').' mail='.($this->mailer->last_error() ?: 'fail');
+                    $err = 'msg='.($this->customer_notifier->last_error() ?: 'fail').' mail='.($this->mailer->last_error() ?: 'fail');
                     $this->reminder_model->mark_failed($r['id'], $err);
                     $failed++;
                 }

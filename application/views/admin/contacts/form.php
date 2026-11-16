@@ -28,6 +28,7 @@ $cancel_url = $is_edit ? admin_url('customers/'.$contact['id']) : admin_url('cus
                 <div class="col-12">
                     <label class="form-check small"><input type="checkbox" name="email_opt_out" value="1" <?= !empty($contact['email_opt_out']) ? 'checked' : ''; ?>> Email opt-out</label>
                     <label class="form-check small ms-3"><input type="checkbox" name="sms_opt_out" value="1" <?= !empty($contact['sms_opt_out']) ? 'checked' : ''; ?>> SMS opt-out</label>
+                    <label class="form-check small ms-3"><input type="checkbox" name="whatsapp_opt_out" value="1" <?= !empty($contact['whatsapp_opt_out']) ? 'checked' : ''; ?>> WhatsApp opt-out</label>
                 </div>
                 <div class="col-12 d-flex flex-wrap gap-2">
                     <button class="btn btn-primary" type="submit">Save</button>

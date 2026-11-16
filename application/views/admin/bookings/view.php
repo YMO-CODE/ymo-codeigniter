@@ -31,7 +31,7 @@ $status_icons = array(
                 <div class="col-md-6">
                     <h6 class="text-muted small text-uppercase"><span class="mi mi-sm mi-leading">person</span>Customer</h6>
                     <p class="mb-0"><strong><?= html_escape($booking['user_name']); ?></strong></p>
-                    <p class="ymo-muted small mb-0"><?= html_escape($booking['user_mobile']); ?> · <?= html_escape($booking['user_email']); ?></p>
+                    <p class="ymo-muted small mb-0"><?= html_escape($booking['user_mobile']); ?><?= ymo_is_placeholder_email($booking['user_email']) ? '' : ' · '.html_escape($booking['user_email']); ?></p>
                     <a href="<?= admin_url('online-accounts/'.$booking['user_id']); ?>" class="small">Online account <span class="mi mi-sm mi-trailing">arrow_forward</span></a>
                 </div>
                 <div class="col-md-6">
@@ -286,6 +286,83 @@ $status_icons = array(
                 <p class="ymo-muted small mt-2 mb-0">Available shortly.</p>
             <?php elseif ($booking['status'] !== 'completed'): ?>
                 <p class="ymo-muted small mt-2 mb-0">Booking must be completed first.</p>
+            <?php endif; ?>
+        </div>
+        <?php endif; ?>
+
+        <?php if (!empty($wa) && (!empty($wa['ready']) || !empty($wa['thread']))): ?>
+        <div class="md-card-elevated mt-3" id="wa-updates">
+            <h6 class="mb-2"><span class="mi mi-sm mi-leading">chat</span>WhatsApp update to customer</h6>
+            <?php if (!empty($wa['ready']) && !empty($can_edit) && $booking['status'] !== 'cancelled'): ?>
+                <p class="small mb-2">
+                    <?php if ($wa['in_window']): ?>
+                        <span class="badge bg-success">Chat open</span>
+                        <span class="ymo-muted">Customer messaged <?= html_escape(date('d M H:i', strtotime($wa['last_in']))); ?> - free-form message, photos and PDF go as normal chat.</span>
+                    <?php else: ?>
+                        <span class="badge bg-secondary">Template only</span>
+                        <span class="ymo-muted">No customer message in 24h - photos go via the <code>service_update</code> template, a PDF via <code>estimate_sent</code>. Attach at least one.</span>
+                    <?php endif; ?>
+                </p>
+                <?= form_open_multipart(admin_url('bookings/'.$booking['id'].'/whatsapp'), array('id' => 'ymo-wa-form')); ?>
+                    <?php if (!empty($wa['quick'])): ?>
+                        <select class="form-select form-select-sm mb-2" onchange="if (this.value) { var t = document.getElementById('ymo-wa-message'); t.value = this.value; t.focus(); } this.selectedIndex = 0;">
+                            <option value="">Quick message…</option>
+                            <?php foreach ($wa['quick'] as $label => $text): ?>
+                                <option value="<?= html_escape($text); ?>"><?= html_escape($label); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    <?php endif; ?>
+                    <textarea class="form-control form-control-sm mb-2" id="ymo-wa-message" name="wa_message" rows="3" maxlength="900" placeholder="e.g. Brake pads are worn to 2 mm - replacement recommended. Estimate attached."></textarea>
+                    <label class="small ymo-muted mb-1">Photos (JPG/PNG, up to 5, max <?= (int) ($this->config->item('crm_whatsapp_media_max_kb') / 1024); ?> MB each, 15 MB total)</label>
+                    <input type="file" class="form-control form-control-sm mb-2" name="wa_photos[]" accept="image/jpeg,image/png" multiple>
+                    <label class="small ymo-muted mb-1">Estimate PDF (optional)</label>
+                    <input type="file" class="form-control form-control-sm mb-2" name="wa_pdf" accept="application/pdf">
+                    <button class="btn btn-success btn-sm w-100" onclick="return confirm('Send this WhatsApp update to <?= html_escape(addslashes($booking['user_name'])); ?>?');">
+                        <span class="mi mi-sm mi-leading">send</span>Send on WhatsApp
+                    </button>
+                <?= form_close(); ?>
+                <script>
+                (function () {
+                    var form = document.getElementById('ymo-wa-form');
+                    if (!form) { return; }
+                    var perFile = <?= (int) $this->config->item('crm_whatsapp_media_max_kb'); ?> * 1024;
+                    form.addEventListener('submit', function (e) {
+                        var total = 0, problem = '';
+                        var photos = form.querySelector('input[name="wa_photos[]"]').files;
+                        if (photos.length > 5) { problem = 'Attach at most 5 photos.'; }
+                        form.querySelectorAll('input[type=file]').forEach(function (inp) {
+                            Array.prototype.forEach.call(inp.files, function (f) {
+                                total += f.size;
+                                if (f.size > perFile) { problem = f.name + ' is larger than ' + Math.round(perFile / 1048576) + ' MB.'; }
+                            });
+                        });
+                        if (!problem && total > 15 * 1048576) { problem = 'Total upload is over 15 MB - send fewer photos at a time.'; }
+                        if (problem) { e.preventDefault(); alert(problem); }
+                    });
+                })();
+                </script>
+            <?php elseif (empty($wa['ready'])): ?>
+                <p class="ymo-muted small">WhatsApp sending is not configured - history only.</p>
+            <?php endif; ?>
+
+            <?php if (!empty($wa['thread'])): ?>
+                <?php $wa_badges = array('sent' => 'bg-secondary', 'delivered' => 'bg-info text-dark', 'read' => 'bg-success', 'failed' => 'bg-danger', 'received' => 'bg-primary', 'queued' => 'bg-light text-dark'); ?>
+                <ul class="list-unstyled small mt-3 mb-0" style="max-height:320px;overflow:auto">
+                    <?php foreach ($wa['thread'] as $m): ?>
+                        <li class="mb-2 p-2 rounded <?= $m['direction'] === 'in' ? 'bg-light' : 'border'; ?>">
+                            <div class="d-flex justify-content-between gap-2">
+                                <span class="ymo-muted"><?= $m['direction'] === 'in' ? 'Customer' : 'Us'; ?> · <?= html_escape(date('d M H:i', strtotime($m['created_at']))); ?></span>
+                                <span class="badge <?= $wa_badges[$m['status']] ?? 'bg-secondary'; ?>"><?= html_escape($m['status']); ?></span>
+                            </div>
+                            <?php if (!empty($m['template_name'])): ?><div class="ymo-muted">template: <?= html_escape($m['template_name']); ?></div><?php endif; ?>
+                            <div style="white-space:pre-wrap"><?= html_escape((string) $m['body']); ?></div>
+                            <?php if (!empty($m['media_path']) && strpos($m['media_path'], 'storage/whatsapp/') === 0): ?>
+                                <a href="<?= admin_url('bookings/'.$booking['id'].'/whatsapp/media/'.$m['id']); ?>" target="_blank" rel="noopener"><span class="mi mi-sm mi-leading">attachment</span>View <?= html_escape($m['kind']); ?></a>
+                            <?php endif; ?>
+                            <?php if ($m['status'] === 'failed' && !empty($m['error'])): ?><div class="text-danger"><?= html_escape($m['error']); ?></div><?php endif; ?>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
             <?php endif; ?>
         </div>
         <?php endif; ?>

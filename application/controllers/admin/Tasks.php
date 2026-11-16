@@ -13,6 +13,19 @@ class Tasks extends Crm_Controller
     public function index()
     {
         $this->require_perm('tasks.view');
+
+        // Default view: "My day" — overdue, today, next 7 days.
+        if ($this->input->get('view') !== 'list') {
+            $who = $this->input->get('who') === 'all' ? NULL : (int) $this->admin['id'];
+            $this->render('admin/tasks/my_day', array(
+                'title'    => 'Follow-ups',
+                'day'      => $this->crm_task_model->my_day($who, 7),
+                'who'      => $who ? 'me' : 'all',
+                'can_edit' => crm_can('tasks.edit'),
+            ));
+            return;
+        }
+
         $perPage = (int) $this->config->item('admin_per_page');
         $page    = max(1, (int) $this->input->get('page'));
         $offset  = ($page - 1) * $perPage;
@@ -65,9 +78,10 @@ class Tasks extends Crm_Controller
         $task = $this->crm_task_model->find($id);
         if (!$task) { show_404(); }
         $this->crm_task_model->mark_done($id);
+        $this->crm_task_model->sync_lead_date($id);
         $this->audit->log('admin', $this->admin['id'], 'crm.task.done', 'crm_task', $id, array());
-        $this->flash('success', 'Task marked done.');
-        redirect(admin_url('tasks'));
+        $this->flash('success', 'Done.'.(!empty($task['lead_id']) ? ' Tip: log the call on the lead so the next follow-up is scheduled.' : ''));
+        redirect($this->_back());
     }
 
     public function skip($id)
@@ -76,8 +90,32 @@ class Tasks extends Crm_Controller
         $task = $this->crm_task_model->find($id);
         if (!$task) { show_404(); }
         $this->crm_task_model->mark_skipped($id);
-        $this->flash('success', 'Task skipped.');
-        redirect(admin_url('tasks'));
+        $this->crm_task_model->sync_lead_date($id);
+        $this->flash('success', 'Follow-up skipped.');
+        redirect($this->_back());
+    }
+
+    /** Push a follow-up to tomorrow / next week from My day. */
+    public function snooze($id)
+    {
+        $this->require_perm('tasks.edit');
+        $task = $this->crm_task_model->find($id);
+        if (!$task || $task['status'] !== 'pending') { show_404(); }
+        $days = (int) $this->input->post('days') ?: 1;
+        // Push from the later of today and the current due date, keeping the time of day.
+        $cur  = strtotime($task['due_at']);
+        $base = max(strtotime(date('Y-m-d', $cur)), strtotime('today'));
+        $due  = date('Y-m-d', strtotime('+'.max(1, min(30, $days)).' days', $base)).' '.date('H:i:s', $cur);
+        $this->crm_task_model->update($id, array('due_at' => $due, 'reminder_sent_at' => NULL));
+        $this->crm_task_model->sync_lead_date($id);
+        $this->flash('success', 'Moved to '.date('D d M', strtotime($due)).'.');
+        redirect($this->_back());
+    }
+
+    protected function _back()
+    {
+        $ref = (string) $this->input->get('back');
+        return $ref === 'dashboard' ? admin_url('dashboard') : admin_url('tasks');
     }
 
     protected function _form($task)
@@ -112,7 +150,13 @@ class Tasks extends Crm_Controller
         );
         if ($id) {
             $this->crm_task_model->update($id, $payload);
-            $this->flash('success', 'Task updated.');
+            $this->crm_task_model->sync_lead_date($id);
+            $this->flash('success', 'Follow-up updated.');
+        } elseif (!empty($payload['lead_id'])) {
+            // One follow-up per lead: move the existing one instead of adding a second.
+            $id = $this->crm_task_model->set_lead_followup($payload['lead_id'], $payload['due_at'],
+                $payload['assignee_admin_id'], $this->admin['id'], $payload['notes']);
+            $this->flash('success', 'Follow-up scheduled.');
         } else {
             $payload['created_by_admin_id'] = $this->admin['id'];
             $payload['status'] = 'pending';

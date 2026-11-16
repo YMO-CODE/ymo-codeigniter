@@ -26,6 +26,7 @@ This document lists everything **you must do manually** after the CRM code is in
 14. [Not automated (known gaps)](#14-not-automated-known-gaps)
 15. [Booking service invoices](#15-booking-service-invoices)
 16. [Import legacy customer contacts (Excel → CSV)](#16-import-legacy-customer-contacts-excel--csv)
+18. [WhatsApp Cloud API — notifications, campaigns, photo updates](#18-whatsapp-cloud-api--notifications-campaigns-photo-updates)
 
 ---
 
@@ -643,7 +644,7 @@ Optional HMAC (flat JSON only): same `CRM_WEBHOOK_SECRET` + `X-CRM-Signature` he
 5. Send a test message from your phone.
 6. Confirm lead appears under **Admin → Leads** with source **WhatsApp**. Further messages from the same number append activity on the same lead.
 
-**Note:** Outbound bulk WhatsApp campaigns are **not** implemented — only inbound lead creation.
+**Note:** Outbound WhatsApp (campaigns, booking notifications, photo updates, delivery receipts, STOP opt-out) is covered in [§18](#18-whatsapp-cloud-api--notifications-campaigns-photo-updates). Inbound button replies, photos, voice notes and locations are now logged on the lead as well as text.
 
 ### Two-way chat (reply from lead page)
 
@@ -685,7 +686,7 @@ Follow [DEPLOY.md](DEPLOY.md) and [deploy/README.md](deploy/README.md) for the f
 ### File permissions
 
 ```bash
-mkdir -p public/uploads/crm/resumes
+mkdir -p public/uploads/crm/resumes storage/whatsapp
 chown -R www-data:www-data storage public/uploads
 chmod -R u+rwX,g+rwX storage public/uploads
 ```
@@ -819,7 +820,8 @@ Use this before handing over to the client team.
 
 | Requirement | Current state | Workaround |
 |-------------|---------------|------------|
-| Bulk **WhatsApp** campaigns | Inbound webhook only | Use provider’s broadcast tool; log activity manually in CRM |
+| Bulk **WhatsApp** campaigns | Implemented with approved templates (§18) | Templates are created/approved in WhatsApp Manager, then synced |
+| **WhatsApp shared inbox / chatbot** | Not implemented (message log only) | Reply from lead page; inbound messages are stored in `crm_wa_messages` |
 | **Instagram DMs** (click-to-message ads) | Inbound via Meta `messages` webhook on `/api/webhooks/meta` | Subscribe `messages` field; see §7 |
 | **Push notifications** | Not implemented | Email/SMS task reminders only |
 | **Google Sheets** sync | Not implemented | CSV export / Import CSV on Contacts |
@@ -1089,3 +1091,146 @@ Reports adds **locality/workshop**, **revenue** (from booking invoices), and **s
 ---
 
 *Last updated: CRM final flow (v3), customers rename, expanded reports and dashboard reminders.*
+
+---
+
+## 18. WhatsApp Cloud API — notifications, campaigns, photo updates
+
+Everything in this section is **off until configured**. Deploying the code and running the migration changes nothing for customers: booking messages keep going by SMS, the WhatsApp campaign channel stays disabled, and the booking-page WhatsApp card only shows once the API is set up.
+
+### What it adds
+
+| Feature | Where | Needs |
+|---------|-------|-------|
+| **WhatsApp campaigns** (approved template, `{first_name}` variables, STOP opt-out, delivered/read counts) | Admin → Campaigns → channel **WHATSAPP** | Token + phone number id + synced templates |
+| **Template list / sync** (read-only mirror of WhatsApp Manager) | Admin → **WhatsApp templates** | + `CRM_WHATSAPP_WABA_ID` |
+| **Booking notifications on WhatsApp** (booking confirmed, status change, invoice with PDF attached, service reminder, review request) — SMS fallback if WhatsApp fails | Automatic | + `CRM_WHATSAPP_NOTIFY=1` and approved templates |
+| **Photo / estimate updates** to the customer (up to 5 photos + PDF) with delivery ticks | Admin → Booking → **WhatsApp update to customer** | Token + phone number id |
+| **Delivery receipts** (sent → delivered → read / failed) and inbound log | Webhook `statuses` | Webhook already pointing at `/api/webhooks/whatsapp` (§9) |
+| **STOP / UNSUBSCRIBE** replies set *WhatsApp opt-out* on matching contacts; campaigns skip them | Webhook | — |
+
+### Step-by-step
+
+1. **Run the migration** (existing installs):
+
+   ```powershell
+   Get-Content database\crm_migration_v5_whatsapp.sql | docker compose exec -T db mysql -u ymo_user -pymo_pass ymo_booking
+   ```
+
+   Fresh installs get the same tables from `schema.sql`.
+
+2. **Media folder** (photos/PDFs sent from the booking page are stored outside the web root):
+
+   ```bash
+   mkdir -p storage/whatsapp && chown -R www-data:www-data storage/whatsapp && chmod -R u+rwX,g+rwX storage/whatsapp
+   ```
+
+3. **Meta side (done by you in WhatsApp Manager / Business settings — the app never changes anything there):**
+   - **Number: +91 77440 65904** is the Cloud API number for everything the CRM sends on WhatsApp: campaigns and all car-service updates (booking confirmation, status, photos/estimates, invoice, reminders, review requests). It is not published on the website: the WhatsApp button, calls and all listings stay on +91 75587 83868. Customer replies to these messages arrive on 77440 65904 and land in the CRM.
+   - Number connected to the Cloud API (coexistence keeps the WhatsApp Business app working on the same number).
+   - A **System User** permanent token with `whatsapp_business_messaging` + `whatsapp_business_management`.
+   - Webhook for the WhatsApp product pointing at `https://booking.yourmechaniconline.com/api/webhooks/whatsapp` with the `messages` field subscribed (§9).
+   - Templates below created and approved.
+
+4. **`.env`**:
+
+   ```bash
+   CRM_WHATSAPP_ACCESS_TOKEN=        # system-user token (CRM_META_ACCESS_TOKEN stays the Page token for lead ads / Instagram)
+   CRM_WHATSAPP_PHONE_NUMBER_ID=     # WhatsApp Manager → Phone numbers
+   CRM_WHATSAPP_WABA_ID=             # WhatsApp Business Account id (for template sync)
+   CRM_META_APP_SECRET=              # optional: verify X-Hub-Signature-256 on webhooks
+   CRM_WHATSAPP_NOTIFY=0             # set to 1 once the booking templates are approved
+   ```
+
+   Recreate the app container after editing `.env`.
+
+5. **Admin → WhatsApp templates → Sync from WhatsApp Manager.** The right-hand card shows which booking events have an approved template.
+6. Send yourself a test: make a booking with your own number, then open it in admin and send a photo from **WhatsApp update to customer**.
+7. When the booking templates show *approved*, set `CRM_WHATSAPP_NOTIFY=1`. Each notification tries WhatsApp first and falls back to the existing DLT SMS if WhatsApp fails or the template is missing/unapproved.
+8. **Cron:** "Send now" dispatches the first batch (35) immediately; the rest go out on the next cron run. For WhatsApp campaigns add a frequent CRM-only cron:
+
+   ```cron
+   */10 * * * * cd /path/to/ymo-codeigniter && docker compose exec -T app php public/index.php cli/cron crm >> storage/logs/cron.log 2>&1
+   ```
+
+### Ready-to-use templates (create in WhatsApp Manager)
+
+**Admin → WhatsApp templates → Ready-to-use templates** lists 12 submission-ready templates with a **Copy** button for each field (name, category, header, body, footer), the buttons to add, and the sample values Meta asks for. The source is `application/config/whatsapp_template_library.php`. Each one shows *not created* or its approval status after Sync.
+
+| Name | Category | Header | Used for |
+|------|----------|--------|----------|
+| `booking_confirmed` | Utility | Text | New booking (auto) |
+| `booking_status` | Utility | — | Status change (auto) |
+| `service_update` | Utility | Image | Booking-page photos outside the 24 h window · buttons Approve / Call me |
+| `estimate_sent` | Utility | Document | Booking-page PDF estimate · buttons Approve / Call me |
+| `invoice_sent` | Utility | Document | Invoice PDF (auto) |
+| `service_reminder` | Utility | — | Service-due reminder (auto, cron) · buttons Book service / Remind me later |
+| `review_request` | Marketing | — | Review prompt (auto/manual) · buttons Excellent / Good / Needs improvement |
+| `offer_doorstep_service` | Marketing | Image | Campaign: monthly offer |
+| `winback_service_due` | Marketing | — | Campaign: lapsed customers |
+| `seasonal_checkup` | Marketing | Text | Campaign: monsoon / Diwali check-up |
+| `referral_invite` | Marketing | — | Campaign: referral credit · website button |
+| `lead_follow_up` | Marketing | — | Campaign: open leads segment |
+
+Notes:
+- Names must match exactly (or override the booking ones with `YMO_WA_TPL_*` env vars). Language **English (en)**.
+- Button taps arrive as inbound messages and show on the lead and the booking's WhatsApp card. Marketing templates carry a **Stop promotions** button, and tapping it sets WhatsApp opt-out.
+- Meta may re-categorise review/reminder templates as **Marketing** (charged at the marketing rate, and users can mute marketing messages).
+- Image headers in campaigns need a public `https://` link to the creative (entered in the campaign form).
+- The booking-page card also has a **Quick message** picker (picked up, inspection photos, extra work, estimate, ready, delivered). Edit the texts in the same config file.
+
+### 24-hour window (photo updates and lead replies)
+
+- If the customer has messaged the business number in the last 24 h, the booking-page update goes as normal chat (text, photos with caption, PDF).
+- Otherwise WhatsApp only allows templates: each photo goes as a `service_update` template (first one carries your message, others "Photo 2 of 3"), and a PDF as `estimate_sent`. A text-only update needs the chat to be open.
+- Lead-page replies (§9) outside the window are accepted by the API and then fail; the failure now shows up in the message log via the webhook.
+
+### Verify
+
+- `crm_wa_messages` gets one row per message with status moving `sent → delivered → read`.
+- Campaign page shows **WhatsApp receipts** (delivered / read / failed).
+- Send "STOP" from a test number → that contact's **WhatsApp opt-out** box is ticked and it is skipped by the next campaign.
+
+## 19. Simpler CRM flow (v6)
+
+The CRM now follows one path: **lead → call → follow-up → booking**. Stages no longer move by themselves.
+
+### Run the migration
+
+```bash
+$COMPOSE exec -T db mysql -u"$DB_USER" -p"$DB_PASS" "$DB_NAME" < database/crm_migration_v6_simple_flow.sql
+$COMPOSE exec app php public/index.php cli/verify_crm v3
+```
+
+Safe to run twice. It maps existing leads to the new stages:
+
+| Old stage / status | New stage |
+|---|---|
+| `status = converted` | **Booked** |
+| `status = junk` | **Lost** (reason: spam) |
+| `lost` | **Lost** (reason: other) |
+| `quote_sent` | **Quote sent** |
+| Warm lead with no admin activity | **New** |
+| Hot / warm / next week / next month / later | **Contacted** |
+
+It also creates one pending follow-up for every open lead that had a follow-up date, links customers to website accounts by mobile, and creates a customer record for every account that lacked one.
+
+### Stages
+
+**New → Contacted → Quote sent → Booked**, or **Lost** (with a reason: not interested, price, no response, went elsewhere, out of area, spam, other). The follow-up date is separate from the stage. The old `status` column is still kept in step (booked = converted, lost = junk) so campaign segments and reports keep working; `stage_locked` is no longer used.
+
+### Daily use
+
+1. **Today** (sidebar top): calls due (overdue first), new leads nobody has called, cars due in the workshop today, leads by stage, and leads → bookings by source for the month. **Mine / Everyone** toggle.
+2. Open a lead → **What happened?** box: pick call / WhatsApp / SMS / email / note, the outcome (no answer, interested, quote sent, booked, lost), a note and the next follow-up (tomorrow, 3 days, 1 week… or a date). One submit logs the activity, moves the stage, sets or clears the follow-up, and assigns the lead to you if unassigned.
+3. **Booked** opens **New booking** pre-filled from the lead: type the mobile, the form finds the account and its cars, or creates the account (no email needed) and the car. Saving links the booking to the lead, marks it Booked and closes its follow-ups. Also reachable from a customer page, the Bookings list and Today.
+4. Website bookings automatically mark the matching open lead (same mobile) as Booked.
+5. **Follow-ups** is "My day": overdue, today and next 7 days, with Call / WhatsApp / Log call / +1 day / Done on each row. Each lead has at most one pending follow-up.
+6. **Leads**: List or Board, source chips (Website, Instagram, Cold call, Offline marketing, Referral…), stage tabs with counts, filters for owner and follow-up due. The board's **Move…** menu changes a stage; Booked opens the booking form, Lost asks for a reason on the lead page.
+7. **Customers**: one record per person. The page shows bookings, cars, enquiries, WhatsApp messages and follow-ups, with Call / WhatsApp / Book service. Filter **Has website account** replaces the Online accounts menu (the old pages still work by URL).
+8. **Messages** = Campaigns + WhatsApp templates (tabs). **Setup** = Packages, Offers, Team, Roles, Settings.
+
+### Notes
+
+- Accounts created from the admin without an email get `m<mobile>@phone-booking.invalid`; the app never emails these addresses and hides them in the UI.
+- The cron step that recalculated lead stages now does nothing (it reports `lead_stages: 0`). No schedule change is needed.

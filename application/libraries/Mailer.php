@@ -63,6 +63,10 @@ class Mailer
      */
     public function send($to, $subject, $body_html, $body_text = NULL, array $attachments = array())
     {
+        if (is_string($to) && function_exists('ymo_is_placeholder_email') && ymo_is_placeholder_email($to)) {
+            $this->last_error = 'No email on file (phone booking).';
+            return FALSE;
+        }
         $host = $this->CI->config->item('mail_host');
         $user = $this->CI->config->item('mail_username');
         $pass = $this->CI->config->item('mail_password');

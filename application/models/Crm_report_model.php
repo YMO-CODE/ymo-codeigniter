@@ -176,6 +176,9 @@ class Crm_report_model extends CI_Model
         return $out;
     }
 
+    /**
+     * Everything the Today page needs from the CRM, scoped to one admin when given.
+     */
     public function dashboard_snapshot($admin_id = NULL)
     {
         if (!$this->db->table_exists('crm_leads')) {
@@ -183,24 +186,23 @@ class Crm_report_model extends CI_Model
         }
         $this->load->model(array('crm_task_model', 'crm_lead_model', 'crm_contact_model'));
 
-        $tasks_today = $this->crm_task_model->paginate(array(
-            'status'   => 'pending',
-            'due'      => 'today',
-            'mine'     => $admin_id ? 1 : 0,
-            'admin_id' => $admin_id,
-        ), 8, 0)['rows'];
+        $counts = array();
+        foreach (crm_lead_stages() as $stage => $label) {
+            $this->db->from('crm_leads')->where('deleted_at IS NULL', NULL, FALSE)->where('stage', $stage);
+            if (in_array($stage, array('booked', 'lost'), TRUE)) {
+                $this->db->where('updated_at >=', date('Y-m-01 00:00:00'));
+            }
+            $counts[$stage] = (int) $this->db->count_all_results();
+        }
 
         return array(
-            'open_leads'       => (int) $this->db->where('status', 'open')->where('deleted_at IS NULL', NULL, FALSE)->count_all_results('crm_leads'),
-            'tasks_today'      => $this->crm_task_model->due_today_count($admin_id),
-            'tasks_overdue'    => $this->crm_task_model->overdue_count($admin_id),
-            'hot_leads'        => $this->crm_lead_model->count_hot_open($admin_id),
-            'hot_leads_list'   => $this->crm_lead_model->list_by_stage_bucket('hot_lead', 8, $admin_id),
-            'week_callbacks'   => $this->crm_lead_model->list_by_stage_bucket('followup_next_week', 8, $admin_id),
-            'month_callbacks'  => $this->crm_lead_model->list_by_stage_bucket('followup_next_month', 8, $admin_id),
-            'tasks_today_list' => $tasks_today,
-            'service_due'      => $this->crm_contact_model->list_service_due(8),
-            'service_due_count'=> $this->crm_contact_model->count_service_due(),
+            'my_day'            => $this->crm_task_model->my_day($admin_id, 0),
+            'new_leads'         => $this->crm_lead_model->list_new(8, $admin_id),
+            'new_leads_count'   => $this->crm_lead_model->count_new($admin_id),
+            'stage_counts'      => $counts,
+            'sources_month'     => $this->crm_lead_model->source_conversion(date('Y-m-01')),
+            'service_due'       => $this->crm_contact_model->list_service_due(6),
+            'service_due_count' => $this->crm_contact_model->count_service_due(),
         );
     }
 

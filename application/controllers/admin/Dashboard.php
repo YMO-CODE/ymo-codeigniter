@@ -20,16 +20,20 @@ class Dashboard extends Admin_Controller
             }
         }
 
+        $who      = $this->input->get('who') === 'all' ? 'all' : 'me';
+        $admin_id = $who === 'me' && isset($this->admin['id']) ? (int) $this->admin['id'] : NULL;
+
         $summary = $this->booking_model->counts_summary();
-        $summary['reminders_week']  = $this->reminder_model->due_this_week_count();
-        $summary['recent_bookings'] = $this->booking_model->paginate(array(), 8, 0)['rows'];
-        $summary['crm'] = $this->crm_report_model->dashboard_snapshot(
-            isset($this->admin['id']) ? (int) $this->admin['id'] : NULL
-        );
+        $summary['reminders_week'] = $this->reminder_model->due_this_week_count();
+        $summary['board']          = $this->booking_model->work_board();
+        $summary['crm']            = $this->crm_report_model->dashboard_snapshot($admin_id);
 
         $this->render('admin/dashboard', array(
-            'title'   => 'Dashboard',
-            'summary' => $summary,
+            'title'    => 'Today',
+            'summary'  => $summary,
+            'who'      => $who,
+            'can_book' => !function_exists('crm_can') || crm_can('bookings.edit'),
+            'can_task' => function_exists('crm_can') && crm_can('tasks.edit'),
         ));
     }
 }
