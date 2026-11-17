@@ -203,7 +203,97 @@ class Crm_report_model extends CI_Model
             'sources_month'     => $this->crm_lead_model->source_conversion(date('Y-m-01')),
             'service_due'       => $this->crm_contact_model->list_service_due(6),
             'service_due_count' => $this->crm_contact_model->count_service_due(),
+            'alerts'            => $this->alerts(),
         );
+    }
+
+    /**
+     * Things that went wrong and need a person: shown as a strip at the top of Today.
+     *
+     * @return array<int, array{level:string,text:string,link:string,link_text:string}>
+     */
+    public function alerts()
+    {
+        $out = array();
+        $since = date('Y-m-d H:i:s', strtotime('-24 hours'));
+
+        if ($this->db->table_exists('crm_wa_messages')) {
+            $rows = $this->db->select('context_type, kind, error, COUNT(*) AS n', FALSE)
+                ->from('crm_wa_messages')
+                ->where('direction', 'out')->where('status', 'failed')
+                ->where('created_at >=', $since)
+                ->group_by(array('context_type', 'kind', 'error'))
+                ->order_by('n', 'DESC')
+                ->get()->result_array();
+            $by_kind = array('updates' => 0, 'campaign' => 0, 'reply' => 0);
+            $balance = FALSE;
+            $sample = '';
+            foreach ($rows as $r) {
+                $ctx  = (string) $r['context_type'];
+                $kind = in_array($ctx, array('campaign', 'campaign_test'), TRUE) ? 'campaign'
+                    : (strpos((string) $r['kind'], 'auto_') === 0 || $ctx === 'lead' ? 'reply' : 'updates');
+                $by_kind[$kind] += (int) $r['n'];
+                if (strpos((string) $r['error'], '131042') !== FALSE) {
+                    $balance = TRUE;
+                } elseif ($sample === '' && $r['error']) {
+                    $sample = mb_strimwidth((string) $r['error'], 0, 140, '…');
+                }
+            }
+            $total = array_sum($by_kind);
+            if ($total) {
+                $parts = array();
+                if ($by_kind['updates']) { $parts[] = $by_kind['updates'].' customer update'.($by_kind['updates'] === 1 ? '' : 's'); }
+                if ($by_kind['campaign']) { $parts[] = $by_kind['campaign'].' campaign message'.($by_kind['campaign'] === 1 ? '' : 's'); }
+                if ($by_kind['reply']) { $parts[] = $by_kind['reply'].' auto-repl'.($by_kind['reply'] === 1 ? 'y' : 'ies'); }
+                $out[] = array(
+                    'level'     => 'critical',
+                    'text'      => implode(', ', $parts).' failed on WhatsApp in the last 24 hours. '
+                        .($balance ? 'The WhatsApp balance is empty: add funds in Meta Business Settings → Billing & payments.' : ($sample !== '' ? 'Reason: '.$sample : '')),
+                    'link'      => $balance ? 'https://business.facebook.com/billing_hub/accounts' : '',
+                    'link_text' => $balance ? 'Add funds' : '',
+                );
+            }
+        }
+
+        if ($this->db->table_exists('crm_campaign_recipients')) {
+            $rows = $this->db->select('c.id, c.name, COUNT(r.id) AS n', FALSE)
+                ->from('crm_campaign_recipients r')
+                ->join('crm_campaigns c', 'c.id = r.campaign_id')
+                ->where('r.status', 'failed')
+                ->where('r.channel !=', 'whatsapp') // WhatsApp failures are counted above
+                ->where('c.updated_at >=', $since)
+                ->group_by('c.id')->order_by('n', 'DESC')->limit(3)
+                ->get()->result_array();
+            foreach ($rows as $r) {
+                $out[] = array('level' => 'warning',
+                    'text' => (int) $r['n'].' message'.((int) $r['n'] === 1 ? '' : 's').' failed in campaign "'.$r['name'].'".',
+                    'link' => admin_url('campaigns/'.$r['id']), 'link_text' => 'Open campaign');
+            }
+            $failed = $this->db->select('id, name')->from('crm_campaigns')
+                ->where('status', 'failed')->where('updated_at >=', $since)->limit(3)->get()->result_array();
+            foreach ($failed as $c) {
+                $out[] = array('level' => 'warning',
+                    'text' => 'Campaign "'.$c['name'].'" stopped before sending (template not approved or WhatsApp not set up).',
+                    'link' => admin_url('campaigns/'.$c['id']), 'link_text' => 'Open campaign');
+            }
+        }
+
+        $two_h = date('Y-m-d H:i:s', strtotime('-2 hours'));
+        $pending = (int) $this->db->from('bookings')->where('status', 'pending')->where('created_at <', $two_h)->count_all_results();
+        if ($pending) {
+            $out[] = array('level' => 'warning',
+                'text' => $pending.' booking'.($pending === 1 ? ' has' : 's have').' waited over 2 hours for a confirmation call.',
+                'link' => admin_url('bookings?status=pending'), 'link_text' => 'See bookings');
+        }
+        $new = (int) $this->db->from('crm_leads')->where('deleted_at IS NULL', NULL, FALSE)
+            ->where('stage', 'new')->where('created_at <', $two_h)->where('created_at >=', date('Y-m-d H:i:s', strtotime('-7 days')))
+            ->count_all_results();
+        if ($new) {
+            $out[] = array('level' => 'warning',
+                'text' => $new.' new lead'.($new === 1 ? '' : 's').' from the last week nobody has called for over 2 hours.',
+                'link' => admin_url('leads?stage=new&who=all'), 'link_text' => 'Call them');
+        }
+        return $out;
     }
 
     protected function _date_range($column, $from, $to)

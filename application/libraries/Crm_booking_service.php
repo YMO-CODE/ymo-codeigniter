@@ -46,7 +46,7 @@ class Crm_booking_service
      *
      * @return int User id (0 on failure, see last_error())
      */
-    public function create_customer($name, $mobile, $email = '', $area = '', $city = '')
+    public function create_customer($name, $mobile, $email = '', $area = '', $city = '', $verified = TRUE)
     {
         $m = crm_mobile10($mobile);
         if (!preg_match('/^[6-9]\d{9}$/', $m)) {
@@ -68,7 +68,7 @@ class Crm_booking_service
             'area'               => trim((string) $area),
             'city'               => trim((string) $city) !== '' ? trim((string) $city) : 'Pune',
             'password'           => bin2hex(random_bytes(12)),
-            'mobile_verified_at' => date('Y-m-d H:i:s'), // confirmed by staff on the phone
+            'mobile_verified_at' => $verified ? date('Y-m-d H:i:s') : NULL, // staff bookings: confirmed on the phone
         ));
         if (!$id) {
             $this->last_error = 'Could not create the customer account.';

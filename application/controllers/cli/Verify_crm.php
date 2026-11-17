@@ -117,7 +117,6 @@ class Verify_crm extends CI_Controller
 
         foreach (array(
             array($nav, "'Today'", 'Nav: Today'),
-            array($nav, "'Follow-ups'", 'Nav: Follow-ups'),
             array($nav, "item('leads'", 'Nav: Leads'),
             array($nav, "item('bookings'", 'Nav: Bookings'),
             array($nav, "item('customers'", 'Nav: Customers'),
@@ -138,6 +137,9 @@ class Verify_crm extends CI_Controller
             "bookings/new'",
             "bookings/lookup'",
             "tasks/(:num)/snooze'",
+            "campaigns/(:num)/test'",
+            "campaigns/(:num)/duplicate'",
+            "campaigns/delete'",
             "contacts'",
             "reports/export/revenue'",
             "reports/export/service-due'",
@@ -176,6 +178,12 @@ class Verify_crm extends CI_Controller
         $this->_file_contains('application/views/admin/leads/view.php', 'Book service', 'Lead detail: Book service');
         $this->_file_contains('application/views/admin/bookings/create.php', 'bookings/lookup', 'Admin booking form: customer lookup');
         $this->_file_contains('application/views/admin/tasks/my_day.php', 'snooze', 'My day: snooze');
+        $this->_file_contains('application/views/admin/dashboard.php', '/snooze?back=dashboard', 'Today: +1 day on calls');
+        $this->_file_contains('application/views/admin/dashboard.php', 'ymo-alerts', 'Today: problem alerts');
+        $this->_file_contains('application/views/admin/leads/view.php', 'data-next', 'Log call: outcome picks next call');
+        $this->_file_contains('application/views/admin/leads/index.php', 'ymo-filter-menu', 'Leads: single Filter menu');
+        $this->_file_contains('application/controllers/Quick_book.php', '_store_pending_booking', 'Quick book creates a Pending booking');
+        $this->_file_contains('application/views/admin/campaigns/view.php', '/test', 'Campaign: send test');
 
         $form = file_get_contents(FCPATH . '../application/views/admin/leads/form.php');
         $this->_assert(strpos($form, 'Workshop') !== FALSE, 'Lead form labels Workshop (not Company)');

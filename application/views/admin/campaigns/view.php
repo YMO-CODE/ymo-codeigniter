@@ -26,6 +26,26 @@
             <?php else: ?>
                 <div class="border rounded p-3 bg-light small"><?= nl2br(html_escape($camp['body'])); ?></div>
             <?php endif; ?>
+            <?php if (!empty($can_edit) && in_array($camp['status'], array('draft','scheduled'), TRUE)): ?>
+                <?= form_open(admin_url('campaigns/'.$camp['id'].'/test'), array('class' => 'mt-3 p-3 border rounded')); ?>
+                    <div class="small fw-semibold mb-2"><span class="mi mi-sm mi-leading">science</span>Send a test to yourself first</div>
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                        <?php if ($camp['channel'] !== 'email'): ?>
+                            <input class="form-control form-control-sm" style="max-width:11rem" name="test_mobile" inputmode="numeric" maxlength="10" placeholder="Your mobile" value="<?= html_escape($test_mobile ?? ''); ?>" required>
+                        <?php endif; ?>
+                        <?php if (in_array($camp['channel'], array('email', 'both'), TRUE)): ?>
+                            <input class="form-control form-control-sm" style="max-width:16rem" type="email" name="test_email" placeholder="Your email" value="<?= html_escape($test_email ?? ''); ?>" required>
+                        <?php endif; ?>
+                        <button class="btn btn-outline-primary btn-sm">Send test</button>
+                    </div>
+                    <p class="small ymo-muted mb-0 mt-1">Only you receive it. The campaign stays a draft.</p>
+                <?= form_close(); ?>
+            <?php endif; ?>
+            <?php if (!empty($can_edit)): ?>
+                <?= form_open(admin_url('campaigns/'.$camp['id'].'/duplicate'), array('class' => 'mt-2')); ?>
+                    <button class="btn btn-link btn-sm px-0"><span class="mi mi-sm mi-leading">content_copy</span>Duplicate as a new draft</button>
+                <?= form_close(); ?>
+            <?php endif; ?>
             <?php if ($can_send && in_array($camp['status'], array('draft','scheduled'), TRUE)): ?>
                 <div class="mt-3 d-flex gap-2 flex-wrap">
                     <?= form_open(admin_url('campaigns/'.$camp['id'].'/send'), array('class'=>'d-inline')); ?>

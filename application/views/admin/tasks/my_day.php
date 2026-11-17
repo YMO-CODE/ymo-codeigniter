@@ -6,6 +6,7 @@ $groups = array(
 );
 $total = count($day['overdue']) + count($day['today']);
 ?>
+<a href="<?= admin_url('dashboard'); ?>" class="small d-inline-block mb-2"><span class="mi mi-sm mi-leading">arrow_back</span>Back to Today</a>
 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
     <div class="btn-group btn-group-sm">
         <a href="<?= admin_url('tasks'); ?>" class="btn <?= $who === 'me' ? 'btn-primary' : 'btn-outline-secondary'; ?>">Mine</a>

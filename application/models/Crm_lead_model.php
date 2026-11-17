@@ -50,12 +50,27 @@ class Crm_lead_model extends CI_Model
     public function paginate(array $filters, $limit, $offset)
     {
         $this->_apply_filters($filters);
-        $rows = $this->db
+        $this->db
             ->select('l.*, s.label AS source_label, a.name AS assignee_name', FALSE)
             ->from(self::TABLE.' l')
             ->join('crm_lead_sources s', 's.id = l.source_id', 'left')
             ->join('admin_users a', 'a.id = l.assigned_to', 'left')
-            ->where('l.deleted_at IS NULL', NULL, FALSE)
+            ->where('l.deleted_at IS NULL', NULL, FALSE);
+        if (($filters['sort'] ?? '') === 'call_first') {
+            // Who to call first: overdue, then never contacted, then due today, then open without a date.
+            $end_today = $this->db->escape(date('Y-m-d 23:59:59'));
+            $now = $this->db->escape(date('Y-m-d H:i:s'));
+            $this->db->order_by("CASE WHEN l.stage IN ('booked','lost') THEN 9"
+                ." WHEN l.next_follow_up_at IS NOT NULL AND l.next_follow_up_at < $now THEN 0"
+                ." WHEN l.stage = 'new' THEN 1"
+                ." WHEN l.next_follow_up_at <= $end_today THEN 2"
+                ." WHEN l.next_follow_up_at IS NULL THEN 3 ELSE 4 END", '', FALSE)
+                ->order_by('l.priority', 'DESC')
+                ->order_by('l.next_follow_up_at IS NULL', 'ASC', FALSE)
+                ->order_by('l.next_follow_up_at', 'ASC')
+                ->order_by('l.created_at', 'ASC');
+        }
+        $rows = $this->db
             ->order_by("FIELD(l.stage, 'new', 'contacted', 'quote_sent', 'booked', 'lost')", '', FALSE)
             ->order_by('l.priority', 'DESC')
             ->order_by('l.next_follow_up_at IS NULL', 'ASC', FALSE)
@@ -543,7 +558,15 @@ class Crm_lead_model extends CI_Model
             $this->db->where('l.priority', (int) $filters['priority']);
         }
         if (!empty($filters['mine']) && !empty($filters['admin_id'])) {
-            $this->db->where('l.assigned_to', (int) $filters['admin_id']);
+            if ($filters['mine'] === 'with_unassigned') {
+                // "My leads" on the list: mine plus nobody's yet, so new leads aren't missed.
+                $this->db->group_start()
+                    ->where('l.assigned_to', (int) $filters['admin_id'])
+                    ->or_where('l.assigned_to IS NULL', NULL, FALSE)
+                    ->group_end();
+            } else {
+                $this->db->where('l.assigned_to', (int) $filters['admin_id']);
+            }
         }
     }
 }

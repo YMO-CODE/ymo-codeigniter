@@ -345,6 +345,79 @@ class Crm_campaign_model extends CI_Model
         return $sent;
     }
 
+    /**
+     * Send this campaign's message to one person (the admin testing it). The
+     * campaign stays a draft and no recipient rows are written.
+     *
+     * @return array<string, array{ok:bool,error:string}> keyed by channel
+     */
+    public function send_test(array $camp, $name, $mobile, $email, Mailer $mailer, Sms_gateway $sms)
+    {
+        $ci = &get_instance();
+        $r = array('name' => (string) $name, 'mobile' => (string) $mobile, 'email' => (string) $email);
+        $out = array();
+        $channels = $camp['channel'] === 'both' ? array('email', 'sms') : array($camp['channel']);
+
+        foreach ($channels as $ch) {
+            if ($ch === 'email') {
+                if ($email === '') { $out['email'] = array('ok' => FALSE, 'error' => 'No email address to test with.'); continue; }
+                $ok = $mailer->send($email, '[TEST] '.($camp['subject'] ?: $camp['name']), nl2br(htmlspecialchars($camp['body'], ENT_QUOTES, 'UTF-8')));
+                $out['email'] = array('ok' => (bool) $ok, 'error' => $ok ? '' : (string) $mailer->last_error());
+            } elseif ($ch === 'sms') {
+                if ($mobile === '') { $out['sms'] = array('ok' => FALSE, 'error' => 'No mobile number to test with.'); continue; }
+                $ok = $ci->config->item('crm_sms_campaign_tpl') ? $sms->send_template($mobile, 'crm_campaign', array('msg' => $camp['body'])) : FALSE;
+                $out['sms'] = array('ok' => (bool) $ok, 'error' => $ok ? '' : ($ci->config->item('crm_sms_campaign_tpl') ? (string) $sms->last_error() : 'CRM SMS template not configured'));
+            } elseif ($ch === 'whatsapp') {
+                if ($mobile === '') { $out['whatsapp'] = array('ok' => FALSE, 'error' => 'No mobile number to test with.'); continue; }
+                $ci->load->library('crm_messaging');
+                $ci->load->model(array('crm_wa_template_model', 'crm_wa_message_model'));
+                $tpl = !empty($camp['wa_template_id']) ? $ci->crm_wa_template_model->find($camp['wa_template_id']) : NULL;
+                if (!$tpl || $tpl['status'] !== 'APPROVED') {
+                    $out['whatsapp'] = array('ok' => FALSE, 'error' => 'The template is missing or not approved.');
+                    continue;
+                }
+                $cfg = $this->wa_config($camp);
+                $params = array();
+                foreach (array_slice(array_pad($cfg['params'], (int) $tpl['param_count'], ''), 0, (int) $tpl['param_count']) as $p) {
+                    $params[] = $this->_fill_wa_placeholders((string) $p, $r);
+                }
+                $res = $ci->crm_messaging->send_whatsapp_template($mobile, $tpl['name'], $tpl['language'], $params,
+                    $this->_campaign_wa_header($tpl, $cfg['header_link']));
+                $err = $res['ok'] ? '' : ($ci->crm_messaging->last_error() ?: 'WhatsApp send failed');
+                $ci->crm_wa_message_model->log(array(
+                    'wa_message_id' => $res['message_id'],
+                    'phone'         => $mobile,
+                    'direction'     => 'out',
+                    'kind'          => 'template',
+                    'template_name' => $tpl['name'],
+                    'body'          => 'TEST: '.implode(' | ', $params),
+                    'context_type'  => 'campaign_test',
+                    'context_id'    => (int) $camp['id'],
+                    'status'        => $res['ok'] ? 'sent' : 'failed',
+                    'error'         => $err ?: NULL,
+                ));
+                $out['whatsapp'] = array('ok' => (bool) $res['ok'], 'error' => $err);
+            }
+        }
+        return $out;
+    }
+
+    /** New draft with the same channel, audience and content. */
+    public function duplicate(array $camp, $admin_id)
+    {
+        return $this->create(array(
+            'name'           => mb_substr('Copy of '.$camp['name'], 0, 160),
+            'channel'        => $camp['channel'],
+            'subject'        => $camp['subject'],
+            'body'           => $camp['body'],
+            'segment_json'   => $camp['segment_json'],
+            'wa_template_id' => $camp['wa_template_id'],
+            'wa_params_json' => $camp['wa_params_json'],
+            'status'         => 'draft',
+            'created_by'     => $admin_id ? (int) $admin_id : NULL,
+        ));
+    }
+
     /** {name} / {first_name} / {mobile} placeholders in campaign template variables. */
     protected function _fill_wa_placeholders($value, array $recipient)
     {

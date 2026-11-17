@@ -29,6 +29,53 @@ class Campaigns extends Crm_Controller
         ));
     }
 
+    /** POST campaigns/{id}/test — send this campaign to the admin only; stays a draft. */
+    public function send_test($id)
+    {
+        $this->require_perm('campaigns.edit');
+        $camp = $this->crm_campaign_model->find($id);
+        if (!$camp || $this->input->method() !== 'post') { show_404(); }
+
+        $mobile = crm_mobile10((string) $this->input->post('test_mobile'));
+        $email  = strtolower(trim((string) $this->input->post('test_email')));
+        if ($mobile !== '' && !preg_match('/^[6-9]\d{9}$/', $mobile)) {
+            $this->flash('error', 'Enter a valid 10-digit mobile number for the test.');
+            redirect(admin_url('campaigns/'.$id));
+        }
+        if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->flash('error', 'Enter a valid email address for the test.');
+            redirect(admin_url('campaigns/'.$id));
+        }
+        $this->session->set_userdata('campaign_test_mobile', $mobile);
+        $this->session->set_userdata('campaign_test_email', $email);
+
+        $res = $this->crm_campaign_model->send_test($camp, (string) ($this->admin['name'] ?? ''), $mobile, $email, $this->mailer, $this->sms_gateway);
+        $names = array('email' => 'Email', 'sms' => 'SMS', 'whatsapp' => 'WhatsApp');
+        $ok = $fail = array();
+        foreach ($res as $ch => $r) {
+            if ($r['ok']) { $ok[] = $names[$ch]; } else { $fail[] = $names[$ch].': '.$r['error']; }
+        }
+        $this->audit->log('admin', $this->admin['id'], 'crm.campaign.test', 'crm_campaign', (int) $id, $res);
+        $to = trim(($mobile !== '' ? $mobile : '').($email !== '' ? ' / '.$email : ''), ' /');
+        $this->flash($fail ? 'warning' : 'success',
+            ($ok ? 'Test sent by '.implode(' and ', $ok).' to '.$to.'. ' : '')
+            .($fail ? 'Failed: '.implode('; ', $fail).'. ' : '')
+            .'The campaign is still a draft.');
+        redirect(admin_url('campaigns/'.$id));
+    }
+
+    /** POST campaigns/{id}/duplicate — copy into a new draft and open it for editing. */
+    public function duplicate($id)
+    {
+        $this->require_perm('campaigns.edit');
+        $camp = $this->crm_campaign_model->find($id);
+        if (!$camp || $this->input->method() !== 'post') { show_404(); }
+        $new_id = $this->crm_campaign_model->duplicate($camp, $this->admin['id']);
+        $this->audit->log('admin', $this->admin['id'], 'crm.campaign.duplicate', 'crm_campaign', $new_id, array('from' => (int) $id));
+        $this->flash('success', 'Copied into a new draft. Rename it and adjust before sending.');
+        redirect(admin_url('campaigns/'.$new_id.'/edit'));
+    }
+
     /** POST campaigns/delete — delete the ticked campaigns from the list. */
     public function bulk_delete()
     {
@@ -88,6 +135,9 @@ class Campaigns extends Crm_Controller
             'wa_tpl' => $wa_tpl,
             'wa_cfg' => $this->crm_campaign_model->wa_config($camp),
             'can_send' => crm_can('campaigns.send'),
+            'can_edit' => crm_can('campaigns.edit'),
+            'test_mobile' => (string) $this->session->userdata('campaign_test_mobile'),
+            'test_email'  => (string) ($this->session->userdata('campaign_test_email') ?: ($this->admin['email'] ?? '')),
         ));
     }
 
@@ -180,6 +230,7 @@ class Campaigns extends Crm_Controller
 
     protected function _form($camp)
     {
+        $this->_auto_sync_templates();
         $this->render('admin/campaigns/form', array(
             'title' => $camp ? 'Edit campaign' : 'New campaign',
             'camp'  => $camp,
@@ -188,6 +239,25 @@ class Campaigns extends Crm_Controller
             'wa_ready'     => $this->crm_messaging->can_send_whatsapp(),
             'wa_cfg'       => $camp ? $this->crm_campaign_model->wa_config($camp) : array('params' => array(), 'header_link' => ''),
         ));
+    }
+
+    /** Pull approved templates from Meta at most every 10 minutes, so nobody has to press Sync. */
+    protected function _auto_sync_templates()
+    {
+        if (!$this->crm_wa_template_model->table_ready() || !$this->crm_messaging->can_send_whatsapp()) {
+            return;
+        }
+        $last = (int) $this->session->userdata('wa_tpl_autosync_at');
+        if ($last > time() - 600) {
+            return;
+        }
+        $this->session->set_userdata('wa_tpl_autosync_at', time());
+        $remote = $this->crm_messaging->fetch_whatsapp_templates();
+        if ($remote !== NULL) {
+            $this->crm_wa_template_model->sync_from_meta($remote);
+        } else {
+            log_message('error', '[wa] template auto-sync failed: '.$this->crm_messaging->last_error());
+        }
     }
 
     protected function _save($id)

@@ -24,9 +24,11 @@ unset($toggle_qs['page'], $toggle_qs['stage']);
         <a href="<?= admin_url('leads/new'); ?>" class="btn btn-primary btn-sm"><span class="mi mi-sm mi-leading">add</span>New lead</a>
     <?php endif; ?>
 </div>
+<?php if (($mode ?? 'list') === 'board'): ?>
 <div class="ymo-chips mb-3">
     <a href="<?= $chip_url(''); ?>" class="<?= $current_source === '' ? 'active' : ''; ?>">All sources</a>
     <?php foreach ($sources as $s): ?>
         <a href="<?= $chip_url($s['slug']); ?>" class="<?= $current_source === $s['slug'] ? 'active' : ''; ?>"><?= html_escape($s['label']); ?></a>
     <?php endforeach; ?>
 </div>
+<?php endif; ?>

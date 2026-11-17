@@ -239,12 +239,12 @@ if (!function_exists('crm_lead_call_outcomes')) {
     function crm_lead_call_outcomes()
     {
         return array(
-            'no_answer'  => array('label' => 'No answer / busy',   'stage' => NULL),
-            'interested' => array('label' => 'Interested',         'stage' => 'contacted'),
-            'quote_sent' => array('label' => 'Quote sent',         'stage' => 'quote_sent'),
-            'booked'     => array('label' => 'Booked - create booking', 'stage' => 'booked'),
-            'lost'       => array('label' => 'Not going ahead',    'stage' => 'lost'),
-            'note'       => array('label' => 'Just a note',        'stage' => NULL),
+            'no_answer'  => array('label' => 'No answer / busy',   'stage' => NULL,         'next' => 'tomorrow', 'icon' => 'phone_missed'),
+            'interested' => array('label' => 'Interested',         'stage' => 'contacted',  'next' => '2d',       'icon' => 'thumb_up'),
+            'quote_sent' => array('label' => 'Quote sent',         'stage' => 'quote_sent', 'next' => '2d',       'icon' => 'request_quote'),
+            'booked'     => array('label' => 'Booked',             'stage' => 'booked',     'next' => 'none',     'icon' => 'event_available'),
+            'lost'       => array('label' => 'Not going ahead',    'stage' => 'lost',       'next' => 'none',     'icon' => 'block'),
+            'note'       => array('label' => 'Just a note',        'stage' => NULL,         'next' => '',         'icon' => 'sticky_note_2'),
         );
     }
 }

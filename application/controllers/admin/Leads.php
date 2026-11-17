@@ -44,7 +44,14 @@ class Leads extends Crm_Controller
             'priority'    => $this->input->get('priority'),
             'mine'        => $this->input->get('mine'),
             'admin_id'    => $this->admin['id'],
+            'sort'        => 'call_first',
         );
+        // Default view: my open leads plus unassigned ones. ?who=all shows the whole team.
+        $who = $this->input->get('who') === 'all' ? 'all' : 'me';
+        if ($who === 'me' && empty($filters['assigned_to'])) {
+            $filters['mine'] = 'with_unassigned';
+        }
+        $filters['who'] = $who;
 
         $source_label = NULL;
         if (!empty($filters['source_slug'])) {
@@ -441,6 +448,7 @@ class Leads extends Crm_Controller
         switch ($when) {
             case 'today':    return date('Y-m-d H:i:s', max(time() + 3600, strtotime('today 17:00')));
             case 'tomorrow': return $at10(strtotime('+1 day'));
+            case '2d':       return $at10(strtotime('+2 days'));
             case '3d':       return $at10(strtotime('+3 days'));
             case '1w':       return $at10(strtotime('+7 days'));
             case '2w':       return $at10(strtotime('+14 days'));

@@ -82,6 +82,9 @@ class Quick_book extends MY_Controller
 
         $payload = $this->_collect_payload();
         $lead_id = $this->_store_lead($payload);
+        if ($lead_id) {
+            $this->_store_pending_booking($payload, $lead_id);
+        }
 
         if ($lead_id) {
             $this->flash('success', 'Thanks - we received your request and will call you shortly.');
@@ -288,6 +291,72 @@ class Quick_book extends MY_Controller
         ));
 
         return $lead_id;
+    }
+
+    /**
+     * Turn the request into a Pending booking the team only has to confirm.
+     * Skipped (the lead stays open for a call) when the package is customised,
+     * the car has no number and no matching saved car, or the car already has
+     * an open booking.
+     *
+     * @return int booking id or 0
+     */
+    protected function _store_pending_booking(array $payload, $lead_id)
+    {
+        if (empty($payload['package_id'])) {
+            return 0;
+        }
+        $this->load->library('crm_booking_service');
+        $svc = $this->crm_booking_service;
+
+        $user = $svc->find_user_by_mobile($payload['mobile']);
+        $user_id = $user ? (int) $user['id'] : 0;
+
+        $vehicle_id = 0;
+        if ($user_id) {
+            foreach ($this->vehicle_model->for_user($user_id) as $v) {
+                $same_number = $payload['vehicle_number'] !== ''
+                    && strtoupper(preg_replace('/\s+/', '', (string) $v['vehicle_number'])) === $payload['vehicle_number'];
+                $same_car = $payload['vehicle_number'] === ''
+                    && (int) $v['make_id'] === (int) $payload['make_id']
+                    && strcasecmp(trim((string) $v['variant']), $payload['variant']) === 0;
+                if ($same_number || $same_car) {
+                    $vehicle_id = (int) $v['id'];
+                    break;
+                }
+            }
+        }
+        if (!$vehicle_id && $payload['vehicle_number'] === '') {
+            return 0;
+        }
+
+        if (!$user_id) {
+            $user_id = $svc->create_customer($payload['name'], $payload['mobile'], $payload['email'], $payload['area'], $payload['city'], FALSE);
+            if (!$user_id) {
+                log_message('error', 'Quick book: could not create customer: '.$svc->last_error());
+                return 0;
+            }
+        }
+
+        $booking_id = $svc->create_booking(array(
+            'user_id'        => $user_id,
+            'vehicle_id'     => $vehicle_id,
+            'make_id'        => $payload['make_id'],
+            'variant'        => $payload['variant'],
+            'vehicle_number' => $payload['vehicle_number'],
+            'package_id'     => $payload['package_id'],
+            'preferred_date' => $payload['preferred_date'],
+            'remarks'        => trim('Quick book. '.$payload['remarks']),
+            'status'         => 'pending',
+            'lead_id'        => (int) $lead_id,
+        ));
+        if (!$booking_id) {
+            $this->load->model('crm_lead_activity_model');
+            $this->crm_lead_activity_model->add((int) $lead_id, NULL, 'system',
+                'Could not create the booking automatically: '.$svc->last_error().' Book it from this lead after the call.');
+            return 0;
+        }
+        return $booking_id;
     }
 
     protected function _capture_utm()

@@ -51,19 +51,13 @@ $lead_car_type = crm_lead_field($lead, 'car_type');
         <div class="md-card-elevated mb-3" id="log">
             <h6 class="mb-3"><span class="mi mi-sm mi-leading">edit_note</span>What happened?</h6>
             <?= form_open(admin_url('leads/'.$lead['id'].'/log'), array('id' => 'ymo-log-form')); ?>
-                <div class="d-flex flex-wrap gap-2 mb-2" role="radiogroup" aria-label="Channel">
-                    <?php foreach (array('call' => 'Call', 'whatsapp' => 'WhatsApp', 'sms' => 'SMS', 'email' => 'Email', 'note' => 'Visit / other') as $k => $label): ?>
-                        <input type="radio" class="btn-check" name="channel" id="ch_<?= $k; ?>" value="<?= $k; ?>" <?= $k === 'call' ? 'checked' : ''; ?>>
-                        <label class="btn btn-sm btn-outline-secondary" for="ch_<?= $k; ?>"><?= $label; ?></label>
-                    <?php endforeach; ?>
-                </div>
-                <div class="d-flex flex-wrap gap-2 mb-3" role="radiogroup" aria-label="Outcome">
+                <div class="ymo-outcomes mb-3" role="radiogroup" aria-label="Outcome">
                     <?php foreach ($outcomes as $k => $o):
                         if ($k === 'booked' && (!$can_book || $stage === 'booked')) { continue; }
                         $cls = $k === 'booked' ? 'btn-outline-success' : ($k === 'lost' ? 'btn-outline-danger' : 'btn-outline-primary');
                     ?>
-                        <input type="radio" class="btn-check" name="outcome" id="oc_<?= $k; ?>" value="<?= $k; ?>" required>
-                        <label class="btn btn-sm <?= $cls; ?>" for="oc_<?= $k; ?>"><?= html_escape($o['label']); ?></label>
+                        <input type="radio" class="btn-check" name="outcome" id="oc_<?= $k; ?>" value="<?= $k; ?>" data-next="<?= html_escape($o['next'] ?? ''); ?>" required>
+                        <label class="btn <?= $cls; ?>" for="oc_<?= $k; ?>"><span class="mi mi-sm mi-leading"><?= html_escape($o['icon'] ?? 'check'); ?></span><?= html_escape($o['label']); ?></label>
                     <?php endforeach; ?>
                 </div>
                 <div class="mb-2" id="lost_box" hidden>
@@ -72,25 +66,31 @@ $lead_car_type = crm_lead_field($lead, 'car_type');
                         <?php foreach ($reasons as $k => $label): ?><option value="<?= $k; ?>"><?= html_escape($label); ?></option><?php endforeach; ?>
                     </select>
                 </div>
-                <textarea class="form-control form-control-sm mb-2" name="note" rows="2" maxlength="5000" placeholder="Notes (price quoted, car issue, when to call…)"></textarea>
+                <textarea class="form-control form-control-sm mb-2" name="note" id="log_note" rows="2" maxlength="5000" placeholder="Note (optional): price quoted, car issue, best time to call"></textarea>
                 <div id="follow_box">
-                    <label class="form-label small mb-1">Next follow-up</label>
+                    <div class="small mb-1"><span class="ymo-muted">Next call:</span> <strong id="fu_summary"><?= $followup ? html_escape('keep '.date('D d M, h:i A', strtotime($followup['due_at']))) : 'Tomorrow, 10 am'; ?></strong></div>
                     <div class="d-flex flex-wrap gap-2 mb-2">
                         <?php
-                        $chips = array('today' => 'Later today', 'tomorrow' => 'Tomorrow', '3d' => 'In 3 days', '1w' => 'Next week', '2w' => 'In 2 weeks', '1m' => 'Next month', 'custom' => 'Pick date', 'none' => 'No follow-up');
+                        $chips = array('today' => 'Later today', 'tomorrow' => 'Tomorrow', '2d' => 'In 2 days', '1w' => 'Next week', '1m' => 'Next month', 'custom' => 'Pick date', 'none' => 'No follow-up');
                         $default_chip = $followup ? '' : 'tomorrow';
                         foreach ($chips as $k => $label): ?>
-                            <input type="radio" class="btn-check" name="follow_up" id="fu_<?= $k; ?>" value="<?= $k; ?>" <?= $k === $default_chip ? 'checked' : ''; ?>>
+                            <input type="radio" class="btn-check" name="follow_up" id="fu_<?= $k; ?>" value="<?= $k; ?>" data-label="<?= html_escape($label); ?>" <?= $k === $default_chip ? 'checked' : ''; ?>>
                             <label class="btn btn-sm btn-outline-secondary" for="fu_<?= $k; ?>"><?= $label; ?></label>
                         <?php endforeach; ?>
                     </div>
                     <input type="datetime-local" class="form-control form-control-sm mb-2" name="follow_up_date" id="fu_date" hidden
                            value="<?= html_escape(date('Y-m-d\T10:00', strtotime('+1 day'))); ?>">
-                    <?php if ($followup): ?>
-                        <p class="small ymo-muted mb-2">Currently due <?= html_escape(date('D d M, h:i A', strtotime($followup['due_at']))); ?> - leave unselected to keep it.</p>
-                    <?php endif; ?>
                 </div>
-                <button class="btn btn-primary btn-sm"><span class="mi mi-sm mi-leading">save</span>Save</button>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <button class="btn btn-primary"><span class="mi mi-sm mi-leading">save</span>Save</button>
+                    <label class="small ymo-muted d-flex align-items-center gap-1 mb-0">via
+                        <select name="channel" class="form-select form-select-sm w-auto">
+                            <?php foreach (array('call' => 'Call', 'whatsapp' => 'WhatsApp', 'sms' => 'SMS', 'email' => 'Email', 'note' => 'Visit / other') as $k => $label): ?>
+                                <option value="<?= $k; ?>" <?= $k === 'call' ? 'selected' : ''; ?>><?= $label; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </label>
+                </div>
             <?= form_close(); ?>
         </div>
         <?php endif; ?>
@@ -239,14 +239,29 @@ $lead_car_type = crm_lead_field($lead, 'car_type');
         var lost = document.getElementById('lost_box');
         var follow = document.getElementById('follow_box');
         var date = document.getElementById('fu_date');
-        form.addEventListener('change', function () {
-            var oc = (form.querySelector('input[name="outcome"]:checked') || {}).value;
+        var summary = document.getElementById('fu_summary');
+        var note = document.getElementById('log_note');
+        form.addEventListener('change', function (e) {
+            var picked = form.querySelector('input[name="outcome"]:checked');
+            var oc = picked ? picked.value : '';
+            // Picking an outcome pre-selects the usual next call; staff only change it when needed.
+            if (e.target === picked) {
+                var chip = picked.dataset.next ? document.getElementById('fu_' + picked.dataset.next) : null;
+                if (chip) {
+                    chip.checked = true;
+                } else {
+                    // "Just a note" leaves the next call as it is.
+                    form.querySelectorAll('input[name="follow_up"]').forEach(function (c) { c.checked = false; });
+                }
+            }
             var isLost = oc === 'lost', isBooked = oc === 'booked';
             lost.hidden = !isLost;
             lost.querySelector('select').required = isLost;
+            note.required = oc === 'note';
             follow.hidden = isLost || isBooked;
-            var fu = (form.querySelector('input[name="follow_up"]:checked') || {}).value;
-            date.hidden = fu !== 'custom';
+            var fu = form.querySelector('input[name="follow_up"]:checked');
+            date.hidden = !fu || fu.value !== 'custom';
+            if (summary) { summary.textContent = !fu ? 'unchanged' : (fu.value === 'custom' ? 'Pick a date below' : fu.dataset.label); }
         });
     }
     var sel = document.getElementById('stage_sel');

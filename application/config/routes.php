@@ -110,6 +110,8 @@ if (ymo_is_admin_host_request()) {
     $route['campaigns/new']                    = 'admin/campaigns/create';
     $route['campaigns/(:num)']                 = 'admin/campaigns/view/$1';
     $route['campaigns/(:num)/edit']            = 'admin/campaigns/edit/$1';
+    $route['campaigns/(:num)/test'] = 'admin/campaigns/send_test/$1';
+    $route['campaigns/(:num)/duplicate'] = 'admin/campaigns/duplicate/$1';
     $route['campaigns/(:num)/send']            = 'admin/campaigns/send/$1';
     $route['campaigns/(:num)/schedule']        = 'admin/campaigns/schedule/$1';
     $route['whatsapp-templates'] = 'admin/wa_templates/index';
@@ -214,6 +216,8 @@ if (ymo_is_admin_host_request()) {
     $route['admin/campaigns/new']              = 'admin/campaigns/create';
     $route['admin/campaigns/(:num)']           = 'admin/campaigns/view/$1';
     $route['admin/campaigns/(:num)/edit']      = 'admin/campaigns/edit/$1';
+    $route['admin/campaigns/(:num)/test'] = 'admin/campaigns/send_test/$1';
+    $route['admin/campaigns/(:num)/duplicate'] = 'admin/campaigns/duplicate/$1';
     $route['admin/campaigns/(:num)/send']      = 'admin/campaigns/send/$1';
     $route['admin/campaigns/(:num)/schedule']  = 'admin/campaigns/schedule/$1';
     $route['admin/whatsapp-templates'] = 'admin/wa_templates/index';
@@ -400,6 +404,8 @@ if (ymo_is_admin_host_request()) {
     $route['admin/campaigns/new'] = 'admin/campaigns/create';
     $route['admin/campaigns/(:num)'] = 'admin/campaigns/view/$1';
     $route['admin/campaigns/(:num)/edit'] = 'admin/campaigns/edit/$1';
+    $route['admin/campaigns/(:num)/test'] = 'admin/campaigns/send_test/$1';
+    $route['admin/campaigns/(:num)/duplicate'] = 'admin/campaigns/duplicate/$1';
     $route['admin/campaigns/(:num)/send'] = 'admin/campaigns/send/$1';
     $route['admin/campaigns/(:num)/schedule'] = 'admin/campaigns/schedule/$1';
     $route['admin/whatsapp-templates'] = 'admin/wa_templates/index';

@@ -22,6 +22,20 @@ $car = function ($b) {
     </div>
 </div>
 
+<?php if ($crm && !empty($crm['alerts'])): ?>
+<div class="ymo-alerts mb-3" role="status">
+    <?php foreach ($crm['alerts'] as $al): ?>
+        <div class="ymo-alert ymo-alert-<?= html_escape($al['level']); ?>">
+            <span class="mi mi-sm"><?= $al['level'] === 'critical' ? 'error' : 'warning'; ?></span>
+            <span class="flex-grow-1"><?= html_escape($al['text']); ?></span>
+            <?php if (!empty($al['link'])): ?>
+                <a href="<?= html_escape($al['link']); ?>" class="btn btn-sm btn-light" <?= strpos($al['link'], 'http') === 0 && strpos($al['link'], admin_url('')) !== 0 ? 'target="_blank" rel="noopener"' : ''; ?>><?= html_escape($al['link_text']); ?></a>
+            <?php endif; ?>
+        </div>
+    <?php endforeach; ?>
+</div>
+<?php endif; ?>
+
 <?php if ($crm): $sc = $crm['stage_counts']; ?>
 <div class="row g-2 mb-3">
     <?php
@@ -49,10 +63,14 @@ $car = function ($b) {
         <div class="ymo-card p-0 mb-3">
             <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
                 <strong class="small text-uppercase ymo-muted"><span class="mi mi-sm mi-leading">call</span>Calls to make</strong>
-                <a href="<?= admin_url('tasks'.($who === 'all' ? '?who=all' : '')); ?>" class="small">All follow-ups</a>
+                <span class="small d-flex gap-3">
+                    <a href="<?= admin_url('tasks'.($who === 'all' ? '?who=all' : '')); ?>">Next 7 days</a>
+                    <a href="<?= admin_url('tasks?view=list&status=done'); ?>">History</a>
+                    <?php if ($can_task): ?><a href="<?= admin_url('tasks/new'); ?>">+ Add</a><?php endif; ?>
+                </span>
             </div>
             <?php if (!$calls): ?><p class="small ymo-muted px-3 py-3 mb-0">Nothing due. New leads below are next.</p><?php endif; ?>
-            <?php foreach (array_slice($calls, 0, 12) as $t):
+            <?php foreach (array_slice($calls, 0, 30) as $t):
                 $name   = $t['lead_name'] ?: ($t['contact_name'] ?: $t['title']);
                 $mobile = $t['lead_mobile'] ?: ($t['contact_mobile'] ?: '');
                 $link   = $t['lead_id'] ? admin_url('leads/'.$t['lead_id'].'#log') : ($t['contact_id'] ? admin_url('customers/'.$t['contact_id']) : admin_url('tasks/'.$t['id'].'/edit'));
@@ -67,10 +85,17 @@ $car = function ($b) {
                     <div class="d-flex gap-1">
                         <?php if ($tel): ?><a class="btn btn-sm btn-outline-primary" href="<?= $tel; ?>" title="Call"><span class="mi mi-sm">call</span></a><?php endif; ?>
                         <a class="btn btn-sm btn-primary" href="<?= $link; ?>"><?= $t['lead_id'] ? 'Log call' : 'Open'; ?></a>
-                        <?php if ($can_task): ?><a class="btn btn-sm btn-outline-success" href="<?= admin_url('tasks/'.$t['id'].'/done?back=dashboard'); ?>" title="Done"><span class="mi mi-sm">check</span></a><?php endif; ?>
+                        <?php if ($can_task): ?>
+                            <?= form_open(admin_url('tasks/'.$t['id'].'/snooze?back=dashboard'), array('class' => 'd-inline')); ?>
+                                <input type="hidden" name="days" value="1">
+                                <button class="btn btn-sm btn-outline-secondary" title="Move to tomorrow">+1 day</button>
+                            <?= form_close(); ?>
+                            <a class="btn btn-sm btn-outline-success" href="<?= admin_url('tasks/'.$t['id'].'/done?back=dashboard'); ?>" title="Done"><span class="mi mi-sm">check</span></a>
+                        <?php endif; ?>
                     </div>
                 </div>
             <?php endforeach; ?>
+            <?php if (count($calls) > 30): ?><p class="small px-3 py-2 mb-0"><a href="<?= admin_url('tasks'.($who === 'all' ? '?who=all' : '')); ?>">All <?= count($calls); ?> calls due</a></p><?php endif; ?>
         </div>
 
         <div class="ymo-card p-0 mb-3">

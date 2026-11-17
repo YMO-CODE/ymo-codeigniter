@@ -1,6 +1,7 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 /*
- * Admin sidebar. Daily work first (Today → Follow-ups → Leads → Bookings → Customers),
+ * Admin sidebar. Daily work first (Today → Leads → Bookings → Customers); the full
+ * follow-up list opens from Today's "Next 7 days" link,
  * then outreach and reports, then setup. Source views (cold calling, Instagram…)
  * live as chips on the Leads page; online accounts are a filter on Customers.
  */
@@ -11,9 +12,8 @@ $item = function ($path, $icon, $label, $active) {
 };
 ?>
 <?php if ($can('dashboard.view')): ?>
-<?= $item('dashboard', 'today', 'Today', admin_nav_active('dashboard')); ?>
-<?php endif; ?>
-<?php if ($crm && crm_can('tasks.view')): ?>
+<?= $item('dashboard', 'today', 'Today', admin_nav_active('dashboard') || admin_nav_active('tasks')); ?>
+<?php elseif ($crm && crm_can('tasks.view')): ?>
 <?= $item('tasks', 'task_alt', 'Follow-ups', admin_nav_active('tasks')); ?>
 <?php endif; ?>
 <?php if ($crm && crm_can('leads.view')): ?>
