@@ -269,12 +269,14 @@ class Bookings extends Admin_Controller
         }
 
         // Customer notification on every status change after `pending`
+        $notice = '';
+        $notice_ok = TRUE;
         if ($new_status !== $previous && in_array($new_status, array('confirmed', 'in_progress', 'completed', 'cancelled'))) {
             $detailed = $this->booking_model->find_detailed($id);
-            $this->_notify_customer_status($detailed);
+            list($notice_ok, $notice) = $this->_notify_customer_status($detailed);
         }
 
-        $this->flash('success', 'Booking marked '.str_replace('_', ' ', $new_status).'.');
+        $this->flash($notice_ok ? 'success' : 'warning', 'Booking marked '.str_replace('_', ' ', $new_status).'.'.($notice !== '' ? ' '.$notice : ''));
         redirect(admin_url('bookings/'.$id));
     }
 
@@ -665,18 +667,56 @@ class Bookings extends Admin_Controller
         return time() >= $earliest;
     }
 
+    /**
+     * Tell the customer about a status change and describe what happened.
+     *
+     * @return array{0: bool, 1: string} [anything delivered, admin-facing summary]
+     */
     protected function _notify_customer_status(array $booking)
     {
-        $this->customer_notifier->notify($booking['user_mobile'], 'booking_status', array(
+        $msg_ok = $this->customer_notifier->notify($booking['user_mobile'], 'booking_status', array(
             'ref'    => $booking['reference'],
             'status' => ymo_sms_status_label($booking['status']),
         ), array('context' => 'admin.booking_status', 'booking_id' => (int) $booking['id']));
-        $this->mailer->send_view(
+        $msg_error = $msg_ok ? '' : (string) $this->customer_notifier->last_error();
+        $channel   = $this->customer_notifier->last_channel() === 'whatsapp' ? 'WhatsApp' : 'SMS';
+
+        $has_email = !ymo_is_placeholder_email($booking['user_email']);
+        $mail_ok = $has_email && $this->mailer->send_view(
             $booking['user_email'],
             'Booking update - '.$booking['reference'],
             'emails/booking_status',
             array('booking' => $booking)
         );
+
+        $sent = array();
+        if ($msg_ok) {
+            $sent[] = $channel;
+        }
+        if ($mail_ok) {
+            $sent[] = 'email';
+        }
+        $text = $sent ? 'Customer notified by '.implode(' and ', $sent).'.' : 'Customer was NOT notified.';
+        if (!$msg_ok) {
+            $text .= ' Message failed: '.$this->_friendly_send_error($msg_error).'.';
+        }
+        if ($has_email && !$mail_ok) {
+            $text .= ' Email failed'.($this->mailer->last_error() ? ': '.$this->mailer->last_error() : '').'.';
+        }
+        return array($msg_ok, $text);
+    }
+
+    /** Turn raw WhatsApp / SMS errors into something an admin can act on. */
+    protected function _friendly_send_error($error)
+    {
+        $error = trim((string) $error);
+        if ($error === '') {
+            return 'unknown error';
+        }
+        if (strpos($error, '131042') !== FALSE) {
+            $error = preg_replace('/WhatsApp:[^\/]*/', 'WhatsApp: no balance or payment method on the WhatsApp account (add funds in Meta Billing & payments) ', $error);
+        }
+        return rtrim(mb_strimwidth($error, 0, 300, '…'), '. ');
     }
 
     protected function _parse_invoice_lines()

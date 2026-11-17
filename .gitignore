@@ -28,3 +28,4 @@ node_modules/
 /storage/.session_epoch
 /storage/whatsapp/*
 !/storage/whatsapp/.gitkeep
+/storage/sync/
