@@ -149,6 +149,47 @@ $car = function ($b) {
     </div>
 
     <div class="col-lg-5">
+        <?php if (!empty($wa_balance)): $wb = $wa_balance; $inr = function ($v) { return '₹'.number_format((float) $v, 2); }; ?>
+        <div class="ymo-card mb-3 ymo-wa-balance <?= $wb['low'] ? 'is-low' : ''; ?>">
+            <div class="d-flex justify-content-between align-items-start mb-1">
+                <p class="ymo-muted text-uppercase small mb-0">WhatsApp balance</p>
+                <a class="small" href="https://business.facebook.com/billing_hub/accounts" target="_blank" rel="noopener">Meta Billing</a>
+            </div>
+            <?php if (!$wb['tracked']): ?>
+                <p class="small mb-2">Not tracked yet. Meta doesn't let the CRM read the balance, so enter the <strong>Available funds</strong> figure shown in Meta Billing once; spend is then subtracted automatically.</p>
+            <?php elseif ($wb['remaining'] === NULL): ?>
+                <p class="small mb-2 text-danger">Couldn't read spend from Meta just now<?= $wb['error'] ? ': '.html_escape(mb_strimwidth($wb['error'], 0, 120, '…')) : ''; ?>. Last entered: <?= $inr($wb['base']); ?> on <?= html_escape(date('d M, h:i A', (int) $wb['base_at'])); ?>.</p>
+            <?php else: ?>
+                <div class="d-flex align-items-baseline gap-2">
+                    <span class="h3 mb-0 <?= $wb['low'] ? 'text-danger' : ''; ?>">~<?= $inr(max(0, $wb['remaining'])); ?></span>
+                    <span class="small ymo-muted">left<?= $wb['msgs_left'] !== NULL ? ' · about '.number_format($wb['msgs_left']).' marketing messages' : ''; ?></span>
+                </div>
+                <?php if ($wb['low']): ?><p class="small text-danger fw-semibold mb-1"><?= $wb['remaining'] <= 0 ? 'Probably empty: WhatsApp messages will fail.' : 'Running low: top up soon.'; ?></p><?php endif; ?>
+                <p class="small ymo-muted mb-2"><?= $inr($wb['base']); ?> entered <?= html_escape(date('d M, h:i A', (int) $wb['base_at'])); ?> − <?= $inr($wb['spent_since']); ?> spent since. An estimate; Meta Billing has the exact figure.</p>
+            <?php endif; ?>
+            <?php if ($wb['today'] !== NULL || $wb['month'] !== NULL): ?>
+                <div class="d-flex justify-content-between small py-1 border-top"><span>Spent today</span><strong><?= $wb['today'] !== NULL ? $inr($wb['today']['cost']).' · '.(int) $wb['today']['volume'].' msgs' : '-'; ?></strong></div>
+                <div class="d-flex justify-content-between small py-1 border-top"><span>Spent this month</span><strong><?= $wb['month'] !== NULL ? $inr($wb['month']['cost']).' · '.(int) $wb['month']['volume'].' msgs' : '-'; ?></strong></div>
+            <?php endif; ?>
+            <?php if (!empty($can_wa_balance)): ?>
+                <details class="mt-2" <?= $wb['tracked'] ? '' : 'open'; ?>>
+                    <summary class="small">Update balance</summary>
+                    <?= form_open(admin_url('dashboard/wa-balance'), array('class' => 'd-flex gap-2 mt-2')); ?>
+                        <input type="hidden" name="mode" value="set">
+                        <input class="form-control form-control-sm" name="amount" inputmode="decimal" style="min-width:0" placeholder="Available funds, ₹" required>
+                        <button class="btn btn-sm btn-outline-primary text-nowrap flex-shrink-0">Set balance</button>
+                    <?= form_close(); ?>
+                    <?php if ($wb['tracked']): ?>
+                        <?= form_open(admin_url('dashboard/wa-balance'), array('class' => 'd-flex gap-2 mt-2')); ?>
+                            <input type="hidden" name="mode" value="topup">
+                            <input class="form-control form-control-sm" name="amount" inputmode="decimal" style="min-width:0" placeholder="Amount added, ₹" required>
+                            <button class="btn btn-sm btn-outline-success text-nowrap flex-shrink-0">Add top-up</button>
+                        <?= form_close(); ?>
+                    <?php endif; ?>
+                </details>
+            <?php endif; ?>
+        </div>
+        <?php endif; ?>
         <?php if ($crm): ?>
         <div class="ymo-card mb-3">
             <p class="ymo-muted text-uppercase small mb-2">Leads by stage</p>

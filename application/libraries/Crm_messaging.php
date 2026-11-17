@@ -292,6 +292,49 @@ class Crm_messaging
         ));
     }
 
+    /**
+     * WhatsApp spend reported by Meta (pricing_analytics) between two UNIX times.
+     *
+     * @return array{cost: float, volume: int, by_category: array}|null  NULL on error
+     */
+    public function fetch_whatsapp_spend($start, $end, $granularity = 'DAILY')
+    {
+        if (!$this->_waba_id() || !$this->_wa_token()) {
+            $this->last_error = 'WhatsApp spend needs CRM_WHATSAPP_WABA_ID and an access token.';
+            return NULL;
+        }
+        // pricing_analytics needs a recent Graph version, whatever the app default is.
+        $field = sprintf('pricing_analytics.start(%d).end(%d).granularity(%s).dimensions(PRICING_CATEGORY)',
+            (int) $start, (int) $end, $granularity);
+        $url = 'https://graph.facebook.com/v22.0/'.rawurlencode($this->_waba_id()).'?'.http_build_query(array('fields' => $field));
+        $ch = curl_init($url);
+        curl_setopt_array($ch, array(
+            CURLOPT_RETURNTRANSFER => TRUE,
+            CURLOPT_HTTPHEADER     => array('Authorization: Bearer '.$this->_wa_token()),
+            CURLOPT_TIMEOUT        => 20,
+        ));
+        $decoded = $this->_exec($ch);
+        if ($decoded === NULL) {
+            return NULL;
+        }
+        $out = array('cost' => 0.0, 'volume' => 0, 'by_category' => array());
+        foreach ($decoded['pricing_analytics']['data'] ?? array() as $series) {
+            foreach ($series['data_points'] ?? array() as $p) {
+                $cat = strtolower((string) ($p['pricing_category'] ?? 'other'));
+                $cost = (float) ($p['cost'] ?? 0);
+                $vol  = (int) ($p['volume'] ?? 0);
+                $out['cost'] += $cost;
+                $out['volume'] += $vol;
+                if (!isset($out['by_category'][$cat])) {
+                    $out['by_category'][$cat] = array('cost' => 0.0, 'volume' => 0);
+                }
+                $out['by_category'][$cat]['cost'] += $cost;
+                $out['by_category'][$cat]['volume'] += $vol;
+            }
+        }
+        return $out;
+    }
+
     protected function _post_messages($node, array $payload, $token = NULL)
     {
         if ($token === NULL) {

@@ -2240,3 +2240,8 @@ table.ymo-table tbody tr:hover { background: var(--ymo-grey-100); }
     .ymo-inbox:not(.is-open) .ymo-inbox-thread { display: none; }
     .ymo-inbox-messages { max-height: 60vh; }
 }
+
+/* Today: WhatsApp balance card */
+.ymo-wa-balance { border-left: 4px solid #25d366; }
+.ymo-wa-balance.is-low { border-left-color: #dc3545; }
+.ymo-wa-balance summary { cursor: pointer; color: var(--ymo-primary); }

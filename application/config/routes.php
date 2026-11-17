@@ -111,6 +111,7 @@ if (ymo_is_admin_host_request()) {
     $route['inbox/read-all'] = 'admin/inbox/read_all';
     $route['inbox/(:num)/reply'] = 'admin/inbox/reply/$1';
     $route['inbox/(:num)'] = 'admin/inbox/view/$1';
+    $route['dashboard/wa-balance'] = 'admin/dashboard/wa_balance';
     $route['campaigns/delete'] = 'admin/campaigns/bulk_delete';
     $route['campaigns/new']                    = 'admin/campaigns/create';
     $route['campaigns/(:num)']                 = 'admin/campaigns/view/$1';
@@ -222,6 +223,7 @@ if (ymo_is_admin_host_request()) {
     $route['admin/inbox/read-all'] = 'admin/inbox/read_all';
     $route['admin/inbox/(:num)/reply'] = 'admin/inbox/reply/$1';
     $route['admin/inbox/(:num)'] = 'admin/inbox/view/$1';
+    $route['admin/dashboard/wa-balance'] = 'admin/dashboard/wa_balance';
     $route['admin/campaigns/delete'] = 'admin/campaigns/bulk_delete';
     $route['admin/campaigns/new']              = 'admin/campaigns/create';
     $route['admin/campaigns/(:num)']           = 'admin/campaigns/view/$1';
@@ -415,6 +417,7 @@ if (ymo_is_admin_host_request()) {
     $route['admin/inbox/read-all'] = 'admin/inbox/read_all';
     $route['admin/inbox/(:num)/reply'] = 'admin/inbox/reply/$1';
     $route['admin/inbox/(:num)'] = 'admin/inbox/view/$1';
+    $route['admin/dashboard/wa-balance'] = 'admin/dashboard/wa_balance';
     $route['admin/campaigns/delete'] = 'admin/campaigns/bulk_delete';
     $route['admin/campaigns/new'] = 'admin/campaigns/create';
     $route['admin/campaigns/(:num)'] = 'admin/campaigns/view/$1';

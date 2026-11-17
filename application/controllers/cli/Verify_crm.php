@@ -143,6 +143,7 @@ class Verify_crm extends CI_Controller
             "campaigns/delete'",
             "inbox/(:num)/reply'",
             "inbox/unread'",
+            "dashboard/wa-balance'",
             "contacts'",
             "reports/export/revenue'",
             "reports/export/service-due'",
@@ -188,6 +189,8 @@ class Verify_crm extends CI_Controller
         $this->_file_contains('application/controllers/Quick_book.php', '_store_pending_booking', 'Quick book creates a Pending booking');
         $this->_file_contains('application/views/admin/campaigns/view.php', '/test', 'Campaign: send test');
         $this->_file_contains('application/views/admin/inbox/index.php', 'ymo-inbox-thread', 'Inbox: conversation view');
+        $this->_file_contains('application/libraries/Crm_wa_balance.php', 'pricing', 'WhatsApp balance: spend tracking');
+        $this->_file_contains('application/views/admin/dashboard.php', 'ymo-wa-balance', 'Today: WhatsApp balance card');
 
         $form = file_get_contents(FCPATH . '../application/views/admin/leads/form.php');
         $this->_assert(strpos($form, 'Workshop') !== FALSE, 'Lead form labels Workshop (not Company)');
