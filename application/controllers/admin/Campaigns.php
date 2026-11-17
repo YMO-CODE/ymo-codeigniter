@@ -49,7 +49,17 @@ class Campaigns extends Crm_Controller
         $this->session->set_userdata('campaign_test_mobile', $mobile);
         $this->session->set_userdata('campaign_test_email', $email);
 
-        $res = $this->crm_campaign_model->send_test($camp, (string) ($this->admin['name'] ?? ''), $mobile, $email, $this->mailer, $this->sms_gateway);
+        // Greet the test the way the customer with this number would be greeted ("Hi there" if unknown).
+        $test_name = '';
+        $this->load->model('crm_contact_model');
+        $contact = $mobile !== '' ? $this->crm_contact_model->find_by_mobile($mobile) : NULL;
+        if (!$contact && $email !== '') {
+            $contact = $this->db->where('email', $email)->where('deleted_at IS NULL', NULL, FALSE)->get('crm_contacts')->row_array();
+        }
+        if ($contact) {
+            $test_name = (string) $contact['name'];
+        }
+        $res = $this->crm_campaign_model->send_test($camp, $test_name, $mobile, $email, $this->mailer, $this->sms_gateway);
         $names = array('email' => 'Email', 'sms' => 'SMS', 'whatsapp' => 'WhatsApp');
         $ok = $fail = array();
         foreach ($res as $ch => $r) {
