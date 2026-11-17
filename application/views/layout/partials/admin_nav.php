@@ -73,7 +73,7 @@ if ($can('settings.manage')) { $setup[] = $item('settings', 'settings', 'Setting
         document.title = (n ? '(' + n + ') ' : '') + baseTitle;
     }
     function poll() {
-        fetch('<?= admin_url('inbox/unread'); ?>', {credentials: 'same-origin', headers: {'Accept': 'application/json'}})
+        fetch('<?= admin_url('inbox/unread'); ?>', {credentials: 'same-origin', headers: {'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest'}})
             .then(function (r) { return r.ok ? r.json() : null; })
             .then(function (d) { if (d && typeof d.unread === 'number') { paint(d.unread); } })
             .catch(function () {});

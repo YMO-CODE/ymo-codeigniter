@@ -163,7 +163,7 @@ $back_label = $lead ? 'Back to lead' : ($contact ? 'Back to customer' : 'All boo
         var m = mobile.value.replace(/\D/g, '');
         if (m.length !== 10 || m === last) { return; }
         last = m;
-        fetch(lookupUrl + '?mobile=' + m, {credentials: 'same-origin'})
+        fetch(lookupUrl + '?mobile=' + m, {credentials: 'same-origin', headers: {'X-Requested-With': 'XMLHttpRequest'}})
             .then(function (r) { return r.json(); })
             .then(function (d) {
                 if (d.found) {
