@@ -29,19 +29,28 @@ class Contact extends Marketing_Controller
 
     protected function _submit()
     {
+        // Bots: hidden field filled, forged stamp or submitted in under 3 seconds.
+        // Act as if it worked so they don't adapt, but save and send nothing.
+        $trap = ymo_form_trap_tripped();
+        if ($trap) {
+            log_message('info', '[spam] contact form dropped: '.$trap.' ip='.$this->input->ip_address());
+            $this->flash('success', 'Thanks - we received your message and will call you shortly.');
+            redirect('contact-us');
+        }
+
         $this->form_validation->set_rules('name', 'Name', 'trim|required|max_length[120]');
-        $this->form_validation->set_rules('mobile', 'Mobile', 'trim|required|max_length[20]');
+        $this->form_validation->set_rules('mobile', 'Mobile', 'trim|required|max_length[20]|callback__valid_indian_mobile');
         $this->form_validation->set_rules('email', 'Email', 'trim|valid_email|max_length[160]');
         $this->form_validation->set_rules('message', 'Message', 'trim|required|max_length[2000]');
 
         if (!$this->form_validation->run()) {
-            $this->flash('error', validation_errors());
+            $this->flash('error', trim(strip_tags(validation_errors())));
             return $this->_show_form();
         }
 
         $payload = array(
             'name'    => trim($this->input->post('name')),
-            'mobile'  => trim($this->input->post('mobile')),
+            'mobile'  => ymo_indian_mobile($this->input->post('mobile')),
             'email'   => trim($this->input->post('email')),
             'message' => trim($this->input->post('message')),
         );
@@ -56,6 +65,15 @@ class Contact extends Marketing_Controller
         }
 
         redirect('contact-us');
+    }
+
+    public function _valid_indian_mobile($value)
+    {
+        if (ymo_indian_mobile($value) === '') {
+            $this->form_validation->set_message('_valid_indian_mobile', 'Please enter a valid 10-digit Indian mobile number.');
+            return FALSE;
+        }
+        return TRUE;
     }
 
     /**
@@ -83,6 +101,17 @@ class Contact extends Marketing_Controller
         }
 
         $this->load->model('crm_lead_activity_model');
+
+        // Links, random strings, sales pitches: keep a record but file it as spam, no email.
+        $spam = ymo_spam_reason($payload['name'], $payload['message']);
+        if ($spam) {
+            $this->crm_lead_model->set_stage($lead_id, 'lost', 'spam');
+            $this->crm_lead_activity_model->add($lead_id, NULL, 'system',
+                'Filed as spam automatically ('.$spam.'). No notification sent.', array('source' => 'marketing_contact'));
+            log_message('info', '[spam] contact form lead #'.$lead_id.' filed as spam: '.$spam);
+            return $lead_id;
+        }
+
         $preview = function_exists('mb_substr')
             ? mb_substr($payload['message'], 0, 240)
             : substr($payload['message'], 0, 240);

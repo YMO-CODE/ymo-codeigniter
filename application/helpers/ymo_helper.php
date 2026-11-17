@@ -381,3 +381,103 @@ if (!function_exists('ymo_placeholder_email')) {
         return 'm'.preg_replace('/\D+/', '', (string) $mobile).'@phone-booking.invalid';
     }
 }
+
+/*
+ * ---------------------------------------------------------------------------
+ * Spam guard for public forms (contact form, etc.)
+ *
+ *   In the form:   <?= ymo_form_trap_fields(); ?>
+ *   On submit:     if (ymo_form_trap_tripped()) { pretend success, save nothing }
+ *                  $why = ymo_spam_reason($name, $message);  // save as spam, no email
+ * ---------------------------------------------------------------------------
+ */
+
+if (!function_exists('ymo_indian_mobile')) {
+    /** "+91 98220 00011", "098220 00011" → "9822000011"; anything else → ''. */
+    function ymo_indian_mobile($raw)
+    {
+        $d = preg_replace('/\D+/', '', (string) $raw);
+        if (strlen($d) === 12 && strpos($d, '91') === 0) {
+            $d = substr($d, 2);
+        } elseif (strlen($d) === 11 && $d[0] === '0') {
+            $d = substr($d, 1);
+        }
+        return preg_match('/^[6-9]\d{9}$/', $d) ? $d : '';
+    }
+}
+
+if (!function_exists('ymo_form_trap_fields')) {
+    /** A hidden field real people never fill, and a signed render time. */
+    function ymo_form_trap_fields()
+    {
+        $ts = time();
+        $sig = hash_hmac('sha256', 'formts:'.$ts, ymo_form_trap_key());
+        return '<div aria-hidden="true" style="position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden">'
+            .'<label>Leave this empty<input type="text" name="website_url" value="" tabindex="-1" autocomplete="off"></label></div>'
+            .'<input type="hidden" name="form_ts" value="'.$ts.'.'.substr($sig, 0, 20).'">';
+    }
+}
+
+if (!function_exists('ymo_form_trap_key')) {
+    function ymo_form_trap_key()
+    {
+        $ci = &get_instance();
+        $k = (string) $ci->config->item('encryption_key');
+        return $k !== '' ? $k : 'ymo-form-trap:'.(string) $ci->config->item('base_url');
+    }
+}
+
+if (!function_exists('ymo_form_trap_tripped')) {
+    /**
+     * TRUE when the submission is almost certainly a bot: the hidden field was
+     * filled, the render stamp is missing or forged, or the form came back in
+     * under 3 seconds.
+     */
+    function ymo_form_trap_tripped($min_seconds = 3)
+    {
+        $ci = &get_instance();
+        if (trim((string) $ci->input->post('website_url')) !== '') {
+            return 'honeypot';
+        }
+        $raw = (string) $ci->input->post('form_ts');
+        if (!preg_match('/^(\d{9,11})\.([a-f0-9]{20})$/', $raw, $m)) {
+            return 'no_stamp';
+        }
+        $expected = substr(hash_hmac('sha256', 'formts:'.$m[1], ymo_form_trap_key()), 0, 20);
+        if (!hash_equals($expected, $m[2])) {
+            return 'bad_stamp';
+        }
+        if (time() - (int) $m[1] < $min_seconds) {
+            return 'too_fast';
+        }
+        return FALSE;
+    }
+}
+
+if (!function_exists('ymo_spam_reason')) {
+    /**
+     * Content that real customers don't send: links, gibberish names, text with
+     * no Latin or Indian-script letters. Returns a short reason or NULL.
+     */
+    function ymo_spam_reason($name, $message)
+    {
+        $name = trim((string) $name);
+        $message = trim((string) $message);
+        if (preg_match('~https?://|www\.|\[url|<a\s~i', $message)) {
+            return 'link in message';
+        }
+        // Random strings such as "RknAAeTgYHinHucZhOowfh": one long word with many case flips.
+        foreach (array($name, $message) as $text) {
+            foreach (preg_split('/\s+/', $text) as $w) {
+                if (strlen($w) >= 12 && preg_match('/^[A-Za-z]+$/', $w)
+                    && preg_match_all('/[a-z][A-Z]/', $w) >= 3) {
+                    return 'random text';
+                }
+            }
+        }
+        if (preg_match('/\b(seo|backlinks?|web ?design|redesign|website (design|redesign|traffic)|rank(ing)? on google|guest post|crypto|bitcoin|casino|loan offer)\b/i', $message)) {
+            return 'sales pitch';
+        }
+        return NULL;
+    }
+}

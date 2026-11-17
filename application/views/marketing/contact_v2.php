@@ -12,12 +12,13 @@
                 <?php endif; ?>
 
                 <?= form_open(site_url('contact-us'), array('class' => 'ymo-v2-form-panel p-4')); ?>
+<?= ymo_form_trap_fields(); ?>
                     <div class="form-floating mb-3">
                         <input type="text" class="form-control" id="contact-name" name="name" placeholder="Name" required maxlength="120" value="<?= html_escape(set_value('name')); ?>">
                         <label for="contact-name">Name</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="tel" class="form-control" id="contact-mobile" name="mobile" placeholder="Mobile" required maxlength="20" value="<?= html_escape(set_value('mobile')); ?>">
+                        <input type="tel" class="form-control" id="contact-mobile" name="mobile" placeholder="10-digit mobile" required maxlength="20" inputmode="tel" pattern="[+0-9 \-]{10,16}" value="<?= html_escape(set_value('mobile')); ?>">
                         <label for="contact-mobile">Mobile</label>
                     </div>
                     <div class="form-floating mb-3">
