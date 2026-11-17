@@ -33,6 +33,9 @@ class Inbox extends Crm_Controller
         $list = $this->crm_wa_message_model->conversations($show === 'unread', $q, $per, ($page - 1) * $per);
         foreach ($list['rows'] as &$r) {
             $r['who'] = $this->_who($r['phone']);
+            if (!empty($r['last'])) {
+                $r['last']['rendered'] = $this->crm_wa_message_model->render_template($r['last']);
+            }
         }
         unset($r);
 
@@ -52,6 +55,10 @@ class Inbox extends Crm_Controller
         if ($phone !== '') {
             $this->crm_wa_message_model->mark_read($phone, $this->admin['id']);
             $data['thread']    = $this->crm_wa_message_model->thread($phone);
+            foreach ($data['thread'] as &$m) {
+                $m['rendered'] = $this->crm_wa_message_model->render_template($m);
+            }
+            unset($m);
             $data['who']       = $this->_who($phone);
             $data['in_window'] = $this->crm_wa_message_model->in_service_window($phone);
             $data['unread']    = $this->crm_wa_message_model->unread_count();

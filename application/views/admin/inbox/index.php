@@ -6,6 +6,9 @@ $qs = function (array $changes) use ($show, $q) {
 };
 $label = function ($m) {
     $body = trim((string) $m['body']);
+    if (!empty($m['rendered'])) {
+        return $m['rendered'];
+    }
     if ($m['kind'] === 'template') {
         return 'Template: '.$m['template_name'].($body !== '' ? ' ('.$body.')' : '');
     }
@@ -13,6 +16,14 @@ $label = function ($m) {
         return $body;
     }
     return '['.($m['kind'] ?: 'message').']';
+};
+// WhatsApp formatting: *bold*, _italic_, ~strike~; everything escaped first.
+$wa_format = function ($text) {
+    $h = html_escape((string) $text);
+    $h = preg_replace('/(^|[\s(])\*([^*\n]+)\*(?=[\s).,!?:;]|$)/u', '$1<strong>$2</strong>', $h);
+    $h = preg_replace('/(^|[\s(])_([^_\n]+)_(?=[\s).,!?:;]|$)/u', '$1<em>$2</em>', $h);
+    $h = preg_replace('/(^|[\s(])~([^~\n]+)~(?=[\s).,!?:;]|$)/u', '$1<s>$2</s>', $h);
+    return nl2br($h);
 };
 $ticks = array('queued' => 'schedule', 'sent' => 'done', 'delivered' => 'done_all', 'read' => 'done_all', 'failed' => 'error');
 ?>
@@ -104,9 +115,13 @@ $ticks = array('queued' => 'schedule', 'sent' => 'done', 'delivered' => 'done_al
                     <?php if ($d !== $day): $day = $d; ?><div class="ymo-inbox-day"><?= html_escape($d === date('d M Y') ? 'Today' : $d); ?></div><?php endif; ?>
                     <div class="ymo-bubble <?= $m['direction'] === 'in' ? 'in' : 'out'; ?> <?= $m['status'] === 'failed' ? 'failed' : ''; ?>">
                         <?php if ($m['direction'] === 'out' && ($auto || $m['kind'] === 'template')): ?>
-                            <div class="ymo-bubble-tag"><?= $auto ? 'Auto-reply' : (($m['context_type'] ?? '') === 'campaign' ? 'Campaign' : 'Update'); ?></div>
+                            <div class="ymo-bubble-tag"><?php
+                                $ctx = (string) ($m['context_type'] ?? '');
+                                echo $auto ? 'Auto-reply' : ($ctx === 'campaign' ? 'Campaign' : ($ctx === 'campaign_test' ? 'Campaign test' : 'Booking update'));
+                                if ($m['kind'] === 'template' && $m['template_name']) { echo ' · '.html_escape($m['template_name']); }
+                            ?></div>
                         <?php endif; ?>
-                        <div class="ymo-bubble-text"><?= nl2br(html_escape($label($m))); ?></div>
+                        <div class="ymo-bubble-text"><?= $wa_format($label($m)); ?></div>
                         <div class="ymo-bubble-meta">
                             <?= html_escape(date('h:i A', strtotime($m['created_at']))); ?>
                             <?php if ($m['direction'] === 'out'): ?>

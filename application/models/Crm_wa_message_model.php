@@ -167,6 +167,36 @@ class Crm_wa_message_model extends CI_Model
         return array_reverse($rows);
     }
 
+    /**
+     * Full text of a template message as the customer saw it. The log keeps only
+     * the template name and its values ("Shilpa", or "booking_status: YMO-1 | In Progress");
+     * the approved wording comes from the synced template. NULL when unknown.
+     */
+    public function render_template(array $m)
+    {
+        static $tpl = array();
+        if (($m['kind'] ?? '') !== 'template' || empty($m['template_name'])) {
+            return NULL;
+        }
+        $name = (string) $m['template_name'];
+        if (!array_key_exists($name, $tpl)) {
+            $tpl[$name] = $this->db->table_exists('crm_wa_templates')
+                ? $this->db->select('body_text')->where('name', $name)->order_by('id', 'ASC')->limit(1)->get('crm_wa_templates')->row_array()
+                : NULL;
+        }
+        if (empty($tpl[$name]['body_text'])) {
+            return NULL;
+        }
+        $raw = (string) $m['body'];
+        $raw = preg_replace('/^TEST: /', '', $raw);
+        $raw = preg_replace('/^[a-z_]+: /', '', $raw); // booking updates log "event: values"
+        $params = $raw === '' ? array() : explode(' | ', $raw);
+        return preg_replace_callback('/\{\{(\d+)\}\}/', function ($x) use ($params) {
+            $i = (int) $x[1] - 1;
+            return isset($params[$i]) ? $params[$i] : $x[0];
+        }, (string) $tpl[$name]['body_text']);
+    }
+
     public function mark_read($phone, $admin_id)
     {
         if (!$this->inbox_ready()) {
