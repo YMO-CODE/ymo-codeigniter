@@ -27,6 +27,8 @@ $config['crm_meta_graph_version']      = getenv('CRM_META_GRAPH_VERSION') ?: 'v1
 // System-user token for WhatsApp (falls back to CRM_META_ACCESS_TOKEN when empty).
 $config['crm_whatsapp_access_token']   = getenv('CRM_WHATSAPP_ACCESS_TOKEN') ?: '';
 $config['crm_whatsapp_waba_id']        = getenv('CRM_WHATSAPP_WABA_ID') ?: '';
+// Meta business portfolio that owns the WhatsApp account (for the Billing link on Today).
+$config['crm_meta_business_id']        = getenv('CRM_META_BUSINESS_ID') ?: '3506576792820788';
 $config['crm_meta_app_secret']         = getenv('CRM_META_APP_SECRET') ?: '';
 $config['crm_whatsapp_notify_enabled'] = getenv('CRM_WHATSAPP_NOTIFY') === '1';
 $config['crm_whatsapp_media_path']     = FCPATH.'../storage/whatsapp/';

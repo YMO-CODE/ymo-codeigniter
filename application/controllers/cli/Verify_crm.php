@@ -143,7 +143,6 @@ class Verify_crm extends CI_Controller
             "campaigns/delete'",
             "inbox/(:num)/reply'",
             "inbox/unread'",
-            "dashboard/wa-balance'",
             "contacts'",
             "reports/export/revenue'",
             "reports/export/service-due'",
