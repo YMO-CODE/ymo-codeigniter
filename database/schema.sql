@@ -579,12 +579,15 @@ CREATE TABLE IF NOT EXISTS `crm_wa_messages` (
     `status`         ENUM('queued','sent','delivered','read','failed','received') NOT NULL DEFAULT 'queued',
     `error`          VARCHAR(500) NULL,
     `admin_id`       INT UNSIGNED NULL,
+    `read_at`        DATETIME NULL,
+    `read_by`        INT UNSIGNED NULL,
     `created_at`     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
     KEY `idx_wa_msg_wamid` (`wa_message_id`),
     KEY `idx_wa_msg_phone` (`phone`, `created_at`),
-    KEY `idx_wa_msg_context` (`context_type`, `context_id`)
+    KEY `idx_wa_msg_context` (`context_type`, `context_id`),
+    KEY `idx_wa_msg_unread` (`direction`, `read_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `crm_candidates` (

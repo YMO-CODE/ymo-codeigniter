@@ -2190,3 +2190,53 @@ table.ymo-table tbody tr:hover { background: var(--ymo-grey-100); }
 @media (max-width: 575.98px) {
     .ymo-filter-pop { right: auto; left: 0; }
 }
+
+/* WhatsApp Inbox */
+.ymo-nav-badge {
+    margin-left: auto;
+    min-width: 1.4rem;
+    padding: 0 .4rem;
+    border-radius: 999px;
+    background: #25d366;
+    color: #fff;
+    font-size: .75rem;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.35rem;
+}
+.ymo-alert-info { background: #e8f6ee; border-color: #a7dcbc; color: #14532d; }
+
+.ymo-inbox {
+    display: grid;
+    grid-template-columns: minmax(16rem, 22rem) 1fr;
+    gap: 1rem;
+    height: calc(100vh - 8.5rem);
+    min-height: 28rem;
+}
+.ymo-inbox-list, .ymo-inbox-thread { display: flex; flex-direction: column; overflow: hidden; min-height: 0; }
+.ymo-inbox-list { overflow-y: auto; }
+.ymo-inbox-row {
+    display: block;
+    padding: .65rem .85rem;
+    border-bottom: 1px solid var(--ymo-grey-100);
+    color: inherit;
+    text-decoration: none;
+}
+.ymo-inbox-row:hover { background: var(--ymo-grey-100); }
+.ymo-inbox-row.active { background: var(--ymo-primary-soft); }
+.ymo-inbox-row.unread strong { color: var(--ymo-primary-dark); }
+.ymo-inbox-messages { flex: 1; overflow-y: auto; background: #f4f1ea; display: flex; flex-direction: column; gap: .4rem; }
+.ymo-inbox-day { align-self: center; font-size: .75rem; color: var(--ymo-grey-700); background: #fff; border-radius: 999px; padding: .1rem .6rem; margin: .4rem 0; }
+.ymo-bubble { max-width: 75%; padding: .45rem .7rem .3rem; border-radius: 10px; background: #fff; box-shadow: 0 1px 1px rgba(0, 0, 0, .06); }
+.ymo-bubble.in { align-self: flex-start; }
+.ymo-bubble.out { align-self: flex-end; background: #dcf8c6; }
+.ymo-bubble.failed { border: 1px solid #f3b4b4; }
+.ymo-bubble-tag { font-size: .7rem; text-transform: uppercase; letter-spacing: .03em; color: var(--ymo-grey-700); }
+.ymo-bubble-text { white-space: normal; word-wrap: break-word; font-size: .92rem; }
+.ymo-bubble-meta { font-size: .7rem; color: var(--ymo-grey-700); text-align: right; }
+@media (max-width: 991.98px) {
+    .ymo-inbox { grid-template-columns: 1fr; height: auto; }
+    .ymo-inbox.is-open .ymo-inbox-list { display: none; }
+    .ymo-inbox:not(.is-open) .ymo-inbox-thread { display: none; }
+    .ymo-inbox-messages { max-height: 60vh; }
+}

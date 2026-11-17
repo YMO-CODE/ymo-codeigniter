@@ -26,7 +26,7 @@ $car = function ($b) {
 <div class="ymo-alerts mb-3" role="status">
     <?php foreach ($crm['alerts'] as $al): ?>
         <div class="ymo-alert ymo-alert-<?= html_escape($al['level']); ?>">
-            <span class="mi mi-sm"><?= $al['level'] === 'critical' ? 'error' : 'warning'; ?></span>
+            <span class="mi mi-sm"><?= $al['level'] === 'critical' ? 'error' : ($al['level'] === 'info' ? 'forum' : 'warning'); ?></span>
             <span class="flex-grow-1"><?= html_escape($al['text']); ?></span>
             <?php if (!empty($al['link'])): ?>
                 <a href="<?= html_escape($al['link']); ?>" class="btn btn-sm btn-light" <?= strpos($al['link'], 'http') === 0 && strpos($al['link'], admin_url('')) !== 0 ? 'target="_blank" rel="noopener"' : ''; ?>><?= html_escape($al['link_text']); ?></a>

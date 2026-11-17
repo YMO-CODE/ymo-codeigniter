@@ -106,6 +106,11 @@ if (ymo_is_admin_host_request()) {
     $route['contacts/(:num)/edit']             = 'admin/contacts/edit/$1';
 
     $route['campaigns']                        = 'admin/campaigns/index';
+    $route['inbox'] = 'admin/inbox/index';
+    $route['inbox/unread'] = 'admin/inbox/unread';
+    $route['inbox/read-all'] = 'admin/inbox/read_all';
+    $route['inbox/(:num)/reply'] = 'admin/inbox/reply/$1';
+    $route['inbox/(:num)'] = 'admin/inbox/view/$1';
     $route['campaigns/delete'] = 'admin/campaigns/bulk_delete';
     $route['campaigns/new']                    = 'admin/campaigns/create';
     $route['campaigns/(:num)']                 = 'admin/campaigns/view/$1';
@@ -212,6 +217,11 @@ if (ymo_is_admin_host_request()) {
     $route['admin/contacts/(:num)']            = 'admin/contacts/view/$1';
     $route['admin/contacts/(:num)/edit']       = 'admin/contacts/edit/$1';
     $route['admin/campaigns']                  = 'admin/campaigns/index';
+    $route['admin/inbox'] = 'admin/inbox/index';
+    $route['admin/inbox/unread'] = 'admin/inbox/unread';
+    $route['admin/inbox/read-all'] = 'admin/inbox/read_all';
+    $route['admin/inbox/(:num)/reply'] = 'admin/inbox/reply/$1';
+    $route['admin/inbox/(:num)'] = 'admin/inbox/view/$1';
     $route['admin/campaigns/delete'] = 'admin/campaigns/bulk_delete';
     $route['admin/campaigns/new']              = 'admin/campaigns/create';
     $route['admin/campaigns/(:num)']           = 'admin/campaigns/view/$1';
@@ -400,6 +410,11 @@ if (ymo_is_admin_host_request()) {
     $route['admin/contacts/(:num)'] = 'admin/contacts/view/$1';
     $route['admin/contacts/(:num)/edit'] = 'admin/contacts/edit/$1';
     $route['admin/campaigns'] = 'admin/campaigns/index';
+    $route['admin/inbox'] = 'admin/inbox/index';
+    $route['admin/inbox/unread'] = 'admin/inbox/unread';
+    $route['admin/inbox/read-all'] = 'admin/inbox/read_all';
+    $route['admin/inbox/(:num)/reply'] = 'admin/inbox/reply/$1';
+    $route['admin/inbox/(:num)'] = 'admin/inbox/view/$1';
     $route['admin/campaigns/delete'] = 'admin/campaigns/bulk_delete';
     $route['admin/campaigns/new'] = 'admin/campaigns/create';
     $route['admin/campaigns/(:num)'] = 'admin/campaigns/view/$1';

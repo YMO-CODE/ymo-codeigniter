@@ -17,6 +17,7 @@ $item = function ($path, $icon, $label, $active) {
 <?= $item('tasks', 'task_alt', 'Follow-ups', admin_nav_active('tasks')); ?>
 <?php endif; ?>
 <?php if ($crm && crm_can('leads.view')): ?>
+<a href="<?= admin_url('inbox'); ?>" class="<?= admin_nav_active('inbox') ? 'active' : ''; ?>"><span class="mi mi-sm mi-leading">forum</span>Inbox<span class="ymo-nav-badge" id="ymo-inbox-badge" hidden></span></a>
 <?= $item('leads', 'person_search', 'Leads', admin_nav_active('leads')); ?>
 <?php endif; ?>
 <?php if ($can('bookings.view')): ?>
@@ -28,7 +29,7 @@ $item = function ($path, $icon, $label, $active) {
 <?= $item('online-accounts', 'person', 'Customers', admin_nav_active('online-accounts')); ?>
 <?php endif; ?>
 <?php if ($crm && crm_can('campaigns.view')): ?>
-<?= $item('campaigns', 'campaign', 'Messages', admin_nav_active('campaigns') || admin_nav_active('whatsapp-templates')); ?>
+<?= $item('campaigns', 'campaign', 'Campaigns', admin_nav_active('campaigns') || admin_nav_active('whatsapp-templates')); ?>
 <?php endif; ?>
 <?php if ($crm && crm_can('reports.view')): ?>
 <?= $item('reports', 'analytics', 'Reports', admin_nav_active('reports')); ?>
@@ -59,3 +60,27 @@ if ($can('settings.manage')) { $setup[] = $item('settings', 'settings', 'Setting
     <?= form_hidden($ci->security->get_csrf_token_name(), $ci->security->get_csrf_hash()); ?>
     <button class="btn btn-sm btn-outline-light w-100" type="submit"><span class="mi mi-sm mi-leading">logout</span>Sign out</button>
 </form>
+<?php if ($crm && crm_can('leads.view')): ?>
+<script>
+(function () {
+    // Unread WhatsApp badge: refresh every 30 seconds while the admin is open.
+    var badge = document.getElementById('ymo-inbox-badge');
+    if (!badge || !window.fetch) { return; }
+    var baseTitle = document.title.replace(/^\(\d+\)\s*/, '');
+    function paint(n) {
+        badge.hidden = !n;
+        badge.textContent = n > 99 ? '99+' : String(n);
+        document.title = (n ? '(' + n + ') ' : '') + baseTitle;
+    }
+    function poll() {
+        fetch('<?= admin_url('inbox/unread'); ?>', {credentials: 'same-origin', headers: {'Accept': 'application/json'}})
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) { if (d && typeof d.unread === 'number') { paint(d.unread); } })
+            .catch(function () {});
+    }
+    poll();
+    setInterval(function () { if (!document.hidden) { poll(); } }, 30000);
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) { poll(); } });
+})();
+</script>
+<?php endif; ?>

@@ -217,6 +217,14 @@ class Crm_report_model extends CI_Model
         $out = array();
         $since = date('Y-m-d H:i:s', strtotime('-24 hours'));
 
+        $this->load->model('crm_wa_message_model');
+        $unread = $this->crm_wa_message_model->unread_count();
+        if ($unread) {
+            $out[] = array('level' => 'info',
+                'text' => $unread.' unread WhatsApp message'.($unread === 1 ? '' : 's').' from customers.',
+                'link' => admin_url('inbox'), 'link_text' => 'Open Inbox');
+        }
+
         if ($this->db->table_exists('crm_wa_messages')) {
             $rows = $this->db->select('context_type, kind, error, COUNT(*) AS n', FALSE)
                 ->from('crm_wa_messages')

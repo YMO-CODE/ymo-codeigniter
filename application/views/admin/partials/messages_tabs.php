@@ -1,5 +1,5 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
-/** Tabs shared by the Messages section: campaigns and WhatsApp templates. */
+/** Tabs shared by the Campaigns section: campaigns and WhatsApp templates. */
 $active = isset($active) ? $active : 'campaigns';
 ?>
 <div class="ymo-tabs mb-3">

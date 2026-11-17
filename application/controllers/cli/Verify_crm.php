@@ -120,7 +120,8 @@ class Verify_crm extends CI_Controller
             array($nav, "item('leads'", 'Nav: Leads'),
             array($nav, "item('bookings'", 'Nav: Bookings'),
             array($nav, "item('customers'", 'Nav: Customers'),
-            array($nav, "'Messages'", 'Nav: Messages'),
+            array($nav, "'Campaigns'", 'Nav: Campaigns'),
+            array($nav, "admin_url('inbox')", 'Nav: Inbox'),
             array($nav, "item('reports'", 'Nav: Reports'),
             array($nav, '>Setup<', 'Nav: Setup group'),
         ) as $row) {
@@ -140,6 +141,8 @@ class Verify_crm extends CI_Controller
             "campaigns/(:num)/test'",
             "campaigns/(:num)/duplicate'",
             "campaigns/delete'",
+            "inbox/(:num)/reply'",
+            "inbox/unread'",
             "contacts'",
             "reports/export/revenue'",
             "reports/export/service-due'",
@@ -184,6 +187,7 @@ class Verify_crm extends CI_Controller
         $this->_file_contains('application/views/admin/leads/index.php', 'ymo-filter-menu', 'Leads: single Filter menu');
         $this->_file_contains('application/controllers/Quick_book.php', '_store_pending_booking', 'Quick book creates a Pending booking');
         $this->_file_contains('application/views/admin/campaigns/view.php', '/test', 'Campaign: send test');
+        $this->_file_contains('application/views/admin/inbox/index.php', 'ymo-inbox-thread', 'Inbox: conversation view');
 
         $form = file_get_contents(FCPATH . '../application/views/admin/leads/form.php');
         $this->_assert(strpos($form, 'Workshop') !== FALSE, 'Lead form labels Workshop (not Company)');

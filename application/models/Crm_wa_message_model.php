@@ -92,6 +92,102 @@ class Crm_wa_message_model extends CI_Model
         return $at && strtotime($at) > time() - 23 * 3600 - 50 * 60;
     }
 
+    // --- Inbox -------------------------------------------------------------
+
+    /** Is the v7 read-tracking column there? (Inbox still lists messages without it.) */
+    public function inbox_ready()
+    {
+        static $ok = NULL;
+        if ($ok === NULL) {
+            $ok = $this->table_ready() && $this->db->field_exists('read_at', self::TABLE);
+        }
+        return $ok;
+    }
+
+    public function unread_count()
+    {
+        if (!$this->inbox_ready()) {
+            return 0;
+        }
+        return (int) $this->db->from(self::TABLE)->where('direction', 'in')
+            ->where('read_at IS NULL', NULL, FALSE)->count_all_results();
+    }
+
+    /**
+     * One row per customer who has written to us, newest activity first.
+     *
+     * @return array{rows: array, total: int}
+     */
+    public function conversations($only_unread = FALSE, $q = '', $limit = 30, $offset = 0)
+    {
+        if (!$this->table_ready()) {
+            return array('rows' => array(), 'total' => 0);
+        }
+        $unread_sql = $this->inbox_ready() ? "SUM(m.direction = 'in' AND m.read_at IS NULL)" : '0';
+        $build = function () use ($unread_sql, $only_unread, $q) {
+            $this->db->select("m.phone, MAX(m.id) AS last_id, MAX(m.created_at) AS last_at, $unread_sql AS unread, MAX(CASE WHEN m.direction = 'in' THEN m.created_at END) AS last_in", FALSE)
+                ->from(self::TABLE.' m')
+                ->group_by('m.phone')
+                ->having('last_in IS NOT NULL', NULL, FALSE);
+            if ($only_unread) {
+                $this->db->having('unread > 0', NULL, FALSE);
+            }
+            $digits = preg_replace('/\D+/', '', (string) $q);
+            if ($digits !== '') {
+                $this->db->like('m.phone', $digits);
+            }
+        };
+        $build();
+        $total = $this->db->count_all_results('', TRUE);
+        $build();
+        // count_all_results on a grouped query counts groups via a subquery in CI3.
+        $rows = $this->db->order_by('last_at', 'DESC')->order_by('last_id', 'DESC')->limit((int) $limit, (int) $offset)->get()->result_array();
+        if (!$rows) {
+            return array('rows' => array(), 'total' => (int) $total);
+        }
+        $last = array();
+        foreach ($this->db->where_in('id', array_column($rows, 'last_id'))->get(self::TABLE)->result_array() as $m) {
+            $last[(int) $m['id']] = $m;
+        }
+        foreach ($rows as &$r) {
+            $r['last'] = $last[(int) $r['last_id']] ?? NULL;
+            $r['unread'] = (int) $r['unread'];
+        }
+        return array('rows' => $rows, 'total' => (int) $total);
+    }
+
+    /** The whole conversation with one number, oldest first (latest $limit messages). */
+    public function thread($phone, $limit = 150)
+    {
+        if (!$this->table_ready()) {
+            return array();
+        }
+        $rows = $this->db->where('phone', crm_whatsapp_e164($phone))
+            ->order_by('id', 'DESC')->limit((int) $limit)->get(self::TABLE)->result_array();
+        return array_reverse($rows);
+    }
+
+    public function mark_read($phone, $admin_id)
+    {
+        if (!$this->inbox_ready()) {
+            return 0;
+        }
+        $this->db->where('phone', crm_whatsapp_e164($phone))->where('direction', 'in')
+            ->where('read_at IS NULL', NULL, FALSE)
+            ->update(self::TABLE, array('read_at' => date('Y-m-d H:i:s'), 'read_by' => $admin_id ? (int) $admin_id : NULL));
+        return $this->db->affected_rows();
+    }
+
+    public function mark_all_read($admin_id)
+    {
+        if (!$this->inbox_ready()) {
+            return 0;
+        }
+        $this->db->where('direction', 'in')->where('read_at IS NULL', NULL, FALSE)
+            ->update(self::TABLE, array('read_at' => date('Y-m-d H:i:s'), 'read_by' => $admin_id ? (int) $admin_id : NULL));
+        return $this->db->affected_rows();
+    }
+
     public function find($id)
     {
         if (!$this->table_ready()) {
