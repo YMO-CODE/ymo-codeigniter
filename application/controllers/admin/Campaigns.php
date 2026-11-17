@@ -29,6 +29,27 @@ class Campaigns extends Crm_Controller
         ));
     }
 
+    /** POST campaigns/delete — delete the ticked campaigns from the list. */
+    public function bulk_delete()
+    {
+        $this->require_perm('campaigns.edit');
+        if ($this->input->method() !== 'post') {
+            redirect(admin_url('campaigns'));
+        }
+        $res = $this->crm_campaign_model->delete_many((array) $this->input->post('ids'));
+        foreach ($res['deleted'] as $c) {
+            $this->audit->log('admin', $this->admin['id'], 'crm.campaign.delete', 'crm_campaign', (int) $c['id'],
+                array('name' => $c['name'], 'status' => $c['status']));
+        }
+        $n = count($res['deleted']);
+        $msg = $n ? 'Deleted '.$n.' campaign'.($n === 1 ? '' : 's').'.' : 'No campaigns deleted.';
+        if ($res['skipped']) {
+            $msg .= ' Skipped '.count($res['skipped']).' still sending ('.implode(', ', array_map(function ($c) { return $c['name']; }, $res['skipped'])).').';
+        }
+        $this->flash($n && !$res['skipped'] ? 'success' : 'warning', $msg);
+        redirect(admin_url('campaigns'));
+    }
+
     public function create()
     {
         $this->require_perm('campaigns.edit');

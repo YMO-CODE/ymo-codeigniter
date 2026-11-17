@@ -40,6 +40,35 @@ class Crm_campaign_model extends CI_Model
     }
 
     /**
+     * Delete campaigns (recipients go with them via ON DELETE CASCADE).
+     * Campaigns that are mid-send are skipped so the cron isn't cut off.
+     *
+     * @return array{deleted: array, skipped: array} campaign rows
+     */
+    public function delete_many(array $ids)
+    {
+        $ids = array_values(array_unique(array_filter(array_map('intval', $ids))));
+        if (!$ids) {
+            return array('deleted' => array(), 'skipped' => array());
+        }
+        $rows = $this->db->select('id, name, status')->where_in('id', $ids)->get(self::TABLE)->result_array();
+        $deleted = $skipped = array();
+        foreach ($rows as $r) {
+            if ($r['status'] === 'sending') {
+                $skipped[] = $r;
+            } else {
+                $deleted[] = $r;
+            }
+        }
+        if ($deleted) {
+            $del_ids = array_map(function ($r) { return (int) $r['id']; }, $deleted);
+            $this->db->where_in('campaign_id', $del_ids)->delete(self::RECIP_TABLE);
+            $this->db->where_in('id', $del_ids)->delete(self::TABLE);
+        }
+        return array('deleted' => $deleted, 'skipped' => $skipped);
+    }
+
+    /**
      * Campaigns cron should work on: scheduled ones that are due, plus ones
      * left in 'sending' (e.g. "Send now" only dispatches the first batch
      * from the web request; cron finishes the rest).

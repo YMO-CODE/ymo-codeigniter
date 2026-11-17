@@ -106,6 +106,7 @@ if (ymo_is_admin_host_request()) {
     $route['contacts/(:num)/edit']             = 'admin/contacts/edit/$1';
 
     $route['campaigns']                        = 'admin/campaigns/index';
+    $route['campaigns/delete'] = 'admin/campaigns/bulk_delete';
     $route['campaigns/new']                    = 'admin/campaigns/create';
     $route['campaigns/(:num)']                 = 'admin/campaigns/view/$1';
     $route['campaigns/(:num)/edit']            = 'admin/campaigns/edit/$1';
@@ -209,6 +210,7 @@ if (ymo_is_admin_host_request()) {
     $route['admin/contacts/(:num)']            = 'admin/contacts/view/$1';
     $route['admin/contacts/(:num)/edit']       = 'admin/contacts/edit/$1';
     $route['admin/campaigns']                  = 'admin/campaigns/index';
+    $route['admin/campaigns/delete'] = 'admin/campaigns/bulk_delete';
     $route['admin/campaigns/new']              = 'admin/campaigns/create';
     $route['admin/campaigns/(:num)']           = 'admin/campaigns/view/$1';
     $route['admin/campaigns/(:num)/edit']      = 'admin/campaigns/edit/$1';
@@ -394,6 +396,7 @@ if (ymo_is_admin_host_request()) {
     $route['admin/contacts/(:num)'] = 'admin/contacts/view/$1';
     $route['admin/contacts/(:num)/edit'] = 'admin/contacts/edit/$1';
     $route['admin/campaigns'] = 'admin/campaigns/index';
+    $route['admin/campaigns/delete'] = 'admin/campaigns/bulk_delete';
     $route['admin/campaigns/new'] = 'admin/campaigns/create';
     $route['admin/campaigns/(:num)'] = 'admin/campaigns/view/$1';
     $route['admin/campaigns/(:num)/edit'] = 'admin/campaigns/edit/$1';
