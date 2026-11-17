@@ -6,11 +6,13 @@
 
 <?= $can_edit ? form_open(admin_url('campaigns/delete'), array('id' => 'camp-bulk-form')) : ''; ?>
 <?php if ($can_edit): ?>
-<div class="ymo-card mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2" id="camp-bulk-bar" hidden>
-    <strong class="small"><span id="camp-bulk-count">0</span> selected</strong>
-    <div class="d-flex gap-2">
-        <button type="button" class="btn btn-sm btn-link" id="camp-bulk-clear">Clear</button>
-        <button type="submit" class="btn btn-sm btn-danger"><span class="mi mi-sm mi-leading">delete</span>Delete selected</button>
+<div class="ymo-card mb-3" id="camp-bulk-bar" hidden>
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <strong class="small"><span id="camp-bulk-count">0</span> selected</strong>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-sm btn-link" id="camp-bulk-clear">Clear</button>
+            <button type="submit" class="btn btn-sm btn-danger"><span class="mi mi-sm mi-leading">delete</span>Delete selected</button>
+        </div>
     </div>
 </div>
 <?php endif; ?>

@@ -124,7 +124,18 @@ class Webhooks extends CI_Controller
         }
 
         $lead_ids = array();
+        $auto = array();
+        if ($is_meta_cloud) {
+            $this->load->library('crm_wa_autoreply');
+        }
         foreach ($messages as $msg) {
+            // "Stop promotions" from someone who never enquired shouldn't become a lead.
+            if (crm_whatsapp_is_opt_out($msg['text']) && !$this->_whatsapp_lead_exists($msg['from'])) {
+                if ($is_meta_cloud) {
+                    $auto[] = $this->crm_wa_autoreply->handle($msg['from'], $msg['name'], $msg['text'], 0);
+                }
+                continue;
+            }
             $lead_id = $this->crm_lead_model->ingest_chat_message(
                 'whatsapp',
                 array(
@@ -144,6 +155,9 @@ class Webhooks extends CI_Controller
             if ($lead_id) {
                 $lead_ids[] = $lead_id;
             }
+            if ($is_meta_cloud) {
+                $auto[] = $this->crm_wa_autoreply->handle($msg['from'], $msg['name'], $msg['text'], (int) $lead_id);
+            }
         }
 
         $this->crm_integration_model->log('whatsapp', 'message_received', $data, 'inbound', 200);
@@ -153,7 +167,18 @@ class Webhooks extends CI_Controller
             'lead_ids'  => array_values(array_unique($lead_ids)),
             'receipts'  => $receipts,
             'opted_out' => $opted_out,
+            'auto'      => array_values(array_filter($auto)),
         ));
+    }
+
+    /** Is there already a WhatsApp lead for this sender? */
+    protected function _whatsapp_lead_exists($from)
+    {
+        return (bool) $this->db->from('crm_leads')
+            ->where('external_provider', 'whatsapp')
+            ->where('external_lead_id', (string) $from)
+            ->where('deleted_at IS NULL', NULL, FALSE)
+            ->count_all_results();
     }
 
     /** Delivery/read/failed receipts -> message log + campaign recipients. */

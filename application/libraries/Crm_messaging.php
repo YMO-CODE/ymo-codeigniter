@@ -58,7 +58,7 @@ class Crm_messaging
      * @param string $to_e164 Digits only with country code, e.g. 919876543210
      * @return array{ok:bool,message_id:string|null}
      */
-    public function send_whatsapp_text($to_e164, $body)
+    public function send_whatsapp_text($to_e164, $body, $preview_url = NULL)
     {
         $phone_id = $this->_whatsapp_phone_id();
         if (!$phone_id || !$this->_wa_token()) {
@@ -76,7 +76,7 @@ class Crm_messaging
             'recipient_type'    => 'individual',
             'to'                => $to,
             'type'              => 'text',
-            'text'              => array('preview_url' => FALSE, 'body' => (string) $body),
+            'text'              => array('preview_url' => $preview_url === NULL ? (strpos((string) $body, 'https://') !== FALSE) : (bool) $preview_url, 'body' => (string) $body),
         ));
     }
 
