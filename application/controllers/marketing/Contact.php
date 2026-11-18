@@ -88,12 +88,19 @@ class Contact extends Marketing_Controller
         }
 
         $this->load->model('crm_lead_model');
-        $lead_id = $this->crm_lead_model->ingest('website', array(
+        $this->load->helper('marketing');
+        $attr = ymo_ad_attribution();
+        $raw = $payload;
+        if ($attr) {
+            $raw['utm'] = $attr;
+        }
+        $source = (ymo_is_google_ads_visit($attr) && $this->crm_lead_model->source_id_by_slug('google_ads') > 0) ? 'google_ads' : 'website';
+        $lead_id = $this->crm_lead_model->ingest($source, array(
             'name'    => $payload['name'],
             'mobile'  => $payload['mobile'],
             'email'   => $payload['email'],
             'message' => $payload['message'],
-            'raw'     => $payload,
+            'raw'     => $raw,
         ), NULL, 'marketing_contact');
 
         if (!$lead_id) {

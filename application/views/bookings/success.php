@@ -39,3 +39,4 @@
         </div>
     </div>
 </div>
+<script>if (window.ymoConversion) { window.ymoConversion('booking', {'transaction_id': <?= json_encode((string) $booking['reference']); ?>}); }</script>

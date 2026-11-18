@@ -382,7 +382,8 @@ INSERT IGNORE INTO `crm_lead_sources` (`id`, `slug`, `label`) VALUES
     (6, 'manual', 'Manual entry'),
     (7, 'cold_call', 'Cold calling'),
     (8, 'referral', 'Referral'),
-    (9, 'offline_marketing', 'Offline Marketing');
+    (9, 'offline_marketing', 'Offline Marketing'),
+    (10, 'google_ads', 'Google Ads');
 
 CREATE TABLE IF NOT EXISTS `crm_leads` (
     `id`                  BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,

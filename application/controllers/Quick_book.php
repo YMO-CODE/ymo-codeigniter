@@ -15,7 +15,7 @@ class Quick_book extends MY_Controller
     const PACKAGE_CUSTOM = 'custom';
 
     /** @var string[] UTM query params persisted through form POST */
-    protected static $UTM_KEYS = array('utm_source', 'utm_medium', 'utm_campaign', 'utm_content');
+    protected static $UTM_KEYS = array('utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'gclid', 'gbraid', 'wbraid', 'landing');
 
     public function __construct()
     {
@@ -262,7 +262,10 @@ class Quick_book extends MY_Controller
         }
 
         $this->load->model('crm_lead_model');
-        $lead_id = $this->crm_lead_model->ingest('landing', array(
+        $this->load->helper('marketing');
+        $from_ads = !empty($payload['utm']) && ymo_is_google_ads_visit((array) $payload['utm']);
+        $source = ($from_ads && $this->crm_lead_model->source_id_by_slug('google_ads') > 0) ? 'google_ads' : 'landing';
+        $lead_id = $this->crm_lead_model->ingest($source, array(
             'name'    => $payload['name'],
             'mobile'  => $payload['mobile'],
             'email'   => $payload['email'],
@@ -283,7 +286,7 @@ class Quick_book extends MY_Controller
             array('source' => 'quick_book')
         );
 
-        crm_notify_admin_new_lead($lead_id, 'Quick book', array(
+        crm_notify_admin_new_lead($lead_id, $from_ads ? 'Quick book (Google Ads)' : 'Quick book', array(
             'name'    => $payload['name'],
             'mobile'  => $payload['mobile'],
             'email'   => $payload['email'],
@@ -361,14 +364,9 @@ class Quick_book extends MY_Controller
 
     protected function _capture_utm()
     {
-        $utm = array();
-        foreach (self::$UTM_KEYS as $key) {
-            $val = trim((string) $this->input->get($key));
-            if ($val !== '') {
-                $utm[$key] = $val;
-            }
-        }
-        return $utm;
+        // URL tags first, else what the Google tag remembered from their landing page.
+        $this->load->helper('marketing');
+        return array_intersect_key(ymo_ad_attribution(), array_flip(self::$UTM_KEYS));
     }
 
     protected function _capture_utm_from_post()

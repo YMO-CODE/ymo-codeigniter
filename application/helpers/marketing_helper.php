@@ -4750,3 +4750,47 @@ if (!function_exists('marketing_marketing_view')) {
         return isset($map[$view]) ? $map[$view] : $view;
     }
 }
+
+if (!function_exists('ymo_ad_attribution')) {
+    /**
+     * Where this visitor came from: UTM tags / Google click id from the URL, or the
+     * ymo_attr cookie set by the Google tag on their landing page (30 days).
+     *
+     * @return array<string,string> e.g. ['utm_source' => 'google', 'gclid' => '…', 'landing' => '/car-servicing-in-warje-pune']
+     */
+    function ymo_ad_attribution()
+    {
+        $keys = array('utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'gclid', 'gbraid', 'wbraid', 'landing');
+        $out = array();
+        foreach ($keys as $k) {
+            $v = isset($_GET[$k]) ? trim((string) $_GET[$k]) : '';
+            if ($v !== '') {
+                $out[$k] = mb_substr($v, 0, 200);
+            }
+        }
+        if ($out) {
+            return $out;
+        }
+        $raw = isset($_COOKIE['ymo_attr']) ? json_decode((string) $_COOKIE['ymo_attr'], TRUE) : NULL;
+        if (is_array($raw)) {
+            foreach ($keys as $k) {
+                if (isset($raw[$k]) && is_scalar($raw[$k]) && trim((string) $raw[$k]) !== '') {
+                    $out[$k] = mb_substr(trim((string) $raw[$k]), 0, 200);
+                }
+            }
+        }
+        return $out;
+    }
+}
+
+if (!function_exists('ymo_is_google_ads_visit')) {
+    /** TRUE when the attribution points at a Google Ads click. */
+    function ymo_is_google_ads_visit(array $attr)
+    {
+        if (!empty($attr['gclid']) || !empty($attr['gbraid']) || !empty($attr['wbraid'])) {
+            return TRUE;
+        }
+        return strtolower($attr['utm_source'] ?? '') === 'google'
+            && in_array(strtolower($attr['utm_medium'] ?? ''), array('cpc', 'ppc', 'paid', 'paidsearch'), TRUE);
+    }
+}

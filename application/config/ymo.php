@@ -15,6 +15,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 // --- Branding / contact -----------------------------------------------------
 $config['ymo_brand_name']     = 'Your Mechanic Online';
 $config['ymo_google_ads_tag_id'] = 'AW-767713505';
+// Google Ads conversion actions (send_to values from Google Ads > Goals > Conversions).
+$config['ymo_google_ads_conversions'] = array(
+    'quick_book' => 'AW-767713505/4F4bCLbgyrodEOHBie4C', // Website - Quick book submitted
+    'booking'    => 'AW-767713505/KL3fCLngyrodEOHBie4C', // Website - Online booking completed
+    'phone'      => 'AW-767713505/qHiICJqay7odEOHBie4C', // Website - Phone number tap
+    'whatsapp'   => 'AW-767713505/grINCJ2ay7odEOHBie4C', // Website - WhatsApp tap
+);
 $config['ymo_brand_short']    = 'YMO';
 $__ymo_biz = is_file(__DIR__.'/marketing_business.php') ? require __DIR__.'/marketing_business.php' : array();
 $config['ymo_support_phone']  = !empty($__ymo_biz['phone_display']) ? $__ymo_biz['phone_display'] : '+91 75587 83868';
