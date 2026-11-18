@@ -192,6 +192,8 @@ class Verify_crm extends CI_Controller
         $this->_file_contains('application/libraries/Crm_wa_balance.php', 'pricing', 'WhatsApp balance: spend tracking');
         $this->_file_contains('application/views/admin/dashboard.php', 'ymo-wa-balance', 'Today: WhatsApp balance card');
         $this->_file_contains('application/views/admin/campaigns/view.php', 'Who got it', 'Campaigns: per-recipient outcomes');
+        $this->_file_contains('application/controllers/cli/Cron.php', 'function digest', 'Cron: midnight summary email');
+        $this->_file_contains('application/libraries/Crm_wa_autoreply.php', 'wants to book', 'WhatsApp: instant email when someone asks to book');
         $this->_file_contains('application/models/Crm_campaign_model.php', 'campaign_retry', 'Campaigns: retry audience');
         $this->_file_contains('application/models/Crm_campaign_model.php', '_no_whatsapp_numbers', 'Campaigns: skip No WhatsApp customers');
 

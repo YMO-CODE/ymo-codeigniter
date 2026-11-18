@@ -83,6 +83,13 @@ class Crm_wa_autoreply
                 'auto_book', $lead_id);
             if ($lead_id) {
                 $this->_queue_call($lead_id, $due, $text);
+                // The one instant email the team gets: someone wants a service.
+                $this->CI->load->helper('crm');
+                crm_notify_admin_new_lead($lead_id, 'WhatsApp - wants to book', array(
+                    'name'    => $name !== '' ? $name : '+'.$phone,
+                    'mobile'  => '+'.ltrim((string) $phone, '+'),
+                    'message' => 'Tapped "'.trim((string) $text).'" on WhatsApp. They were told the team will call '.$this->callback_phrase($due).'.',
+                ));
             }
             return 'book';
         }

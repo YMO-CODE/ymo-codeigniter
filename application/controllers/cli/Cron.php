@@ -10,7 +10,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * Sub-commands:
  *   run             — booking reminders + CRM tasks + CRM campaigns + OTP purge
  *   purge_otp       — delete expired OTP rows
- *   crm             — CRM-only (tasks + campaigns)
+ *   crm             — CRM-only (campaigns, lead stages)
+ *   digest          — one summary email per admin (run at midnight IST)
  */
 class Cron extends CI_Controller
 {
@@ -123,24 +124,8 @@ class Cron extends CI_Controller
             return $out;
         }
 
+        // No email per follow-up any more: everyone gets one summary at midnight (cli/cron digest).
         $this->load->model(array('crm_task_model', 'crm_campaign_model'));
-        $hours = (int) $this->config->item('crm_task_reminder_hours');
-        $tasks = $this->crm_task_model->due_for_reminder($hours, 100);
-        foreach ($tasks as $t) {
-            if (empty($t['assignee_email'])) {
-                continue;
-            }
-            $ok = $this->mailer->send_view(
-                $t['assignee_email'],
-                'CRM follow-up due: '.$t['title'],
-                'emails/task_reminder',
-                array('task' => $t)
-            );
-            if ($ok) {
-                $this->crm_task_model->mark_reminder_sent($t['id']);
-                $out['tasks']++;
-            }
-        }
 
         $camps = $this->crm_campaign_model->due_scheduled(10);
         foreach ($camps as $c) {
@@ -167,6 +152,54 @@ class Cron extends CI_Controller
         }
 
         return $out;
+    }
+
+    /**
+     * Midnight summary, one email per active admin who has something to do today:
+     * their overdue and today's follow-ups, plus new leads, unread WhatsApp and
+     * pending bookings for everyone.
+     */
+    public function digest()
+    {
+        if (!$this->db->table_exists('crm_tasks')) {
+            return;
+        }
+        $today = date('Y-m-d 00:00:00');
+        $tomorrow = date('Y-m-d 00:00:00', strtotime('tomorrow'));
+        $team = array(
+            'new_leads' => $this->db->where('created_at >=', date('Y-m-d H:i:s', time() - 86400))
+                ->where('deleted_at IS NULL', NULL, FALSE)->count_all_results('crm_leads'),
+            'pending_bookings' => $this->db->table_exists('bookings')
+                ? $this->db->where('status', 'pending')->count_all_results('bookings') : 0,
+            'unread' => 0,
+        );
+        if ($this->db->table_exists('crm_wa_messages')) {
+            $this->load->model('crm_wa_message_model');
+            $team['unread'] = (int) $this->crm_wa_message_model->unread_count();
+        }
+
+        $admins = $this->db->select('id, name, email')->where('is_active', 1)->where('email !=', '')->get('admin_users')->result_array();
+        $sent = 0;
+        foreach ($admins as $a) {
+            $tasks = $this->db->select('t.id, t.title, t.due_at, t.notes, t.priority, t.lead_id, l.mobile', FALSE)
+                ->from('crm_tasks t')->join('crm_leads l', 'l.id = t.lead_id', 'left')
+                ->where('t.status', 'pending')->where('t.assignee_admin_id', (int) $a['id'])
+                ->where('t.due_at <', $tomorrow)
+                ->order_by('t.priority', 'DESC')->order_by('t.due_at', 'ASC')->limit(200)->get()->result_array();
+            $overdue = array_values(array_filter($tasks, function ($t) use ($today) { return $t['due_at'] < $today; }));
+            $due_today = array_values(array_filter($tasks, function ($t) use ($today) { return $t['due_at'] >= $today; }));
+            if (!$tasks && !$team['new_leads'] && !$team['unread'] && !$team['pending_bookings']) {
+                continue;
+            }
+            $subject = 'Today in the CRM: '.count($due_today).' call'.(count($due_today) === 1 ? '' : 's')
+                .($overdue ? ', '.count($overdue).' overdue' : '').' · '.date('d M');
+            if ($this->mailer->send_view($a['email'], $subject, 'emails/crm_digest', array(
+                'admin' => $a, 'overdue' => $overdue, 'due_today' => $due_today, 'team' => $team, 'subject' => $subject,
+            ))) {
+                $sent++;
+            }
+        }
+        $this->_log('cron.digest sent='.$sent);
     }
 
     public function purge_otp()
