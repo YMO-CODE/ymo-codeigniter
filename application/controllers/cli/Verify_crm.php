@@ -143,6 +143,7 @@ class Verify_crm extends CI_Controller
             "campaigns/delete'",
             "inbox/(:num)/reply'",
             "inbox/unread'",
+            "campaigns/(:num)/retry'",
             "contacts'",
             "reports/export/revenue'",
             "reports/export/service-due'",
@@ -190,6 +191,9 @@ class Verify_crm extends CI_Controller
         $this->_file_contains('application/views/admin/inbox/index.php', 'ymo-inbox-thread', 'Inbox: conversation view');
         $this->_file_contains('application/libraries/Crm_wa_balance.php', 'pricing', 'WhatsApp balance: spend tracking');
         $this->_file_contains('application/views/admin/dashboard.php', 'ymo-wa-balance', 'Today: WhatsApp balance card');
+        $this->_file_contains('application/views/admin/campaigns/view.php', 'Who got it', 'Campaigns: per-recipient outcomes');
+        $this->_file_contains('application/models/Crm_campaign_model.php', 'campaign_retry', 'Campaigns: retry audience');
+        $this->_file_contains('application/models/Crm_campaign_model.php', '_no_whatsapp_numbers', 'Campaigns: skip No WhatsApp customers');
 
         $form = file_get_contents(FCPATH . '../application/views/admin/leads/form.php');
         $this->_assert(strpos($form, 'Workshop') !== FALSE, 'Lead form labels Workshop (not Company)');

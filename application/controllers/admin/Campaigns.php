@@ -137,7 +137,26 @@ class Campaigns extends Crm_Controller
             ? $this->crm_wa_template_model->find($camp['wa_template_id'])
             : NULL;
 
+        $groups = Crm_campaign_model::outcome_groups();
+        $show = (string) $this->input->get('show');
+        $show = isset($groups[$show]) ? $show : '';
+        $out = $this->crm_campaign_model->recipients_by_outcome($id, $show);
+        $per = 50;
+        $page = max(1, (int) $this->input->get('page'));
+        $seg = json_decode($camp['segment_json'] ?: '{}', TRUE) ?: array();
+        $retry_of = (($seg['type'] ?? '') === 'campaign_retry') ? $this->crm_campaign_model->find((int) ($seg['campaign_id'] ?? 0)) : NULL;
+
         $this->render('admin/campaigns/view', array(
+            'groups'      => $groups,
+            'show'        => $show,
+            'counts'      => $out['counts'],
+            'recipients'  => array_slice($out['rows'], ($page - 1) * $per, $per),
+            'r_total'     => count($out['rows']),
+            'r_page'      => $page,
+            'r_pages'     => max(1, (int) ceil(count($out['rows']) / $per)),
+            'first_sent'  => $this->crm_campaign_model->first_sent_at($id),
+            'retry_of'    => $retry_of,
+            'retry_first_sent' => $retry_of ? $this->crm_campaign_model->first_sent_at($retry_of['id']) : NULL,
             'title'  => $camp['name'],
             'camp'   => $camp,
             'stats'  => $this->crm_campaign_model->recipient_stats($id),
@@ -149,6 +168,61 @@ class Campaigns extends Crm_Controller
             'test_mobile' => (string) $this->session->userdata('campaign_test_mobile'),
             'test_email'  => (string) ($this->session->userdata('campaign_test_email') ?: ($this->admin['email'] ?? '')),
         ));
+    }
+
+    /** POST campaigns/{id}/retry — draft that re-sends to the "Can retry later" people only. */
+    public function retry($id)
+    {
+        $this->require_perm('campaigns.edit');
+        $camp = $this->crm_campaign_model->find($id);
+        if (!$camp) { show_404(); }
+        $n = $this->crm_campaign_model->recipients_by_outcome($id, 'retry');
+        if (!$n['counts']['retry']) {
+            $this->flash('info', 'Nobody in this campaign is waiting for a retry.');
+            redirect(admin_url('campaigns/'.$id));
+        }
+        $new_id = $this->crm_campaign_model->create_retry($camp, $this->admin['id']);
+        $this->audit->log('admin', $this->admin['id'], 'crm.campaign.retry', 'crm_campaign', (int) $new_id, array('from' => (int) $id));
+        $this->flash('success', 'Retry draft created for '.$n['counts']['retry'].' people. Schedule it for about a week after the first send, or send it now.');
+        redirect(admin_url('campaigns/'.$new_id));
+    }
+
+    /** POST campaigns/{id}/no-whatsapp — tag "Not on WhatsApp" recipients so future WhatsApp campaigns skip them. */
+    public function no_whatsapp($id)
+    {
+        $this->require_perm('campaigns.edit');
+        $camp = $this->crm_campaign_model->find($id);
+        if (!$camp) { show_404(); }
+        $n = $this->crm_campaign_model->tag_no_whatsapp_for_campaign($id);
+        $this->audit->log('admin', $this->admin['id'], 'crm.campaign.no_whatsapp', 'crm_campaign', (int) $id, array('tagged' => $n));
+        $this->flash('success', $n
+            ? 'Tagged '.$n.' customer'.($n === 1 ? '' : 's').' "'.Crm_campaign_model::NO_WA_TAG.'". Future WhatsApp campaigns skip them.'
+            : 'None of these numbers are saved as customers, so nothing was tagged.');
+        redirect(admin_url('campaigns/'.$id.'?show=no_whatsapp'));
+    }
+
+    /** GET campaigns/{id}/export?show=group — CSV of recipients and their outcome. */
+    public function export($id)
+    {
+        $this->require_perm('campaigns.view');
+        $camp = $this->crm_campaign_model->find($id);
+        if (!$camp) { show_404(); }
+        $groups = Crm_campaign_model::outcome_groups();
+        $show = (string) $this->input->get('show');
+        $show = isset($groups[$show]) ? $show : '';
+        $out = $this->crm_campaign_model->recipients_by_outcome($id, $show);
+        $name = preg_replace('/[^a-z0-9]+/i', '-', $camp['name']).($show ? '-'.$show : '').'.csv';
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="'.trim($name, '-').'"');
+        $fh = fopen('php://output', 'w');
+        fwrite($fh, "\xEF\xBB\xBF");
+        fputcsv($fh, array('Name', 'Mobile', 'Email', 'Outcome', 'Reason', 'Sent at', 'Delivered at', 'Read at'));
+        foreach ($out['rows'] as $r) {
+            fputcsv($fh, array($r['name'], $r['mobile'], $r['email'], $groups[$r['outcome']]['label'], $r['reason'],
+                $r['sent_at'], $r['delivered_at'] ?? '', $r['read_at'] ?? ''));
+        }
+        fclose($fh);
+        exit;
     }
 
     public function send($id)
@@ -318,6 +392,13 @@ class Campaigns extends Crm_Controller
         $segment = array('type' => $segment_type);
         if ($segment_type === 'tag') {
             $segment['tag_id'] = (int) $this->input->post('tag_id');
+        }
+        // A retry draft keeps its fixed audience whatever the form says.
+        if ($id && ($old = $this->crm_campaign_model->find($id))) {
+            $old_seg = json_decode($old['segment_json'] ?: '{}', TRUE) ?: array();
+            if (($old_seg['type'] ?? '') === 'campaign_retry') {
+                $segment = $old_seg;
+            }
         }
 
         $payload = array(

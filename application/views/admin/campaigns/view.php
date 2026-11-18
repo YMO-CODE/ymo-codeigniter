@@ -5,6 +5,15 @@
         <div class="md-card-elevated">
             <h2 class="h4"><?= html_escape($camp['name']); ?></h2>
             <p class="ymo-muted small"><?= strtoupper($camp['channel']); ?> · <?= html_escape($camp['status']); ?></p>
+            <?php if (!empty($retry_of)):
+                $earliest = !empty($retry_first_sent) ? strtotime($retry_first_sent.' +7 days') : NULL; ?>
+                <div class="ymo-alert ymo-alert-info mb-3"><span class="mi mi-sm">replay</span><span>
+                    Audience: the people Meta held back in <a href="<?= admin_url('campaigns/'.$retry_of['id'].'?show=retry'); ?>"><?= html_escape($retry_of['name']); ?></a>. The list is worked out again when you send.
+                    <?php if ($earliest): ?><?= $earliest > time()
+                        ? 'Meta suggests waiting about a week: schedule it for <strong>'.html_escape(date('d M', $earliest)).'</strong> or later.'
+                        : 'It has been over a week since the first send, so it is a good time to send.'; ?><?php endif; ?>
+                </span></div>
+            <?php endif; ?>
             <?php if ($camp['channel'] === 'whatsapp'): ?>
                 <?php if (!empty($wa_tpl)): ?>
                     <p class="small mb-1">Template: <strong><?= html_escape($wa_tpl['name']); ?></strong> (<?= html_escape($wa_tpl['language']); ?>)
@@ -83,3 +92,64 @@
         </div>
     </div>
 </div>
+
+<?php if (array_sum($counts)): 
+    $rq = function (array $c) use ($show) { $p = array_filter(array_merge(array('show' => $show), $c), function ($v) { return $v !== NULL && $v !== '' && $v !== 1; }); return $p ? '?'.http_build_query($p) : ''; };
+    $badge = array('read' => 'bg-success', 'delivered' => 'bg-success-subtle text-success-emphasis', 'sent' => 'bg-secondary-subtle text-secondary-emphasis', 'pending' => 'bg-secondary-subtle text-secondary-emphasis',
+        'retry' => 'bg-warning-subtle text-warning-emphasis', 'no_whatsapp' => 'bg-danger-subtle text-danger-emphasis', 'bad_number' => 'bg-danger-subtle text-danger-emphasis', 'failed' => 'bg-danger-subtle text-danger-emphasis', 'skipped' => 'bg-light text-dark');
+?>
+<div class="ymo-card mt-3" id="recipients">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+        <h6 class="mb-0">Who got it</h6>
+        <a class="btn btn-sm btn-outline-secondary" href="<?= admin_url('campaigns/'.$camp['id'].'/export'.($show ? '?show='.$show : '')); ?>"><span class="mi mi-sm mi-leading">download</span>Download <?= $show ? '"'.html_escape($groups[$show]['label']).'"' : 'all'; ?> (CSV)</a>
+    </div>
+    <div class="d-flex flex-wrap gap-1 mb-3">
+        <a class="btn btn-sm <?= $show === '' ? 'btn-primary' : 'btn-outline-secondary'; ?>" href="<?= admin_url('campaigns/'.$camp['id']); ?>#recipients">All <?= array_sum($counts); ?></a>
+        <?php foreach ($groups as $g => $meta): if (!$counts[$g]) { continue; } ?>
+            <a class="btn btn-sm <?= $show === $g ? 'btn-primary' : 'btn-outline-secondary'; ?>" href="<?= admin_url('campaigns/'.$camp['id'].'?show='.$g); ?>#recipients"><?= html_escape($meta['label']); ?> <?= (int) $counts[$g]; ?></a>
+        <?php endforeach; ?>
+    </div>
+
+    <?php if ($show !== ''): ?>
+        <p class="small ymo-muted mb-2"><?= html_escape($groups[$show]['hint']); ?></p>
+    <?php endif; ?>
+
+    <?php if (in_array($show, array('', 'retry'), TRUE) && $counts['retry'] && !empty($can_edit) && $camp['status'] === 'completed'): 
+        $earliest = $first_sent ? strtotime($first_sent.' +7 days') : NULL; ?>
+        <?= form_open(admin_url('campaigns/'.$camp['id'].'/retry'), array('class' => 'p-3 border rounded mb-3 d-flex flex-wrap gap-2 align-items-center justify-content-between')); ?>
+            <span class="small"><strong><?= (int) $counts['retry']; ?> people</strong> can be sent this again later<?= $earliest && $earliest > time() ? ', ideally from <strong>'.html_escape(date('d M', $earliest)).'</strong>' : ''; ?>. This makes a draft for just them; nothing is sent yet.</span>
+            <button class="btn btn-sm btn-outline-primary"><span class="mi mi-sm mi-leading">replay</span>Create retry campaign</button>
+        <?= form_close(); ?>
+    <?php endif; ?>
+    <?php if (in_array($show, array('', 'no_whatsapp'), TRUE) && $counts['no_whatsapp'] && !empty($can_edit)): ?>
+        <?= form_open(admin_url('campaigns/'.$camp['id'].'/no-whatsapp'), array('class' => 'p-3 border rounded mb-3 d-flex flex-wrap gap-2 align-items-center justify-content-between')); ?>
+            <span class="small"><strong><?= (int) $counts['no_whatsapp']; ?> numbers</strong> aren't on WhatsApp. Tag them "No WhatsApp" so future WhatsApp campaigns skip them (new failures are tagged automatically).</span>
+            <button class="btn btn-sm btn-outline-danger"><span class="mi mi-sm mi-leading">label</span>Tag as No WhatsApp</button>
+        <?= form_close(); ?>
+    <?php endif; ?>
+
+    <div class="table-responsive">
+        <table class="table table-sm align-middle mb-0 small">
+            <thead><tr><th>Customer</th><th>Mobile</th><th>Result</th><th>Reason</th><th class="text-nowrap">Sent</th></tr></thead>
+            <tbody>
+            <?php foreach ($recipients as $r): ?>
+                <tr>
+                    <td><a href="<?= admin_url('customers?q='.rawurlencode(substr(preg_replace('/\D/', '', $r['mobile']), -10))); ?>"><?= html_escape($r['name'] !== '' ? $r['name'] : '(no name)'); ?></a></td>
+                    <td class="text-nowrap"><?= html_escape($r['mobile']); ?></td>
+                    <td><span class="badge <?= $badge[$r['outcome']] ?? 'bg-light text-dark'; ?>"><?= html_escape($groups[$r['outcome']]['label']); ?></span></td>
+                    <td class="ymo-muted"><?= html_escape(mb_strimwidth($r['reason'], 0, 90, '…')); ?></td>
+                    <td class="text-nowrap ymo-muted"><?= $r['sent_at'] ? html_escape(date('d M, h:i A', strtotime($r['sent_at']))) : '-'; ?></td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php if ($r_pages > 1): ?>
+        <div class="d-flex justify-content-between small mt-2">
+            <?php if ($r_page > 1): ?><a href="<?= admin_url('campaigns/'.$camp['id'].$rq(array('page' => $r_page - 1))); ?>#recipients">‹ Previous</a><?php else: ?><span></span><?php endif; ?>
+            <span class="ymo-muted">Page <?= (int) $r_page; ?> of <?= (int) $r_pages; ?> · <?= (int) $r_total; ?> people</span>
+            <?php if ($r_page < $r_pages): ?><a href="<?= admin_url('campaigns/'.$camp['id'].$rq(array('page' => $r_page + 1))); ?>#recipients">Next ›</a><?php else: ?><span></span><?php endif; ?>
+        </div>
+    <?php endif; ?>
+</div>
+<?php endif; ?>

@@ -28,6 +28,12 @@ $wa_selectable = $wa_ready && !empty($wa_templates);
                         <label>Channel</label>
                     </div>
                 </div>
+                <?php if (($seg['type'] ?? '') === 'campaign_retry'): ?>
+                <div class="col-12">
+                    <div class="ymo-alert ymo-alert-info mb-0"><span class="mi mi-sm">replay</span><span>Audience is fixed: the people Meta held back in <a href="<?= admin_url('campaigns/'.(int) ($seg['campaign_id'] ?? 0).'?show=retry'); ?>">the original campaign</a>.</span></div>
+                    <input type="hidden" name="segment_type" value="campaign_retry">
+                </div>
+                <?php else: ?>
                 <div class="col-md-6">
                     <div class="form-floating">
                         <select class="form-select" name="segment_type">
@@ -49,6 +55,7 @@ $wa_selectable = $wa_ready && !empty($wa_templates);
                         <label>Tag (if segment = tag)</label>
                     </div>
                 </div>
+                <?php endif; ?>
                 <div class="col-12 js-wa-only">
                     <div class="border rounded p-3 bg-light">
                         <div class="form-floating mb-2">

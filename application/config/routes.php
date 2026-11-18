@@ -117,6 +117,9 @@ if (ymo_is_admin_host_request()) {
     $route['campaigns/(:num)/edit']            = 'admin/campaigns/edit/$1';
     $route['campaigns/(:num)/test'] = 'admin/campaigns/send_test/$1';
     $route['campaigns/(:num)/duplicate'] = 'admin/campaigns/duplicate/$1';
+    $route['campaigns/(:num)/retry'] = 'admin/campaigns/retry/$1';
+    $route['campaigns/(:num)/no-whatsapp'] = 'admin/campaigns/no_whatsapp/$1';
+    $route['campaigns/(:num)/export'] = 'admin/campaigns/export/$1';
     $route['campaigns/(:num)/send']            = 'admin/campaigns/send/$1';
     $route['campaigns/(:num)/schedule']        = 'admin/campaigns/schedule/$1';
     $route['whatsapp-templates'] = 'admin/wa_templates/index';
@@ -228,6 +231,9 @@ if (ymo_is_admin_host_request()) {
     $route['admin/campaigns/(:num)/edit']      = 'admin/campaigns/edit/$1';
     $route['admin/campaigns/(:num)/test'] = 'admin/campaigns/send_test/$1';
     $route['admin/campaigns/(:num)/duplicate'] = 'admin/campaigns/duplicate/$1';
+    $route['admin/campaigns/(:num)/retry'] = 'admin/campaigns/retry/$1';
+    $route['admin/campaigns/(:num)/no-whatsapp'] = 'admin/campaigns/no_whatsapp/$1';
+    $route['admin/campaigns/(:num)/export'] = 'admin/campaigns/export/$1';
     $route['admin/campaigns/(:num)/send']      = 'admin/campaigns/send/$1';
     $route['admin/campaigns/(:num)/schedule']  = 'admin/campaigns/schedule/$1';
     $route['admin/whatsapp-templates'] = 'admin/wa_templates/index';
@@ -421,6 +427,9 @@ if (ymo_is_admin_host_request()) {
     $route['admin/campaigns/(:num)/edit'] = 'admin/campaigns/edit/$1';
     $route['admin/campaigns/(:num)/test'] = 'admin/campaigns/send_test/$1';
     $route['admin/campaigns/(:num)/duplicate'] = 'admin/campaigns/duplicate/$1';
+    $route['admin/campaigns/(:num)/retry'] = 'admin/campaigns/retry/$1';
+    $route['admin/campaigns/(:num)/no-whatsapp'] = 'admin/campaigns/no_whatsapp/$1';
+    $route['admin/campaigns/(:num)/export'] = 'admin/campaigns/export/$1';
     $route['admin/campaigns/(:num)/send'] = 'admin/campaigns/send/$1';
     $route['admin/campaigns/(:num)/schedule'] = 'admin/campaigns/schedule/$1';
     $route['admin/whatsapp-templates'] = 'admin/wa_templates/index';

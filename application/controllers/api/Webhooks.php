@@ -107,8 +107,10 @@ class Webhooks extends CI_Controller
 
         $opted_out = 0;
         if ($is_meta_cloud) {
-            $this->load->model('crm_wa_message_model');
+            $this->load->model(array('crm_wa_message_model', 'crm_campaign_model'));
             foreach ($messages as $msg) {
+                // They wrote to us on WhatsApp, so a "No WhatsApp" tag is wrong.
+                $this->crm_campaign_model->clear_no_whatsapp($msg['from']);
                 $this->crm_wa_message_model->log(array(
                     'wa_message_id' => $msg['message_id'] ?: NULL,
                     'phone'         => $msg['from'],

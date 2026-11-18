@@ -89,6 +89,199 @@ class Crm_campaign_model extends CI_Model
             ->result_array();
     }
 
+    /** Tag given to customers whose number can't receive WhatsApp (Meta error 131026). */
+    const NO_WA_TAG = 'No WhatsApp';
+
+    /**
+     * Recipient outcome groups shown on the campaign page, in display order.
+     * Meta error codes: 131049 per-person marketing limit, 130472 Meta experiment,
+     * 131000 Meta-side glitch (all worth retrying later); 131026 not on WhatsApp;
+     * 131009 malformed number.
+     */
+    public static function outcome_groups()
+    {
+        return array(
+            'read'       => array('label' => 'Read',                 'hint' => 'Opened the message.'),
+            'delivered'  => array('label' => 'Delivered, not read',  'hint' => 'Reached the phone but not opened yet.'),
+            'sent'       => array('label' => 'No receipt yet',       'hint' => 'Accepted by WhatsApp; delivery not confirmed yet.'),
+            'pending'    => array('label' => 'Waiting to send',      'hint' => 'Goes out on the next cron run.'),
+            'retry'      => array('label' => 'Can retry later',      'hint' => "Meta held these back (marketing limit per person, Meta test group or a Meta glitch). Not charged. Retrying after about a week usually works."),
+            'no_whatsapp'=> array('label' => 'Not on WhatsApp',      'hint' => 'These numbers cannot receive WhatsApp. Call or SMS them instead.'),
+            'bad_number' => array('label' => 'Wrong number',         'hint' => 'The saved mobile number is invalid. Fix it on the customer.'),
+            'failed'     => array('label' => 'Other failures',       'hint' => 'See the reason column.'),
+            'skipped'    => array('label' => 'Skipped',              'hint' => 'Left out when sending.'),
+        );
+    }
+
+    /** First Meta error code (e.g. "131049") in an error text, or ''. */
+    public static function wa_error_code($error)
+    {
+        return preg_match('/(?<!\d)(13\d{4})(?!\d)/', (string) $error, $m) ? $m[1] : '';
+    }
+
+    /** Which outcome group a recipient row belongs to. */
+    public static function outcome_of(array $r)
+    {
+        if ($r['status'] === 'pending') {
+            return 'pending';
+        }
+        if ($r['status'] === 'skipped') {
+            return 'skipped';
+        }
+        if ($r['status'] === 'failed' || ($r['delivery_status'] ?? '') === 'failed') {
+            $code = self::wa_error_code($r['error_message'] ?? '');
+            if (in_array($code, array('131049', '130472', '131000'), TRUE)) {
+                return 'retry';
+            }
+            if ($code === '131026') {
+                return 'no_whatsapp';
+            }
+            if ($code === '131009') {
+                return 'bad_number';
+            }
+            return 'failed';
+        }
+        $d = (string) ($r['delivery_status'] ?? '');
+        return $d === 'read' ? 'read' : ($d === 'delivered' ? 'delivered' : 'sent');
+    }
+
+    /** Short plain-English reason for a failed recipient. */
+    public static function outcome_reason(array $r)
+    {
+        $code = self::wa_error_code($r['error_message'] ?? '');
+        $map = array(
+            '131049' => 'Meta limit on marketing messages to this person',
+            '130472' => 'Meta test group, marketing held back',
+            '131000' => 'Meta glitch',
+            '131026' => 'Not on WhatsApp',
+            '131009' => 'Invalid mobile number',
+            '131042' => 'WhatsApp balance was empty',
+            '131050' => 'Customer stopped marketing messages',
+        );
+        if (isset($map[$code])) {
+            return $map[$code];
+        }
+        return trim((string) ($r['error_message'] ?? ''));
+    }
+
+    /**
+     * Recipients with their outcome group.
+     * @return array{counts: array<string,int>, rows: array[]} rows only for $group ('' = all), newest first
+     */
+    public function recipients_by_outcome($campaign_id, $group = '')
+    {
+        $fields = 'id, name, mobile, email, channel, status, error_message, sent_at';
+        if ($this->db->field_exists('delivery_status', self::RECIP_TABLE)) {
+            $fields .= ', delivery_status, delivered_at, read_at';
+        }
+        $all = $this->db->select($fields)->where('campaign_id', (int) $campaign_id)
+            ->order_by('id', 'ASC')->get(self::RECIP_TABLE)->result_array();
+        $counts = array_fill_keys(array_keys(self::outcome_groups()), 0);
+        $rows = array();
+        foreach ($all as $r) {
+            $r['outcome'] = self::outcome_of($r);
+            $counts[$r['outcome']]++;
+            if ($group === '' || $group === $r['outcome']) {
+                $r['reason'] = in_array($r['outcome'], array('retry', 'no_whatsapp', 'bad_number', 'failed'), TRUE) ? self::outcome_reason($r) : '';
+                $rows[] = $r;
+            }
+        }
+        return array('counts' => $counts, 'rows' => $rows);
+    }
+
+    /** When the first message of this campaign went out (for the "wait a week" advice). */
+    public function first_sent_at($campaign_id)
+    {
+        $row = $this->db->select_min('sent_at', 'at')->where('campaign_id', (int) $campaign_id)
+            ->where('sent_at IS NOT NULL', NULL, FALSE)->get(self::RECIP_TABLE)->row_array();
+        return $row['at'] ?? NULL;
+    }
+
+    /**
+     * New draft that re-sends the same template only to the "Can retry later"
+     * people of $camp. The audience is fixed to that list.
+     */
+    public function create_retry(array $camp, $admin_id)
+    {
+        return $this->create(array(
+            'name'           => mb_substr('Retry: '.preg_replace('/^Retry: /', '', $camp['name']), 0, 160),
+            'channel'        => $camp['channel'],
+            'subject'        => $camp['subject'],
+            'body'           => $camp['body'],
+            'segment_json'   => json_encode(array('type' => 'campaign_retry', 'campaign_id' => (int) $camp['id'])),
+            'wa_template_id' => $camp['wa_template_id'],
+            'wa_params_json' => $camp['wa_params_json'],
+            'status'         => 'draft',
+            'created_by'     => $admin_id ? (int) $admin_id : NULL,
+        ));
+    }
+
+    /** Tag every "Not on WhatsApp" recipient of a campaign. Returns customers tagged. */
+    public function tag_no_whatsapp_for_campaign($campaign_id)
+    {
+        $res = $this->recipients_by_outcome($campaign_id, 'no_whatsapp');
+        $n = 0;
+        foreach ($res['rows'] as $r) {
+            $n += $this->flag_no_whatsapp($r['mobile']);
+        }
+        return $n;
+    }
+
+    /** Tag the customer with this mobile "No WhatsApp". Returns 1 if a customer was found. */
+    public function flag_no_whatsapp($mobile)
+    {
+        $c = $this->_contact_for_mobile($mobile);
+        if (!$c) {
+            return 0;
+        }
+        $this->load->model('crm_tag_model');
+        $this->crm_tag_model->merge_contact_tags((int) $c['id'], array($this->crm_tag_model->find_or_create(self::NO_WA_TAG)));
+        return 1;
+    }
+
+    /** They messaged us on WhatsApp, so they clearly have it: remove the tag. */
+    public function clear_no_whatsapp($mobile)
+    {
+        $c = $this->_contact_for_mobile($mobile);
+        if (!$c || !$this->db->table_exists('crm_tags')) {
+            return;
+        }
+        $tag = $this->db->get_where('crm_tags', array('name' => self::NO_WA_TAG))->row_array();
+        if ($tag) {
+            $this->db->where('contact_id', (int) $c['id'])->where('tag_id', (int) $tag['id'])->delete('crm_contact_tags');
+        }
+    }
+
+    protected function _contact_for_mobile($mobile)
+    {
+        $m10 = substr(preg_replace('/\D/', '', (string) $mobile), -10);
+        if (strlen($m10) < 10) {
+            return NULL;
+        }
+        $this->load->model('crm_contact_model');
+        return $this->crm_contact_model->find_by_mobile($m10);
+    }
+
+    /** Mobiles (last 10 digits) of customers tagged "No WhatsApp". */
+    protected function _no_whatsapp_numbers()
+    {
+        if (!$this->db->table_exists('crm_tags')) {
+            return array();
+        }
+        $rows = $this->db->select('c.mobile')->from('crm_contacts c')
+            ->join('crm_contact_tags ct', 'ct.contact_id = c.id')
+            ->join('crm_tags t', 't.id = ct.tag_id')
+            ->where('t.name', self::NO_WA_TAG)->get()->result_array();
+        $out = array();
+        foreach ($rows as $r) {
+            $d = substr(preg_replace('/\D/', '', (string) $r['mobile']), -10);
+            if ($d !== '') {
+                $out[$d] = TRUE;
+            }
+        }
+        return $out;
+    }
+
     public function has_recipients($campaign_id)
     {
         return $this->db->where('campaign_id', (int) $campaign_id)->count_all_results(self::RECIP_TABLE) > 0;
@@ -142,6 +335,9 @@ class Crm_campaign_model extends CI_Model
             $patch = array('delivery_status' => 'failed', 'status' => 'failed');
             if ($error !== '') {
                 $patch['error_message'] = substr($error, 0, 500);
+            }
+            if (self::wa_error_code($error) === '131026') {
+                $this->flag_no_whatsapp($row['mobile']);
             }
         } elseif ($status === 'sent' && $cur === '') {
             $patch = array('delivery_status' => 'sent');
@@ -207,6 +403,12 @@ class Crm_campaign_model extends CI_Model
             $patch['error_message'] = substr($error, 0, 500);
         }
         $this->db->where('id', (int) $id)->update(self::RECIP_TABLE, $patch);
+        if ($status === 'failed' && self::wa_error_code($error) === '131026') {
+            $row = $this->db->select('mobile')->get_where(self::RECIP_TABLE, array('id' => (int) $id))->row_array();
+            if ($row) {
+                $this->flag_no_whatsapp($row['mobile']);
+            }
+        }
     }
 
     /**
@@ -231,6 +433,17 @@ class Crm_campaign_model extends CI_Model
                 ->where('c.deleted_at IS NULL', NULL, FALSE)
                 ->get()
                 ->result_array();
+        } elseif ($type === 'campaign_retry' && !empty($segment['campaign_id'])) {
+            // Fixed audience: the "Can retry later" people of an earlier campaign.
+            $res = $this->recipients_by_outcome((int) $segment['campaign_id'], 'retry');
+            foreach ($res['rows'] as $r) {
+                $c = $this->_contact_for_mobile($r['mobile']);
+                $contacts[] = $c ?: array(
+                    'name' => $r['name'], 'email' => $r['email'], 'mobile' => $r['mobile'],
+                    'email_opt_out' => 0, 'sms_opt_out' => 0, 'whatsapp_opt_out' => 0,
+                );
+            }
+            return $this->_contacts_to_recipients($contacts, $channel);
         } elseif ($type === 'leads_open') {
             $leads = $this->db
                 ->where('status', 'open')
@@ -496,7 +709,7 @@ class Crm_campaign_model extends CI_Model
     {
         $out = array();
         $wa_seen = array();
-        $wa_blocked = $channel === 'whatsapp' ? $this->_whatsapp_opted_out_numbers() : array();
+        $wa_blocked = $channel === 'whatsapp' ? $this->_whatsapp_opted_out_numbers() + $this->_no_whatsapp_numbers() : array();
         foreach ($contacts as $c) {
             if ($channel === 'whatsapp') {
                 $key = substr(preg_replace('/\D/', '', (string) ($c['mobile'] ?? '')), -10);
