@@ -141,39 +141,65 @@ $pages = array(
         'view'             => 'marketing/page',
     ),
     'best-car-services-hinjewadi-pune' => array(
+        // Main Pune workshop (GBP JP5F+62P, Rajiv Gandhi Infotech Park Phase 1, 411057).
         // Both spellings on purpose: GSC shows searches for "hinjawadi" as well as "hinjewadi".
-        'title'            => 'Car Service in Hinjewadi (Hinjawadi), Pune | YMO Workshop',
-        'meta_title'       => 'Car Service in Hinjewadi (Hinjawadi), Pune | YMO Workshop',
-        'meta_description' => 'Car service in Hinjewadi (Hinjawadi) Phase 1, 2 & 3, Pune. Workshop in Phase 1, free pick-up, WhatsApp photo updates, from ₹2,499.',
-        'h1'               => 'Car Service in Hinjewadi (Hinjawadi) Phase 1, 2 & 3, Pune',
-        'intro'            => 'Our workshop is in Hinjewadi Phase 1, inside Rajiv Gandhi Infotech Park, so cars from Hinjawadi Phase 1, 2 and 3, Marunji Road and Wakad reach us fast. Free pick-up and drop, upfront pricing from ₹2,499, and WhatsApp photo and video updates at every stage of the job.',
+        'title'            => 'Car Service & Garage in Hinjewadi (Hinjawadi), Pune | YMO',
+        'meta_title'       => 'Car Service & Garage in Hinjewadi (Hinjawadi), Pune | YMO',
+        'meta_description' => 'YMO car garage in Rajiv Gandhi Infotech Park Phase 1, Hinjewadi (Hinjawadi), Pune 411057. Service, AC & repairs, free pick-up Phase 1–3. From ₹2,499.',
+        'h1'               => 'Car Service & Car Garage in Hinjewadi (Hinjawadi), Pune',
+        'intro'            => 'Our main Pune workshop is inside Rajiv Gandhi Infotech Park, Phase 1, Hinjewadi (Hinjawadi), Pune 411057: a full multi-brand car garage for Hinjewadi Phase 1, 2 and 3, Marunji, Maan, Wakad, Punawale and Baner. Drive in or book a free pick-up from your office gate or society, approve an upfront estimate (complete service from ₹2,499), and get WhatsApp photo and video updates at every stage.',
         'body'             => '<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">Our workshop in Hinjewadi Phase 1</h2>'
-            .'<p class="md-body-md mb-3">Your Mechanic Online&#039;s Pune workshop, a full multi-brand car garage, is in Rajiv Gandhi Infotech Park, Phase 1, Hinjewadi (often written Hinjawadi). If you are searching for a car garage near you in Hinjewadi, we are in the middle of the IT park, not a long drive across the city.</p>'
-            .'<p class="md-body-md mb-3">We collect your car from your office gate or housing society anywhere in Phase 1, 2 or 3, service it at our workshop, and drop it back. You get WhatsApp photos and videos at every stage, and you approve the estimate before any work starts.</p></div>'
-            .'<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">Car service across Hinjewadi Phase 1, 2 and 3</h2>'
+            .'<p class="md-body-md mb-3">Your Mechanic Online&#039;s main Pune workshop is a multi-brand car garage inside Rajiv Gandhi Infotech Park, Phase 1, Hinjewadi (often written Hinjawadi), Pune 411057 (Plus Code JP5F+62P). If you are searching for a car garage near you in Hinjewadi, we are in the middle of the IT park, not a long drive across the city.</p>'
+            .'<p class="md-body-md mb-3">Drive in, or book a free pick-up from your office gate or housing society. We service or repair the car at the workshop, send you WhatsApp photos and videos as the work happens, and you approve the estimate before any job starts. Most periodic services and small repairs are done the same day, so you can hand over the car in the morning and get it back after work. For most bookings you pay after delivery.</p>'
+            .'<p class="md-body-md mb-0"><a href="https://share.google/zdztabyzbml7l1uvZ" target="_blank" rel="noopener">Get directions to our Hinjewadi workshop</a> · Call or WhatsApp <a href="tel:+917558783868">+91 75587 83868</a> · Open Monday to Saturday, 9 AM–8 PM</p></div>'
+            .'<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">Areas we cover from Hinjewadi</h2>'
             .'<h3 id="phase-1" class="md-title-md mt-4 mb-2">Hinjewadi Phase 1</h3>'
             .'<p class="md-body-md mb-3">Our workshop is here, inside Rajiv Gandhi Infotech Park Phase 1. If you work at one of the Phase 1 campuses, such as Cognizant, Accenture, Tata Technologies or KPMG, or live nearby, book a pick-up from your office gate or drive in to the workshop.</p>'
             .'<h3 id="phase-2" class="md-title-md mt-4 mb-2">Hinjewadi Phase 2</h3>'
             .'<p class="md-body-md mb-3">Phase 2 is a short drive from our workshop. We collect cars from the Infosys and Wipro campuses, other Phase 2 offices and the housing societies around them, and return them after the job, with WhatsApp updates while you work.</p>'
-            .'<h3 id="phase-3" class="md-title-md mt-4 mb-2">Hinjewadi Phase 3</h3>'
+            .'<h3 id="phase-3" class="md-title-md mt-4 mb-2">Hinjewadi Phase 3, Maan and Megapolis</h3>'
             .'<p class="md-body-md mb-3">Phase 3 is the newest part of the IT park, home to TCS, Tech Mahindra and Capgemini campuses and large townships such as Megapolis near Maan. Public transport is thin out here, so free pick-up and drop saves you the trip.</p>'
-            .'<p class="md-body-md mb-0 mt-4">Popular in Hinjewadi: <a href="/services/car-rubbing-and-polishing-in-pune-6500">car polishing</a>, <a href="/services/complete-car-servicing">complete car servicing</a> and <a href="/services/car-oil-change">oil change</a>. Nearby areas: <a href="/affordable-car-servicing-in-wakad-pune">Wakad</a>, <a href="/the-best-car-servicing-in-baner">Baner</a> and <a href="/car-servicing-in-pimple-saudagar-pune">Pimple Saudagar</a>.</p></div>',
+            .'<h3 id="marunji-wakad" class="md-title-md mt-4 mb-2">Marunji, Kasarsai Road, Wakad and Punawale</h3>'
+            .'<p class="md-body-md mb-3">Marunji and the Kasarsai Road townships are minutes from the workshop. We also pick up across <a href="/affordable-car-servicing-in-wakad-pune">Wakad</a>, Punawale, Tathawade and Ravet, routing via the Hinjawadi–Wakad link road to avoid highway queues.</p>'
+            .'<h3 id="baner-balewadi" class="md-title-md mt-4 mb-2">Baner, Balewadi, Sus and Pashan</h3>'
+            .'<p class="md-body-md mb-3">For <a href="/the-best-car-servicing-in-baner">Baner</a>, Balewadi, Sus and Pashan we collect the car from your gate and bring it back after the job. Cars from Kothrud, Karve Nagar and Sinhagad Road are usually closer to our <a href="/car-servicing-in-warje-pune">Warje workshop</a>.</p></div>'
+            .'<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">Services at our Hinjewadi workshop</h2>'
+            .'<ul class="md-body-md mb-3">'
+            .'<li><a href="/services/complete-car-servicing">Complete car servicing</a>: from ₹2,499 (SUV from ₹2,999). Oil and filter change, brake cleaning, AC filter, coolant top-up and interior vacuum.</li>'
+            .'<li><a href="/services/car-air-conditioner-servicing-in-pune">Car AC service and repair</a>: from ₹999. Gas recharge, leak test and compressor checks, worth doing before the summer heat.</li>'
+            .'<li><a href="/services/car-brake-repair">Brake repair</a>: brake pads from ₹499, full inspection with fluid top-up from ₹899.</li>'
+            .'<li><a href="/services/car-denting-and-painting-3000">Denting and painting</a>: from ₹4,500 per panel, with colour matching.</li>'
+            .'<li><a href="/services/car-rubbing-and-polishing-in-pune-6500">3-stage rubbing and polishing</a>: from ₹6,500.</li>'
+            .'<li><a href="/services/car-interior-cleaning-in-pune-2500">Interior deep cleaning</a>: from ₹2,500.</li>'
+            .'<li><a href="/services/car-engine-services-in-pune">Engine diagnostics and repair</a>: diagnostic scan from ₹999.</li>'
+            .'<li><a href="/services/lube-oil-and-filters">Oil change</a>: express oil and filter from ₹1,499.</li>'
+            .'</ul>'
+            .'<p class="md-body-md mb-0">We service all brands, from Maruti, Hyundai, Tata and Kia to <a href="/premium-luxury-car-service-pune">luxury cars</a> such as BMW, Mercedes-Benz and Audi. The final price is confirmed before any work starts.</p></div>'
+            .'<div class="ymo-content-section mb-5"><h2 class="md-headline-md mb-3">Why IT-park commuters use YMO</h2>'
+            .'<ul class="md-body-md mb-0">'
+            .'<li>Pick-up from your office gate or society, so you don&#039;t lose half a day in traffic.</li>'
+            .'<li>WhatsApp photos and videos of the actual work, not just a bill at the end.</li>'
+            .'<li>You approve every job and price before we start; nothing extra is done without your OK.</li>'
+            .'<li>Same-day delivery for most services, and payment after delivery for most bookings.</li>'
+            .'</ul></div>',
         'page_type'            => 'locality',
         'city_slug'            => 'pune',
         'locality_slug'        => 'hinjewadi',
         'locality_label'       => 'Hinjewadi',
         'title_locked'         => TRUE,
-        'updated_at'           => '2026-11-01',
-        'quick_answer'         => 'YMO runs a car service workshop in Hinjewadi (also spelled Hinjawadi) Phase 1, Pune, with free pick-up and drop across Phase 1, 2 and 3. Complete servicing from ₹2,499, WhatsApp photo updates, AC repair, brakes, denting and polishing.',
+        'updated_at'           => '2026-11-23',
+        'quick_answer'         => 'YMO runs a car service workshop inside Rajiv Gandhi Infotech Park, Phase 1, Hinjewadi (also spelled Hinjawadi), Pune 411057, open Monday to Saturday 9 AM–8 PM, with free pick-up and drop across Phase 1, 2 and 3, Marunji, Wakad and Baner. Complete servicing from ₹2,499, AC service from ₹999, WhatsApp photo updates, denting and polishing.',
         'og_image'             => '/assets/img/marketing/2022/03/complete-car-servicing-in-pune-1-scaled.jpg',
         'faq'                  => array(
+            array('q' => 'Where is your car garage in Hinjewadi?', 'a' => 'Our car garage is inside Rajiv Gandhi Infotech Park, Phase 1, Hinjewadi (Hinjawadi), Pune 411057 (Plus Code JP5F+62P). You can drive in or book a free pick-up from anywhere in Phase 1, 2 or 3.'),
             array('q' => 'Is it Hinjewadi or Hinjawadi?', 'a' => 'Both spellings refer to the same area in west Pune, home to Rajiv Gandhi Infotech Park. Our workshop is in Phase 1, and we pick up cars from across Phase 1, 2 and 3.'),
-            array('q' => 'How much does car servicing cost in Hinjewadi?', 'a' => 'Complete car servicing in Hinjewadi starts from ₹2,499 at YMO. You get an upfront estimate before any work begins.'),
+            array('q' => 'What are the timings of your Hinjewadi workshop?', 'a' => 'The Hinjewadi workshop is open Monday to Saturday, 9 AM to 8 PM. You can book a pick-up or a call back online at any time.'),
+            array('q' => 'How much does car servicing cost in Hinjewadi?', 'a' => 'Complete car servicing in Hinjewadi starts from ₹2,499 (₹2,999 for SUVs). AC service starts from ₹999 and denting from ₹4,500 per panel. You get an upfront estimate before any work begins.'),
             array('q' => 'Can you pick up my car from my office in Hinjawadi Phase 2 or Phase 3?', 'a' => 'Yes. Pick-up and drop are free across Hinjewadi Phase 1, 2 and 3, including the Infosys and Wipro campuses in Phase 2 and the TCS, Tech Mahindra and Megapolis area in Phase 3. Share your office gate or society name and our driver calls before arriving.'),
-            array('q' => 'Where is your car garage in Hinjewadi?', 'a' => 'Our car garage is inside Rajiv Gandhi Infotech Park, Phase 1, Hinjewadi (Hinjawadi), Pune 411057. You can drive in or book a free pick-up from anywhere in Phase 1, 2 or 3.'),
-            array('q' => 'Which phase of Hinjewadi is your workshop in?', 'a' => 'Phase 1, inside Rajiv Gandhi Infotech Park. Cars from Phase 2 and Phase 3 are picked up and dropped back free of charge.'),
+            array('q' => 'Can I give my car in the morning and get it back after work?', 'a' => 'For most periodic services and small repairs, yes. We pick the car up in the morning and drop it back the same evening. Bigger jobs such as denting and painting take longer, and we tell you the timeline upfront.'),
+            array('q' => 'Do I pay before or after the service?', 'a' => 'For most bookings you pay after the car is delivered back to you, once you have seen the work.'),
             array('q' => 'Will I get updates while my car is being serviced?', 'a' => 'Yes. We send WhatsApp photos and videos at every stage, so you can see the work and approve any extra jobs before we do them.'),
-            array('q' => 'Do you service all car brands in Hinjewadi?', 'a' => 'Yes. Maruti, Hyundai, Tata, Honda, Toyota, Kia, BMW, Mercedes-Benz, Audi and more.'),
+            array('q' => 'Do you service all car brands and luxury cars in Hinjewadi?', 'a' => 'Yes. Maruti, Hyundai, Tata, Honda, Toyota, Kia, Mahindra, Skoda, Volkswagen, and luxury brands such as BMW, Mercedes-Benz and Audi.'),
         ),
         'view'             => 'marketing/page',
     ),

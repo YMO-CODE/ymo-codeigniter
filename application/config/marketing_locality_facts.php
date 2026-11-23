@@ -20,7 +20,8 @@ return array(
         'hinjewadi' => array(
             'landmarks'     => 'Rajiv Gandhi Infotech Park Phases 1–3, Marunji Road, and Hinjawadi Gaon',
             'drive_context' => 'We collect from tech-park gates and residential towers; off-peak workshop run is typically 20–35 minutes.',
-            'local_jobs'    => 'Weekend slot demand from shift workers, AC performance checks before summer, and quick oil changes between project deadlines.',
+            'local_jobs'    => 'Saturday slot demand from shift workers, AC performance checks before summer, and quick oil changes between project deadlines.',
+            'hours'         => 'Open Monday to Saturday, 9 AM–8 PM.',
         ),
         'aundh' => array(
             'landmarks'     => 'Aundh Gaon, ITI Road, and Parihar Chowk',
