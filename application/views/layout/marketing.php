@@ -52,6 +52,22 @@ $ymo_city_variants = function_exists('marketing_city_variants_for_path')
     <?= $content; ?>
 </main>
 
+<?php
+// Call-back + WhatsApp banner on every page that doesn't already show it in its content
+// (area and service pages show it right after the hero). Not on the contact page or thank-you page.
+if (empty($GLOBALS['ymo_callback_form_rendered'])
+    && !in_array($ymo_page_path, array('contact-us', 'request-callback/thanks'), TRUE)
+    && strpos((string) $ci->uri->uri_string(), 'request-callback') !== 0):
+?>
+<section class="container pb-5 ymo-callback-site">
+    <div class="row justify-content-center"><div class="col-12">
+    <?php $this->load->view('marketing/partials/callback_form', array(
+        'callback_from' => $ymo_page_path !== '' ? $ymo_page_path : (string) $ci->uri->uri_string(),
+        'callback_page' => isset($ymo_pages_all[$ymo_page_path]) ? $ymo_pages_all[$ymo_page_path] : array(),
+    )); ?>
+    </div></div>
+</section>
+<?php endif; ?>
 <?php $this->load->view('layout/partials/marketing_footer'); ?>
 <?php $this->load->view('layout/partials/whatsapp_cta'); ?>
 <?php $this->load->view('layout/partials/mobile_cta_bar'); ?>

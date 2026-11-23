@@ -47,7 +47,7 @@ echo ymo_marketing_render_hero(
                 if (in_array($cb_type, array('locality', 'service'), TRUE)):
                     $this->load->view('marketing/partials/callback_form', array(
                         'callback_from' => isset($canonical_path) ? $canonical_path : '',
-                        'callback_area' => !empty($hero_page['locality_label']) ? $hero_page['locality_label'] : '',
+                        'callback_page' => $hero_page,
                     ));
                 endif;
                 ?>
