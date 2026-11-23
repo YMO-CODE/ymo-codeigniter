@@ -44,11 +44,16 @@ return array(
 
     'opening_hours'    => array(
 
-        'days'  => array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'),
+        // Hinjewadi workshop (main listing): open every day except Thursday; Sunday from 8:30 AM (see 'extra').
+        'days'  => array('Monday', 'Tuesday', 'Wednesday', 'Friday', 'Saturday'),
 
         'opens' => '09:00',
 
         'closes'=> '20:00',
+
+        'extra' => array(
+            array('days' => array('Sunday'), 'opens' => '08:30', 'closes' => '20:00'),
+        ),
 
     ),
 

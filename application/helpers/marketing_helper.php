@@ -3056,6 +3056,16 @@ if (!function_exists('marketing_schema_graph')) {
                 ),
             ),
         );
+        // Days with different times (e.g. Sunday opens earlier).
+        if (!empty($hours['extra']) && is_array($hours['extra'])) {
+            foreach ($hours['extra'] as $x) {
+                if (!empty($x['days']) && !empty($x['opens']) && !empty($x['closes'])) {
+                    $graph[count($graph) - 1]['openingHoursSpecification'][] = array(
+                        '@type' => 'OpeningHoursSpecification', 'dayOfWeek' => $x['days'], 'opens' => $x['opens'], 'closes' => $x['closes'],
+                    );
+                }
+            }
+        }
         if ($og_url !== '') {
             $graph[0]['image'] = $og_url;
         }
@@ -3622,7 +3632,7 @@ if (!function_exists('marketing_llms_txt')) {
         }
         $lines[] = '';
         $lines[] = '## Workshops';
-        $lines[] = '- Pune – Hinjewadi: Rajiv Gandhi Infotech Park, Phase 1, Hinjewadi (Hinjawadi), Pune 411057. Mon–Sat, 9 AM–8 PM. Page: '.marketing_canonical_url('best-car-services-hinjewadi-pune');
+        $lines[] = '- Pune – Hinjewadi: Rajiv Gandhi Infotech Park, Phase 1, Hinjewadi (Hinjawadi), Pune 411057. Open every day except Thursday, 9 AM–8 PM (Sunday from 8:30 AM). Page: '.marketing_canonical_url('best-car-services-hinjewadi-pune');
         $lines[] = '- Pune – Warje: Shelke Nagar, Warje, Pune 411058. Open Monday and Wednesday–Sunday, 9 AM–8 PM (closed Tuesday). Serves Warje, Karve Nagar, Kothrud, Sinhagad Road, Narhe, Dhayari, Nanded City. Page: '.marketing_canonical_url('car-servicing-in-warje-pune');
         $lines[] = '- Indore and Nashik: doorstep service with free pick-up and drop. Pages: '.marketing_canonical_url('locations/indore').', '.marketing_canonical_url('locations/nashik');
         $lines[] = '';
