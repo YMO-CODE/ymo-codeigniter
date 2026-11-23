@@ -106,6 +106,12 @@ if (ymo_is_admin_host_request()) {
     $route['contacts/(:num)/edit']             = 'admin/contacts/edit/$1';
 
     $route['campaigns']                        = 'admin/campaigns/index';
+    $route['ymochat/app-manifest'] = 'api/ymochat/manifest';
+    $route['ymochat/push/key'] = 'admin/ymochat/push_key';
+    $route['ymochat/push/subscribe'] = 'admin/ymochat/push_subscribe';
+    $route['ymochat/push/state'] = 'admin/ymochat/push_state';
+    $route['ymochat/push/unsubscribe'] = 'admin/ymochat/push_unsubscribe';
+    $route['ymochat/push/test'] = 'admin/ymochat/push_test';
     $route['ymochat'] = 'admin/ymochat/index';
     $route['ymochat/feed'] = 'admin/ymochat/feed';
     $route['ymochat/pulse'] = 'admin/ymochat/pulse';
@@ -225,6 +231,13 @@ if (ymo_is_admin_host_request()) {
     $route['admin/contacts/(:num)']            = 'admin/contacts/view/$1';
     $route['admin/contacts/(:num)/edit']       = 'admin/contacts/edit/$1';
     $route['admin/campaigns']                  = 'admin/campaigns/index';
+    $route['ymochat/app-manifest'] = 'api/ymochat/manifest';
+    $route['admin/ymochat/app-manifest'] = 'api/ymochat/manifest';
+    $route['admin/ymochat/push/key'] = 'admin/ymochat/push_key';
+    $route['admin/ymochat/push/subscribe'] = 'admin/ymochat/push_subscribe';
+    $route['admin/ymochat/push/state'] = 'admin/ymochat/push_state';
+    $route['admin/ymochat/push/unsubscribe'] = 'admin/ymochat/push_unsubscribe';
+    $route['admin/ymochat/push/test'] = 'admin/ymochat/push_test';
     $route['admin/ymochat'] = 'admin/ymochat/index';
     $route['admin/ymochat/feed'] = 'admin/ymochat/feed';
     $route['admin/ymochat/pulse'] = 'admin/ymochat/pulse';
@@ -431,6 +444,12 @@ if (ymo_is_admin_host_request()) {
     $route['admin/contacts/(:num)'] = 'admin/contacts/view/$1';
     $route['admin/contacts/(:num)/edit'] = 'admin/contacts/edit/$1';
     $route['admin/campaigns'] = 'admin/campaigns/index';
+    $route['admin/ymochat/app-manifest'] = 'api/ymochat/manifest';
+    $route['admin/ymochat/push/key'] = 'admin/ymochat/push_key';
+    $route['admin/ymochat/push/subscribe'] = 'admin/ymochat/push_subscribe';
+    $route['admin/ymochat/push/state'] = 'admin/ymochat/push_state';
+    $route['admin/ymochat/push/unsubscribe'] = 'admin/ymochat/push_unsubscribe';
+    $route['admin/ymochat/push/test'] = 'admin/ymochat/push_test';
     $route['admin/ymochat'] = 'admin/ymochat/index';
     $route['admin/ymochat/feed'] = 'admin/ymochat/feed';
     $route['admin/ymochat/pulse'] = 'admin/ymochat/pulse';

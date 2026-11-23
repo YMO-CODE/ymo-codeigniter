@@ -88,6 +88,80 @@ class Ymochat extends Crm_Controller
         $this->_json(array('ok' => TRUE, 'msgs' => $this->ymochat_model->messages((int) $v['id'], $after)));
     }
 
+    // --- push alerts on this phone / computer ---------------------------------------
+
+    /** GET ymochat/push/key — public VAPID key for pushManager.subscribe(). */
+    public function push_key()
+    {
+        $this->require_perm('leads.view');
+        $this->load->library('web_push');
+        $this->_json(array('key' => $this->web_push->public_key(), 'devices' => $this->ymochat_model->push_count_for_admin((int) $this->admin['id'])));
+    }
+
+    /** POST ymochat/push/subscribe {sub, mode, quiet, device} */
+    public function push_subscribe()
+    {
+        $this->require_perm('leads.view');
+        $in = $this->_xhr_json();
+        if ($in === NULL || empty($in['sub']) || !is_array($in['sub'])) {
+            return $this->_json(array('ok' => FALSE), 400);
+        }
+        $id = $this->ymochat_model->push_subscribe((int) $this->admin['id'], $in['sub'],
+            isset($in['mode']) ? (string) $in['mode'] : 'all', !empty($in['quiet']), isset($in['device']) ? (string) $in['device'] : '');
+        if (!$id) {
+            return $this->_json(array('ok' => FALSE, 'error' => 'invalid'));
+        }
+        if (!empty($in['test'])) {
+            $this->ymochat_model->push_notify('test', array(), '', (int) $this->admin['id']);
+        }
+        $this->_json(array('ok' => TRUE));
+    }
+
+    /** POST ymochat/push/state {endpoint} — is this browser subscribed, and how. */
+    public function push_state()
+    {
+        $this->require_perm('leads.view');
+        $in = $this->_xhr_json();
+        $sub = $in && !empty($in['endpoint']) ? $this->ymochat_model->push_subscription((int) $this->admin['id'], (string) $in['endpoint']) : NULL;
+        $this->_json(array('ok' => TRUE, 'sub' => $sub));
+    }
+
+    /** POST ymochat/push/unsubscribe {endpoint} */
+    public function push_unsubscribe()
+    {
+        $this->require_perm('leads.view');
+        $in = $this->_xhr_json();
+        if ($in && !empty($in['endpoint'])) {
+            $this->ymochat_model->push_unsubscribe((int) $this->admin['id'], (string) $in['endpoint']);
+        }
+        $this->_json(array('ok' => TRUE));
+    }
+
+    /** POST ymochat/push/test — test alert to all of my devices. */
+    public function push_test()
+    {
+        $this->require_perm('leads.view');
+        if ($this->_xhr_json() === NULL) {
+            return $this->_json(array('ok' => FALSE), 400);
+        }
+        $sent = $this->ymochat_model->push_notify('test', array(), '', (int) $this->admin['id']);
+        $this->_json(array('ok' => TRUE, 'sent' => $sent));
+    }
+
+    /** JSON body of a same-site XHR POST, or NULL. */
+    protected function _xhr_json()
+    {
+        if ($this->input->method() !== 'post' || $this->input->get_request_header('X-Requested-With') !== 'XMLHttpRequest') {
+            return NULL;
+        }
+        $origin = (string) $this->input->get_request_header('Origin', TRUE);
+        if ($origin !== '' && strtolower((string) parse_url($origin, PHP_URL_HOST)) !== strtolower(preg_replace('/:\d+$/', '', (string) $this->input->server('HTTP_HOST')))) {
+            return NULL;
+        }
+        $in = json_decode((string) file_get_contents('php://input'), TRUE);
+        return is_array($in) ? $in : array();
+    }
+
     protected function _agent_seen()
     {
         $this->load->driver('cache', array('adapter' => 'file', 'backup' => 'dummy'));

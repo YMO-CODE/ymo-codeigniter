@@ -20,12 +20,27 @@
 .ymc-row.fresh { animation: ymcflash 3s ease-out; }
 </style>
 
-<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-    <div class="ymc-alerts" id="ymc-alert-state"></div>
-    <div class="d-flex gap-2">
-        <button type="button" class="btn btn-sm btn-primary" id="ymc-enable"><span class="mi mi-sm mi-leading">notifications_active</span>Turn on visitor alerts</button>
-        <button type="button" class="btn btn-sm btn-outline-secondary" id="ymc-test">Test sound</button>
+<div class="ymo-card p-3 mb-2" id="ymc-push">
+    <div class="d-flex flex-wrap justify-content-between gap-2 align-items-center">
+        <div class="small" id="ymc-push-state">Checking alerts on this device…</div>
+        <div class="d-flex flex-wrap gap-2">
+            <button type="button" class="btn btn-sm btn-outline-primary d-none" id="ymc-install"><span class="mi mi-sm mi-leading">install_mobile</span>Install app</button>
+            <button type="button" class="btn btn-sm btn-primary" id="ymc-push-on"><span class="mi mi-sm mi-leading">notifications_active</span>Get alerts on this device</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary d-none" id="ymc-push-test">Send test alert</button>
+            <button type="button" class="btn btn-sm btn-link d-none" id="ymc-push-off">Turn off on this device</button>
+        </div>
     </div>
+    <div class="d-flex flex-wrap gap-3 mt-2 small align-items-center">
+        <label class="d-flex align-items-center gap-1">Alert me for
+            <select id="ymc-mode" class="form-select form-select-sm w-auto">
+                <option value="all">every visitor</option>
+                <option value="ads">Google Ads visitors only</option>
+                <option value="chat">chat messages only</option>
+            </select>
+        </label>
+        <label class="d-flex align-items-center gap-1"><input type="checkbox" id="ymc-quiet"> Quiet at night (10 PM–8 AM, chats still come)</label>
+    </div>
+    <div class="small ymo-muted mt-2 d-none" id="ymc-ios-tip"><span class="mi mi-sm mi-leading">ios_share</span>On iPhone: open this page in <b>Safari</b>, tap <b>Share</b> → <b>Add to Home Screen</b>, open <b>YMO CRM</b> from the home screen, then tap "Get alerts on this device".</div>
 </div>
 
 <div class="ymo-inbox" id="ymc-wrap">
@@ -93,18 +108,96 @@
     var path = function (u) { try { var x = new URL(u); return x.pathname + (x.search || ''); } catch (e) { return u || ''; } };
     var deviceIcon = function (d) { return d === 'mobile' ? 'smartphone' : (d === 'tablet' ? 'tablet' : 'computer'); };
 
-    // ---- alerts (sound + browser notification); shared with the sidebar bell ----
-    var Alerts = window.YMOChatAlerts;
-    function alertState() {
-        var on = Alerts && Alerts.enabled();
-        $('ymc-alert-state').innerHTML = on
-            ? '<span class="mi mi-sm mi-leading text-success">notifications_active</span>Alerts are on: you get a sound and a pop-up when someone lands on the website (keep this CRM open in a tab).'
-            : '<span class="mi mi-sm mi-leading">notifications_off</span>Alerts are off. Turn them on to hear a sound when someone visits the website.';
-        $('ymc-enable').textContent = on ? 'Turn off alerts' : 'Turn on visitor alerts';
+    // ---- alerts on this phone / computer (web push; works with the CRM closed) ----
+    var PUSH = BASE + '/push/';
+    var xpost = function (url, body) {
+        return fetch(url, {method: 'POST', credentials: 'same-origin',
+            headers: {'Content-Type': 'application/json', 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest'},
+            body: JSON.stringify(body || {})}).then(function (r) { return r.json(); });
+    };
+    var b64ToBytes = function (b) { b = (b + '===='.slice((b.length % 4) || 4)).replace(/-/g, '+').replace(/_/g, '/'); var raw = atob(b), a = new Uint8Array(raw.length); for (var i = 0; i < raw.length; i++) a[i] = raw.charCodeAt(i); return a; };
+    var ua = navigator.userAgent;
+    var isIOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+    var pushOK = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+    var deviceName = (/Android/.test(ua) ? 'Android' : (isIOS ? 'iPhone' : (/Windows/.test(ua) ? 'Windows' : (/Mac/.test(ua) ? 'Mac' : 'Computer')))) + (standalone ? ' app' : ' browser');
+    var swReg = null, curSub = null;
+    var store = { get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: function (k, v) { try { v === null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} } };
+    function prefs() { return {mode: $('ymc-mode').value, quiet: $('ymc-quiet').checked}; }
+    function paintPush(on, msg) {
+        $('ymc-push-state').innerHTML = msg || (on
+            ? '<span class="mi mi-sm mi-leading text-success">notifications_active</span><b>Alerts are on for this device.</b> You get a notification when someone visits the website, even with the CRM closed.'
+            : '<span class="mi mi-sm mi-leading">notifications_off</span>Alerts are off on this device.');
+        $('ymc-push-on').classList.toggle('d-none', !!on);
+        $('ymc-push-test').classList.toggle('d-none', !on);
+        $('ymc-push-off').classList.toggle('d-none', !on);
+        store.set('ymochat_push_on', on ? '1' : null);
     }
-    $('ymc-enable').onclick = function () { if (!Alerts) return; Alerts.enabled() ? Alerts.disable() : Alerts.enable(); setTimeout(alertState, 300); };
-    $('ymc-test').onclick = function () { Alerts && Alerts.beep(); };
-    alertState();
+    function pushRefresh() {
+        if (!pushOK) {
+            if (isIOS && !standalone) { $('ymc-ios-tip').classList.remove('d-none'); paintPush(false, '<span class="mi mi-sm mi-leading">info</span>To get alerts on this iPhone, add the CRM to your home screen first (see below).'); $('ymc-push-on').disabled = true; return; }
+            paintPush(false, '<span class="mi mi-sm mi-leading">info</span>This browser cannot get alerts while the CRM is closed. You will still hear a sound while this tab is open.');
+            $('ymc-push-on').textContent = (window.YMOChatAlerts && YMOChatAlerts.enabled()) ? 'Sound alerts are on' : 'Turn on sound alerts';
+            return;
+        }
+        navigator.serviceWorker.register('/ymochat-sw.js').then(function () { return navigator.serviceWorker.ready; }).then(function (reg) {
+            swReg = reg;
+            return reg.pushManager.getSubscription();
+        }).then(function (sub) {
+            curSub = sub;
+            if (!sub) { paintPush(false); return; }
+            return xpost(PUSH + 'state', {endpoint: sub.endpoint}).then(function (d) {
+                if (d.sub) {
+                    $('ymc-mode').value = d.sub.mode; $('ymc-quiet').checked = d.sub.quiet_nights == 1;
+                    paintPush(true);
+                } else {
+                    // The server forgot this device (e.g. new keys): register it again quietly.
+                    return xpost(PUSH + 'subscribe', Object.assign({sub: sub.toJSON(), device: deviceName}, prefs())).then(function (r) { paintPush(!!r.ok); });
+                }
+            });
+        }).catch(function () { paintPush(false, '<span class="mi mi-sm mi-leading">error</span>Could not check alerts on this device. Reload the page to try again.'); });
+    }
+    function pushOn() {
+        if (!pushOK) { if (window.YMOChatAlerts) { YMOChatAlerts.enable(); pushRefresh(); } return; }
+        var btn = $('ymc-push-on'); btn.disabled = true;
+        Notification.requestPermission().then(function (perm) {
+            if (perm !== 'granted') {
+                throw new Error(perm === 'denied' ? 'blocked' : 'dismissed');
+            }
+            return Promise.all([getJSON(PUSH + 'key'), swReg || navigator.serviceWorker.ready]);
+        }).then(function (r) {
+            swReg = r[1];
+            if (!r[0].key) throw new Error('nokey');
+            return swReg.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: b64ToBytes(r[0].key)});
+        }).then(function (sub) {
+            curSub = sub;
+            return xpost(PUSH + 'subscribe', Object.assign({sub: sub.toJSON(), device: deviceName, test: 1}, prefs()));
+        }).then(function (d) {
+            btn.disabled = false;
+            if (!d.ok) throw new Error('save');
+            paintPush(true);
+        }).catch(function (e) {
+            btn.disabled = false;
+            var m = e && e.message === 'blocked'
+                ? 'Notifications are blocked for the CRM in this browser. Allow them in the browser’s site settings (lock icon next to the address), then tap the button again.'
+                : 'Could not turn on alerts' + (e && e.message === 'nokey' ? ' (server keys missing – check the storage folder is writable).' : '. Please try again.');
+            paintPush(false, '<span class="mi mi-sm mi-leading text-danger">error</span>' + m);
+        });
+    }
+    $('ymc-push-on').onclick = pushOn;
+    $('ymc-push-test').onclick = function () { var b = this; b.disabled = true; xpost(PUSH + 'test').then(function (d) { b.disabled = false; b.textContent = d.sent ? 'Test sent ✓' : 'Not delivered – try again'; setTimeout(function () { b.textContent = 'Send test alert'; }, 4000); }).catch(function () { b.disabled = false; }); };
+    $('ymc-push-off').onclick = function () {
+        var ep = curSub && curSub.endpoint;
+        (curSub ? curSub.unsubscribe() : Promise.resolve()).then(function () { return ep ? xpost(PUSH + 'unsubscribe', {endpoint: ep}) : null; }).then(function () { curSub = null; paintPush(false); });
+    };
+    ['ymc-mode', 'ymc-quiet'].forEach(function (id) { $(id).addEventListener('change', function () {
+        if (curSub) xpost(PUSH + 'subscribe', Object.assign({sub: curSub.toJSON(), device: deviceName}, prefs()));
+    }); });
+    var installEvt = null;
+    window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); installEvt = e; $('ymc-install').classList.remove('d-none'); });
+    $('ymc-install').onclick = function () { if (!installEvt) return; installEvt.prompt(); installEvt.userChoice.finally(function () { installEvt = null; $('ymc-install').classList.add('d-none'); }); };
+    if (isIOS && !standalone) $('ymc-ios-tip').classList.remove('d-none');
+    pushRefresh();
 
     // ---- visitor list ----
     function row(v, fresh) {

@@ -106,7 +106,8 @@ if ($can('settings.manage')) { $setup[] = $item('settings', 'settings', 'Setting
         var n = 0; flashT = setInterval(function () { document.title = (n++ % 2 ? baseTitle : text); if (n > 20 || !document.hidden) { clearInterval(flashT); document.title = baseTitle; } }, 1000);
     }
     function notify(title, body, id) {
-        if (!api.enabled()) { return; }
+        // This device already gets push alerts from the server: don't alert twice.
+        if (!api.enabled() || store.get('ymochat_push_on') === '1') { return; }
         beep(); flash(title);
         if ('Notification' in window && Notification.permission === 'granted') {
             try {

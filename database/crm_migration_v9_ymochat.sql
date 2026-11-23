@@ -58,3 +58,23 @@ CREATE TABLE IF NOT EXISTS `ymochat_messages` (
     PRIMARY KEY (`id`),
     KEY `idx_visitor` (`visitor_id`, `id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- Phones and computers that get YMOChat push alerts (one row per browser).
+CREATE TABLE IF NOT EXISTS `ymochat_push_subs` (
+    `id`            BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `admin_id`      INT UNSIGNED  NOT NULL,
+    `endpoint_hash` CHAR(40)      NOT NULL,
+    `endpoint`      TEXT          NOT NULL,
+    `p256dh`        VARCHAR(120)  NOT NULL,
+    `auth`          VARCHAR(48)   NOT NULL,
+    `mode`          VARCHAR(8)    NOT NULL DEFAULT 'all',
+    `quiet_nights`  TINYINT(1)    NOT NULL DEFAULT 0,
+    `device`        VARCHAR(80)   NOT NULL DEFAULT '',
+    `created_at`    DATETIME      NOT NULL,
+    `last_ok_at`    DATETIME      NULL,
+    `fail_count`    INT UNSIGNED  NOT NULL DEFAULT 0,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uniq_endpoint` (`endpoint_hash`),
+    KEY `idx_admin` (`admin_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

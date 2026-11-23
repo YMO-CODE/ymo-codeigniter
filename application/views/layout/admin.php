@@ -14,6 +14,16 @@ $page_title = isset($title) ? $title.' - Admin · '.$brand_name : 'Admin · '.$b
     <title><?= html_escape($page_title); ?></title>
     <link rel="icon" type="image/png" href="<?= base_url('assets/img/logo.png'); ?>">
     <meta name="theme-color" content="#1d2026">
+    <link rel="manifest" href="<?= admin_url('ymochat/app-manifest'); ?>">
+    <link rel="apple-touch-icon" href="<?= base_url('assets/img/crm-apple-touch-180.png'); ?>">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="YMO CRM">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <script>
+    // YMO CRM app: the service worker shows YMOChat alerts even when the CRM is closed.
+    if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('/ymochat-sw.js').catch(function () {}); }); }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap">

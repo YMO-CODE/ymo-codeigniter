@@ -80,6 +80,24 @@ CREATE TABLE IF NOT EXISTS `ymochat_messages` (
     PRIMARY KEY (`id`),
     KEY `idx_visitor` (`visitor_id`, `id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `ymochat_push_subs` (
+    `id`            BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `admin_id`      INT UNSIGNED  NOT NULL,
+    `endpoint_hash` CHAR(40)      NOT NULL,
+    `endpoint`      TEXT          NOT NULL,
+    `p256dh`        VARCHAR(120)  NOT NULL,
+    `auth`          VARCHAR(48)   NOT NULL,
+    `mode`          VARCHAR(8)    NOT NULL DEFAULT 'all',
+    `quiet_nights`  TINYINT(1)    NOT NULL DEFAULT 0,
+    `device`        VARCHAR(80)   NOT NULL DEFAULT '',
+    `created_at`    DATETIME      NOT NULL,
+    `last_ok_at`    DATETIME      NULL,
+    `fail_count`    INT UNSIGNED  NOT NULL DEFAULT 0,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uniq_endpoint` (`endpoint_hash`),
+    KEY `idx_admin` (`admin_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 SQL;
 
 
@@ -91,7 +109,7 @@ SQL;
             return self::$schema_ok;
         }
         if ($this->db->table_exists('ymochat_visitors') && $this->db->table_exists('ymochat_messages')
-            && $this->db->table_exists('ymochat_pageviews')) {
+            && $this->db->table_exists('ymochat_pageviews') && $this->db->table_exists('ymochat_push_subs')) {
             return self::$schema_ok = TRUE;
         }
         $sql = self::SCHEMA_SQL;
@@ -404,6 +422,152 @@ SQL;
         $r['visit_key'] = $r['id'].'@'.$r['visit_started_at'];
         unset($r['user_agent']);
         return $r;
+    }
+
+
+    // --- phone / desktop push alerts -----------------------------------------------
+
+    /** Save (or refresh) a browser's push subscription for an admin. */
+    public function push_subscribe($admin_id, array $sub, $mode, $quiet, $device)
+    {
+        $endpoint = isset($sub['endpoint']) ? (string) $sub['endpoint'] : '';
+        $p256dh = isset($sub['keys']['p256dh']) ? (string) $sub['keys']['p256dh'] : '';
+        $auth = isset($sub['keys']['auth']) ? (string) $sub['keys']['auth'] : '';
+        if (!preg_match('#^https://#', $endpoint) || strlen($endpoint) > 2000
+            || !preg_match('/^[A-Za-z0-9_-]{80,120}$/', $p256dh) || !preg_match('/^[A-Za-z0-9_-]{16,48}$/', $auth)
+            || !$this->ensure_schema()) {
+            return 0;
+        }
+        $mode = in_array($mode, array('all', 'ads', 'chat'), TRUE) ? $mode : 'all';
+        $row = array(
+            'admin_id' => (int) $admin_id, 'endpoint' => $endpoint, 'p256dh' => $p256dh, 'auth' => $auth,
+            'mode' => $mode, 'quiet_nights' => $quiet ? 1 : 0, 'device' => self::clip((string) $device, 80), 'fail_count' => 0,
+        );
+        $hash = sha1($endpoint);
+        $existing = $this->db->get_where('ymochat_push_subs', array('endpoint_hash' => $hash), 1)->row_array();
+        if ($existing) {
+            $this->db->where('id', (int) $existing['id'])->update('ymochat_push_subs', $row);
+            return (int) $existing['id'];
+        }
+        $row['endpoint_hash'] = $hash;
+        $row['created_at'] = date('Y-m-d H:i:s');
+        $this->db->insert('ymochat_push_subs', $row);
+        return (int) $this->db->insert_id();
+    }
+
+    public function push_unsubscribe($admin_id, $endpoint)
+    {
+        if (!$this->ensure_schema()) {
+            return;
+        }
+        $this->db->where('endpoint_hash', sha1((string) $endpoint))->where('admin_id', (int) $admin_id)->delete('ymochat_push_subs');
+    }
+
+    public function push_subscription($admin_id, $endpoint)
+    {
+        if (!$this->ensure_schema()) {
+            return NULL;
+        }
+        return $this->db->select('id, mode, quiet_nights, device, created_at, last_ok_at')
+            ->where('endpoint_hash', sha1((string) $endpoint))->where('admin_id', (int) $admin_id)
+            ->get('ymochat_push_subs', 1)->row_array() ?: NULL;
+    }
+
+    public function push_count_for_admin($admin_id)
+    {
+        if (!$this->ensure_schema()) {
+            return 0;
+        }
+        return (int) $this->db->where('admin_id', (int) $admin_id)->count_all_results('ymochat_push_subs');
+    }
+
+    /**
+     * Alert the team's phones and computers.
+     *
+     * @param string $kind  visit | chat | contact | test
+     */
+    public function push_notify($kind, array $visitor, $text = '', $only_admin = NULL)
+    {
+        if (!$this->ensure_schema()) {
+            return 0;
+        }
+        $this->db->select('s.id, s.endpoint, s.p256dh, s.auth, s.mode, s.quiet_nights')
+            ->from('ymochat_push_subs s')->join('admin_users a', 'a.id = s.admin_id')
+            ->where('a.is_active', 1);
+        if ($only_admin !== NULL) {
+            $this->db->where('s.admin_id', (int) $only_admin);
+        }
+        $subs = $this->db->get()->result_array();
+        if (!$subs) {
+            return 0;
+        }
+        $ist = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
+        $hour = (int) $ist->format('G');
+        $night = $hour >= 22 || $hour < 8;
+        $is_ad = isset($visitor['source']) && $visitor['source'] === 'google_ads';
+        $subs = array_values(array_filter($subs, function ($s) use ($kind, $night, $is_ad) {
+            if ($kind === 'test') {
+                return TRUE;
+            }
+            if ($kind === 'visit') {
+                if ($s['mode'] === 'chat' || ($s['mode'] === 'ads' && !$is_ad)) {
+                    return FALSE;
+                }
+                return !($night && $s['quiet_nights']);
+            }
+            return TRUE; // chat messages and shared numbers always come through
+        }));
+        if (!$subs) {
+            return 0;
+        }
+
+        $where = trim((isset($visitor['city']) ? $visitor['city'] : '').(!empty($visitor['region']) && $visitor['region'] !== $visitor['city'] ? ', '.$visitor['region'] : ''), ', ');
+        $where = $where !== '' ? $where : 'Unknown location';
+        $src = self::source_label(isset($visitor['source']) ? $visitor['source'] : '', isset($visitor['source_detail']) ? $visitor['source_detail'] : '');
+        $page = isset($visitor['current_title']) && $visitor['current_title'] !== '' ? $visitor['current_title'] : '';
+        $page = preg_replace('/\s*[|·–-]\s*(YMO|Your Mechanic Online).*$/u', '', $page);
+        $who = !empty($visitor['name']) ? $visitor['name'] : $where;
+        $vid = isset($visitor['id']) ? (int) $visitor['id'] : 0;
+        switch ($kind) {
+            case 'chat':
+                $title = '💬 '.$who;
+                $body = self::clip($text, 160);
+                break;
+            case 'contact':
+                $title = '📞 Number shared · '.$who;
+                $body = $text;
+                break;
+            case 'test':
+                $title = '✅ YMOChat alerts are on';
+                $body = 'This device will now alert you when someone visits the website.';
+                break;
+            default:
+                $title = ($is_ad ? '🟡 Ad visitor · ' : '🟢 Visitor · ').$where;
+                $body = $src.($page !== '' ? ' · '.$page : '')
+                    .(isset($visitor['device']) && $visitor['device'] !== '' ? ' · '.$visitor['device'] : '')
+                    .(!empty($visitor['visits']) && (int) $visitor['visits'] > 1 ? ' · visit #'.(int) $visitor['visits'] : '');
+        }
+        $data = array(
+            'title' => $title,
+            'body'  => $body,
+            'url'   => admin_url('ymochat'.($vid ? '?v='.$vid : '')),
+            'tag'   => $kind === 'test' ? 'ymochat-test' : 'ymochat-'.$vid.($kind === 'visit' ? '' : '-'.$kind),
+        );
+        $this->load->library('web_push');
+        $res = $this->web_push->send_many($subs, $data, $kind === 'visit' ? 120 : 3600);
+        $now = date('Y-m-d H:i:s');
+        $sent = 0;
+        foreach ($res as $id => $code) {
+            if ($code >= 200 && $code < 300) {
+                $sent++;
+                $this->db->where('id', (int) $id)->update('ymochat_push_subs', array('last_ok_at' => $now, 'fail_count' => 0));
+            } elseif ($code === 404 || $code === 410) {
+                $this->db->where('id', (int) $id)->delete('ymochat_push_subs'); // phone unsubscribed or app removed
+            } else {
+                $this->db->set('fail_count', 'fail_count + 1', FALSE)->where('id', (int) $id)->update('ymochat_push_subs');
+            }
+        }
+        return $sent;
     }
 
     // --- helpers -------------------------------------------------------------
