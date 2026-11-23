@@ -54,6 +54,7 @@ $ymo_city_variants = function_exists('marketing_city_variants_for_path')
 
 <?php $this->load->view('layout/partials/marketing_footer'); ?>
 <?php $this->load->view('layout/partials/whatsapp_cta'); ?>
+<?php $this->load->view('layout/partials/mobile_cta_bar'); ?>
 <?php $this->load->view('layout/partials/marketing_foot_assets'); ?>
 <?php $this->load->view('layout/partials/offers_popup_deferred'); ?>
 </body>

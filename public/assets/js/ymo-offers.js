@@ -180,7 +180,25 @@
             .catch(function () { /* silent */ });
     }
 
+    // Visitors who arrive from a paid ad should see the page, not a pop-up:
+    // skip the offer for the whole visit when the landing URL carries ad tags.
+    var AD_VISIT_KEY = 'ymo_ad_visit';
+    function isAdVisit() {
+        try {
+            if (/[?&](gclid|gbraid|wbraid|gad_source)=|[?&]utm_medium=cpc(&|$)/i.test(window.location.search)) {
+                sessionStorage.setItem(AD_VISIT_KEY, '1');
+                return true;
+            }
+            return sessionStorage.getItem(AD_VISIT_KEY) === '1';
+        } catch (e) {
+            return /[?&](gclid|gbraid|wbraid|gad_source)=/i.test(window.location.search);
+        }
+    }
+
     function init() {
+        if (isAdVisit()) {
+            return;
+        }
         if (window.YMO_OFFERS_BOOTSTRAP) {
             bootstrapFromInline();
             return;

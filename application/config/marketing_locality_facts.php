@@ -81,6 +81,7 @@ return array(
             'landmarks'     => 'Warje Malwadi, Karvenagar bridge, Shelke Nagar, and Sinhagad Road',
             'drive_context' => 'Our Warje workshop is in Shelke Nagar, so pick-ups from Warje, Karve Nagar and Sinhagad Road are short local runs.',
             'local_jobs'    => 'Monsoon brake checks, AC servicing before summer, and clutch wear from Sinhagad Road and Chandni Chowk traffic.',
+            'hours'         => 'Open Monday and Wednesday to Sunday, 9 AM–8 PM (closed Tuesday).',
         ),
     ),
     'indore' => array(

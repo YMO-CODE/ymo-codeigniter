@@ -264,6 +264,8 @@ if (ymo_is_admin_host_request()) {
     $route['llms.txt']             = 'marketing/seo/llms';
     $route['geo/city']             = 'marketing/geo/city';
     $route['contact-us']           = 'marketing/contact/index';
+    $route['request-callback']        = 'marketing/contact/callback';
+    $route['request-callback/thanks'] = 'marketing/contact/callback_thanks';
     $route['about-us']             = 'marketing/pages/show';
     $route['api/offers/active']    = 'api/offers/active';
     $route['api/offers/preview/(:num)'] = 'api/offers/preview/$1';

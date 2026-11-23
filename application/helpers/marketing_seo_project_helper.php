@@ -1025,6 +1025,7 @@ if (!function_exists('marketing_locality_facts_for_page')) {
             'landmarks'     => isset($row['landmarks']) ? (string) $row['landmarks'] : '',
             'drive_context' => isset($row['drive_context']) ? (string) $row['drive_context'] : '',
             'local_jobs'    => isset($row['local_jobs']) ? (string) $row['local_jobs'] : '',
+            'hours'         => isset($row['hours']) ? (string) $row['hours'] : '',
         );
         if ($out['landmarks'] === '' && $out['drive_context'] === '' && $out['local_jobs'] === '') {
             return NULL;
@@ -1049,7 +1050,8 @@ if (!function_exists('marketing_locality_uniqueness_placeholder_html')) {
             $html .= '<p class="md-body-md mb-3"><strong>Landmarks we use for pick-up:</strong> '
                 .html_escape($facts['landmarks']).'. Share your society, office, or shop name plus a pin — our driver calls before arrival.</p>';
             if ($facts['drive_context'] !== '') {
-                $html .= '<p class="md-body-md mb-3"><strong>Timing:</strong> '.html_escape($facts['drive_context']).' Same-day slots Mon–Sat, 9 AM–8 PM.</p>';
+                $html .= '<p class="md-body-md mb-3"><strong>Timing:</strong> '.html_escape($facts['drive_context']).' '
+                    .($facts['hours'] !== '' ? html_escape($facts['hours']) : 'Same-day slots Mon–Sat, 9 AM–8 PM.').'</p>';
             }
             if ($facts['local_jobs'] !== '') {
                 $html .= '<p class="md-body-md mb-3"><strong>Often booked here:</strong> '.html_escape($facts['local_jobs']).'</p>';

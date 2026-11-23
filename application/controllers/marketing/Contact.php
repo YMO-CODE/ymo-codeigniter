@@ -77,11 +77,78 @@ class Contact extends Marketing_Controller
     }
 
     /**
+     * Short "call me back" form on area and service pages (name, mobile, car).
+     * POST /request-callback → CRM lead (google_ads when the visit came from an ad)
+     * → /request-callback/thanks, which fires the lead conversion.
+     */
+    public function callback()
+    {
+        $from = $this->_safe_return_path($this->input->post('from'));
+        if ($this->input->method() !== 'post') {
+            redirect($from !== '' ? $from : '/');
+        }
+
+        $trap = ymo_form_trap_tripped(2);
+        if ($trap) {
+            log_message('info', '[spam] callback form dropped: '.$trap.' ip='.$this->input->ip_address());
+            redirect('request-callback/thanks');
+        }
+
+        $this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[2]|max_length[120]');
+        $this->form_validation->set_rules('mobile', 'Mobile', 'trim|required|max_length[20]|callback__valid_indian_mobile');
+        $this->form_validation->set_rules('car', 'Car', 'trim|max_length[80]');
+
+        if (!$this->form_validation->run()) {
+            $this->flash('error', trim(strip_tags(validation_errors())));
+            redirect(($from !== '' ? $from : '/').'#callback');
+        }
+
+        $car = trim((string) $this->input->post('car'));
+        $page = $from !== '' ? $from : '/';
+        $payload = array(
+            'name'    => trim($this->input->post('name')),
+            'mobile'  => ymo_indian_mobile($this->input->post('mobile')),
+            'email'   => '',
+            'message' => 'Please call me back.'.($car !== '' ? ' Car: '.$car.'.' : '').' Page: '.$page,
+        );
+
+        $lead_id = $this->_store_enquiry($payload, 'Call-back request', 'Call-back request from '.$page);
+        if (!$lead_id) {
+            log_message('error', 'Call-back request could not be saved to crm_leads.');
+            $this->flash('error', 'We could not save your request right now. Please call us on '.$this->config->item('ymo_support_phone').'.');
+            redirect($page.'#callback');
+        }
+
+        redirect('request-callback/thanks');
+    }
+
+    public function callback_thanks()
+    {
+        $this->page_meta = array(
+            'title'            => 'Thanks - we will call you back',
+            'meta_description' => 'Your call-back request reached Your Mechanic Online.',
+            'h1'               => 'Thanks - we will call you shortly',
+            'canonical_path'   => 'request-callback/thanks',
+            'meta_robots'      => 'noindex, nofollow',
+        );
+        $this->render_marketing('marketing/callback_thanks', array(
+            'phone' => $this->config->item('ymo_support_phone'),
+        ));
+    }
+
+    /** Only same-site paths like "/car-servicing-in-warje-pune"; anything else → ''. */
+    protected function _safe_return_path($raw)
+    {
+        $p = '/'.ltrim(trim((string) $raw), '/');
+        return preg_match('#^/[a-z0-9][a-z0-9\-/]{0,150}$#', $p) ? $p : '';
+    }
+
+    /**
      * Persist a marketing-site contact enquiry as a CRM lead.
      *
      * @return int Lead id, or 0 when CRM is unavailable.
      */
-    protected function _store_enquiry(array $payload)
+    protected function _store_enquiry(array $payload, $label = 'Contact form', $note_prefix = 'Enquiry from contact form')
     {
         if (!$this->db->table_exists('crm_leads')) {
             return 0;
@@ -126,11 +193,11 @@ class Contact extends Marketing_Controller
             $lead_id,
             NULL,
             'note',
-            'Enquiry from contact form: '.$preview,
+            $note_prefix.': '.$preview,
             array('source' => 'marketing_contact')
         );
 
-        crm_notify_admin_new_lead($lead_id, 'Contact form', array(
+        crm_notify_admin_new_lead($lead_id, $source === 'google_ads' ? $label.' (Google Ads)' : $label, array(
             'name'    => $payload['name'],
             'mobile'  => $payload['mobile'],
             'email'   => $payload['email'],

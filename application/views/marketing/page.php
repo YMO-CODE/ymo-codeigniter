@@ -39,6 +39,16 @@ echo ymo_marketing_render_hero(
 <section class="container py-5">
     <div class="row justify-content-center">
         <div class="<?= !empty($body) || !empty($service_catalog) ? 'col-12' : 'col-lg-8'; ?>">
+            <?php
+            // Ad landing pages (areas and services): short call-back form first.
+            $cb_type = isset($hero_page['page_type']) ? $hero_page['page_type'] : '';
+            if (in_array($cb_type, array('locality', 'service'), TRUE)):
+                $this->load->view('marketing/partials/callback_form', array(
+                    'callback_from' => isset($canonical_path) ? $canonical_path : '',
+                    'callback_area' => !empty($hero_page['locality_label']) ? $hero_page['locality_label'] : '',
+                ));
+            endif;
+            ?>
             <?php if (!empty($quick_answer) && empty($hero_ctx['lead_in_hero'])): ?>
                 <div class="md-card-filled p-3 mb-3 ymo-quick-answer-block">
                     <p class="md-body-md mb-0"><?= html_escape($quick_answer); ?></p>
