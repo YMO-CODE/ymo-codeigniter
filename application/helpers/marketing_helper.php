@@ -3142,6 +3142,12 @@ if (!function_exists('marketing_schema_graph')) {
                             $b_node['hasMap'] = $b['gbp_url'];
                             $b_node['sameAs'] = array($b['gbp_url']);
                         }
+                        if (!empty($b['opening_hours']['days'])) {
+                            $b_node['openingHoursSpecification'] = array(array(
+                                '@type' => 'OpeningHoursSpecification', 'dayOfWeek' => $b['opening_hours']['days'],
+                                'opens' => $b['opening_hours']['opens'], 'closes' => $b['opening_hours']['closes'],
+                            ));
+                        }
                         $graph[] = $b_node;
                     }
                 }
@@ -3615,11 +3621,34 @@ if (!function_exists('marketing_llms_txt')) {
             $lines[] = '- [Car servicing in '.$city['name'].']('.marketing_canonical_url($city['hub_path']).'): City hub with neighbourhoods and services';
         }
         $lines[] = '';
+        $lines[] = '## Workshops';
+        $lines[] = '- Pune – Hinjewadi: Rajiv Gandhi Infotech Park, Phase 1, Hinjewadi (Hinjawadi), Pune 411057. Mon–Sat, 9 AM–8 PM. Page: '.marketing_canonical_url('best-car-services-hinjewadi-pune');
+        $lines[] = '- Pune – Warje: Shelke Nagar, Warje, Pune 411058. Open Monday and Wednesday–Sunday, 9 AM–8 PM (closed Tuesday). Serves Warje, Karve Nagar, Kothrud, Sinhagad Road, Narhe, Dhayari, Nanded City. Page: '.marketing_canonical_url('car-servicing-in-warje-pune');
+        $lines[] = '- Indore and Nashik: doorstep service with free pick-up and drop. Pages: '.marketing_canonical_url('locations/indore').', '.marketing_canonical_url('locations/nashik');
+        $lines[] = '';
+        $lines[] = '## Key facts';
+        $lines[] = '- Multi-brand car service and repair: Maruti, Hyundai, Tata, Honda, Toyota, Kia, Mahindra, Skoda, Volkswagen, and luxury cars (BMW, Mercedes-Benz, Audi).';
+        $lines[] = '- Prices (from): complete car service ₹2,499; AC repair and gas recharge ₹999; brake inspection ₹499; denting and painting ₹4,500 per panel; interior deep cleaning ₹2,500; 3-stage rubbing and polishing ₹6,500. Final price is confirmed before work starts.';
+        $lines[] = '- Free pick-up and drop; WhatsApp photo and video updates during the service; customers approve the estimate before any job; for most bookings payment is after delivery.';
+        $lines[] = '- Call or WhatsApp: +91 75587 83868. Book online: '.ymo_booking_url('packages');
+        $lines[] = '';
         $lines[] = '## Key locality pages';
+        $listed = array();
         if (function_exists('marketing_pune_locality_defs')) {
             foreach (marketing_pune_locality_defs() as $def) {
+                $listed[$def[0]] = TRUE;
                 $lines[] = '- ['.$def[2].', Pune]('.marketing_canonical_url($def[0]).')';
             }
+        }
+        // Locality pages added later (e.g. Warje) that are not in the list above.
+        foreach (marketing_pages_data() as $lp => $pg) {
+            if (!is_array($pg) || isset($listed[$lp]) || (isset($pg['page_type']) ? $pg['page_type'] : '') !== 'locality'
+                || empty($pg['locality_label']) || empty($pg['city_slug'])) {
+                continue;
+            }
+            $c = marketing_city_by_slug($pg['city_slug']);
+            $listed[$lp] = TRUE;
+            $lines[] = '- ['.$pg['locality_label'].', '.($c ? $c['name'] : ucfirst($pg['city_slug'])).']('.marketing_canonical_url($lp).')';
         }
         $lines[] = '';
         $lines[] = '## Services';
@@ -3642,7 +3671,7 @@ if (!function_exists('marketing_llms_txt')) {
         $lines[] = '';
         $lines[] = '## Contact';
         $lines[] = '- [Contact us]('.marketing_canonical_url('contact-us').'): Book or enquire online';
-        $lines[] = '- Phone: +91-7744-065904';
+        $lines[] = '- Phone and WhatsApp: +91 75587 83868';
         $lines[] = '- Email: contactus@yourmechaniconline.com';
         $lines[] = '- Instagram: https://www.instagram.com/yourmechaniconline_ymo/';
         return implode("\n", $lines)."\n";

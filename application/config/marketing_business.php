@@ -82,6 +82,9 @@ return array(
 
                     'geo'         => array('latitude' => '18.4678025', 'longitude' => '73.786272'), // GBP pin, plus code FQ9P+4G
 
+                    // Closed on Tuesday.
+                    'opening_hours' => array('days' => array('Monday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), 'opens' => '09:00', 'closes' => '20:00'),
+
                 ),
 
             ),
