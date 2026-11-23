@@ -211,6 +211,9 @@ class Bookings extends Admin_Controller
             'invoices'  => $invoices,
             'review_pending' => !empty($review),
             'review_eligible' => $this->_review_eligible($booking),
+            'review_workshops' => $this->_review_workshops(),
+            'review_workshop'  => $this->_review_guess($booking),
+            'review_sent'      => $this->_review_sent($booking),
             'can_edit'  => function_exists('crm_can') ? crm_can('bookings.edit') : TRUE,
             'wa'        => $this->_wa_panel_data($booking),
         ));
@@ -276,6 +279,17 @@ class Bookings extends Admin_Controller
             list($notice_ok, $notice) = $this->_notify_customer_status($detailed);
         }
 
+        // Ask for a Google review right after delivery (config/reviews.php).
+        if ($new_status === 'completed' && $previous !== 'completed') {
+            $this->config->load('reviews', TRUE);
+            if ($this->config->item('review_request_on_complete', 'reviews')) {
+                $this->load->library('review_service');
+                $detailed = isset($detailed) && $detailed ? $detailed : $this->booking_model->find_detailed($id);
+                $rr = $this->review_service->ask_for_booking($detailed, '', array('source' => 'auto', 'admin_id' => (int) $this->admin['id']));
+                $notice .= ' Google review: '.$rr['message'];
+            }
+        }
+
         $this->flash($notice_ok ? 'success' : 'warning', 'Booking marked '.str_replace('_', ' ', $new_status).'.'.($notice !== '' ? ' '.$notice : ''));
         redirect(admin_url('bookings/'.$id));
     }
@@ -287,39 +301,20 @@ class Bookings extends Admin_Controller
         if (!$booking) { show_404(); }
 
         if (!$this->_review_eligible($booking)) {
-            $this->flash('warning', 'Review can only be sent for completed bookings older than '
-                .(int) $this->config->item('reminder_review_days').' day(s).');
+            $this->flash('warning', 'A review can be asked for once the booking is completed.');
             redirect(admin_url('bookings/'.$id));
         }
 
-        $sms_ok = $this->customer_notifier->notify($booking['user_mobile'], 'review_request', array(
-            'name' => strtok($booking['user_name'], ' '),
-            'ref'  => $booking['reference'],
-        ), array('context' => 'admin.review_request', 'booking_id' => (int) $booking['id']));
-        $this->load->helper('marketing');
-        $mail_ok = $this->mailer->send_view(
-            $booking['user_email'],
-            'How did we do? - '.$booking['reference'],
-            'emails/review_request',
-            array('booking' => $booking)
-        );
-
-        $review = $this->reminder_model->find_pending_review_for_booking($id);
-        if ($review) {
-            if ($sms_ok || $mail_ok) {
-                $this->reminder_model->mark_sent($review['id']);
-            } else {
-                $this->reminder_model->mark_failed($review['id'],
-                    ($this->customer_notifier->last_error() ?: 'SMS: fail').' / Mail: '.($this->mailer->last_error() ?: 'fail'));
-            }
-        }
-
-        $this->audit->log('admin', $this->admin['id'], 'booking.send_review', 'booking', $id, array(
-            'sms' => $sms_ok ? 'ok:'.$this->customer_notifier->last_channel() : ($this->customer_notifier->last_error() ?: 'fail'),
-            'mail'=> $mail_ok ? 'ok' : ($this->mailer->last_error() ?: 'fail'),
+        $this->load->library('review_service');
+        $res = $this->review_service->ask_for_booking($booking, (string) $this->input->post('workshop'), array(
+            'source'   => 'manual',
+            'admin_id' => (int) $this->admin['id'],
+            'force'    => TRUE,
         ));
-        $this->flash($sms_ok || $mail_ok ? 'success' : 'error',
-            $sms_ok || $mail_ok ? 'Review request sent.' : 'Could not send review request - check gateway logs.');
+        $this->audit->log('admin', $this->admin['id'], 'booking.send_review', 'booking', $id, array(
+            'ok' => $res['ok'], 'channel' => $res['channel'], 'message' => $res['message'],
+        ));
+        $this->flash($res['ok'] ? 'success' : 'error', $res['message']);
         redirect(admin_url('bookings/'.$id));
     }
 
@@ -659,12 +654,27 @@ class Bookings extends Admin_Controller
         );
     }
 
+    protected function _review_workshops()
+    {
+        $this->load->helper('review');
+        return ymo_review_workshops();
+    }
+
+    protected function _review_guess(array $booking)
+    {
+        $this->load->library('review_service');
+        return $this->review_service->workshop_for_booking($booking);
+    }
+
+    protected function _review_sent(array $booking)
+    {
+        $this->load->model('gbp_review_model');
+        return $this->gbp_review_model->requested_for_booking((int) $booking['id']);
+    }
+
     protected function _review_eligible(array $booking)
     {
-        if ($booking['status'] !== 'completed') { return FALSE; }
-        $days = (int) $this->config->item('reminder_review_days');
-        $earliest = strtotime($booking['completed_at']) + $days * 86400;
-        return time() >= $earliest;
+        return $booking['status'] === 'completed';
     }
 
     /**

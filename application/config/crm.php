@@ -59,10 +59,13 @@ $config['crm_whatsapp_templates'] = array(
         'lang'   => getenv('YMO_WA_TPL_LANG') ?: 'en',
         'params' => array('name', 'vehicle'),
     ),
+    // Google review ask with a "Write a Google review" link button
+    // (https://www.yourmechaniconline.com/review/<workshop>).
     'review_request' => array(
-        'name'   => getenv('YMO_WA_TPL_REVIEW_REQUEST') ?: 'review_request',
-        'lang'   => getenv('YMO_WA_TPL_LANG') ?: 'en',
-        'params' => array('name', 'ref'),
+        'name'       => getenv('YMO_WA_TPL_REVIEW_REQUEST') ?: 'review_request_google',
+        'lang'       => getenv('YMO_WA_TPL_LANG') ?: 'en',
+        'params'     => array('name', 'workshop_label'),
+        'url_button' => 'workshop',
     ),
     'invoice_sent' => array(
         'name'   => getenv('YMO_WA_TPL_INVOICE_SENT') ?: 'invoice_sent',

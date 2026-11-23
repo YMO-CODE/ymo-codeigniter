@@ -67,34 +67,21 @@ class Cron extends CI_Controller
         }
 
         $review_due = $this->reminder_model->due_review($chunk);
+        $this->load->library('review_service');
+        $this->load->model('booking_model');
         foreach ($review_due as $r) {
             try {
-                $sms_ok = TRUE; $mail_ok = TRUE;
-                if (in_array($r['channel'], array('sms', 'both'))) {
-                    $sms_ok = $this->customer_notifier->notify($r['user_mobile'], 'review_request', array(
-                        'name' => strtok($r['user_name'], ' '),
-                        'ref'  => $r['reference'],
-                    ), array('context' => 'cron.review_request', 'booking_id' => (int) ($r['booking_id'] ?? 0)));
+                $booking = $this->booking_model->find_detailed((int) $r['booking_id']);
+                if (!$booking) {
+                    $this->reminder_model->mark_failed($r['id'], 'booking missing');
+                    continue;
                 }
-                if (in_array($r['channel'], array('email', 'both'))) {
-                    $mail_ok = $this->mailer->send_view(
-                        $r['user_email'],
-                        'How did we do? - '.$r['reference'],
-                        'emails/review_request',
-                        array('booking' => array(
-                            'reference'  => $r['reference'],
-                            'user_name'  => $r['user_name'],
-                            'user_email' => $r['user_email'],
-                        ))
-                    );
-                }
-
-                if ($sms_ok || $mail_ok) {
+                $res = $this->review_service->ask_for_booking($booking, '', array('source' => 'cron'));
+                if ($res['ok'] || strpos($res['message'], 'already') !== FALSE || strpos($res['message'], 'Already') !== FALSE) {
                     $this->reminder_model->mark_sent($r['id']);
                     $sent++;
                 } else {
-                    $err = 'msg='.($this->customer_notifier->last_error() ?: 'fail').' mail='.($this->mailer->last_error() ?: 'fail');
-                    $this->reminder_model->mark_failed($r['id'], $err);
+                    $this->reminder_model->mark_failed($r['id'], mb_substr($res['message'], 0, 250));
                     $failed++;
                 }
             } catch (Exception $e) {
@@ -105,10 +92,29 @@ class Cron extends CI_Controller
 
         $this->otp_model->purge_expired();
         $crm = $this->_run_crm_jobs();
+        $rev = $this->_run_reviews();
 
         $secs = round(microtime(TRUE) - $started, 2);
         $this->_log("cron.run sent=$sent failed=$failed service=".count($due)." review=".count($review_due)
-            ." crm_tasks={$crm['tasks']} crm_camps={$crm['campaigns']} in {$secs}s");
+            ." crm_tasks={$crm['tasks']} crm_camps={$crm['campaigns']} google_reviews=".$rev." in {$secs}s");
+    }
+
+    /** Daily Google review check on its own: php public/index.php cli/cron reviews */
+    public function reviews()
+    {
+        $this->_log('cron.reviews '.$this->_run_reviews());
+    }
+
+    protected function _run_reviews()
+    {
+        try {
+            $this->load->library('review_service');
+            $s = $this->review_service->daily_check();
+            return sprintf('new=%d replied=%d alerted=%d failed=%d%s', $s['new'], $s['replied'], $s['alerted'], $s['failed'],
+                $s['errors'] ? ' errors='.implode(' | ', $s['errors']) : '');
+        } catch (Exception $e) {
+            return 'error='.$e->getMessage();
+        }
     }
 
     public function crm()

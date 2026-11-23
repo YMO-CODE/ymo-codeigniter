@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 $first = strtok($booking['user_name'], ' ');
-$review_url = function_exists('marketing_gbp_review_url') ? marketing_gbp_review_url() : 'https://share.google/zdztabyzbml7l1uvZ';
+$review_url = !empty($review_link) ? $review_link : (function_exists('marketing_gbp_review_url') ? marketing_gbp_review_url() : 'https://share.google/zdztabyzbml7l1uvZ');
 $body = '
     <h2 style="margin:0 0 12px;font-size:20px;">How did we do, '.htmlspecialchars($first).'?</h2>
     <p style="margin:0 0 16px;color:#3a3f46;">Thanks for choosing us for your '

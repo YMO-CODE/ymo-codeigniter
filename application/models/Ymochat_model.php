@@ -570,6 +570,31 @@ SQL;
         return $sent;
     }
 
+    /** Push any CRM alert (e.g. a new Google review) to every phone with alerts on. */
+    public function push_alert($title, $body, $url, $tag)
+    {
+        if (!$this->ensure_schema()) {
+            return 0;
+        }
+        $subs = $this->db->select('s.id, s.endpoint, s.p256dh, s.auth')
+            ->from('ymochat_push_subs s')->join('admin_users a', 'a.id = s.admin_id')
+            ->where('a.is_active', 1)->get()->result_array();
+        if (!$subs) {
+            return 0;
+        }
+        $this->load->library('web_push');
+        $res = $this->web_push->send_many($subs, array('title' => $title, 'body' => $body, 'url' => $url, 'tag' => $tag), 86400);
+        $sent = 0;
+        foreach ($res as $id => $code) {
+            if ($code >= 200 && $code < 300) {
+                $sent++;
+            } elseif ($code === 404 || $code === 410) {
+                $this->db->where('id', (int) $id)->delete('ymochat_push_subs');
+            }
+        }
+        return $sent;
+    }
+
     // --- helpers -------------------------------------------------------------
 
     public static function source_label($source, $detail)

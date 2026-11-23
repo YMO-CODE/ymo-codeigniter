@@ -106,6 +106,16 @@ if (ymo_is_admin_host_request()) {
     $route['contacts/(:num)/edit']             = 'admin/contacts/edit/$1';
 
     $route['campaigns']                        = 'admin/campaigns/index';
+    $route['reviews'] = 'admin/reviews/index';
+    $route['reviews/connect'] = 'admin/reviews/connect';
+    $route['reviews/google/callback'] = 'admin/reviews/callback';
+    $route['reviews/disconnect'] = 'admin/reviews/disconnect';
+    $route['reviews/locations'] = 'admin/reviews/locations';
+    $route['reviews/credentials'] = 'admin/reviews/credentials';
+    $route['reviews/check'] = 'admin/reviews/check';
+    $route['reviews/ask'] = 'admin/reviews/ask';
+    $route['reviews/(:num)/reply'] = 'admin/reviews/reply/$1';
+    $route['reviews/(:num)/done'] = 'admin/reviews/done/$1';
     $route['ymochat/app-manifest'] = 'api/ymochat/manifest';
     $route['ymochat/push/key'] = 'admin/ymochat/push_key';
     $route['ymochat/push/subscribe'] = 'admin/ymochat/push_subscribe';
@@ -135,6 +145,7 @@ if (ymo_is_admin_host_request()) {
     $route['campaigns/(:num)/schedule']        = 'admin/campaigns/schedule/$1';
     $route['whatsapp-templates'] = 'admin/wa_templates/index';
     $route['whatsapp-templates/sync'] = 'admin/wa_templates/sync';
+    $route['whatsapp-templates/submit'] = 'admin/wa_templates/submit';
 
     $route['recruitment']                      = 'admin/recruitment/index';
     $route['recruitment/new']                  = 'admin/recruitment/create';
@@ -231,7 +242,27 @@ if (ymo_is_admin_host_request()) {
     $route['admin/contacts/(:num)']            = 'admin/contacts/view/$1';
     $route['admin/contacts/(:num)/edit']       = 'admin/contacts/edit/$1';
     $route['admin/campaigns']                  = 'admin/campaigns/index';
+    $route['reviews'] = 'admin/reviews/index';
+    $route['reviews/connect'] = 'admin/reviews/connect';
+    $route['reviews/google/callback'] = 'admin/reviews/callback';
+    $route['reviews/disconnect'] = 'admin/reviews/disconnect';
+    $route['reviews/locations'] = 'admin/reviews/locations';
+    $route['reviews/credentials'] = 'admin/reviews/credentials';
+    $route['reviews/check'] = 'admin/reviews/check';
+    $route['reviews/ask'] = 'admin/reviews/ask';
+    $route['reviews/(:num)/reply'] = 'admin/reviews/reply/$1';
+    $route['reviews/(:num)/done'] = 'admin/reviews/done/$1';
     $route['ymochat/app-manifest'] = 'api/ymochat/manifest';
+    $route['admin/reviews'] = 'admin/reviews/index';
+    $route['admin/reviews/connect'] = 'admin/reviews/connect';
+    $route['admin/reviews/google/callback'] = 'admin/reviews/callback';
+    $route['admin/reviews/disconnect'] = 'admin/reviews/disconnect';
+    $route['admin/reviews/locations'] = 'admin/reviews/locations';
+    $route['admin/reviews/credentials'] = 'admin/reviews/credentials';
+    $route['admin/reviews/check'] = 'admin/reviews/check';
+    $route['admin/reviews/ask'] = 'admin/reviews/ask';
+    $route['admin/reviews/(:num)/reply'] = 'admin/reviews/reply/$1';
+    $route['admin/reviews/(:num)/done'] = 'admin/reviews/done/$1';
     $route['admin/ymochat/app-manifest'] = 'api/ymochat/manifest';
     $route['admin/ymochat/push/key'] = 'admin/ymochat/push_key';
     $route['admin/ymochat/push/subscribe'] = 'admin/ymochat/push_subscribe';
@@ -261,6 +292,7 @@ if (ymo_is_admin_host_request()) {
     $route['admin/campaigns/(:num)/schedule']  = 'admin/campaigns/schedule/$1';
     $route['admin/whatsapp-templates'] = 'admin/wa_templates/index';
     $route['admin/whatsapp-templates/sync'] = 'admin/wa_templates/sync';
+    $route['admin/whatsapp-templates/submit'] = 'admin/wa_templates/submit';
     $route['admin/recruitment']                = 'admin/recruitment/index';
     $route['admin/recruitment/new']            = 'admin/recruitment/create';
     $route['admin/recruitment/(:num)']         = 'admin/recruitment/view/$1';
@@ -288,6 +320,8 @@ if (ymo_is_admin_host_request()) {
     $route['geo/city']             = 'marketing/geo/city';
     $route['contact-us']           = 'marketing/contact/index';
     $route['request-callback']        = 'marketing/contact/callback';
+    $route['review/([a-z]+)']        = 'marketing/review_link/go/$1';
+    $route['review']                 = 'marketing/review_link/go';
     $route['request-callback/thanks'] = 'marketing/contact/callback_thanks';
     $route['about-us']             = 'marketing/pages/show';
     $route['api/offers/active']    = 'api/offers/active';
@@ -444,6 +478,16 @@ if (ymo_is_admin_host_request()) {
     $route['admin/contacts/(:num)'] = 'admin/contacts/view/$1';
     $route['admin/contacts/(:num)/edit'] = 'admin/contacts/edit/$1';
     $route['admin/campaigns'] = 'admin/campaigns/index';
+    $route['admin/reviews'] = 'admin/reviews/index';
+    $route['admin/reviews/connect'] = 'admin/reviews/connect';
+    $route['admin/reviews/google/callback'] = 'admin/reviews/callback';
+    $route['admin/reviews/disconnect'] = 'admin/reviews/disconnect';
+    $route['admin/reviews/locations'] = 'admin/reviews/locations';
+    $route['admin/reviews/credentials'] = 'admin/reviews/credentials';
+    $route['admin/reviews/check'] = 'admin/reviews/check';
+    $route['admin/reviews/ask'] = 'admin/reviews/ask';
+    $route['admin/reviews/(:num)/reply'] = 'admin/reviews/reply/$1';
+    $route['admin/reviews/(:num)/done'] = 'admin/reviews/done/$1';
     $route['admin/ymochat/app-manifest'] = 'api/ymochat/manifest';
     $route['admin/ymochat/push/key'] = 'admin/ymochat/push_key';
     $route['admin/ymochat/push/subscribe'] = 'admin/ymochat/push_subscribe';
@@ -473,6 +517,7 @@ if (ymo_is_admin_host_request()) {
     $route['admin/campaigns/(:num)/schedule'] = 'admin/campaigns/schedule/$1';
     $route['admin/whatsapp-templates'] = 'admin/wa_templates/index';
     $route['admin/whatsapp-templates/sync'] = 'admin/wa_templates/sync';
+    $route['admin/whatsapp-templates/submit'] = 'admin/wa_templates/submit';
     $route['admin/recruitment'] = 'admin/recruitment/index';
     $route['admin/recruitment/new'] = 'admin/recruitment/create';
     $route['admin/recruitment/(:num)'] = 'admin/recruitment/view/$1';

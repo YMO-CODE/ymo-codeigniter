@@ -89,7 +89,7 @@ class Crm_messaging
      *                                 'filename' => for documents)
      * @return array{ok:bool,message_id:string|null}
      */
-    public function send_whatsapp_template($to_e164, $name, $lang = 'en', array $body_params = array(), $header = NULL)
+    public function send_whatsapp_template($to_e164, $name, $lang = 'en', array $body_params = array(), $header = NULL, array $url_buttons = array())
     {
         if (!$this->_wa_ready()) {
             return array('ok' => FALSE, 'message_id' => NULL);
@@ -139,6 +139,16 @@ class Crm_messaging
                 $params[] = array('type' => 'text', 'text' => $v !== '' ? $v : '-');
             }
             $components[] = array('type' => 'body', 'parameters' => $params);
+        }
+        // Dynamic URL buttons: the value replaces {{1}} at the end of the button URL.
+        foreach (array_values($url_buttons) as $i => $suffix) {
+            if ((string) $suffix === '') {
+                continue;
+            }
+            $components[] = array(
+                'type' => 'button', 'sub_type' => 'url', 'index' => (string) $i,
+                'parameters' => array(array('type' => 'text', 'text' => (string) $suffix)),
+            );
         }
 
         $template = array(
@@ -266,6 +276,67 @@ class Crm_messaging
             $next = $decoded['paging']['next'] ?? NULL;
         }
         return $out;
+    }
+
+    /**
+     * Submit a template from config/whatsapp_template_library.php to Meta for approval.
+     * Supports text headers, body examples, footer, QUICK_REPLY / URL / PHONE_NUMBER buttons.
+     * @return string|null Meta template id
+     */
+    public function create_whatsapp_template(array $t, $lang = 'en')
+    {
+        if (!$this->can_sync_whatsapp_templates()) {
+            $this->last_error = 'Template submit needs CRM_WHATSAPP_ACCESS_TOKEN and CRM_WHATSAPP_WABA_ID.';
+            return NULL;
+        }
+        $components = array();
+        if (!empty($t['header']) && is_array($t['header'])) {
+            if ($t['header']['type'] !== 'text') {
+                $this->last_error = 'Templates with a '.$t['header']['type'].' header need a sample file: create this one in WhatsApp Manager.';
+                return NULL;
+            }
+            $components[] = array('type' => 'HEADER', 'format' => 'TEXT', 'text' => (string) $t['header']['text']);
+        }
+        $body = array('type' => 'BODY', 'text' => (string) $t['body']);
+        if (!empty($t['examples'])) {
+            $body['example'] = array('body_text' => array(array_values(array_map('strval', $t['examples']))));
+        }
+        $components[] = $body;
+        if (!empty($t['footer'])) {
+            $components[] = array('type' => 'FOOTER', 'text' => (string) $t['footer']);
+        }
+        if (!empty($t['buttons'])) {
+            $btns = array();
+            foreach ($t['buttons'] as $b) {
+                $type = strtoupper($b['type']);
+                $x = array('type' => $type, 'text' => (string) $b['text']);
+                if ($type === 'URL') {
+                    $x['url'] = (string) $b['url'];
+                    if (!empty($b['example'])) {
+                        $x['example'] = array((string) $b['example']);
+                    }
+                } elseif ($type === 'PHONE_NUMBER') {
+                    $x['phone_number'] = (string) $b['phone_number'];
+                }
+                $btns[] = $x;
+            }
+            $components[] = array('type' => 'BUTTONS', 'buttons' => $btns);
+        }
+        $ch = curl_init($this->_graph_url($this->_waba_id().'/message_templates'));
+        curl_setopt_array($ch, array(
+            CURLOPT_RETURNTRANSFER => TRUE,
+            CURLOPT_POST           => TRUE,
+            CURLOPT_POSTFIELDS     => json_encode(array(
+                'name'       => (string) $t['name'],
+                'language'   => $lang,
+                'category'   => strtoupper((string) $t['category']),
+                'components' => $components,
+            )),
+            CURLOPT_HTTPHEADER     => array('Content-Type: application/json', 'Authorization: Bearer '.$this->_wa_token()),
+            CURLOPT_TIMEOUT        => 30,
+        ));
+        $res = $this->_exec($ch);
+        return $res && !empty($res['id']) ? (string) $res['id'] : NULL;
     }
 
     /**

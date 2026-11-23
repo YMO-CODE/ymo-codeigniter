@@ -95,6 +95,12 @@ $badge = function ($status) {
                                 <span class="ymo-muted" style="min-width:70px">Samples</span>
                                 <span><?php foreach ($t['examples'] as $n => $ex): ?><code>{{<?= $n + 1; ?>}}</code> <?= html_escape($ex); ?><?= $n + 1 < count($t['examples']) ? ' · ' : ''; ?><?php endforeach; ?></span>
                             </div>
+                            <?php if (!$synced && (empty($t['header']) || $t['header']['type'] === 'text')): ?>
+                                <?= form_open(admin_url('whatsapp-templates/submit'), array('class' => 'mt-2')); ?>
+                                    <input type="hidden" name="name" value="<?= html_escape($t['name']); ?>">
+                                    <button class="btn btn-primary btn-sm"><span class="mi mi-sm mi-leading">send</span>Submit to Meta for approval</button>
+                                <?= form_close(); ?>
+                            <?php endif; ?>
                             <?php if (!empty($t['campaign_hint'])): ?>
                                 <div class="ymo-muted mt-1">In the campaign form: <?= html_escape($t['campaign_hint']); ?></div>
                             <?php endif; ?>

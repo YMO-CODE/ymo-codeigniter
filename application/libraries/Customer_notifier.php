@@ -159,7 +159,11 @@ class Customer_notifier
             $media_path = $file;
         }
 
-        $res = $this->CI->crm_messaging->send_whatsapp_template($mobile, $tpl['name'], $tpl['lang'], $params, $header);
+        $buttons = array();
+        if (!empty($tpl['url_button'])) {
+            $buttons[] = isset($vars[$tpl['url_button']]) ? (string) $vars[$tpl['url_button']] : '';
+        }
+        $res = $this->CI->crm_messaging->send_whatsapp_template($mobile, $tpl['name'], $tpl['lang'], $params, $header, $buttons);
 
         $this->CI->crm_wa_message_model->log(array(
             'wa_message_id' => $res['message_id'],

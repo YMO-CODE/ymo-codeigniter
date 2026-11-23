@@ -20,6 +20,7 @@ $item = function ($path, $icon, $label, $active) {
 <a href="<?= admin_url('inbox'); ?>" class="<?= admin_nav_active('inbox') ? 'active' : ''; ?>"><span class="mi mi-sm mi-leading">forum</span>Inbox<span class="ymo-nav-badge" id="ymo-inbox-badge" hidden></span></a>
 <a href="<?= admin_url('ymochat'); ?>" class="<?= admin_nav_active('ymochat') ? 'active' : ''; ?>"><span class="mi mi-sm mi-leading">travel_explore</span>YMOChat<span class="ymo-nav-badge ymochat-live-badge" hidden></span></a>
 <?= $item('leads', 'person_search', 'Leads', admin_nav_active('leads')); ?>
+<?= $item('reviews', 'reviews', 'Google reviews', admin_nav_active('reviews')); ?>
 <?php endif; ?>
 <?php if ($can('bookings.view')): ?>
 <?= $item('bookings', 'event_note', 'Bookings', admin_nav_active('bookings')); ?>

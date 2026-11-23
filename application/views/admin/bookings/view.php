@@ -272,19 +272,25 @@ $status_icons = array(
 
         <?php if (!empty($can_edit)): ?>
         <div class="md-card-elevated">
-            <h6 class="mb-2"><span class="mi mi-sm mi-leading">reviews</span>Manual review request</h6>
-            <p class="ymo-muted small">
-                Send a one-shot SMS + email asking the customer for a review.
-                Available <?= (int) $this->config->item('reminder_review_days'); ?>+ days after completion.
-            </p>
+            <h6 class="mb-2"><span class="mi mi-sm mi-leading">reviews</span>Ask for a Google review</h6>
+            <?php if (!empty($review_sent)): ?>
+                <p class="small mb-2"><span class="badge bg-success">Sent</span>
+                    <span class="ymo-muted"><?= html_escape(date('d M, H:i', strtotime($review_sent['created_at']))); ?> by <?= html_escape($review_sent['channel'] ?: '—'); ?> · <?= html_escape(ucfirst($review_sent['workshop'])); ?> link</span></p>
+            <?php else: ?>
+                <p class="ymo-muted small">WhatsApp (SMS if WhatsApp fails) + email with a button that opens the Google review box for the workshop below. Sent automatically when the booking is marked completed.</p>
+            <?php endif; ?>
             <?= form_open(admin_url('bookings/'.$booking['id'].'/send-review')); ?>
+                <label class="small ymo-muted mb-1" for="review-workshop">Workshop the car was serviced at</label>
+                <select name="workshop" id="review-workshop" class="form-select form-select-sm mb-2">
+                    <?php foreach ((array) $review_workshops as $slug => $w): ?>
+                        <option value="<?= html_escape($slug); ?>" <?= $slug === $review_workshop ? 'selected' : ''; ?>><?= html_escape($w['label']); ?></option>
+                    <?php endforeach; ?>
+                </select>
                 <button class="btn btn-outline-primary w-100" <?= $review_eligible ? '' : 'disabled'; ?>>
-                    <span class="mi mi-leading">send</span>Send review request
+                    <span class="mi mi-leading">send</span><?= !empty($review_sent) ? 'Send again' : 'Send review request'; ?>
                 </button>
             <?= form_close(); ?>
-            <?php if (!$review_eligible && $booking['status'] === 'completed'): ?>
-                <p class="ymo-muted small mt-2 mb-0">Available shortly.</p>
-            <?php elseif ($booking['status'] !== 'completed'): ?>
+            <?php if ($booking['status'] !== 'completed'): ?>
                 <p class="ymo-muted small mt-2 mb-0">Booking must be completed first.</p>
             <?php endif; ?>
         </div>

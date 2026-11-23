@@ -93,6 +93,18 @@ $config['wa_template_library'] = array(
         ),
     ),
     array(
+        'name'     => 'review_request_google',
+        'category' => 'MARKETING',
+        'event'    => 'review_request',
+        'header'   => NULL,
+        'body'     => "Hi {{1}}, thank you for getting your car serviced at our {{2}} workshop.\n\nIf you were happy with the work, could you leave us a quick Google review? It takes less than a minute and helps other car owners find us.",
+        'examples' => array('Rahul', 'Hinjewadi'),
+        'footer'   => 'Your Mechanic Online',
+        'buttons'  => array(
+            array('type' => 'URL', 'text' => 'Write a Google review', 'url' => 'https://www.yourmechaniconline.com/review/{{1}}', 'example' => 'https://www.yourmechaniconline.com/review/hinjewadi'),
+        ),
+    ),
+    array(
         'name'     => 'review_request',
         'category' => 'MARKETING',
         'event'    => 'review_request',

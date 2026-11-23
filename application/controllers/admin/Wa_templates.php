@@ -58,4 +58,37 @@ class Wa_templates extends Crm_Controller
             $stats['added'], $stats['updated'], $stats['removed']));
         redirect(admin_url('whatsapp-templates'));
     }
+
+    /** POST whatsapp-templates/submit {name} — send a ready-to-use template to Meta for approval. */
+    public function submit()
+    {
+        $this->require_perm('campaigns.edit');
+        if ($this->input->method() !== 'post') {
+            show_error('Method not allowed', 405);
+        }
+        $this->config->load('whatsapp_template_library', TRUE);
+        $name = (string) $this->input->post('name');
+        $tpl = NULL;
+        foreach ((array) $this->config->item('wa_template_library', 'whatsapp_template_library') as $t) {
+            if ($t['name'] === $name) {
+                $tpl = $t;
+            }
+        }
+        if (!$tpl) {
+            $this->flash('error', 'Unknown template.');
+            redirect(admin_url('whatsapp-templates'));
+        }
+        $id = $this->crm_messaging->create_whatsapp_template($tpl, 'en');
+        if (!$id) {
+            $this->flash('error', 'Meta did not accept '.$name.': '.($this->crm_messaging->last_error() ?: 'unknown error'));
+            redirect(admin_url('whatsapp-templates'));
+        }
+        $this->audit->log('admin', $this->admin['id'], 'crm.wa_templates.submit', 'crm_wa_template', NULL, array('name' => $name, 'meta_id' => $id));
+        $remote = $this->crm_messaging->fetch_whatsapp_templates();
+        if ($remote !== NULL && $this->crm_wa_template_model->table_ready()) {
+            $this->crm_wa_template_model->sync_from_meta($remote);
+        }
+        $this->flash('success', 'Submitted '.$name.' to Meta. Approval usually takes a few minutes to a day; press Sync to see the status.');
+        redirect(admin_url('whatsapp-templates'));
+    }
 }
