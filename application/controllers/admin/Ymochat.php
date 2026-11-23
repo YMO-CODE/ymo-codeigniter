@@ -95,7 +95,8 @@ class Ymochat extends Crm_Controller
     {
         $this->require_perm('leads.view');
         $this->load->library('web_push');
-        $this->_json(array('key' => $this->web_push->public_key(), 'devices' => $this->ymochat_model->push_count_for_admin((int) $this->admin['id'])));
+        $key = $this->web_push->public_key();
+        $this->_json(array('key' => $key, 'error' => $key === '' ? $this->web_push->error : '', 'devices' => $this->ymochat_model->push_count_for_admin((int) $this->admin['id'])));
     }
 
     /** POST ymochat/push/subscribe {sub, mode, quiet, device} */

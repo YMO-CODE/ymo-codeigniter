@@ -5,8 +5,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * Minimal Web Push sender (RFC 8030 / 8291 aes128gcm / 8292 VAPID) using only
  * OpenSSL + cURL, so no Composer package is needed.
  *
- * Keys: generated once and kept in storage/ymochat_vapid.json (the storage
- * folder survives deploys). Deleting that file makes every phone subscribe again.
+ * Keys: generated once and kept in the settings table (key ymochat_vapid).
+ * Deleting that row makes every phone turn alerts on again.
  */
 class Web_push
 {
@@ -167,39 +167,62 @@ class Web_push
         return $jwt;
     }
 
+    /** Why keys() failed, for the CRM screen. */
+    public $error = '';
+
     protected function keys()
     {
         if ($this->keys !== NULL) {
             return $this->keys;
         }
         $this->keys = FALSE;
-        $file = self::key_file();
-        if (is_file($file)) {
-            $k = json_decode((string) file_get_contents($file), TRUE);
+        $CI = &get_instance();
+        $db = isset($CI->db) && $CI->db->table_exists('settings') ? $CI->db : NULL;
+
+        // 1. Database (settings table) – survives deploys, no folder permissions needed.
+        if ($db) {
+            $row = $db->select('setting_value')->get_where('settings', array('setting_key' => 'ymochat_vapid'), 1)->row_array();
+            $k = $row ? json_decode((string) $row['setting_value'], TRUE) : NULL;
             if (is_array($k) && !empty($k['private_pem']) && !empty($k['public'])) {
                 return $this->keys = $k;
             }
         }
-        $pk = openssl_pkey_new(array('curve_name' => 'prime256v1', 'private_key_type' => OPENSSL_KEYTYPE_EC));
-        if (!$pk) {
-            log_message('error', 'Web push: cannot create VAPID keys (OpenSSL EC support missing).');
-            return FALSE;
+        // 2. Older file location (or YMO_VAPID_FILE).
+        $file = self::key_file();
+        $k = is_file($file) ? json_decode((string) @file_get_contents($file), TRUE) : NULL;
+        if (!(is_array($k) && !empty($k['private_pem']) && !empty($k['public']))) {
+            // 3. First use: create a key pair.
+            $pk = @openssl_pkey_new(array('curve_name' => 'prime256v1', 'private_key_type' => OPENSSL_KEYTYPE_EC));
+            if (!$pk) {
+                $this->error = 'openssl: '.(string) openssl_error_string();
+                log_message('error', 'Web push: cannot create VAPID keys: '.$this->error);
+                return FALSE;
+            }
+            $pem = '';
+            if (!openssl_pkey_export($pk, $pem)) {
+                $this->error = 'openssl export: '.(string) openssl_error_string();
+                log_message('error', 'Web push: cannot export VAPID key: '.$this->error);
+                return FALSE;
+            }
+            $d = openssl_pkey_get_details($pk);
+            $pub = "\x04".str_pad($d['ec']['x'], 32, "\0", STR_PAD_LEFT).str_pad($d['ec']['y'], 32, "\0", STR_PAD_LEFT);
+            $k = array('private_pem' => $pem, 'public' => self::b64url_encode($pub), 'created_at' => date('c'));
         }
-        $pem = '';
-        openssl_pkey_export($pk, $pem);
-        $d = openssl_pkey_get_details($pk);
-        $pub = "\x04".str_pad($d['ec']['x'], 32, "\0", STR_PAD_LEFT).str_pad($d['ec']['y'], 32, "\0", STR_PAD_LEFT);
-        $k = array('private_pem' => $pem, 'public' => self::b64url_encode($pub), 'created_at' => date('c'));
-        $dir = dirname($file);
-        if (!is_dir($dir)) {
-            @mkdir($dir, 0775, TRUE);
+        if ($db) {
+            // INSERT IGNORE + read back: if two requests race, both end up with the same keys.
+            $db->query('INSERT IGNORE INTO settings (setting_key, setting_value) VALUES (?, ?)', array('ymochat_vapid', json_encode($k)));
+            $row = $db->select('setting_value')->get_where('settings', array('setting_key' => 'ymochat_vapid'), 1)->row_array();
+            $saved = $row ? json_decode((string) $row['setting_value'], TRUE) : NULL;
+            if (is_array($saved) && !empty($saved['public'])) {
+                return $this->keys = $saved;
+            }
+        } elseif (@file_put_contents($file, json_encode($k), LOCK_EX) !== FALSE) {
+            @chmod($file, 0600);
+            return $this->keys = $k;
         }
-        if (@file_put_contents($file, json_encode($k), LOCK_EX) === FALSE) {
-            log_message('error', 'Web push: cannot write '.$file);
-            return FALSE;
-        }
-        @chmod($file, 0600);
-        return $this->keys = $k;
+        $this->error = 'could not save keys (settings table and '.$file.' not writable)';
+        log_message('error', 'Web push: '.$this->error);
+        return FALSE;
     }
 
     public static function key_file()

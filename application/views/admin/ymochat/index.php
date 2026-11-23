@@ -167,7 +167,7 @@
             return Promise.all([getJSON(PUSH + 'key'), swReg || navigator.serviceWorker.ready]);
         }).then(function (r) {
             swReg = r[1];
-            if (!r[0].key) throw new Error('nokey');
+            if (!r[0].key) throw new Error('nokey:' + (r[0].error || ''));
             return swReg.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: b64ToBytes(r[0].key)});
         }).then(function (sub) {
             curSub = sub;
@@ -180,7 +180,7 @@
             btn.disabled = false;
             var m = e && e.message === 'blocked'
                 ? 'Notifications are blocked for the CRM in this browser. Allow them in the browser’s site settings (lock icon next to the address), then tap the button again.'
-                : 'Could not turn on alerts' + (e && e.message === 'nokey' ? ' (server keys missing – check the storage folder is writable).' : '. Please try again.');
+                : 'Could not turn on alerts' + (e && /^nokey/.test(e.message) ? ' (server could not create its alert keys: ' + esc(e.message.slice(6) || 'unknown') + ').' : '. Please try again.');
             paintPush(false, '<span class="mi mi-sm mi-leading text-danger">error</span>' + m);
         });
     }
