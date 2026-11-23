@@ -12,4 +12,9 @@ $livechat_license = (int) $ci->config->item('livechat_license');
 if ($livechat_license > 0) {
     $ci->load->view('layout/partials/livechat', array('defer' => TRUE));
 }
+if ($ci->config->item('ymochat_enabled')):
+    $ymc_wa = function_exists('marketing_business_whatsapp_url') ? marketing_business_whatsapp_url('Hi YMO, I would like to book a car service') : 'https://wa.me/917558783868';
 ?>
+<script>window.YMOCHAT = <?= json_encode(array('api' => rtrim(site_url('api/ymochat'), '/').'/', 'wa' => $ymc_wa), JSON_UNESCAPED_SLASHES); ?>;</script>
+<script src="<?= base_url('assets/js/ymochat.js?v='.(int) @filemtime(FCPATH.'assets/js/ymochat.js')); ?>" defer></script>
+<?php endif; ?>

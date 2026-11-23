@@ -479,7 +479,7 @@ $config['csrf_token_name'] = 'ymo_csrf_token';
 $config['csrf_cookie_name'] = 'ymo_csrf_cookie';
 $config['csrf_expire'] = 7200;
 $config['csrf_regenerate'] = TRUE;
-$config['csrf_exclude_uris'] = array('api/webhooks/meta', 'api/webhooks/website', 'api/webhooks/whatsapp', 'api/offers/active');
+$config['csrf_exclude_uris'] = array('api/webhooks/meta', 'api/webhooks/website', 'api/webhooks/whatsapp', 'api/offers/active', 'api/ymochat/beat', 'api/ymochat/send', 'api/ymochat/contact', 'ymochat/(\d+)/send', 'admin/ymochat/(\d+)/send');
 
 /*
 |--------------------------------------------------------------------------

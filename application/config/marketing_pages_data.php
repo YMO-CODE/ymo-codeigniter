@@ -24,7 +24,7 @@ $pages = array(
         'h1'               => 'Privacy Policy',
         'intro'            => 'We respect your privacy and explain here what data we collect, why we collect it, and the choices you have.',
         'page_type'        => 'minimal',
-        'body'             => '<p><strong>Last updated:</strong> July 2026</p>'
+        'body'             => '<p><strong>Last updated:</strong> November 2026</p>'
             .'<p>Your Mechanic Online (&ldquo;YMO&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;) operates the marketing website at yourmechaniconline.com and the online booking platform at booking.yourmechaniconline.com. This policy describes how we handle personal information when you browse our site, create an account, or book a car service.</p>'
             .'<h2>Information we collect</h2>'
             .'<ul>'
@@ -46,6 +46,8 @@ $pages = array(
             .'<p>We do not sell your personal information. We share data only with service providers who help us operate the platform, such as SMS gateways, email delivery, and hosting partners, under contracts that require them to protect your data. We may disclose information if required by law or to protect our rights, customers, or staff.</p>'
             .'<h2>Cookies</h2>'
             .'<p>We use essential cookies for sessions and form security. Optional cookies may remember dismissed UI preferences (for example, <code>ymo_city_hint_dismissed</code>) and the city you pick in the header (<code>ymo_city</code>, kept for one year). To suggest your nearest city we look up your approximate city from your IP address in a local copy of the DB-IP database (<a href="https://db-ip.com" rel="noopener">IP geolocation by DB-IP</a>); the IP address is not stored or shared for this. You can clear cookies in your browser settings; some features may not work correctly without essential cookies.</p>'
+            .'<h2>Website visits and chat</h2>'
+            .'<p>When you browse yourmechaniconline.com we record the pages you open, your IP address and the approximate city it points to, your device and browser, and how you reached us (for example a Google ad or a search). Our team sees this while you are on the site so we can offer help through the chat window. Chat messages, and any name or mobile number you type into the chat, are saved so we can reply and call you back. We keep visit records for up to 90 days and chats with the related enquiry.</p>'
             .'<h2>Data retention</h2>'
             .'<p>We retain booking and account records for as long as needed to provide services, resolve disputes, and meet legal or accounting requirements, then delete or anonymise them where appropriate.</p>'
             .'<h2>Security</h2>'

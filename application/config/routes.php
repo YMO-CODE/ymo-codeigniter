@@ -106,6 +106,11 @@ if (ymo_is_admin_host_request()) {
     $route['contacts/(:num)/edit']             = 'admin/contacts/edit/$1';
 
     $route['campaigns']                        = 'admin/campaigns/index';
+    $route['ymochat'] = 'admin/ymochat/index';
+    $route['ymochat/feed'] = 'admin/ymochat/feed';
+    $route['ymochat/pulse'] = 'admin/ymochat/pulse';
+    $route['ymochat/(:num)/send'] = 'admin/ymochat/send/$1';
+    $route['ymochat/(:num)'] = 'admin/ymochat/thread/$1';
     $route['inbox'] = 'admin/inbox/index';
     $route['inbox/unread'] = 'admin/inbox/unread';
     $route['inbox/read-all'] = 'admin/inbox/read_all';
@@ -220,6 +225,11 @@ if (ymo_is_admin_host_request()) {
     $route['admin/contacts/(:num)']            = 'admin/contacts/view/$1';
     $route['admin/contacts/(:num)/edit']       = 'admin/contacts/edit/$1';
     $route['admin/campaigns']                  = 'admin/campaigns/index';
+    $route['admin/ymochat'] = 'admin/ymochat/index';
+    $route['admin/ymochat/feed'] = 'admin/ymochat/feed';
+    $route['admin/ymochat/pulse'] = 'admin/ymochat/pulse';
+    $route['admin/ymochat/(:num)/send'] = 'admin/ymochat/send/$1';
+    $route['admin/ymochat/(:num)'] = 'admin/ymochat/thread/$1';
     $route['admin/inbox'] = 'admin/inbox/index';
     $route['admin/inbox/unread'] = 'admin/inbox/unread';
     $route['admin/inbox/read-all'] = 'admin/inbox/read_all';
@@ -268,6 +278,9 @@ if (ymo_is_admin_host_request()) {
     $route['request-callback/thanks'] = 'marketing/contact/callback_thanks';
     $route['about-us']             = 'marketing/pages/show';
     $route['api/offers/active']    = 'api/offers/active';
+    $route['api/ymochat/beat']     = 'api/ymochat/beat';
+    $route['api/ymochat/send']     = 'api/ymochat/send';
+    $route['api/ymochat/contact']  = 'api/ymochat/contact';
     $route['api/offers/preview/(:num)'] = 'api/offers/preview/$1';
 
     $marketing_pages_file = APPPATH.'config/marketing_pages_data.php';
@@ -418,6 +431,11 @@ if (ymo_is_admin_host_request()) {
     $route['admin/contacts/(:num)'] = 'admin/contacts/view/$1';
     $route['admin/contacts/(:num)/edit'] = 'admin/contacts/edit/$1';
     $route['admin/campaigns'] = 'admin/campaigns/index';
+    $route['admin/ymochat'] = 'admin/ymochat/index';
+    $route['admin/ymochat/feed'] = 'admin/ymochat/feed';
+    $route['admin/ymochat/pulse'] = 'admin/ymochat/pulse';
+    $route['admin/ymochat/(:num)/send'] = 'admin/ymochat/send/$1';
+    $route['admin/ymochat/(:num)'] = 'admin/ymochat/thread/$1';
     $route['admin/inbox'] = 'admin/inbox/index';
     $route['admin/inbox/unread'] = 'admin/inbox/unread';
     $route['admin/inbox/read-all'] = 'admin/inbox/read_all';

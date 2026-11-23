@@ -37,6 +37,13 @@ $config['livechat_license']   = (int) (getenv('YMO_LIVECHAT_LICENSE') !== FALSE 
     ? getenv('YMO_LIVECHAT_LICENSE')
     : 19881722);
 
+// YMOChat: our own website chat + live visitors in the CRM (replaces LiveChat).
+// On by default; set YMO_YMOCHAT=0 to switch it off (LiveChat comes back if licensed).
+$config['ymochat_enabled'] = (getenv('YMO_YMOCHAT') === FALSE || trim((string) getenv('YMO_YMOCHAT')) !== '0');
+if ($config['ymochat_enabled']) {
+    $config['livechat_license'] = 0;
+}
+
 // Cities where service is currently offered. Used to populate the signup
 // dropdown and to validate the chosen city. Add a new row here when expanding.
 $config['ymo_service_cities'] = array('Indore', 'Pune', 'Nashik');
