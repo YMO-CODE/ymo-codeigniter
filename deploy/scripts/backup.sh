@@ -24,7 +24,7 @@ fi
 mkdir -p "$DEST"
 
 echo "==> MySQL dump..."
-$COMPOSE exec -T db sh -c 'mysqldump -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" --single-transaction --routines --triggers "$MYSQL_DATABASE"' \
+$COMPOSE exec -T db sh -c 'mysqldump -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" --single-transaction --no-tablespaces --routines --triggers "$MYSQL_DATABASE"' \
   | gzip > "${DEST}/ymo_booking.sql.gz"
 
 echo "==> Uploads archive..."
