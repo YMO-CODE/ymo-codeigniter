@@ -104,14 +104,10 @@ class Account extends Customer_Controller
         if (!$invoice) {
             show_404();
         }
-        if (empty($invoice['pdf_path']) || !file_exists(FCPATH.$invoice['pdf_path'])) {
+        if (empty($invoice['pdf_path'])) {
             show_error('Invoice PDF not found.', 404);
         }
         $filename = preg_replace('/[^A-Za-z0-9\-]/', '', $invoice['invoice_number']).'.pdf';
-        header('Content-Type: application/pdf');
-        header('Content-Disposition: inline; filename="'.$filename.'"');
-        header('Content-Length: '.filesize(FCPATH.$invoice['pdf_path']));
-        readfile(FCPATH.$invoice['pdf_path']);
-        exit;
+        ymo_media_send($invoice['pdf_path'], 'application/pdf', $filename);
     }
 }

@@ -66,7 +66,7 @@ $default_cta = site_url('packages');
                 <input class="form-control" id="of_image" name="image" type="file" accept="image/jpeg,image/png,image/webp">
                 <?php if (!empty($offer['image_path'])): ?>
                     <div class="mt-2">
-                        <img src="<?= base_url($offer['image_path']); ?>" alt="" class="rounded" style="max-height:120px;">
+                        <img src="<?= ymo_media_url($offer['image_path']); ?>" alt="" class="rounded" style="max-height:120px;">
                         <div class="form-check mt-2">
                             <input type="checkbox" class="form-check-input" id="remove_image" name="remove_image" value="1">
                             <label class="form-check-label" for="remove_image">Remove current image</label>

@@ -81,7 +81,7 @@ $cta_label = array('CALL' => 'Call now', 'BOOK' => 'Book', 'LEARN_MORE' => 'Lear
             <div class="gp-item">
                 <div class="d-flex gap-2">
                     <?php if (!empty($p['has_image'])): ?>
-                        <img class="gp-thumb" src="<?= html_escape(rtrim(marketing_canonical_url(''), '/').'/media/gbp/'.(int) $p['id'].'/'.$p['image_hash']); ?>" alt="">
+                        <img class="gp-thumb" src="<?= html_escape($this->gbp_post_service->image_url($p)); ?>" alt="">
                     <?php endif; ?>
                     <div class="flex-grow-1 small">
                         <div class="d-flex justify-content-between flex-wrap gap-1 mb-1">

@@ -14,7 +14,7 @@
             <?php if (empty($documents)): ?><p class="ymo-muted small">No files uploaded.</p><?php endif; ?>
             <ul class="list-unstyled small">
             <?php foreach ($documents as $d): ?>
-                <li class="mb-1"><a href="<?= base_url($d['file_path']); ?>" target="_blank"><?= html_escape($d['original_name']); ?></a></li>
+                <li class="mb-1"><a href="<?= admin_url('recruitment/document/'.(int) $d['id']); ?>" target="_blank" rel="noopener"><?= html_escape($d['original_name']); ?></a></li>
             <?php endforeach; ?>
             </ul>
             <?php if ($can_edit): ?>

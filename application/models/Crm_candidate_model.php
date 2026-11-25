@@ -86,6 +86,11 @@ class Crm_candidate_model extends CI_Model
             ->result_array();
     }
 
+    public function find_document($doc_id)
+    {
+        return $this->db->get_where(self::DOC_TABLE, array('id' => (int) $doc_id), 1)->row_array();
+    }
+
     public function add_document($candidate_id, $file_path, $original_name, $mime_type)
     {
         $this->db->insert(self::DOC_TABLE, array(

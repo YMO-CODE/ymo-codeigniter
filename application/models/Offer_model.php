@@ -79,7 +79,7 @@ class Offer_model extends CI_Model
     {
         $image_url = NULL;
         if (!empty($row['image_path'])) {
-            $image_url = base_url(ltrim($row['image_path'], '/'));
+            $image_url = ymo_media_url($row['image_path']);
         }
 
         $updated = !empty($row['updated_at']) ? $row['updated_at'] : date('Y-m-d H:i:s');
@@ -97,9 +97,6 @@ class Offer_model extends CI_Model
 
     protected function _unlink_image($relative_path)
     {
-        $path = FCPATH.ltrim((string) $relative_path, '/');
-        if (is_file($path)) {
-            @unlink($path);
-        }
+        ymo_media_delete((string) $relative_path);
     }
 }

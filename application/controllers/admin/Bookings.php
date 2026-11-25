@@ -525,14 +525,17 @@ class Bookings extends Admin_Controller
         if (!$msg || $msg['context_type'] !== 'booking' || (int) $msg['context_id'] !== (int) $booking_id || empty($msg['media_path'])) {
             show_404();
         }
+        $types = array('jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png', 'pdf' => 'application/pdf');
+        $ext = strtolower(pathinfo($msg['media_path'], PATHINFO_EXTENSION));
+        if (!isset($types[$ext])) {
+            show_404();
+        }
+        if (strpos($msg['media_path'], 'r2p/whatsapp/') === 0) {
+            ymo_media_send($msg['media_path'], $types[$ext], basename($msg['media_path']), 'inline', 'private, max-age=86400');
+        }
         $base = realpath((string) $this->config->item('crm_whatsapp_media_path'));
         $file = realpath(FCPATH.'../'.$msg['media_path']);
         if (!$base || !$file || strpos($file, $base.DIRECTORY_SEPARATOR) !== 0 || !is_file($file)) {
-            show_404();
-        }
-        $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-        $types = array('jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png', 'pdf' => 'application/pdf');
-        if (!isset($types[$ext])) {
             show_404();
         }
         header('Content-Type: '.$types[$ext]);
@@ -837,7 +840,7 @@ class Bookings extends Admin_Controller
 
         if ($notify) {
             $total_fmt = ymo_sms_dlt_number($invoice['grand_total']);
-            $pdf_abs = (!empty($invoice['pdf_path']) && file_exists(FCPATH.$invoice['pdf_path'])) ? FCPATH.$invoice['pdf_path'] : '';
+            $pdf_abs = !empty($invoice['pdf_path']) ? ymo_media_local_copy($invoice['pdf_path']) : '';
             $sms_ok = $this->customer_notifier->notify($booking['user_mobile'], 'invoice_sent', array(
                 'ref'   => $booking['reference'],
                 'total' => $total_fmt,
@@ -853,9 +856,9 @@ class Bookings extends Admin_Controller
 
             if (!empty($booking['user_email'])) {
                 $attachments = array();
-                if (!empty($invoice['pdf_path']) && file_exists(FCPATH.$invoice['pdf_path'])) {
+                if ($pdf_abs !== '') {
                     $attachments[] = array(
-                        'path' => FCPATH.$invoice['pdf_path'],
+                        'path' => $pdf_abs,
                         'name' => $invoice['invoice_number'].'.pdf',
                     );
                 }
@@ -903,14 +906,10 @@ class Bookings extends Admin_Controller
 
     protected function _stream_invoice_pdf(array $invoice)
     {
-        if (empty($invoice['pdf_path']) || !file_exists(FCPATH.$invoice['pdf_path'])) {
+        if (empty($invoice['pdf_path'])) {
             show_error('Invoice PDF not found.', 404);
         }
         $filename = preg_replace('/[^A-Za-z0-9\-]/', '', $invoice['invoice_number']).'.pdf';
-        header('Content-Type: application/pdf');
-        header('Content-Disposition: inline; filename="'.$filename.'"');
-        header('Content-Length: '.filesize(FCPATH.$invoice['pdf_path']));
-        readfile(FCPATH.$invoice['pdf_path']);
-        exit;
+        ymo_media_send($invoice['pdf_path'], 'application/pdf', $filename);
     }
 }

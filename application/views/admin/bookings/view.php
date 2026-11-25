@@ -362,7 +362,7 @@ $status_icons = array(
                             </div>
                             <?php if (!empty($m['template_name'])): ?><div class="ymo-muted">template: <?= html_escape($m['template_name']); ?></div><?php endif; ?>
                             <div style="white-space:pre-wrap"><?= html_escape((string) $m['body']); ?></div>
-                            <?php if (!empty($m['media_path']) && strpos($m['media_path'], 'storage/whatsapp/') === 0): ?>
+                            <?php if (!empty($m['media_path']) && (strpos($m['media_path'], 'storage/whatsapp/') === 0 || strpos($m['media_path'], 'r2p/whatsapp/') === 0)): ?>
                                 <a href="<?= admin_url('bookings/'.$booking['id'].'/whatsapp/media/'.$m['id']); ?>" target="_blank" rel="noopener"><span class="mi mi-sm mi-leading">attachment</span>View <?= html_escape($m['kind']); ?></a>
                             <?php endif; ?>
                             <?php if ($m['status'] === 'failed' && !empty($m['error'])): ?><div class="text-danger"><?= html_escape($m['error']); ?></div><?php endif; ?>

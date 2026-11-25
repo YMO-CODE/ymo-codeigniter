@@ -3,8 +3,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
  * Google Business Profile posts written in the CRM: text, optional photo
- * (stored here, served publicly at /media/gbp/{id}/{hash} so Google can fetch
- * it), button, which workshop listings, when to publish, and the result per
+ * (R2 public bucket in image_path; older posts or no-R2 setups keep the bytes
+ * here, served at /media/gbp/{id}/{hash} so Google can fetch it), button, which workshop listings, when to publish, and the result per
  * listing. Table is created on first use.
  */
 class Gbp_post_model extends CI_Model
@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS gbp_posts (
   workshops VARCHAR(120) NOT NULL DEFAULT '',
   image MEDIUMBLOB NULL,
   image_hash VARCHAR(16) NOT NULL DEFAULT '',
+  image_path VARCHAR(255) NULL,
   status VARCHAR(20) NOT NULL DEFAULT 'scheduled',
   publish_on DATE NOT NULL,
   results TEXT NULL,
@@ -36,6 +37,9 @@ CREATE TABLE IF NOT EXISTS gbp_posts (
             return $this->ready;
         }
         if ($this->db->table_exists('gbp_posts')) {
+            if (!$this->db->field_exists('image_path', 'gbp_posts')) {
+                $this->db->query("ALTER TABLE gbp_posts ADD COLUMN image_path VARCHAR(255) NULL AFTER image_hash");
+            }
             return $this->ready = TRUE;
         }
         if (!$this->db->query(trim(self::SCHEMA_SQL))) {
@@ -57,7 +61,7 @@ CREATE TABLE IF NOT EXISTS gbp_posts (
     {
         $this->ensure_schema();
         if (!$with_image) {
-            $this->db->select('id, summary, cta_type, workshops, image_hash, status, publish_on, results, created_by, created_at, published_at, (image IS NOT NULL) AS has_image', FALSE);
+            $this->db->select('id, summary, cta_type, workshops, image_hash, image_path, status, publish_on, results, created_by, created_at, published_at, (image IS NOT NULL OR image_path IS NOT NULL) AS has_image', FALSE);
         }
         return $this->db->get_where('gbp_posts', array('id' => (int) $id), 1)->row_array();
     }
@@ -75,6 +79,11 @@ CREATE TABLE IF NOT EXISTS gbp_posts (
 
     public function delete($id)
     {
+        $row = $this->find($id);
+        if ($row && !empty($row['image_path']) && in_array($row['status'], array('scheduled', 'failed'), TRUE)) {
+            $this->load->helper('media');
+            ymo_media_delete($row['image_path']);
+        }
         $this->db->where('id', (int) $id)->where_in('status', array('scheduled', 'failed'))->delete('gbp_posts');
         return $this->db->affected_rows() > 0;
     }
@@ -90,7 +99,7 @@ CREATE TABLE IF NOT EXISTS gbp_posts (
     public function recent($limit = 40)
     {
         $this->ensure_schema();
-        return $this->db->select('id, summary, cta_type, workshops, image_hash, status, publish_on, results, created_at, published_at, (image IS NOT NULL) AS has_image', FALSE)
+        return $this->db->select('id, summary, cta_type, workshops, image_hash, image_path, status, publish_on, results, created_at, published_at, (image IS NOT NULL OR image_path IS NOT NULL) AS has_image', FALSE)
             ->order_by("FIELD(status, 'scheduled') DESC", '', FALSE)->order_by('publish_on', 'DESC')->order_by('id', 'DESC')
             ->limit((int) $limit)->get('gbp_posts')->result_array();
     }

@@ -22,7 +22,7 @@
                 <div class="col-md-6 col-lg-4">
                     <div class="md-card-elevated h-100">
                         <?php if (!empty($v['image_path'])): ?>
-                            <img src="<?= base_url($v['image_path']); ?>" alt="" class="img-fluid rounded mb-3" style="aspect-ratio:16/9;object-fit:cover;width:100%;">
+                            <img src="<?= ymo_media_url($v['image_path']); ?>" alt="" class="img-fluid rounded mb-3" style="aspect-ratio:16/9;object-fit:cover;width:100%;">
                         <?php else: ?>
                             <div class="rounded mb-3 d-flex align-items-center justify-content-center"
                                  style="aspect-ratio:16/9;background:var(--ymo-grey-100);">

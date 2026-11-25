@@ -157,6 +157,7 @@ if (ymo_is_admin_host_request()) {
     $route['recruitment/(:num)']               = 'admin/recruitment/view/$1';
     $route['recruitment/(:num)/edit']          = 'admin/recruitment/edit/$1';
     $route['recruitment/(:num)/upload']        = 'admin/recruitment/upload_resume/$1';
+    $route['recruitment/document/(:num)']      = 'admin/recruitment/document/$1';
     $route['recruitment/(:num)/schedule']     = 'admin/recruitment/schedule_interview/$1';
 
     $route['reports']                          = 'admin/reports/index';
@@ -313,6 +314,7 @@ if (ymo_is_admin_host_request()) {
     $route['admin/recruitment/(:num)']         = 'admin/recruitment/view/$1';
     $route['admin/recruitment/(:num)/edit']    = 'admin/recruitment/edit/$1';
     $route['admin/recruitment/(:num)/upload']  = 'admin/recruitment/upload_resume/$1';
+    $route['admin/recruitment/document/(:num)'] = 'admin/recruitment/document/$1';
     $route['admin/recruitment/(:num)/schedule']= 'admin/recruitment/schedule_interview/$1';
     $route['admin/reports']                    = 'admin/reports/index';
     $route['admin/reports/export/leads']       = 'admin/reports/export_leads';
@@ -544,6 +546,7 @@ if (ymo_is_admin_host_request()) {
     $route['admin/recruitment/(:num)'] = 'admin/recruitment/view/$1';
     $route['admin/recruitment/(:num)/edit'] = 'admin/recruitment/edit/$1';
     $route['admin/recruitment/(:num)/upload'] = 'admin/recruitment/upload_resume/$1';
+    $route['admin/recruitment/document/(:num)'] = 'admin/recruitment/document/$1';
     $route['admin/recruitment/(:num)/schedule'] = 'admin/recruitment/schedule_interview/$1';
     $route['admin/reports'] = 'admin/reports/index';
     $route['admin/reports/export/leads'] = 'admin/reports/export_leads';

@@ -37,6 +37,12 @@ class Crm_wa_message_model extends CI_Model
         if (isset($data['error']) && $data['error'] !== NULL) {
             $data['error'] = substr((string) $data['error'], 0, 500);
         }
+        // Photos/PDFs sent from a booking go to the private R2 bucket once sent
+        // (kept on the server when R2 is not configured).
+        if (!empty($data['media_path']) && strpos($data['media_path'], 'storage/whatsapp/') === 0) {
+            $this->load->helper('media');
+            $data['media_path'] = ymo_media_offload($data['media_path'], 'private', substr($data['media_path'], strlen('storage/')));
+        }
         $data['created_at'] = date('Y-m-d H:i:s');
         $data['updated_at'] = $data['created_at'];
         $this->db->insert(self::TABLE, $data);

@@ -94,10 +94,23 @@ class Recruitment extends Crm_Controller
         }
 
         $data = $this->upload->data();
-        $rel = 'uploads/crm/resumes/'.$data['file_name'];
+        // Résumés are private: R2 private bucket (or the server), opened only through document().
+        $rel = ymo_media_offload('uploads/crm/resumes/'.$data['file_name'], 'private', 'resumes/'.$data['file_name']);
         $this->crm_candidate_model->add_document($id, $rel, $data['orig_name'], $data['file_type']);
         $this->flash('success', 'Resume uploaded.');
         redirect(admin_url('recruitment/'.$id));
+    }
+
+    /** GET recruitment/document/{id} — open an uploaded résumé (staff with recruitment access only). */
+    public function document($doc_id)
+    {
+        $this->require_perm('recruitment.view');
+        $doc = $this->crm_candidate_model->find_document((int) $doc_id);
+        if (!$doc) {
+            show_404();
+        }
+        $type = $doc['mime_type'] ?: ymo_media_mime($doc['file_path']);
+        ymo_media_send($doc['file_path'], $type, $doc['original_name'] ?: basename($doc['file_path']));
     }
 
     public function schedule_interview($id)

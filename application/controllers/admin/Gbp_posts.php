@@ -10,7 +10,7 @@ class Gbp_posts extends Crm_Controller
     {
         parent::__construct();
         $this->load->model(array('gbp_post_model', 'gbp_review_model'));
-        $this->load->library('gbp_post_service');
+        $this->load->library(array('gbp_post_service', 'audit'));
         $this->load->helper('review');
     }
 
@@ -74,12 +74,22 @@ class Gbp_posts extends Crm_Controller
             redirect(admin_url('google-posts'));
         }
 
+        // Photo goes to the R2 public bucket; the database copy is only the no-R2 fallback.
+        $image_hash = $image !== NULL ? substr(sha1($image), 0, 12) : '';
+        $image_path = NULL;
+        if ($image !== NULL) {
+            $image_path = ymo_media_put_bytes('public', 'gbp/'.date('Y/m').'/'.$image_hash.'-'.bin2hex(random_bytes(3)).'.jpg', $image, 'image/jpeg');
+            if ($image_path !== NULL) {
+                $image = NULL;
+            }
+        }
         $id = $this->gbp_post_model->create(array(
             'summary'    => $summary,
             'cta_type'   => $cta,
             'workshops'  => implode(',', $workshops),
             'image'      => $image,
-            'image_hash' => $image !== NULL ? substr(sha1($image), 0, 12) : '',
+            'image_hash' => $image_hash,
+            'image_path' => $image_path,
             'status'     => 'scheduled',
             'publish_on' => $when === 'date' ? $date : date('Y-m-d'),
             'created_by' => (int) $this->admin['id'],

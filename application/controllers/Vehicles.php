@@ -63,7 +63,7 @@ class Vehicles extends Customer_Controller
             if (!empty($upload)) {
                 $patch['image_path'] = $upload;
                 if (!empty($vehicle['image_path'])) {
-                    @unlink($this->config->item('upload_vehicle_path').basename($vehicle['image_path']));
+                    ymo_media_delete($vehicle['image_path']);
                 }
             }
 
@@ -154,7 +154,7 @@ class Vehicles extends Customer_Controller
         $info = $this->upload->data();
         $this->_resize($info['full_path']);
 
-        return $this->config->item('upload_vehicle_url').$info['file_name'];
+        return ymo_media_offload($this->config->item('upload_vehicle_url').$info['file_name'], 'public', 'vehicles/'.$info['file_name']);
     }
 
     protected function _resize($abs_path)

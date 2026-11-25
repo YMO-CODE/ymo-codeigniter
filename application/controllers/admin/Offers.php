@@ -53,10 +53,7 @@ class Offers extends Admin_Controller
             $patch = $this->_collect();
             if ($this->input->post('remove_image')) {
                 if (!empty($offer['image_path'])) {
-                    $path = FCPATH.ltrim($offer['image_path'], '/');
-                    if (is_file($path)) {
-                        @unlink($path);
-                    }
+                    ymo_media_delete($offer['image_path']);
                 }
                 $patch['image_path'] = NULL;
             } else {
@@ -67,10 +64,7 @@ class Offers extends Admin_Controller
                 }
                 if ($image) {
                     if (!empty($offer['image_path'])) {
-                        $old = FCPATH.ltrim($offer['image_path'], '/');
-                        if (is_file($old)) {
-                            @unlink($old);
-                        }
+                        ymo_media_delete($offer['image_path']);
                     }
                     $patch['image_path'] = $image;
                 }
@@ -158,7 +152,7 @@ class Offers extends Admin_Controller
         }
 
         $data = $this->upload->data();
-        return 'uploads/offers/'.$data['file_name'];
+        return ymo_media_offload('uploads/offers/'.$data['file_name'], 'public', 'offers/'.$data['file_name']);
     }
 
     protected function _render_form($offer = NULL)

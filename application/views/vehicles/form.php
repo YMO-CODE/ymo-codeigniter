@@ -49,7 +49,7 @@
                         <label class="form-label small ymo-muted"><span class="mi mi-sm mi-leading">photo_camera</span>Photo (optional, max 3 MB)</label>
                         <input type="file" class="form-control" name="image" accept="image/*">
                         <?php if (!empty($vehicle['image_path'])): ?>
-                            <div class="mt-2"><img src="<?= base_url($vehicle['image_path']); ?>" alt="" class="rounded" style="max-width:160px;"></div>
+                            <div class="mt-2"><img src="<?= ymo_media_url($vehicle['image_path']); ?>" alt="" class="rounded" style="max-width:160px;"></div>
                         <?php endif; ?>
                     </div>
                     <div class="d-flex gap-2">

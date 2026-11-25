@@ -73,7 +73,10 @@ class Invoice_pdf
             return NULL;
         }
 
-        return 'uploads/invoices/'.$year.'/'.$filename;
+        // Invoices are private: R2 private bucket when configured (never under public/).
+        $CI = &get_instance();
+        $CI->load->helper('media');
+        return ymo_media_offload('uploads/invoices/'.$year.'/'.$filename, 'private', 'invoices/'.$year.'/'.$filename, 'application/pdf');
     }
 
     protected function _load_dompdf()

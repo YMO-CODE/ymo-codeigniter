@@ -30,3 +30,4 @@ node_modules/
 !/storage/whatsapp/.gitkeep
 /storage/sync/
 /storage/ymochat_vapid.json
+/storage/backups/

@@ -69,9 +69,13 @@ class Gbp_post_service
         return $jpeg;
     }
 
-    /** Public URL Google fetches the photo from. */
+    /** Public URL Google fetches the photo from (R2 when stored there). */
     public function image_url(array $post)
     {
+        if (!empty($post['image_path'])) {
+            $this->CI->load->helper('media');
+            return ymo_media_url($post['image_path']);
+        }
         return rtrim(marketing_canonical_url(''), '/').'/media/gbp/'.(int) $post['id'].'/'.$post['image_hash'];
     }
 
