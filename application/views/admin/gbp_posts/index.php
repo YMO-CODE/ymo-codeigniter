@@ -24,6 +24,10 @@ $cta_label = array('CALL' => 'Call now', 'BOOK' => 'Book', 'LEARN_MORE' => 'Lear
 .gp-item { border: 1px solid #e5e7eb; border-radius: 10px; padding: .75rem .9rem; margin-bottom: .6rem; background: #fff; }
 .gp-thumb { width: 84px; height: 63px; object-fit: cover; border-radius: 6px; flex: 0 0 auto; }
 .gp-count { font-size: .8rem; }
+.gp-tabs .nav-link { padding: .3rem .7rem; font-size: .85rem; }
+.gp-text { white-space: pre-wrap; }
+.gp-text.is-clamped { max-height: 6.4em; overflow: hidden; -webkit-mask-image: linear-gradient(#000 60%, transparent); mask-image: linear-gradient(#000 60%, transparent); }
+.gp-more { font-size: .8rem; }
 </style>
 
 <?php if (!$google_on): ?>
@@ -37,7 +41,7 @@ $cta_label = array('CALL' => 'Call now', 'BOOK' => 'Book', 'LEARN_MORE' => 'Lear
     <div class="ymo-card p-3 mb-3">
         <div class="d-flex justify-content-between align-items-center">
             <h2 class="h6 mb-1"><?= $editing ? 'Edit post #'.(int) $editing['id'] : 'New post'; ?></h2>
-            <?php if ($editing): ?><a class="small" href="<?= admin_url('google-posts'); ?>">Cancel edit</a><?php endif; ?>
+            <?php if ($editing): ?><a class="small" href="<?= admin_url('google-posts?tab='.$tab); ?>#posts">Cancel edit</a><?php endif; ?>
         </div>
         <p class="small ymo-muted mb-2">Shows on your Google listing in Search and Maps ("Updates"). Aim for one a week per workshop<?= $last ? ' · last post '.html_escape(date('d M', strtotime($last))) : ''; ?>.</p>
         <?php if ($can_edit): ?>
@@ -94,9 +98,15 @@ $cta_label = array('CALL' => 'Call now', 'BOOK' => 'Book', 'LEARN_MORE' => 'Lear
 </div>
 
 <div class="col-lg-7">
-    <div class="ymo-card p-3 mb-3">
-        <h2 class="h6 mb-2">Posts<?= $drafts ? ' <span class="badge bg-secondary align-middle">'.(int) $drafts.' draft'.($drafts === 1 ? '' : 's').'</span>' : ''; ?></h2>
-        <?php if (!$posts): ?><p class="small ymo-muted mb-0">No posts yet.</p><?php endif; ?>
+    <div class="ymo-card p-3 mb-3" id="posts">
+        <h2 class="h6 mb-2">Posts</h2>
+        <ul class="nav nav-pills gp-tabs flex-wrap gap-1 mb-3">
+            <?php foreach (array('draft' => 'Drafts', 'scheduled' => 'Scheduled', 'live' => 'Live', 'failed' => 'Failed', 'all' => 'All') as $k => $lbl):
+                if (in_array($k, array('failed'), TRUE) && !$tabs[$k] && $tab !== $k) { continue; } ?>
+                <li class="nav-item"><a class="nav-link <?= $tab === $k ? 'active' : ''; ?>" href="<?= admin_url('google-posts?tab='.$k); ?>#posts"><?= $lbl; ?> <span class="badge <?= $tab === $k ? 'bg-light text-dark' : 'bg-secondary'; ?>"><?= (int) $tabs[$k]; ?></span></a></li>
+            <?php endforeach; ?>
+        </ul>
+        <?php if (!$posts): ?><p class="small ymo-muted mb-0"><?= $tab === 'draft' ? 'No drafts.' : ($tab === 'all' ? 'No posts yet.' : 'Nothing here.'); ?></p><?php endif; ?>
         <?php foreach ($posts as $p):
             $res = json_decode((string) $p['results'], TRUE) ?: array();
             $b = isset($status_badge[$p['status']]) ? $status_badge[$p['status']] : array($p['status'], 'bg-light');
@@ -122,7 +132,9 @@ $cta_label = array('CALL' => 'Call now', 'BOOK' => 'Book', 'LEARN_MORE' => 'Lear
                                 }
                             endforeach; ?></span>
                         </div>
-                        <div style="white-space:pre-wrap"><?= html_escape($p['status'] === 'draft' ? $p['summary'] : mb_strimwidth($p['summary'], 0, 300, '…')); ?></div>
+                        <?php $long = mb_strlen($p['summary']) > 260 || substr_count($p['summary'], "\n") > 3; ?>
+                        <div class="gp-text<?= $long ? ' is-clamped' : ''; ?>"><?= html_escape($p['summary']); ?></div>
+                        <?php if ($long): ?><button type="button" class="btn btn-link p-0 gp-more">Show all</button><?php endif; ?>
                         <?php foreach ($res as $w => $r): if (empty($r['ok']) && !empty($r['error'])): ?>
                             <div class="text-danger mt-1"><?= html_escape((isset($workshops[$w]) ? $workshops[$w]['label'] : $w).': '.$r['error']); ?></div>
                         <?php endif; endforeach; ?>
@@ -130,7 +142,7 @@ $cta_label = array('CALL' => 'Call now', 'BOOK' => 'Book', 'LEARN_MORE' => 'Lear
                         <div class="d-flex gap-2 mt-2 align-items-center">
                             <?= form_open(admin_url('google-posts/'.(int) $p['id'].'/publish'), array('onsubmit' => $p['status'] === 'draft' ? "return confirm('Publish this post to Google now?');" : '')); ?><button class="btn btn-sm <?= $p['status'] === 'draft' ? 'btn-primary' : 'btn-outline-primary'; ?>"><?= in_array($p['status'], array('draft', 'scheduled'), TRUE) ? 'Publish now' : 'Retry'; ?></button><?= form_close(); ?>
                             <?php if (in_array($p['status'], array('draft', 'scheduled', 'failed'), TRUE)): ?>
-                            <a class="btn btn-sm btn-outline-secondary" href="<?= admin_url('google-posts?edit='.(int) $p['id']); ?>#gp-form">Edit</a>
+                            <a class="btn btn-sm btn-outline-secondary" href="<?= admin_url('google-posts?'.http_build_query(array_filter(array('tab' => $tab, 'p' => isset($_GET['p']) ? (int) $_GET['p'] : NULL, 'edit' => (int) $p['id'])))); ?>#gp-form">Edit</a>
                             <?php endif; ?>
                             <?php if (in_array($p['status'], array('draft', 'scheduled', 'failed'), TRUE)): ?>
                             <?= form_open(admin_url('google-posts/'.(int) $p['id'].'/delete'), array('onsubmit' => "return confirm('Remove this post?');")); ?><button class="btn btn-sm btn-link text-danger">Remove</button><?= form_close(); ?>
@@ -141,11 +153,19 @@ $cta_label = array('CALL' => 'Call now', 'BOOK' => 'Book', 'LEARN_MORE' => 'Lear
                 </div>
             </div>
         <?php endforeach; ?>
+        <?= crm_list_pager($pager); ?>
     </div>
 </div>
 </div>
 <script>
 (function () {
+  document.querySelectorAll('.gp-more').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var t = b.previousElementSibling;
+      var open = t.classList.toggle('is-clamped');
+      b.textContent = open ? 'Show all' : 'Show less';
+    });
+  });
   var t = document.getElementById('gp-text'), n = document.getElementById('gp-n');
   if (!t || !n) { return; }
   var f = function () { n.textContent = t.value.length + '/' + t.maxLength; };

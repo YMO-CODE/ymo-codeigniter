@@ -27,14 +27,30 @@ class Gbp_posts extends Crm_Controller
                 $editing = $row;
             }
         }
+        // Status tabs + 15 per page. Default tab: drafts while there are any.
+        $tabs = $this->gbp_post_model->tab_counts();
+        $tab = (string) $this->input->get('tab');
+        if (!in_array($tab, array('draft', 'scheduled', 'live', 'failed', 'all'), TRUE)) {
+            $tab = $tabs['draft'] ? 'draft' : 'all';
+        }
+        $per = 15;
+        $page = max(1, (int) $this->input->get('p'));
+        $res = $this->gbp_post_model->page($tab, $per, ($page - 1) * $per);
+        if ($res['total'] && ($page - 1) * $per >= $res['total']) {
+            $page = (int) ceil($res['total'] / $per);
+            $res = $this->gbp_post_model->page($tab, $per, ($page - 1) * $per);
+        }
         $this->render('admin/gbp_posts/index', array(
             'title'     => 'Google posts',
-            'posts'     => $this->gbp_post_model->recent(60),
+            'posts'     => $res['rows'],
+            'tab'       => $tab,
+            'tabs'      => $tabs,
+            'pager'     => array('page' => $page, 'pages' => (int) ceil($res['total'] / $per), 'total' => $res['total'], 'per' => $per, 'param' => 'p', 'anchor' => 'posts', 'path' => 'google-posts', 'noun' => 'posts'),
             'workshops' => ymo_review_workshops(),
             'connected' => $this->gbp_post_service->connected_workshops(),
             'google_on' => (bool) $this->gbp_review_model->setting('gbp_oauth_token', NULL),
             'last'      => $this->gbp_post_model->last_published_on(),
-            'drafts'    => $this->gbp_post_model->count_by_status('draft'),
+            'drafts'    => $tabs['draft'],
             'editing'   => $editing,
             'can_edit'  => crm_can('campaigns.edit'),
             'max_text'  => Gbp_post_service::MAX_TEXT,
@@ -157,7 +173,7 @@ class Gbp_posts extends Crm_Controller
         $this->flash($s['failed'] ? ($s['ok'] ? 'warning' : 'error') : 'success',
             $s['ok'] ? 'Posted to '.$s['ok'].' listing(s).'.($s['failed'] ? ' Failed: '.implode('; ', $s['messages']) : '')
                 : 'Not posted: '.implode('; ', $s['messages']));
-        redirect(admin_url('google-posts'));
+        $this->_back('google-posts', 'posts');
     }
 
     /** POST google-posts/{id}/delete — only posts that are not live anywhere. */
@@ -167,7 +183,7 @@ class Gbp_posts extends Crm_Controller
         $this->_post_only();
         $ok = $this->gbp_post_model->delete((int) $id);
         $this->flash($ok ? 'success' : 'error', $ok ? 'Post removed.' : 'Only drafts, scheduled or failed posts can be removed here. Live posts are removed on Google.');
-        redirect(admin_url('google-posts'));
+        $this->_back('google-posts', 'posts');
     }
 
     protected function _post_only()
@@ -175,5 +191,25 @@ class Gbp_posts extends Crm_Controller
         if ($this->input->method() !== 'post') {
             show_error('Method not allowed', 405);
         }
+    }
+
+    /**
+     * Back to the list the action came from (same tab, page and filters), else the plain page.
+     */
+    protected function _back($path, $anchor = '')
+    {
+        $ref = (string) $this->input->server('HTTP_REFERER');
+        $base = admin_url($path);
+        $url = $base;
+        if ($ref !== '' && strpos($ref, $base) === 0) {
+            $url = preg_replace('/#.*$/', '', $ref);
+            $parts = parse_url($url);
+            if (!empty($parts['query'])) {
+                parse_str($parts['query'], $qs);
+                unset($qs['edit'], $qs['r']);
+                $url = $base.($qs ? '?'.http_build_query($qs) : '');
+            }
+        }
+        redirect($url.($anchor !== '' ? '#'.$anchor : ''));
     }
 }

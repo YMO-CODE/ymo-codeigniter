@@ -167,6 +167,50 @@ CREATE TABLE IF NOT EXISTS review_requests (
         return $this->db->order_by('review_time', 'DESC')->limit((int) $limit)->get()->result_array();
     }
 
+    /**
+     * One page of reviews. Filters: attention (bool), workshop (slug), stars ('5', '4', 'low' = 1–3).
+     * @return array{rows:array, total:int}
+     */
+    public function page(array $f, $limit, $offset)
+    {
+        $this->ensure_schema();
+        $apply = function () use ($f) {
+            $this->db->from('gbp_reviews');
+            if (!empty($f['attention'])) {
+                $this->db->where_in('action', array('alerted', 'failed'))->where('handled_at IS NULL', NULL, FALSE);
+            }
+            if (!empty($f['workshop'])) {
+                $this->db->where('workshop', (string) $f['workshop']);
+            }
+            if (isset($f['stars']) && $f['stars'] === 'low') {
+                $this->db->where('stars <=', 3);
+            } elseif (isset($f['stars']) && in_array($f['stars'], array('4', '5'), TRUE)) {
+                $this->db->where('stars', (int) $f['stars']);
+            }
+        };
+        $apply();
+        $total = (int) $this->db->count_all_results();
+        $apply();
+        $rows = $this->db->order_by('review_time', 'DESC')->order_by('id', 'DESC')
+            ->limit((int) $limit, (int) $offset)->get()->result_array();
+        return array('rows' => $rows, 'total' => $total);
+    }
+
+    /** 0-based position of a review in the attention list (same order as page()), or NULL. */
+    public function attention_position($id)
+    {
+        $r = $this->find($id);
+        if (!$r || !in_array($r['action'], array('alerted', 'failed'), TRUE) || $r['handled_at'] !== NULL) {
+            return NULL;
+        }
+        return (int) $this->db->where_in('action', array('alerted', 'failed'))->where('handled_at IS NULL', NULL, FALSE)
+            ->group_start()
+                ->where('review_time >', $r['review_time'])
+                ->or_group_start()->where('review_time', $r['review_time'])->where('id >', (int) $r['id'])->group_end()
+            ->group_end()
+            ->count_all_results('gbp_reviews');
+    }
+
     public function counts()
     {
         $this->ensure_schema();
@@ -216,6 +260,15 @@ CREATE TABLE IF NOT EXISTS review_requests (
     {
         $this->ensure_schema();
         return $this->db->order_by('id', 'DESC')->limit((int) $limit)->get('review_requests')->result_array();
+    }
+
+    /** @return array{rows:array, total:int} */
+    public function page_requests($limit, $offset)
+    {
+        $this->ensure_schema();
+        $total = (int) $this->db->count_all('review_requests');
+        $rows = $this->db->order_by('id', 'DESC')->limit((int) $limit, (int) $offset)->get('review_requests')->result_array();
+        return array('rows' => $rows, 'total' => $total);
     }
 
     public function request_counts()

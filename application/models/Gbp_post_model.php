@@ -122,6 +122,55 @@ CREATE TABLE IF NOT EXISTS gbp_posts (
         return $this->db->where('status', (string) $status)->count_all_results('gbp_posts');
     }
 
+    /** Count per status tab: draft, scheduled, live (published + partial), failed, all. */
+    public function tab_counts()
+    {
+        $this->ensure_schema();
+        $out = array('draft' => 0, 'scheduled' => 0, 'live' => 0, 'failed' => 0, 'all' => 0);
+        foreach ($this->db->select('status, COUNT(*) n', FALSE)->group_by('status')->get('gbp_posts')->result_array() as $r) {
+            $n = (int) $r['n'];
+            $out['all'] += $n;
+            $k = in_array($r['status'], array('published', 'partial'), TRUE) ? 'live' : $r['status'];
+            if (isset($out[$k])) {
+                $out[$k] += $n;
+            }
+        }
+        return $out;
+    }
+
+    /**
+     * One page of posts for a tab.
+     * @return array{rows:array, total:int}
+     */
+    public function page($tab, $limit, $offset)
+    {
+        $this->ensure_schema();
+        $map = array('draft' => array('draft'), 'scheduled' => array('scheduled'), 'live' => array('published', 'partial'), 'failed' => array('failed'));
+        $apply = function () use ($tab, $map) {
+            $this->db->from('gbp_posts');
+            if (isset($map[$tab])) {
+                $this->db->where_in('status', $map[$tab]);
+            }
+        };
+        $apply();
+        $total = (int) $this->db->count_all_results();
+        $apply();
+        $this->db->select('id, summary, cta_type, workshops, image_hash, image_path, status, publish_on, results, created_at, published_at, (image IS NOT NULL OR image_path IS NOT NULL) AS has_image', FALSE);
+        if ($tab === 'draft') {
+            $this->db->order_by('id', 'ASC');
+        } elseif ($tab === 'scheduled') {
+            $this->db->order_by('publish_on', 'ASC')->order_by('id', 'ASC');
+        } elseif ($tab === 'live') {
+            $this->db->order_by('published_at', 'DESC')->order_by('id', 'DESC');
+        } else {
+            $this->db->order_by("FIELD(status, 'scheduled', 'draft') DESC", '', FALSE)
+                ->order_by("(status = 'draft') * id", 'ASC', FALSE)
+                ->order_by('publish_on', 'DESC')->order_by('id', 'DESC');
+        }
+        $rows = $this->db->limit((int) $limit, (int) $offset)->get()->result_array();
+        return array('rows' => $rows, 'total' => $total);
+    }
+
     public function last_published_on()
     {
         $this->ensure_schema();

@@ -31,6 +31,7 @@ $ago = function ($dt) {
 .rv-reason { background: #fff8e1; border-radius: 6px; padding: .35rem .55rem; font-size: .85rem; }
 .rv-reply { background: #f1f8f1; border-radius: 6px; padding: .35rem .55rem; font-size: .85rem; }
 .rv-table td { vertical-align: top; font-size: .85rem; }
+.rv-filters .btn { --bs-btn-padding-y: .15rem; --bs-btn-padding-x: .55rem; --bs-btn-font-size: .8rem; }
 </style>
 
 <div class="d-flex flex-wrap gap-2 mb-3">
@@ -47,8 +48,8 @@ $ago = function ($dt) {
 
 <div class="row g-3">
 <div class="col-lg-7">
-    <div class="ymo-card p-3 mb-3">
-        <h2 class="h6 mb-1">Needs your attention</h2>
+    <div class="ymo-card p-3 mb-3" id="attention">
+        <h2 class="h6 mb-1">Needs your attention<?= $att_pager['total'] ? ' <span class="badge bg-danger align-middle">'.(int) $att_pager['total'].'</span>' : ''; ?></h2>
         <p class="small ymo-muted mb-2">1–3★ reviews are never answered automatically: reply yourself (and call the customer). 4★ reviews are answered automatically and shown here with why a star was lost.</p>
         <?php if (!$attention): ?>
             <p class="small mb-0">Nothing waiting. 👍</p>
@@ -90,12 +91,37 @@ $ago = function ($dt) {
                 <?php endif; ?>
             </div>
         <?php endforeach; ?>
+        <?= crm_list_pager($att_pager); ?>
     </div>
 
-    <div class="ymo-card p-3 mb-3">
-        <h2 class="h6 mb-2">Latest Google reviews</h2>
+    <div class="ymo-card p-3 mb-3" id="latest">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+            <h2 class="h6 mb-0">Latest Google reviews</h2>
+            <?php
+            $fq = function (array $set) use ($f_ws, $f_stars) {
+                $q = array_filter(array('ws' => $f_ws, 'stars' => $f_stars) + array());
+                foreach ($set as $k => $v) { if ($v === '') { unset($q[$k]); } else { $q[$k] = $v; } }
+                $keep = array_intersect_key($_GET, array('ap' => 1, 'qp' => 1));
+                $q = $keep + $q;
+                return admin_url('reviews'.($q ? '?'.http_build_query($q) : '')).'#latest';
+            };
+            ?>
+            <div class="rv-filters d-flex flex-wrap gap-1 align-items-center">
+                <div class="btn-group" role="group" aria-label="Stars">
+                    <?php foreach (array('' => 'All', '5' => '5★', '4' => '4★', 'low' => '1–3★') as $k => $lbl): ?>
+                        <a class="btn <?= $f_stars === (string) $k ? 'btn-primary' : 'btn-outline-secondary'; ?>" href="<?= html_escape($fq(array('stars' => (string) $k))); ?>"><?= $lbl; ?></a>
+                    <?php endforeach; ?>
+                </div>
+                <div class="btn-group" role="group" aria-label="Workshop">
+                    <a class="btn <?= $f_ws === '' ? 'btn-primary' : 'btn-outline-secondary'; ?>" href="<?= html_escape($fq(array('ws' => ''))); ?>">All workshops</a>
+                    <?php foreach ($workshops as $slug => $w): ?>
+                        <a class="btn <?= $f_ws === $slug ? 'btn-primary' : 'btn-outline-secondary'; ?>" href="<?= html_escape($fq(array('ws' => $slug))); ?>"><?= html_escape($w['label']); ?></a>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
         <?php if (!$reviews): ?>
-            <p class="small ymo-muted mb-0">No reviews checked yet. They appear here after the first daily check.</p>
+            <p class="small ymo-muted mb-0"><?= ($f_ws !== '' || $f_stars !== '') ? 'No reviews match these filters.' : 'No reviews checked yet. They appear here after the first daily check.'; ?></p>
         <?php else: ?>
         <div class="table-responsive">
         <table class="table table-sm rv-table mb-0">
@@ -115,6 +141,7 @@ $ago = function ($dt) {
             </tbody>
         </table>
         </div>
+        <?= crm_list_pager($rev_pager); ?>
         <?php endif; ?>
     </div>
 </div>
@@ -137,9 +164,22 @@ $ago = function ($dt) {
             </div>
             <label class="small ymo-muted mt-2 d-flex gap-1 align-items-center"><input type="checkbox" name="force" value="1"> Send even if we asked this number in the last 30 days</label>
         <?= form_close(); ?>
+        <details class="mt-3" id="ask-bulk">
+            <summary class="small fw-semibold">Send to many customers at once</summary>
+            <?= form_open(admin_url('reviews/ask-bulk'), array('class' => 'mt-2')); ?>
+                <textarea name="lines" class="form-control form-control-sm mb-2" rows="6" required placeholder="One customer per line, e.g.&#10;Rahul Patil, 98220 00011&#10;Sneha 9876543210 warje&#10;+91 99220 12345"></textarea>
+                <div class="d-flex gap-2 align-items-center">
+                    <select name="workshop" class="form-select form-select-sm w-auto" title="Workshop for lines that don't name one">
+                        <?php foreach ($workshops as $slug => $w): ?><option value="<?= html_escape($slug); ?>"><?= html_escape($w['label']); ?></option><?php endforeach; ?>
+                    </select>
+                    <button class="btn btn-sm btn-primary"><span class="mi mi-sm mi-leading">send</span>Send to all</button>
+                </div>
+                <p class="small ymo-muted mt-1 mb-0">Up to 50 lines. Write a workshop name (hinjewadi, warje, indore, nashik) on a line to override the dropdown. Numbers asked in the last 30 days are skipped.</p>
+            <?= form_close(); ?>
+        </details>
         <?php endif; ?>
         <?php if ($requests): ?>
-            <h3 class="small fw-semibold mt-3 mb-1">Recently asked</h3>
+            <h3 class="small fw-semibold mt-3 mb-1" id="asked">Recently asked</h3>
             <div class="table-responsive">
             <table class="table table-sm rv-table mb-0">
                 <?php foreach ($requests as $q): ?>
@@ -152,6 +192,7 @@ $ago = function ($dt) {
                 <?php endforeach; ?>
             </table>
             </div>
+            <?= crm_list_pager($req_pager); ?>
         <?php endif; ?>
     </div>
 

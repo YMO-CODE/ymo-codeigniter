@@ -25,14 +25,43 @@ class Reviews extends Crm_Controller
         if ($connected && !$available && crm_can('settings.manage')) {
             $available = $this->_refresh_locations();
         }
+        // Each list pages on its own: ap = attention, p = latest reviews, qp = requests.
+        $workshops = ymo_review_workshops();
+        $f_ws = (string) $this->input->get('ws');
+        $f_ws = isset($workshops[$f_ws]) ? $f_ws : '';
+        $f_stars = (string) $this->input->get('stars');
+        $f_stars = in_array($f_stars, array('5', '4', 'low'), TRUE) ? $f_stars : '';
+        $att_per = 10; $rev_per = 20; $req_per = 10;
+        $ap = max(1, (int) $this->input->get('ap'));
+        $focus = (int) $this->input->get('r');
+        if ($focus > 0 && !$this->input->get('ap')) {
+            $pos = $this->gbp_review_model->attention_position($focus);
+            if ($pos !== NULL) {
+                $ap = (int) floor($pos / $att_per) + 1;
+            }
+        }
+        $att = $this->gbp_review_model->page(array('attention' => TRUE), $att_per, ($ap - 1) * $att_per);
+        if ($att['total'] && ($ap - 1) * $att_per >= $att['total']) {
+            $ap = (int) ceil($att['total'] / $att_per);
+            $att = $this->gbp_review_model->page(array('attention' => TRUE), $att_per, ($ap - 1) * $att_per);
+        }
+        $p = max(1, (int) $this->input->get('p'));
+        $rev = $this->gbp_review_model->page(array('workshop' => $f_ws, 'stars' => $f_stars), $rev_per, ($p - 1) * $rev_per);
+        $qp = max(1, (int) $this->input->get('qp'));
+        $req = $this->gbp_review_model->page_requests($req_per, ($qp - 1) * $req_per);
         $this->render('admin/reviews/index', array(
             'title'       => 'Google reviews',
             'counts'      => $this->gbp_review_model->counts(),
             'asked_30d'   => $this->gbp_review_model->request_counts(),
-            'attention'   => $this->gbp_review_model->recent(50, 'attention'),
-            'reviews'     => $this->gbp_review_model->recent(60),
-            'requests'    => $this->gbp_review_model->recent_requests(25),
-            'workshops'   => ymo_review_workshops(),
+            'attention'   => $att['rows'],
+            'att_pager'   => array('page' => $ap, 'pages' => (int) ceil($att['total'] / $att_per), 'total' => $att['total'], 'per' => $att_per, 'param' => 'ap', 'anchor' => 'attention', 'path' => 'reviews', 'noun' => 'waiting'),
+            'reviews'     => $rev['rows'],
+            'rev_pager'   => array('page' => $p, 'pages' => (int) ceil($rev['total'] / $rev_per), 'total' => $rev['total'], 'per' => $rev_per, 'param' => 'p', 'anchor' => 'latest', 'path' => 'reviews', 'noun' => 'reviews'),
+            'f_ws'        => $f_ws,
+            'f_stars'     => $f_stars,
+            'requests'    => $req['rows'],
+            'req_pager'   => array('page' => $qp, 'pages' => (int) ceil($req['total'] / $req_per), 'total' => $req['total'], 'per' => $req_per, 'param' => 'qp', 'anchor' => 'asked', 'path' => 'reviews', 'noun' => 'requests'),
+            'workshops'   => $workshops,
             'client'      => $this->gbp_api->client(),
             'client_env'  => trim((string) getenv('YMO_GBP_CLIENT_ID')) !== '',
             'connected'   => $connected,
@@ -63,6 +92,62 @@ class Reviews extends Crm_Controller
         redirect(admin_url('reviews#ask'));
     }
 
+    /**
+     * POST reviews/ask-bulk — one customer per line: "Name, 98220 00011" (a workshop
+     * name on the line overrides the default, e.g. "Rahul 9822000011 warje").
+     */
+    public function ask_bulk()
+    {
+        $this->require_perm('leads.edit');
+        $this->_post_only();
+        $this->load->library('review_service');
+        $workshops = ymo_review_workshops();
+        $default = (string) $this->input->post('workshop');
+        $lines = preg_split('/\r\n|\r|\n/', (string) $this->input->post('lines'));
+        $sent = 0; $skipped = array(); $failed = array(); $seen = array(); $n = 0;
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if ($line === '') {
+                continue;
+            }
+            if (++$n > 50) {
+                $skipped[] = 'only the first 50 lines were sent';
+                break;
+            }
+            if (!preg_match('/(?:\+?91[\s-]*)?0?([6-9](?:[\s-]*\d){9})/', $line, $m)) {
+                $failed[] = $line.' (no mobile number)';
+                continue;
+            }
+            $mobile = ymo_indian_mobile($m[0]);
+            if ($mobile === '' || isset($seen[$mobile])) {
+                continue;
+            }
+            $seen[$mobile] = TRUE;
+            $rest = str_replace($m[0], ' ', $line);
+            $w = $default;
+            foreach ($workshops as $slug => $ws) {
+                if (preg_match('/\b'.preg_quote($slug, '/').'\b/i', $rest)) {
+                    $w = $slug;
+                    $rest = preg_replace('/\b'.preg_quote($slug, '/').'\b/i', ' ', $rest);
+                }
+            }
+            $name = trim(preg_replace('/[\s,;|\t-]+/', ' ', $rest));
+            $res = $this->review_service->ask($mobile, $name, $w, array('source' => 'bulk', 'admin_id' => (int) $this->admin['id']));
+            if ($res['ok']) {
+                $sent++;
+            } elseif (stripos($res['message'], 'already asked') !== FALSE) {
+                $skipped[] = ($name ?: $mobile).' (asked in the last 30 days)';
+            } else {
+                $failed[] = ($name ?: $mobile).': '.$res['message'];
+            }
+        }
+        $msg = $sent.' review request(s) sent.';
+        if ($skipped) { $msg .= ' Skipped: '.implode('; ', $skipped).'.'; }
+        if ($failed) { $msg .= ' Not sent: '.implode('; ', array_slice($failed, 0, 8)).(count($failed) > 8 ? ' …' : '').'.'; }
+        $this->flash($failed ? ($sent ? 'warning' : 'error') : 'success', $msg);
+        redirect(admin_url('reviews#ask'));
+    }
+
     /** POST reviews/{id}/reply — post the team's reply to Google. */
     public function reply($id)
     {
@@ -72,7 +157,7 @@ class Reviews extends Crm_Controller
         $text = trim((string) $this->input->post('text'));
         if (!$row || $text === '') {
             $this->flash('error', 'Write a reply first.');
-            redirect(admin_url('reviews'));
+            $this->_back('reviews', 'attention');
         }
         $name = $row['location_name'].'/reviews/'.$row['review_id'];
         if (!$this->gbp_api->reply($name, $text)) {
@@ -84,7 +169,7 @@ class Reviews extends Crm_Controller
             'handled_at' => date('Y-m-d H:i:s'), 'handled_by' => (int) $this->admin['id'], 'error' => NULL,
         ));
         $this->flash('success', 'Reply posted on Google.');
-        redirect(admin_url('reviews'));
+        $this->_back('reviews', 'attention');
     }
 
     /** POST reviews/{id}/done — the team has dealt with it (called the customer, replied on Google, …). */
@@ -94,7 +179,7 @@ class Reviews extends Crm_Controller
         $this->_post_only();
         $this->gbp_review_model->mark($id, array('handled_at' => date('Y-m-d H:i:s'), 'handled_by' => (int) $this->admin['id']));
         $this->flash('success', 'Marked as handled.');
-        redirect(admin_url('reviews'));
+        $this->_back('reviews', 'attention');
     }
 
     /** POST reviews/check — run the daily check now. */
@@ -248,5 +333,25 @@ class Reviews extends Crm_Controller
         if ($this->input->method() !== 'post') {
             show_error('Method not allowed', 405);
         }
+    }
+
+    /**
+     * Back to the list the action came from (same tab, page and filters), else the plain page.
+     */
+    protected function _back($path, $anchor = '')
+    {
+        $ref = (string) $this->input->server('HTTP_REFERER');
+        $base = admin_url($path);
+        $url = $base;
+        if ($ref !== '' && strpos($ref, $base) === 0) {
+            $url = preg_replace('/#.*$/', '', $ref);
+            $parts = parse_url($url);
+            if (!empty($parts['query'])) {
+                parse_str($parts['query'], $qs);
+                unset($qs['edit'], $qs['r']);
+                $url = $base.($qs ? '?'.http_build_query($qs) : '');
+            }
+        }
+        redirect($url.($anchor !== '' ? '#'.$anchor : ''));
     }
 }

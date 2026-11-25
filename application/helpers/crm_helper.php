@@ -863,3 +863,21 @@ if (!function_exists('crm_time_ago')) {
         return date('d M', $ts);
     }
 }
+
+if (!function_exists('crm_list_pager')) {
+    /**
+     * HTML for a pager under an in-page list (views/admin/partials/pager.php).
+     * Rendered in its own scope so its variables don't leak into later views.
+     * @param array $o page, pages, param, anchor, path, [total, per, noun]
+     */
+    function crm_list_pager(array $o)
+    {
+        $o += array('page' => 1, 'pages' => 1, 'param' => 'p', 'anchor' => '', 'path' => '', 'total' => NULL, 'per' => 0, 'noun' => '');
+        $render = function ($page, $pages, $param, $anchor, $path, $total, $per, $noun) {
+            ob_start();
+            include APPPATH.'views/admin/partials/pager.php';
+            return ob_get_clean();
+        };
+        return $render($o['page'], $o['pages'], $o['param'], $o['anchor'], $o['path'], $o['total'], $o['per'], $o['noun']);
+    }
+}
