@@ -80,11 +80,13 @@ CREATE TABLE IF NOT EXISTS gbp_posts (
     public function delete($id)
     {
         $row = $this->find($id);
-        if ($row && !empty($row['image_path']) && in_array($row['status'], array('scheduled', 'failed'), TRUE)) {
+        // Only R2 copies are removed; site assets (assets/img/...) are shared and stay.
+        if ($row && !empty($row['image_path']) && strpos($row['image_path'], 'r2/') === 0
+            && in_array($row['status'], array('draft', 'scheduled', 'failed'), TRUE)) {
             $this->load->helper('media');
             ymo_media_delete($row['image_path']);
         }
-        $this->db->where('id', (int) $id)->where_in('status', array('scheduled', 'failed'))->delete('gbp_posts');
+        $this->db->where('id', (int) $id)->where_in('status', array('draft', 'scheduled', 'failed'))->delete('gbp_posts');
         return $this->db->affected_rows() > 0;
     }
 
@@ -100,14 +102,30 @@ CREATE TABLE IF NOT EXISTS gbp_posts (
     {
         $this->ensure_schema();
         return $this->db->select('id, summary, cta_type, workshops, image_hash, image_path, status, publish_on, results, created_at, published_at, (image IS NOT NULL OR image_path IS NOT NULL) AS has_image', FALSE)
-            ->order_by("FIELD(status, 'scheduled') DESC", '', FALSE)->order_by('publish_on', 'DESC')->order_by('id', 'DESC')
+            // Drafts first (oldest first, so they read in order), then scheduled, then the rest by date.
+            ->order_by("FIELD(status, 'scheduled', 'draft') DESC", '', FALSE)
+            ->order_by("(status = 'draft') * id", 'ASC', FALSE)
+            ->order_by('publish_on', 'DESC')->order_by('id', 'DESC')
             ->limit((int) $limit)->get('gbp_posts')->result_array();
+    }
+
+    /** Post with this exact text already saved? (keeps the draft seeder idempotent) */
+    public function exists_with_summary($summary)
+    {
+        $this->ensure_schema();
+        return $this->db->where('summary', (string) $summary)->count_all_results('gbp_posts') > 0;
+    }
+
+    public function count_by_status($status)
+    {
+        $this->ensure_schema();
+        return $this->db->where('status', (string) $status)->count_all_results('gbp_posts');
     }
 
     public function last_published_on()
     {
         $this->ensure_schema();
-        $r = $this->db->select_max('published_at')->get_where('gbp_posts', array('status !=' => 'scheduled'))->row_array();
+        $r = $this->db->select_max('published_at')->where_not_in('status', array('scheduled', 'draft'))->get('gbp_posts')->row_array();
         return $r ? $r['published_at'] : NULL;
     }
 }

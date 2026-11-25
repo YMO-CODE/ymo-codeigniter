@@ -73,8 +73,12 @@ class Gbp_post_service
     public function image_url(array $post)
     {
         if (!empty($post['image_path'])) {
-            $this->CI->load->helper('media');
-            return ymo_media_url($post['image_path']);
+            if (strpos($post['image_path'], 'r2/') === 0) {
+                $this->CI->load->helper('media');
+                return ymo_media_url($post['image_path']);
+            }
+            // Website asset (e.g. assets/img/workshops/...): always the public www URL.
+            return rtrim(marketing_canonical_url(''), '/').'/'.ltrim($post['image_path'], '/');
         }
         return rtrim(marketing_canonical_url(''), '/').'/media/gbp/'.(int) $post['id'].'/'.$post['image_hash'];
     }
@@ -96,7 +100,7 @@ class Gbp_post_service
     {
         $sum = array('ok' => 0, 'failed' => 0, 'messages' => array());
         $post = $this->CI->gbp_post_model->find($id);
-        if (!$post || !in_array($post['status'], array('scheduled', 'failed', 'partial'), TRUE)) {
+        if (!$post || !in_array($post['status'], array('draft', 'scheduled', 'failed', 'partial'), TRUE)) {
             $sum['messages'][] = 'Post not found or already published.';
             return $sum;
         }

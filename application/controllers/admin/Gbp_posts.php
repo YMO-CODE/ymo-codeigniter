@@ -18,29 +18,55 @@ class Gbp_posts extends Crm_Controller
     {
         $this->require_perm('campaigns.view');
         $this->gbp_post_model->ensure_schema();
+        // ?edit={id}: load a post that is not live yet into the form.
+        $editing = NULL;
+        $edit_id = (int) $this->input->get('edit');
+        if ($edit_id > 0 && crm_can('campaigns.edit')) {
+            $row = $this->gbp_post_model->find($edit_id);
+            if ($row && in_array($row['status'], array('draft', 'scheduled', 'failed'), TRUE)) {
+                $editing = $row;
+            }
+        }
         $this->render('admin/gbp_posts/index', array(
             'title'     => 'Google posts',
-            'posts'     => $this->gbp_post_model->recent(40),
+            'posts'     => $this->gbp_post_model->recent(60),
             'workshops' => ymo_review_workshops(),
             'connected' => $this->gbp_post_service->connected_workshops(),
             'google_on' => (bool) $this->gbp_review_model->setting('gbp_oauth_token', NULL),
             'last'      => $this->gbp_post_model->last_published_on(),
+            'drafts'    => $this->gbp_post_model->count_by_status('draft'),
+            'editing'   => $editing,
             'can_edit'  => crm_can('campaigns.edit'),
             'max_text'  => Gbp_post_service::MAX_TEXT,
         ));
     }
 
-    /** POST google-posts/save — new post (publish now or on a date). */
+    /**
+     * POST google-posts/save — new post, or changes to a draft/scheduled/failed one (post_id).
+     * when: draft (keep, never auto-posts) | now | date (auto-posts with the 9 AM run).
+     */
     public function save()
     {
         $this->require_perm('campaigns.edit');
         $this->_post_only();
+        $post_id = (int) $this->input->post('post_id');
+        $existing = NULL;
+        if ($post_id > 0) {
+            $existing = $this->gbp_post_model->find($post_id);
+            if (!$existing || !in_array($existing['status'], array('draft', 'scheduled', 'failed'), TRUE)) {
+                $this->flash('error', 'That post is already live, so it can no longer be edited here.');
+                redirect(admin_url('google-posts'));
+            }
+        }
+        $back = admin_url('google-posts'.($existing ? '?edit='.$post_id : ''));
         $summary = trim(str_replace("\r\n", "\n", (string) $this->input->post('summary')));
         $workshops = array_values(array_intersect((array) $this->input->post('workshops'), array_keys(ymo_review_workshops())));
         $cta = (string) $this->input->post('cta_type');
         $cta = in_array($cta, array('CALL', 'BOOK', 'LEARN_MORE', 'NONE'), TRUE) ? $cta : 'CALL';
         $when = (string) $this->input->post('when');
+        $when = in_array($when, array('draft', 'now', 'date'), TRUE) ? $when : 'now';
         $date = (string) $this->input->post('publish_on');
+        $remove_photo = (bool) $this->input->post('remove_photo');
 
         $errors = array();
         if ($summary === '') {
@@ -69,45 +95,60 @@ class Gbp_posts extends Crm_Controller
         }
 
         if ($errors) {
-            $this->session->set_flashdata('gbp_post_draft', array('summary' => $summary, 'workshops' => $workshops, 'cta_type' => $cta, 'publish_on' => $date));
+            $this->session->set_flashdata('gbp_post_draft', array('summary' => $summary, 'workshops' => $workshops, 'cta_type' => $cta, 'publish_on' => $date, 'when' => $when));
             $this->flash('error', implode(' ', $errors));
-            redirect(admin_url('google-posts'));
+            redirect($back);
         }
 
-        // Photo goes to the R2 public bucket; the database copy is only the no-R2 fallback.
-        $image_hash = $image !== NULL ? substr(sha1($image), 0, 12) : '';
-        $image_path = NULL;
-        if ($image !== NULL) {
-            $image_path = ymo_media_put_bytes('public', 'gbp/'.date('Y/m').'/'.$image_hash.'-'.bin2hex(random_bytes(3)).'.jpg', $image, 'image/jpeg');
-            if ($image_path !== NULL) {
-                $image = NULL;
-            }
-        }
-        $id = $this->gbp_post_model->create(array(
+        $fields = array(
             'summary'    => $summary,
             'cta_type'   => $cta,
             'workshops'  => implode(',', $workshops),
-            'image'      => $image,
-            'image_hash' => $image_hash,
-            'image_path' => $image_path,
-            'status'     => 'scheduled',
+            'status'     => $when === 'draft' ? 'draft' : 'scheduled',
             'publish_on' => $when === 'date' ? $date : date('Y-m-d'),
-            'created_by' => (int) $this->admin['id'],
-        ));
-        $this->audit->log('admin', $this->admin['id'], 'gbp_post.create', 'gbp_post', $id, array('workshops' => $workshops, 'when' => $when === 'date' ? $date : 'now'));
+        );
+        // New photo: R2 public bucket; the database copy is only the no-R2 fallback.
+        if ($image !== NULL) {
+            $hash = substr(sha1($image), 0, 12);
+            $stored = ymo_media_put_bytes('public', 'gbp/'.date('Y/m').'/'.$hash.'-'.bin2hex(random_bytes(3)).'.jpg', $image, 'image/jpeg');
+            $fields['image_hash'] = $hash;
+            $fields['image_path'] = $stored;
+            $fields['image'] = $stored !== NULL ? NULL : $image;
+        } elseif ($remove_photo && $existing) {
+            $fields['image_hash'] = '';
+            $fields['image_path'] = NULL;
+            $fields['image'] = NULL;
+        }
+        if ($existing && (isset($fields['image_path']) || $remove_photo) && !empty($existing['image_path']) && strpos($existing['image_path'], 'r2/') === 0) {
+            ymo_media_delete($existing['image_path']);
+        }
 
-        if ($when !== 'date') {
+        if ($existing) {
+            $fields['results'] = NULL;
+            $this->gbp_post_model->update($post_id, $fields);
+            $id = $post_id;
+            $this->audit->log('admin', $this->admin['id'], 'gbp_post.update', 'gbp_post', $id, array('workshops' => $workshops, 'when' => $when === 'date' ? $date : $when));
+        } else {
+            $fields += array('image' => NULL, 'image_hash' => '', 'image_path' => NULL);
+            $fields['created_by'] = (int) $this->admin['id'];
+            $id = $this->gbp_post_model->create($fields);
+            $this->audit->log('admin', $this->admin['id'], 'gbp_post.create', 'gbp_post', $id, array('workshops' => $workshops, 'when' => $when === 'date' ? $date : $when));
+        }
+
+        if ($when === 'now') {
             $s = $this->gbp_post_service->publish($id);
             $this->flash($s['failed'] ? ($s['ok'] ? 'warning' : 'error') : 'success',
                 $s['ok'] ? 'Posted to '.$s['ok'].' listing(s).'.($s['failed'] ? ' Failed: '.implode('; ', $s['messages']) : '')
                     : 'Not posted: '.implode('; ', $s['messages']));
-        } else {
+        } elseif ($when === 'date') {
             $this->flash('success', 'Scheduled for '.date('D d M', strtotime($date)).'. It goes live with the 9 AM daily run.');
+        } else {
+            $this->flash('success', 'Saved as a draft. It stays here until you publish it.');
         }
         redirect(admin_url('google-posts'));
     }
 
-    /** POST google-posts/{id}/publish — publish a scheduled post now, or retry a failed one. */
+    /** POST google-posts/{id}/publish — publish a draft or scheduled post now, or retry a failed one. */
     public function publish($id)
     {
         $this->require_perm('campaigns.edit');
@@ -125,7 +166,7 @@ class Gbp_posts extends Crm_Controller
         $this->require_perm('campaigns.edit');
         $this->_post_only();
         $ok = $this->gbp_post_model->delete((int) $id);
-        $this->flash($ok ? 'success' : 'error', $ok ? 'Post removed from the queue.' : 'Only scheduled or failed posts can be removed here. Live posts are removed on Google.');
+        $this->flash($ok ? 'success' : 'error', $ok ? 'Post removed.' : 'Only drafts, scheduled or failed posts can be removed here. Live posts are removed on Google.');
         redirect(admin_url('google-posts'));
     }
 
