@@ -164,6 +164,10 @@ class Webhooks extends CI_Controller
 
         $this->crm_integration_model->log('whatsapp', 'message_received', $data, 'inbound', 200);
 
+        if ($is_meta_cloud) {
+            $this->_whatsapp_push($messages);
+        }
+
         return $this->_json(array(
             'ok'        => TRUE,
             'lead_ids'  => array_values(array_unique($lead_ids)),
@@ -171,6 +175,50 @@ class Webhooks extends CI_Controller
             'opted_out' => $opted_out,
             'auto'      => array_values(array_filter($auto)),
         ));
+    }
+
+    /** Phone alert (CRM home-screen app) for each customer who wrote to us: one per sender. */
+    protected function _whatsapp_push(array $messages)
+    {
+        $by = array();
+        foreach ($messages as $m) {
+            if (crm_whatsapp_is_opt_out($m['text'])) {
+                continue;
+            }
+            $from = preg_replace('/\D/', '', (string) $m['from']);
+            if ($from === '') {
+                continue;
+            }
+            if (!isset($by[$from])) {
+                $by[$from] = array('name' => trim((string) $m['name']), 'texts' => array(), 'n' => 0);
+            }
+            $by[$from]['n']++;
+            $t = trim((string) $m['text']);
+            if ($t === '') {
+                $type = (string) ($m['raw']['type'] ?? '');
+                $t = $type !== '' && $type !== 'text' ? '['.$type.']' : '';
+            }
+            if ($t !== '') {
+                $by[$from]['texts'][] = $t;
+            }
+        }
+        if (!$by) {
+            return;
+        }
+        try {
+            $this->load->model('ymochat_model');
+            foreach ($by as $from => $x) {
+                $who = $x['name'] !== '' ? $x['name'] : '+'.$from;
+                $body = $x['texts'] ? implode(' · ', $x['texts']) : 'New message';
+                if (mb_strlen($body) > 160) {
+                    $body = mb_substr($body, 0, 157).'…';
+                }
+                $this->ymochat_model->push_alert('WhatsApp · '.$who.($x['n'] > 1 ? ' ('.$x['n'].')' : ''), $body,
+                    admin_url('inbox/'.$from), 'wa-'.$from, TRUE);
+            }
+        } catch (Exception $e) {
+            log_message('error', '[whatsapp_push] '.$e->getMessage());
+        }
     }
 
     /** Is there already a WhatsApp lead for this sender? */

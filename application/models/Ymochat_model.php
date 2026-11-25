@@ -570,15 +570,25 @@ SQL;
         return $sent;
     }
 
-    /** Push any CRM alert (e.g. a new Google review) to every phone with alerts on. */
-    public function push_alert($title, $body, $url, $tag)
+    /**
+     * Push any CRM alert (a new Google review, a WhatsApp message…) to every phone
+     * with alerts on. $respect_quiet: skip phones with "quiet nights" between 10 PM and 8 AM.
+     */
+    public function push_alert($title, $body, $url, $tag, $respect_quiet = FALSE)
     {
         if (!$this->ensure_schema()) {
             return 0;
         }
-        $subs = $this->db->select('s.id, s.endpoint, s.p256dh, s.auth')
+        $subs = $this->db->select('s.id, s.endpoint, s.p256dh, s.auth, s.quiet_nights')
             ->from('ymochat_push_subs s')->join('admin_users a', 'a.id = s.admin_id')
             ->where('a.is_active', 1)->get()->result_array();
+        if ($respect_quiet && $subs) {
+            $h = (int) (new DateTime('now', new DateTimeZone('Asia/Kolkata')))->format('G');
+            $night = $h >= 22 || $h < 8;
+            $subs = array_values(array_filter($subs, function ($s) use ($night) {
+                return !($night && $s['quiet_nights']);
+            }));
+        }
         if (!$subs) {
             return 0;
         }
