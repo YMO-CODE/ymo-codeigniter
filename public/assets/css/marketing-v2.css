@@ -3019,3 +3019,36 @@
     margin-left: 0.75rem;
     opacity: 0.85;
 }
+
+/* Workshop photo grid (locality pages): swipe row on phones, 3 columns from tablet up. */
+.ymo-workshop-photos {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 72%;
+  gap: 10px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+}
+.ymo-workshop-photos__item { scroll-snap-align: start; }
+@media (min-width: 768px) {
+  .ymo-workshop-photos { grid-auto-flow: row; grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: visible; }
+}
+.ymo-workshop-photos__item {
+  margin: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #e5e7eb;
+  aspect-ratio: 4 / 5;
+}
+.ymo-theme-v2 .ymo-workshop-photos__item img,
+.ymo-workshop-photos__item img {
+  display: block;
+  margin: 0;
+  max-width: none;
+  border-radius: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
