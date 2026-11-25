@@ -90,7 +90,7 @@ class Review_responder
             } elseif ($text !== '') {
                 $mid[] = 'We are really glad you had a good experience at '.$area.'.';
             } else {
-                $mid[] = 'Glad you were happy with our work at '.$area.'.';
+                $mid[] = 'Glad you were happy with the work at '.$area.'.';
             }
             if ($staff !== '') {
                 $mid[] = 'We have passed your kind words on to '.$staff.'.';
