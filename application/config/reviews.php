@@ -16,12 +16,14 @@ $config['review_workshops'] = array(
         'city'     => 'pune',
         'place_id' => 'ChIJ1X7rK5y7wjsRzLwRob-jb3U',
         'area'     => 'our Hinjewadi workshop',
+        'page'     => 'best-car-services-hinjewadi-pune',
     ),
     'warje' => array(
         'label'    => 'Warje',
         'city'     => 'pune',
         'place_id' => 'ChIJq7XI77GVwjsRosT1iLyuSHs',
         'area'     => 'our Warje workshop',
+        'page'     => 'car-servicing-in-warje-pune',
         // Customer areas that are served from Warje rather than Hinjewadi.
         'areas'    => array('warje', 'karve nagar', 'karvenagar', 'kothrud', 'sinhagad', 'narhe', 'dhayari', 'nanded', 'shivane', 'bavdhan', 'erandwane', 'vadgaon', 'ambegaon', 'katraj', 'dhankawadi', 'kirkatwadi', 'khadakwasla'),
     ),
@@ -30,12 +32,14 @@ $config['review_workshops'] = array(
         'city'     => 'indore',
         'place_id' => 'ChIJUTfU14DjYjkRgAAmoXIzzVQ',
         'area'     => 'our Indore workshop',
+        'page'     => 'locations/indore',
     ),
     'nashik' => array(
         'label'    => 'Nashik',
         'city'     => 'nashik',
         'place_id' => 'ChIJWzBgMSTr3TsRd_mSlY1G4ho',
         'area'     => 'our Nashik workshop',
+        'page'     => 'locations/nashik',
     ),
 );
 

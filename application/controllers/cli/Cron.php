@@ -110,8 +110,11 @@ class Cron extends CI_Controller
         try {
             $this->load->library('review_service');
             $s = $this->review_service->daily_check();
-            return sprintf('new=%d replied=%d alerted=%d failed=%d%s', $s['new'], $s['replied'], $s['alerted'], $s['failed'],
+            $out = sprintf('new=%d replied=%d alerted=%d failed=%d%s', $s['new'], $s['replied'], $s['alerted'], $s['failed'],
                 $s['errors'] ? ' errors='.implode(' | ', $s['errors']) : '');
+            $this->load->library('gbp_post_service');
+            $p = $this->gbp_post_service->publish_due();
+            return $out.sprintf(' posts_live=%d posts_failed=%d', $p['published'], $p['failed']);
         } catch (Exception $e) {
             return 'error='.$e->getMessage();
         }

@@ -106,6 +106,10 @@ if (ymo_is_admin_host_request()) {
     $route['contacts/(:num)/edit']             = 'admin/contacts/edit/$1';
 
     $route['campaigns']                        = 'admin/campaigns/index';
+    $route['google-posts'] = 'admin/gbp_posts/index';
+    $route['google-posts/save'] = 'admin/gbp_posts/save';
+    $route['google-posts/(:num)/publish'] = 'admin/gbp_posts/publish/$1';
+    $route['google-posts/(:num)/delete'] = 'admin/gbp_posts/delete/$1';
     $route['reviews'] = 'admin/reviews/index';
     $route['reviews/connect'] = 'admin/reviews/connect';
     $route['reviews/google/callback'] = 'admin/reviews/callback';
@@ -114,6 +118,7 @@ if (ymo_is_admin_host_request()) {
     $route['reviews/credentials'] = 'admin/reviews/credentials';
     $route['reviews/check'] = 'admin/reviews/check';
     $route['reviews/ask'] = 'admin/reviews/ask';
+    $route['reviews/ask-bulk'] = 'admin/reviews/ask_bulk';
     $route['reviews/(:num)/reply'] = 'admin/reviews/reply/$1';
     $route['reviews/(:num)/done'] = 'admin/reviews/done/$1';
     $route['ymochat/app-manifest'] = 'api/ymochat/manifest';
@@ -242,6 +247,10 @@ if (ymo_is_admin_host_request()) {
     $route['admin/contacts/(:num)']            = 'admin/contacts/view/$1';
     $route['admin/contacts/(:num)/edit']       = 'admin/contacts/edit/$1';
     $route['admin/campaigns']                  = 'admin/campaigns/index';
+    $route['google-posts'] = 'admin/gbp_posts/index';
+    $route['google-posts/save'] = 'admin/gbp_posts/save';
+    $route['google-posts/(:num)/publish'] = 'admin/gbp_posts/publish/$1';
+    $route['google-posts/(:num)/delete'] = 'admin/gbp_posts/delete/$1';
     $route['reviews'] = 'admin/reviews/index';
     $route['reviews/connect'] = 'admin/reviews/connect';
     $route['reviews/google/callback'] = 'admin/reviews/callback';
@@ -250,9 +259,14 @@ if (ymo_is_admin_host_request()) {
     $route['reviews/credentials'] = 'admin/reviews/credentials';
     $route['reviews/check'] = 'admin/reviews/check';
     $route['reviews/ask'] = 'admin/reviews/ask';
+    $route['reviews/ask-bulk'] = 'admin/reviews/ask_bulk';
     $route['reviews/(:num)/reply'] = 'admin/reviews/reply/$1';
     $route['reviews/(:num)/done'] = 'admin/reviews/done/$1';
     $route['ymochat/app-manifest'] = 'api/ymochat/manifest';
+    $route['admin/google-posts'] = 'admin/gbp_posts/index';
+    $route['admin/google-posts/save'] = 'admin/gbp_posts/save';
+    $route['admin/google-posts/(:num)/publish'] = 'admin/gbp_posts/publish/$1';
+    $route['admin/google-posts/(:num)/delete'] = 'admin/gbp_posts/delete/$1';
     $route['admin/reviews'] = 'admin/reviews/index';
     $route['admin/reviews/connect'] = 'admin/reviews/connect';
     $route['admin/reviews/google/callback'] = 'admin/reviews/callback';
@@ -261,6 +275,7 @@ if (ymo_is_admin_host_request()) {
     $route['admin/reviews/credentials'] = 'admin/reviews/credentials';
     $route['admin/reviews/check'] = 'admin/reviews/check';
     $route['admin/reviews/ask'] = 'admin/reviews/ask';
+    $route['admin/reviews/ask-bulk'] = 'admin/reviews/ask_bulk';
     $route['admin/reviews/(:num)/reply'] = 'admin/reviews/reply/$1';
     $route['admin/reviews/(:num)/done'] = 'admin/reviews/done/$1';
     $route['admin/ymochat/app-manifest'] = 'api/ymochat/manifest';
@@ -322,6 +337,7 @@ if (ymo_is_admin_host_request()) {
     $route['request-callback']        = 'marketing/contact/callback';
     $route['review/([a-z]+)']        = 'marketing/review_link/go/$1';
     $route['review']                 = 'marketing/review_link/go';
+    $route['media/gbp/(:num)/([a-f0-9]+)'] = 'marketing/gbp_media/show/$1/$2';
     $route['request-callback/thanks'] = 'marketing/contact/callback_thanks';
     $route['about-us']             = 'marketing/pages/show';
     $route['api/offers/active']    = 'api/offers/active';
@@ -478,6 +494,10 @@ if (ymo_is_admin_host_request()) {
     $route['admin/contacts/(:num)'] = 'admin/contacts/view/$1';
     $route['admin/contacts/(:num)/edit'] = 'admin/contacts/edit/$1';
     $route['admin/campaigns'] = 'admin/campaigns/index';
+    $route['admin/google-posts'] = 'admin/gbp_posts/index';
+    $route['admin/google-posts/save'] = 'admin/gbp_posts/save';
+    $route['admin/google-posts/(:num)/publish'] = 'admin/gbp_posts/publish/$1';
+    $route['admin/google-posts/(:num)/delete'] = 'admin/gbp_posts/delete/$1';
     $route['admin/reviews'] = 'admin/reviews/index';
     $route['admin/reviews/connect'] = 'admin/reviews/connect';
     $route['admin/reviews/google/callback'] = 'admin/reviews/callback';
@@ -486,6 +506,7 @@ if (ymo_is_admin_host_request()) {
     $route['admin/reviews/credentials'] = 'admin/reviews/credentials';
     $route['admin/reviews/check'] = 'admin/reviews/check';
     $route['admin/reviews/ask'] = 'admin/reviews/ask';
+    $route['admin/reviews/ask-bulk'] = 'admin/reviews/ask_bulk';
     $route['admin/reviews/(:num)/reply'] = 'admin/reviews/reply/$1';
     $route['admin/reviews/(:num)/done'] = 'admin/reviews/done/$1';
     $route['admin/ymochat/app-manifest'] = 'api/ymochat/manifest';

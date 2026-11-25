@@ -206,6 +206,16 @@ class Gbp_api
         return $res !== NULL;
     }
 
+    /**
+     * Publish a post ("What's new" / offer) on one location.
+     * $account_location = accounts/…/locations/…
+     * @return array|null Google's localPost (name, searchUrl, state) or NULL ($this->error says why)
+     */
+    public function create_post($account_location, array $post)
+    {
+        return $this->_request('POST', 'https://mybusiness.googleapis.com/v4/'.$account_location.'/localPosts', $post, TRUE);
+    }
+
     // --- helpers --------------------------------------------------------------------
 
     public static function stars($s)

@@ -21,6 +21,7 @@ $item = function ($path, $icon, $label, $active) {
 <a href="<?= admin_url('ymochat'); ?>" class="<?= admin_nav_active('ymochat') ? 'active' : ''; ?>"><span class="mi mi-sm mi-leading">travel_explore</span>YMOChat<span class="ymo-nav-badge ymochat-live-badge" hidden></span></a>
 <?= $item('leads', 'person_search', 'Leads', admin_nav_active('leads')); ?>
 <?= $item('reviews', 'reviews', 'Google reviews', admin_nav_active('reviews')); ?>
+<?php if (crm_can('campaigns.view')): ?><?= $item('google-posts', 'storefront', 'Google posts', admin_nav_active('google-posts')); ?><?php endif; ?>
 <?php endif; ?>
 <?php if ($can('bookings.view')): ?>
 <?= $item('bookings', 'event_note', 'Bookings', admin_nav_active('bookings')); ?>
