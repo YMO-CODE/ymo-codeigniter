@@ -111,7 +111,7 @@ class Review_responder
         if ($staff !== '') {
             $parts[] = 'We will pass your note on to '.$staff.'.';
         }
-        $parts[] = 'We would love to know what would have made it 5 stars – please call or WhatsApp us on 75587 83868.';
+        $parts[] = 'We would love to know what would have made it 5 stars – please call us on 75587 83868 or WhatsApp us on 77440 65904.';
         return implode(' ', $parts).' – Team YMO';
     }
 
@@ -182,7 +182,7 @@ class Review_responder
             ."Customers get live WhatsApp photo/video updates during service. Write the owner's public reply.\n\n"
             ."Rules: 1–3 short sentences, warm and specific to what they wrote, no emojis, no hashtags, no discounts or promises, "
             ."do not repeat their whole review, use their first name if it looks like a real name, mention '".$area."' only if natural, "
-            ."sign off with ' – Team YMO'. ".($stars === 4 ? "It is a 4-star review: thank them and invite them to tell us what would have made it 5 stars by calling or WhatsApping 75587 83868. " : '')
+            ."sign off with ' – Team YMO'. ".($stars === 4 ? "It is a 4-star review: thank them and invite them to tell us what would have made it 5 stars by calling 75587 83868 or WhatsApping 77440 65904. " : '')
             ."\n\nAlso give 'reason': ".($stars < 5 ? "in one short sentence, why the customer did not give 5 stars, based only on the text (if they did not say, say so)." : "an empty string.")
             ."\n\nReturn only JSON: {\"reply\": \"...\", \"reason\": \"...\"}\n\n"
             ."Reviewer: ".$review['author']."\nStars: ".$stars."\nReview: ".($review['comment'] !== '' ? $review['comment'] : '(no text)');

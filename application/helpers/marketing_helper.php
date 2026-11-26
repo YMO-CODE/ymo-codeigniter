@@ -3640,7 +3640,7 @@ if (!function_exists('marketing_llms_txt')) {
         $lines[] = '- Multi-brand car service and repair: Maruti, Hyundai, Tata, Honda, Toyota, Kia, Mahindra, Skoda, Volkswagen, and luxury cars (BMW, Mercedes-Benz, Audi).';
         $lines[] = '- Prices (from): complete car service ₹2,499; AC repair and gas recharge ₹999; brake inspection ₹499; denting and painting ₹4,500 per panel; interior deep cleaning ₹2,500; 3-stage rubbing and polishing ₹6,500. Final price is confirmed before work starts.';
         $lines[] = '- Free pick-up and drop; WhatsApp photo and video updates during the service; customers approve the estimate before any job; for most bookings payment is after delivery.';
-        $lines[] = '- Call or WhatsApp: +91 75587 83868. Book online: '.ymo_booking_url('packages');
+        $lines[] = '- Call: +91 75587 83868. WhatsApp: +91 77440 65904. Book online: '.ymo_booking_url('packages');
         $lines[] = '';
         $lines[] = '## Key locality pages';
         $listed = array();
@@ -3681,7 +3681,7 @@ if (!function_exists('marketing_llms_txt')) {
         $lines[] = '';
         $lines[] = '## Contact';
         $lines[] = '- [Contact us]('.marketing_canonical_url('contact-us').'): Book or enquire online';
-        $lines[] = '- Phone and WhatsApp: +91 75587 83868';
+        $lines[] = '- Phone: +91 75587 83868'."\n".'- WhatsApp: +91 77440 65904';
         $lines[] = '- Email: contactus@yourmechaniconline.com';
         $lines[] = '- Instagram: https://www.instagram.com/yourmechaniconline_ymo/';
         return implode("\n", $lines)."\n";

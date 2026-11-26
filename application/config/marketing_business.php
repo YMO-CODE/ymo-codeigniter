@@ -26,7 +26,10 @@ return array(
 
     'email'            => 'contactus@yourmechaniconline.com',
 
-    'whatsapp_e164'    => '917558783868',
+    // WhatsApp Business (Cloud API) number: chats land in the CRM inbox with phone alerts.
+    // Calls stay on phone_e164 above.
+    'whatsapp_e164'    => '917744065904',
+    'whatsapp_display' => '+91 77440 65904',
 
     'parts_policy'     => 'We use OEM, OES, or brand-approved parts matched to your car and the job — alternatives are explained on your estimate before anything is fitted. Customer-supplied parts can be fitted on request where safe and appropriate.',
 

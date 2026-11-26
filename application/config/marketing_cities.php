@@ -12,7 +12,7 @@ return array(
         'hub_path'   => 'locations/pune',
         'phone'      => '+91 75587 83868',
         'voice_phone'=> '+91-7558783868',
-        'whatsapp'   => '+917558783868',
+        'whatsapp'   => '+917744065904',
         'email'      => 'contactus@yourmechaniconline.com',
         'gbp_url'    => 'https://share.google/zdztabyzbml7l1uvZ',
         'address'    => array(
@@ -59,7 +59,7 @@ return array(
         'hub_path'   => 'locations/indore',
         'phone'      => '+91 75587 83868',
         'voice_phone'=> '+91-7558783868',
-        'whatsapp'   => '+917558783868',
+        'whatsapp'   => '+917744065904',
         'email'      => 'contactus@yourmechaniconline.com',
         'gbp_url'    => '',
         'address'    => array(
@@ -100,7 +100,7 @@ return array(
         'hub_path'   => 'locations/nashik',
         'phone'      => '+91 75587 83868',
         'voice_phone'=> '+91-7558783868',
-        'whatsapp'   => '+917558783868',
+        'whatsapp'   => '+917744065904',
         'email'      => 'contactus@yourmechaniconline.com',
         'gbp_url'    => '',
         'address'    => array(

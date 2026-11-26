@@ -56,7 +56,7 @@ if (!function_exists('marketing_business_whatsapp_url')) {
     function marketing_business_whatsapp_url($message = 'Hi YMO, I would like to book a car service')
     {
         $c = marketing_business_config();
-        $num = !empty($c['whatsapp_e164']) ? preg_replace('/\D/', '', $c['whatsapp_e164']) : '917558783868';
+        $num = !empty($c['whatsapp_e164']) ? preg_replace('/\D/', '', $c['whatsapp_e164']) : '917744065904';
         return 'https://wa.me/'.$num.'?text='.rawurlencode($message);
     }
 }
@@ -150,7 +150,16 @@ if (!function_exists('marketing_apply_business_nap_to_html')) {
             '7558303868'      => '7558783868',
             '7823015407'      => '7558783868',
         );
-        return str_replace(array_keys($replacements), array_values($replacements), $html);
+        // 77440 65904 is the WhatsApp Business number: old page copy listed it as a
+        // phone line (rewritten to the call number above), but WhatsApp links keep it.
+        $keep = array(
+            'wa.me/917744065904'                          => '%%YMO_WA_LINK%%',
+            'api.whatsapp.com/send?phone=917744065904'    => '%%YMO_WA_API%%',
+            'api.whatsapp.com/send/?phone=917744065904'   => '%%YMO_WA_API2%%',
+        );
+        $html = str_replace(array_keys($keep), array_values($keep), $html);
+        $html = str_replace(array_keys($replacements), array_values($replacements), $html);
+        return str_replace(array_values($keep), array_keys($keep), $html);
     }
 }
 

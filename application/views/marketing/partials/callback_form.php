@@ -20,7 +20,7 @@ if ($cb_area === '' && !empty($cb_page['city_slug']) && function_exists('marketi
     $cb_area = $cb_city && !empty($cb_city['name']) ? (string) $cb_city['name'] : '';
 }
 $cb_wa_msg = 'Hi YMO, I need a car service'.($cb_area !== '' ? ' in '.$cb_area : '').'.';
-$cb_wa = function_exists('marketing_business_whatsapp_url') ? marketing_business_whatsapp_url($cb_wa_msg) : 'https://wa.me/917558783868?text='.rawurlencode($cb_wa_msg);
+$cb_wa = function_exists('marketing_business_whatsapp_url') ? marketing_business_whatsapp_url($cb_wa_msg) : 'https://wa.me/917744065904?text='.rawurlencode($cb_wa_msg);
 ?>
 <div id="callback" class="ymo-callback-card md-card-elevated p-3 p-md-4 mb-4">
     <h2 class="md-title-lg mb-1">Get a free call back<?= $cb_area !== '' ? ' in '.html_escape($cb_area) : ''; ?></h2>

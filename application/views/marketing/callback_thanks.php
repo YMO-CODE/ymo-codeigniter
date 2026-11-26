@@ -1,7 +1,7 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 <?php
 $tel = function_exists('marketing_business_phone_e164') ? marketing_business_phone_e164() : '+917558783868';
-$wa  = function_exists('marketing_business_whatsapp_url') ? marketing_business_whatsapp_url('Hi YMO, I just asked for a call back') : 'https://wa.me/917558783868';
+$wa  = function_exists('marketing_business_whatsapp_url') ? marketing_business_whatsapp_url('Hi YMO, I just asked for a call back') : 'https://wa.me/917744065904';
 ?>
 <section class="container py-5">
     <div class="row justify-content-center">

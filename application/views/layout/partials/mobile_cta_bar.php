@@ -8,7 +8,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $mcb_tel = function_exists('marketing_business_phone_e164') ? marketing_business_phone_e164() : '+917558783868';
 $mcb_wa  = function_exists('marketing_business_whatsapp_url')
     ? marketing_business_whatsapp_url('Hi YMO, I would like to book a car service')
-    : 'https://wa.me/917558783868?text='.rawurlencode('Hi YMO, I would like to book a car service');
+    : 'https://wa.me/917744065904?text='.rawurlencode('Hi YMO, I would like to book a car service');
 ?>
 <style>
 .ymo-mobile-cta-bar{display:none}
