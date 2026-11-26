@@ -108,6 +108,25 @@ class Webhooks extends CI_Controller
         $opted_out = 0;
         if ($is_meta_cloud) {
             $this->load->model(array('crm_wa_message_model', 'crm_campaign_model'));
+            // Where each conversation came from: Meta ad/post (referral block),
+            // a website WhatsApp button (pre-filled text), or a direct first message.
+            // Worked out before logging, so "first message ever" is still knowable.
+            $seen = array();
+            foreach ($messages as $i => $msg) {
+                $src = crm_whatsapp_referral($msg['raw']);
+                if (!$src && crm_whatsapp_website_origin($msg['text'])) {
+                    $src = array('kind' => 'website', 'platform' => 'web');
+                }
+                $ph = crm_whatsapp_e164($msg['from']);
+                if (!$src && !isset($seen[$ph]) && !$this->crm_wa_message_model->has_inbound($ph)) {
+                    $src = array('kind' => 'direct');
+                }
+                $seen[$ph] = TRUE;
+                if ($src) {
+                    $this->crm_wa_message_model->record_source($ph, $src, $msg['message_id'] ?: NULL);
+                    $messages[$i]['source'] = $src;
+                }
+            }
             foreach ($messages as $msg) {
                 // They wrote to us on WhatsApp, so a "No WhatsApp" tag is wrong.
                 $this->crm_campaign_model->clear_no_whatsapp($msg['from']);
@@ -138,8 +157,19 @@ class Webhooks extends CI_Controller
                 }
                 continue;
             }
+            // New leads from ads / the website get that source; existing leads keep theirs.
+            $src = isset($msg['source']) ? $msg['source'] : NULL;
+            $slug = 'whatsapp';
+            if ($src && in_array($src['kind'], array('meta_ad', 'meta_post'), TRUE)) {
+                $slug = $src['platform'] === 'instagram' ? 'instagram' : 'meta';
+            } elseif ($src && $src['kind'] === 'website') {
+                $slug = 'website';
+            }
+            if ($slug !== 'whatsapp' && $this->crm_lead_model->source_id_by_slug($slug) <= 0) {
+                $slug = 'whatsapp';
+            }
             $lead_id = $this->crm_lead_model->ingest_chat_message(
-                'whatsapp',
+                $slug,
                 array(
                     'name'    => $msg['name'],
                     'mobile'  => $msg['from'],
@@ -190,7 +220,10 @@ class Webhooks extends CI_Controller
                 continue;
             }
             if (!isset($by[$from])) {
-                $by[$from] = array('name' => trim((string) $m['name']), 'texts' => array(), 'n' => 0);
+                $by[$from] = array('name' => trim((string) $m['name']), 'texts' => array(), 'n' => 0, 'via' => '');
+            }
+            if (!empty($m['source']) && $m['source']['kind'] !== 'direct') {
+                $by[$from]['via'] = crm_wa_source_label($m['source']);
             }
             $by[$from]['n']++;
             $t = trim((string) $m['text']);
@@ -213,7 +246,7 @@ class Webhooks extends CI_Controller
                 if (mb_strlen($body) > 160) {
                     $body = mb_substr($body, 0, 157).'…';
                 }
-                $this->ymochat_model->push_alert('WhatsApp · '.$who.($x['n'] > 1 ? ' ('.$x['n'].')' : ''), $body,
+                $this->ymochat_model->push_alert('WhatsApp'.($x['via'] !== '' ? ' · '.$x['via'] : '').' · '.$who.($x['n'] > 1 ? ' ('.$x['n'].')' : ''), $body,
                     admin_url('inbox/'.$from), 'wa-'.$from, TRUE);
             }
         } catch (Exception $e) {

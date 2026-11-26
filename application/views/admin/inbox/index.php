@@ -1,7 +1,7 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 $open = $phone !== '';
-$qs = function (array $changes) use ($show, $q) {
-    $p = array_filter(array_merge(array('show' => $show, 'q' => $q), $changes), function ($v) { return $v !== NULL && $v !== ''; });
+$qs = function (array $changes) use ($show, $q, $src) {
+    $p = array_filter(array_merge(array('show' => $show, 'q' => $q, 'src' => $src), $changes), function ($v) { return $v !== NULL && $v !== ''; });
     return $p ? '?'.http_build_query($p) : '';
 };
 $label = function ($m) {
@@ -25,6 +25,16 @@ $wa_format = function ($text) {
     $h = preg_replace('/(^|[\s(])~([^~\n]+)~(?=[\s).,!?:;]|$)/u', '$1<s>$2</s>', $h);
     return nl2br($h);
 };
+// Where the conversation came from (Meta ad / post, website button, direct).
+$src_chip = function ($s) {
+    $lbl = crm_wa_source_label($s);
+    if ($lbl === '' || $s['kind'] === 'direct') {
+        return '';
+    }
+    $cls = $s['kind'] === 'website' ? 'web' : (($s['platform'] ?? '') === 'instagram' ? 'ig' : 'fb');
+    $title = trim(($s['headline'] ?? '').(!empty($s['ad_id']) ? ' · ad '.$s['ad_id'] : ''), ' ·');
+    return '<span class="ymo-src ymo-src-'.$cls.'"'.($title !== '' ? ' title="'.html_escape($title).'"' : '').'>'.html_escape($lbl).'</span>';
+};
 $ticks = array('queued' => 'schedule', 'sent' => 'done', 'delivered' => 'done_all', 'read' => 'done_all', 'failed' => 'error');
 ?>
 <?php if (!$ready): ?>
@@ -38,8 +48,15 @@ $ticks = array('queued' => 'schedule', 'sent' => 'done', 'delivered' => 'done_al
                 <a class="btn <?= $show === 'unread' ? 'btn-primary' : 'btn-outline-secondary'; ?>" href="<?= admin_url('inbox'.$qs(array('show' => 'unread', 'page' => NULL))); ?>">Unread<?= $unread ? ' ('.(int) $unread.')' : ''; ?></a>
                 <a class="btn <?= $show === 'all' ? 'btn-primary' : 'btn-outline-secondary'; ?>" href="<?= admin_url('inbox'.$qs(array('show' => 'all', 'page' => NULL))); ?>">All</a>
             </div>
+            <div class="btn-group btn-group-sm" role="group" aria-label="Where the chat came from">
+                <?php foreach (array('' => 'Any', 'ads' => 'From ads', 'website' => 'Website', 'direct' => 'Direct') as $k => $lbl):
+                    $n = $k !== '' && isset($src_counts[$k]) ? (int) $src_counts[$k] : NULL; ?>
+                    <a class="btn <?= $src === $k ? 'btn-primary' : 'btn-outline-secondary'; ?>" href="<?= admin_url('inbox'.$qs(array('src' => $k, 'page' => NULL))); ?>"><?= $lbl; ?><?= $n ? ' ('.$n.')' : ''; ?></a>
+                <?php endforeach; ?>
+            </div>
             <form method="get" action="<?= admin_url('inbox'); ?>" class="flex-grow-1">
                 <input type="hidden" name="show" value="<?= html_escape($show); ?>">
+                <?php if ($src !== ''): ?><input type="hidden" name="src" value="<?= html_escape($src); ?>"><?php endif; ?>
                 <input class="form-control form-control-sm" type="search" name="q" placeholder="Search number" value="<?= html_escape($q); ?>">
             </form>
             <?php if ($unread): ?>
@@ -49,7 +66,7 @@ $ticks = array('queued' => 'schedule', 'sent' => 'done', 'delivered' => 'done_al
             <?php endif; ?>
         </div>
         <?php if (!$rows): ?>
-            <p class="ymo-muted small p-3 mb-0"><?= $show === 'unread' ? 'No unread messages. You are all caught up.' : 'No WhatsApp conversations yet.'; ?></p>
+            <p class="ymo-muted small p-3 mb-0"><?= $src !== '' ? 'No conversations from this source'.($show === 'unread' ? ' with unread messages' : '').'.' : ($show === 'unread' ? 'No unread messages. You are all caught up.' : 'No WhatsApp conversations yet.'); ?></p>
         <?php endif; ?>
         <?php foreach ($rows as $r):
             $rw = $r['who'];
@@ -58,7 +75,7 @@ $ticks = array('queued' => 'schedule', 'sent' => 'done', 'delivered' => 'done_al
         ?>
             <a href="<?= admin_url('inbox/'.$r['phone'].$qs(array())); ?>" class="ymo-inbox-row <?= $r['phone'] === $phone ? 'active' : ''; ?> <?= $r['unread'] ? 'unread' : ''; ?>">
                 <div class="d-flex justify-content-between gap-2">
-                    <strong class="text-truncate"><?= html_escape($name); ?></strong>
+                    <strong class="text-truncate"><?= html_escape($name); ?> <?= $src_chip($r['source']); ?></strong>
                     <span class="small ymo-muted text-nowrap"><?= $m ? html_escape(crm_time_ago($m['created_at'])) : ''; ?></span>
                 </div>
                 <div class="d-flex justify-content-between gap-2 align-items-center">
@@ -95,6 +112,22 @@ $ticks = array('queued' => 'schedule', 'sent' => 'done', 'delivered' => 'done_al
                     <div>
                         <strong><?= html_escape($who['name'] !== '' ? $who['name'] : '+'.$phone); ?></strong>
                         <div class="small ymo-muted">+<?= html_escape($phone); ?></div>
+                        <?php $first_src = $sources ? $sources[0] : NULL;
+                        if ($first_src && $first_src['kind'] !== 'direct'): ?>
+                            <div class="small mt-1">
+                                <?= $src_chip($first_src); ?>
+                                <?php if ($first_src['headline'] !== ''): ?><span class="ymo-muted">“<?= html_escape(mb_strimwidth($first_src['headline'], 0, 70, '…')); ?>”</span><?php endif; ?>
+                                <?php if ($first_src['source_url'] !== '' && preg_match('#^https://#', $first_src['source_url'])): ?> <a href="<?= html_escape($first_src['source_url']); ?>" target="_blank" rel="noopener noreferrer" class="small">View ad ↗</a><?php endif; ?>
+                                <span class="ymo-muted">· <?= html_escape(date('d M, H:i', strtotime($first_src['created_at']))); ?></span>
+                                <?php if (count($sources) > 1): ?>
+                                    <details class="d-inline-block ms-1"><summary class="small ymo-muted" style="cursor:pointer">earlier (<?= count($sources) - 1; ?>)</summary>
+                                        <?php foreach (array_slice($sources, 1) as $es): ?>
+                                            <div class="small ymo-muted"><?= html_escape(crm_wa_source_label($es)); ?><?= $es['headline'] !== '' ? ' · “'.html_escape(mb_strimwidth($es['headline'], 0, 50, '…')).'”' : ''; ?> · <?= html_escape(date('d M Y', strtotime($es['created_at']))); ?></div>
+                                        <?php endforeach; ?>
+                                    </details>
+                                <?php endif; ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                     <div class="d-flex flex-wrap gap-1">
                         <?php if ($tel): ?><a class="btn btn-sm btn-outline-primary" href="<?= $tel; ?>"><span class="mi mi-sm mi-leading">call</span>Call</a><?php endif; ?>

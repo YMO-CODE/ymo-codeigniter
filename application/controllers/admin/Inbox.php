@@ -21,6 +21,8 @@ class Inbox extends Crm_Controller
         $this->require_perm('leads.view');
         $show   = $this->input->get('show') === 'all' ? 'all' : 'unread';
         $q      = trim((string) $this->input->get('q'));
+        $src    = (string) $this->input->get('src');
+        $src    = in_array($src, array('ads', 'website', 'direct'), TRUE) ? $src : '';
         $page   = max(1, (int) $this->input->get('page'));
         $per    = 30;
         $phone  = crm_whatsapp_e164($phone);
@@ -30,9 +32,11 @@ class Inbox extends Crm_Controller
             $show = 'all';
         }
 
-        $list = $this->crm_wa_message_model->conversations($show === 'unread', $q, $per, ($page - 1) * $per);
+        $list = $this->crm_wa_message_model->conversations($show === 'unread', $q, $per, ($page - 1) * $per, $src);
+        $sources = $this->crm_wa_message_model->latest_sources(array_column($list['rows'], 'phone'));
         foreach ($list['rows'] as &$r) {
             $r['who'] = $this->_who($r['phone']);
+            $r['source'] = isset($sources[$r['phone']]) ? $sources[$r['phone']] : NULL;
             if (!empty($r['last'])) {
                 $r['last']['rendered'] = $this->crm_wa_message_model->render_template($r['last']);
             }
@@ -43,6 +47,8 @@ class Inbox extends Crm_Controller
             'title'   => 'Inbox',
             'show'    => $show,
             'q'       => $q,
+            'src'     => $src,
+            'src_counts' => $this->crm_wa_message_model->source_counts(),
             'page'    => $page,
             'pages'   => max(1, (int) ceil($list['total'] / $per)),
             'rows'    => $list['rows'],
@@ -60,6 +66,7 @@ class Inbox extends Crm_Controller
             }
             unset($m);
             $data['who']       = $this->_who($phone);
+            $data['sources']   = $this->crm_wa_message_model->sources_for($phone, 10);
             $data['in_window'] = $this->crm_wa_message_model->in_service_window($phone);
             $data['unread']    = $this->crm_wa_message_model->unread_count();
             foreach ($data['rows'] as &$r) {

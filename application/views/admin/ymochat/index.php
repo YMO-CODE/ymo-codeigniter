@@ -168,7 +168,25 @@
         }).then(function (r) {
             swReg = r[1];
             if (!r[0].key) throw new Error('nokey:' + (r[0].error || ''));
-            return swReg.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: b64ToBytes(r[0].key)});
+            var opts = {userVisibleOnly: true, applicationServerKey: b64ToBytes(r[0].key)};
+            // A registration left over from older alert keys blocks a new one
+            // (InvalidStateError on Android Chrome): drop it and register again.
+            return swReg.pushManager.getSubscription().then(function (old) {
+                return old ? old.unsubscribe().catch(function () {}) : null;
+            }).then(function () {
+                return swReg.pushManager.subscribe(opts);
+            }).catch(function (err) {
+                if (err && err.name === 'InvalidStateError') {
+                    return swReg.pushManager.getSubscription().then(function (old) { return old ? old.unsubscribe() : null; })
+                        .then(function () { return swReg.pushManager.subscribe(opts); });
+                }
+                throw err;
+            }).catch(function (err) {
+                var e2 = new Error('subscribe');
+                e2.detail = (err && (err.name || '')) + (err && err.message ? ': ' + err.message : '');
+                e2.push = err && err.name;
+                throw e2;
+            });
         }).then(function (sub) {
             curSub = sub;
             return xpost(PUSH + 'subscribe', Object.assign({sub: sub.toJSON(), device: deviceName, test: 1}, prefs()));
@@ -178,9 +196,30 @@
             paintPush(true);
         }).catch(function (e) {
             btn.disabled = false;
-            var m = e && e.message === 'blocked'
-                ? 'Notifications are blocked for the CRM in this browser. Allow them in the browser’s site settings (lock icon next to the address), then tap the button again.'
-                : 'Could not turn on alerts' + (e && /^nokey/.test(e.message) ? ' (server could not create its alert keys: ' + esc(e.message.slice(6) || 'unknown') + ').' : '. Please try again.');
+            var msg = e && e.message || '', m;
+            var android = /Android/.test(ua), brave = !!(navigator.brave);
+            if (msg === 'blocked') {
+                m = android
+                    ? 'Notifications are blocked for the CRM. Open Android Settings → Apps → ' + (standalone ? 'YMO CRM (or your browser)' : 'your browser') + ' → Notifications and allow them; also allow them for this site in the browser’s site settings. Then tap the button again.'
+                    : 'Notifications are blocked for the CRM in this browser. Allow them in the browser’s site settings (lock icon next to the address), then tap the button again.';
+            } else if (msg === 'dismissed') {
+                m = 'The notification permission prompt was closed. Tap the button again and choose Allow.';
+            } else if (/^nokey/.test(msg)) {
+                m = 'Could not turn on alerts (server could not create its alert keys: ' + esc(msg.slice(6) || 'unknown') + ').';
+            } else if (msg === 'subscribe') {
+                if (e.push === 'AbortError' || e.push === 'NotAllowedError' && !brave) {
+                    m = 'This browser could not reach its push service, so alerts can’t be turned on here.'
+                        + (brave ? ' In Brave, open Settings → Privacy and security, turn on “Use Google services for push messaging”, restart Brave and try again.'
+                                 : (android ? ' Use Google Chrome on this phone (it needs Google Play services) and make sure Chrome’s notifications are allowed in Android Settings → Apps → Chrome.' : ' Try Google Chrome or Microsoft Edge.'));
+                } else {
+                    m = 'Could not register this device for alerts.';
+                }
+                m += ' <span class="ymo-muted">(' + esc(e.detail || 'unknown error') + ')</span>';
+            } else if (msg === 'save') {
+                m = 'This device registered, but the CRM could not save it. Reload the page and try again.';
+            } else {
+                m = 'Could not turn on alerts. Please try again. <span class="ymo-muted">(' + esc((e && (e.name + ': ' + e.message)) || 'unknown') + ')</span>';
+            }
             paintPush(false, '<span class="mi mi-sm mi-leading text-danger">error</span>' + m);
         });
     }

@@ -881,3 +881,77 @@ if (!function_exists('crm_list_pager')) {
         return $render($o['page'], $o['pages'], $o['param'], $o['anchor'], $o['path'], $o['total'], $o['per'], $o['noun']);
     }
 }
+
+if (!function_exists('crm_whatsapp_referral')) {
+    /**
+     * Where an inbound WhatsApp Cloud API message came from, when Meta says so:
+     * Click-to-WhatsApp ads and boosted posts add a "referral" block to the
+     * first message (ad id, headline, link, click id).
+     * @return array|null {kind: meta_ad|meta_post, platform: instagram|facebook|meta,
+     *                     ad_id, headline, body, source_url, ctwa_clid, media_type}
+     */
+    function crm_whatsapp_referral(array $raw)
+    {
+        $ref = isset($raw['referral']) && is_array($raw['referral']) ? $raw['referral'] : NULL;
+        if (!$ref) {
+            return NULL;
+        }
+        $url = (string) ($ref['source_url'] ?? '');
+        $host = strtolower((string) parse_url($url, PHP_URL_HOST));
+        $platform = 'meta';
+        if (strpos($host, 'instagram') !== FALSE || strpos($host, 'instagr.am') !== FALSE) {
+            $platform = 'instagram';
+        } elseif (strpos($host, 'facebook') !== FALSE || strpos($host, 'fb.me') !== FALSE || strpos($host, 'fb.com') !== FALSE) {
+            $platform = 'facebook';
+        }
+        $type = strtolower((string) ($ref['source_type'] ?? 'ad'));
+        $clip = function ($s, $n) { $s = trim((string) $s); return function_exists('mb_substr') ? mb_substr($s, 0, $n) : substr($s, 0, $n); };
+        return array(
+            'kind'       => $type === 'post' ? 'meta_post' : 'meta_ad',
+            'platform'   => $platform,
+            'ad_id'      => $clip($ref['source_id'] ?? '', 64),
+            'headline'   => $clip($ref['headline'] ?? '', 190),
+            'body'       => $clip($ref['body'] ?? '', 500),
+            'source_url' => $clip($url, 500),
+            'ctwa_clid'  => $clip($ref['ctwa_clid'] ?? '', 190),
+            'media_type' => $clip($ref['media_type'] ?? '', 20),
+        );
+    }
+}
+
+if (!function_exists('crm_whatsapp_website_origin')) {
+    /**
+     * Messages pre-filled by the website's WhatsApp buttons (see
+     * whatsapp_cta.php, mobile_cta_bar.php, callback_form.php): those chats
+     * started on the website. Returns 'website' or NULL.
+     */
+    function crm_whatsapp_website_origin($text)
+    {
+        $t = strtolower(trim(preg_replace('/\s+/', ' ', (string) $text)));
+        foreach (array('hi ymo, i would like to book a car service', 'hi ymo, i just asked for a call back') as $p) {
+            if (strpos($t, $p) === 0) {
+                return 'website';
+            }
+        }
+        return NULL;
+    }
+}
+
+if (!function_exists('crm_wa_source_label')) {
+    /** Short label for a WhatsApp conversation source row (crm_wa_sources). */
+    function crm_wa_source_label($src)
+    {
+        if (!$src || empty($src['kind'])) {
+            return '';
+        }
+        $plat = array('instagram' => 'Instagram', 'facebook' => 'Facebook', 'meta' => 'Meta');
+        $p = isset($plat[$src['platform'] ?? '']) ? $plat[$src['platform']] : 'Meta';
+        switch ($src['kind']) {
+            case 'meta_ad':   return $p.' ad';
+            case 'meta_post': return $p.' post';
+            case 'website':   return 'Website';
+            case 'direct':    return 'Direct';
+        }
+        return '';
+    }
+}

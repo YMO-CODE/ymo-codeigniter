@@ -2225,6 +2225,11 @@ table.ymo-table tbody tr:hover { background: var(--ymo-grey-100); }
 .ymo-inbox-row:hover { background: var(--ymo-grey-100); }
 .ymo-inbox-row.active { background: var(--ymo-primary-soft); }
 .ymo-inbox-row.unread strong { color: var(--ymo-primary-dark); }
+/* Where a WhatsApp conversation came from (Instagram / Facebook ad, website). */
+.ymo-src { display: inline-block; font-size: .68rem; font-weight: 600; line-height: 1.5; padding: 0 .45rem; border-radius: 999px; vertical-align: middle; white-space: nowrap; }
+.ymo-src-ig { background: #fce7f3; color: #9d174d; }
+.ymo-src-fb { background: #dbeafe; color: #1e40af; }
+.ymo-src-web { background: #e5e7eb; color: #374151; }
 .ymo-inbox-messages { flex: 1; overflow-y: auto; background: #f4f1ea; display: flex; flex-direction: column; gap: .4rem; }
 .ymo-inbox-day { align-self: center; font-size: .75rem; color: var(--ymo-grey-700); background: #fff; border-radius: 999px; padding: .1rem .6rem; margin: .4rem 0; }
 .ymo-bubble { max-width: 75%; padding: .45rem .7rem .3rem; border-radius: 10px; background: #fff; box-shadow: 0 1px 1px rgba(0, 0, 0, .06); }

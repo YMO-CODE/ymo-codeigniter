@@ -9,6 +9,27 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Crm_wa_message_model extends CI_Model
 {
     const TABLE = 'crm_wa_messages';
+    /** Where each conversation came from (Meta ad / post, website button, direct). */
+    const SOURCES = 'crm_wa_sources';
+    const SOURCES_SQL = "
+CREATE TABLE IF NOT EXISTS crm_wa_sources (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  phone VARCHAR(20) NOT NULL,
+  kind VARCHAR(20) NOT NULL,
+  platform VARCHAR(20) NOT NULL DEFAULT '',
+  ad_id VARCHAR(64) NOT NULL DEFAULT '',
+  headline VARCHAR(190) NOT NULL DEFAULT '',
+  body VARCHAR(500) NOT NULL DEFAULT '',
+  source_url VARCHAR(500) NOT NULL DEFAULT '',
+  ctwa_clid VARCHAR(190) NOT NULL DEFAULT '',
+  wa_message_id VARCHAR(100) NULL,
+  created_at DATETIME NOT NULL,
+  PRIMARY KEY (id),
+  KEY idx_phone (phone, id),
+  KEY idx_kind (kind)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+";
+    protected $sources_ready = NULL;
 
     /** @var bool|null */
     protected $ready = NULL;
@@ -47,6 +68,106 @@ class Crm_wa_message_model extends CI_Model
         $data['updated_at'] = $data['created_at'];
         $this->db->insert(self::TABLE, $data);
         return (int) $this->db->insert_id();
+    }
+
+    public function sources_ready()
+    {
+        if ($this->sources_ready !== NULL) {
+            return $this->sources_ready;
+        }
+        if ($this->db->table_exists(self::SOURCES)) {
+            return $this->sources_ready = TRUE;
+        }
+        // Same collation as the message table, so the inbox can join the two.
+        $sql = trim(self::SOURCES_SQL);
+        $st = $this->db->query("SHOW TABLE STATUS LIKE '".self::TABLE."'")->row_array();
+        if ($st && !empty($st['Collation']) && preg_match('/^utf8mb4_[a-z0-9_]+$/', $st['Collation'])) {
+            $sql .= ' COLLATE='.$st['Collation'];
+        }
+        if (!$this->db->query($sql)) {
+            log_message('error', '[crm_wa_sources] schema failed: '.$this->db->error()['message']);
+            return $this->sources_ready = FALSE;
+        }
+        return $this->sources_ready = TRUE;
+    }
+
+    /** Has this number ever written to us before? (checked before logging the new message) */
+    public function has_inbound($phone)
+    {
+        if (!$this->table_ready()) {
+            return FALSE;
+        }
+        return $this->db->where('phone', crm_whatsapp_e164($phone))->where('direction', 'in')
+            ->limit(1)->count_all_results(self::TABLE) > 0;
+    }
+
+    /**
+     * Remember where a conversation came from.
+     * @param array $src kind (meta_ad|meta_post|website|direct), platform, ad_id, headline, body, source_url, ctwa_clid
+     */
+    public function record_source($phone, array $src, $wa_message_id = NULL)
+    {
+        if (!$this->sources_ready()) {
+            return 0;
+        }
+        $row = array(
+            'phone'         => crm_whatsapp_e164($phone),
+            'kind'          => (string) $src['kind'],
+            'platform'      => (string) ($src['platform'] ?? ''),
+            'ad_id'         => (string) ($src['ad_id'] ?? ''),
+            'headline'      => (string) ($src['headline'] ?? ''),
+            'body'          => (string) ($src['body'] ?? ''),
+            'source_url'    => (string) ($src['source_url'] ?? ''),
+            'ctwa_clid'     => (string) ($src['ctwa_clid'] ?? ''),
+            'wa_message_id' => $wa_message_id ?: NULL,
+            'created_at'    => date('Y-m-d H:i:s'),
+        );
+        if ($row['phone'] === '') {
+            return 0;
+        }
+        $this->db->insert(self::SOURCES, $row);
+        return (int) $this->db->insert_id();
+    }
+
+    /** Latest source per phone: phone => row. */
+    public function latest_sources(array $phones)
+    {
+        $phones = array_values(array_filter(array_unique(array_map('strval', $phones))));
+        if (!$phones || !$this->sources_ready()) {
+            return array();
+        }
+        $out = array();
+        $rows = $this->db->where_in('phone', $phones)->order_by('id', 'ASC')->get(self::SOURCES)->result_array();
+        foreach ($rows as $r) {
+            $out[$r['phone']] = $r;
+        }
+        return $out;
+    }
+
+    /** Every recorded source for one number, newest first. */
+    public function sources_for($phone, $limit = 10)
+    {
+        if (!$this->sources_ready()) {
+            return array();
+        }
+        return $this->db->where('phone', crm_whatsapp_e164($phone))->order_by('id', 'DESC')
+            ->limit((int) $limit)->get(self::SOURCES)->result_array();
+    }
+
+    /** Conversations per source filter: counts for the inbox tabs. */
+    public function source_counts()
+    {
+        $out = array('ads' => 0, 'website' => 0, 'direct' => 0);
+        if (!$this->sources_ready()) {
+            return $out;
+        }
+        foreach ($this->db->select("CASE WHEN kind IN ('meta_ad','meta_post') THEN 'ads' ELSE kind END AS k, COUNT(DISTINCT phone) n", FALSE)
+            ->group_by('k')->get(self::SOURCES)->result_array() as $r) {
+            if (isset($out[$r['k']])) {
+                $out[$r['k']] = (int) $r['n'];
+            }
+        }
+        return $out;
     }
 
     /** Record a webhook delivery receipt; never downgrades read -> delivered. */
@@ -124,13 +245,15 @@ class Crm_wa_message_model extends CI_Model
      *
      * @return array{rows: array, total: int}
      */
-    public function conversations($only_unread = FALSE, $q = '', $limit = 30, $offset = 0)
+    public function conversations($only_unread = FALSE, $q = '', $limit = 30, $offset = 0, $source = '')
     {
         if (!$this->table_ready()) {
             return array('rows' => array(), 'total' => 0);
         }
         $unread_sql = $this->inbox_ready() ? "SUM(m.direction = 'in' AND m.read_at IS NULL)" : '0';
-        $build = function () use ($unread_sql, $only_unread, $q) {
+        $kinds = array('ads' => array('meta_ad', 'meta_post'), 'website' => array('website'), 'direct' => array('direct'));
+        $source = isset($kinds[$source]) && $this->sources_ready() ? $source : '';
+        $build = function () use ($unread_sql, $only_unread, $q, $source, $kinds) {
             $this->db->select("m.phone, MAX(m.id) AS last_id, MAX(m.created_at) AS last_at, $unread_sql AS unread, MAX(CASE WHEN m.direction = 'in' THEN m.created_at END) AS last_in", FALSE)
                 ->from(self::TABLE.' m')
                 ->group_by('m.phone')
@@ -141,6 +264,10 @@ class Crm_wa_message_model extends CI_Model
             $digits = preg_replace('/\D+/', '', (string) $q);
             if ($digits !== '') {
                 $this->db->like('m.phone', $digits);
+            }
+            if ($source !== '') {
+                $in = implode(',', array_map(array($this->db, 'escape'), $kinds[$source]));
+                $this->db->where('m.phone IN (SELECT s.phone FROM '.self::SOURCES.' s WHERE s.kind IN ('.$in.'))', NULL, FALSE);
             }
         };
         $build();
