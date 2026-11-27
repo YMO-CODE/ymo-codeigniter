@@ -344,6 +344,7 @@ if (ymo_is_admin_host_request()) {
     $route['about-us']             = 'marketing/pages/show';
     $route['api/offers/active']    = 'api/offers/active';
     $route['api/ymochat/beat']     = 'api/ymochat/beat';
+    $route['api/ads/wa-click']     = 'api/ads/wa_click';
     $route['api/ymochat/send']     = 'api/ymochat/send';
     $route['api/ymochat/contact']  = 'api/ymochat/contact';
     $route['api/offers/preview/(:num)'] = 'api/offers/preview/$1';
@@ -555,6 +556,8 @@ if (ymo_is_admin_host_request()) {
     $route['api/webhooks/meta'] = 'api/webhooks/meta';
     $route['api/webhooks/website'] = 'api/webhooks/website';
     $route['api/webhooks/whatsapp'] = 'api/webhooks/whatsapp';
+    $route['api/ads/wa-click'] = 'api/ads/wa_click';
+    $route['api/google-ads/conversions\.csv'] = 'api/ads/conversions';
     $route['api/offers/active'] = 'api/offers/active';
     $route['api/offers/preview/(:num)'] = 'api/offers/preview/$1';
 }

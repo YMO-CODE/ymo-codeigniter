@@ -105,6 +105,14 @@ class Webhooks extends CI_Controller
             return $this->_json(array('ok' => TRUE, 'skipped' => 'no_text_messages', 'receipts' => $receipts));
         }
 
+        // Website WhatsApp buttons tapped by Google Ads visitors carry an invisible
+        // reference (see google_tag.php); read it, then drop it from the text.
+        $this->load->model('crm_ad_click_model');
+        foreach ($messages as $i => $msg) {
+            $messages[$i]['ad_ref'] = Crm_ad_click_model::decode_ref($msg['text']);
+            $messages[$i]['text'] = Crm_ad_click_model::strip_ref($msg['text']);
+        }
+
         $opted_out = 0;
         if ($is_meta_cloud) {
             $this->load->model(array('crm_wa_message_model', 'crm_campaign_model'));
@@ -118,7 +126,9 @@ class Webhooks extends CI_Controller
                     $src = array('kind' => 'website', 'platform' => 'web');
                 }
                 $ph = crm_whatsapp_e164($msg['from']);
-                if (!$src && !isset($seen[$ph]) && !$this->crm_wa_message_model->has_inbound($ph)) {
+                $first = !isset($seen[$ph]) && !$this->crm_wa_message_model->has_inbound($ph);
+                $messages[$i]['first'] = $first;
+                if (!$src && $first) {
                     $src = array('kind' => 'direct');
                 }
                 $seen[$ph] = TRUE;
@@ -186,6 +196,9 @@ class Webhooks extends CI_Controller
             );
             if ($lead_id) {
                 $lead_ids[] = $lead_id;
+                if ($is_meta_cloud) {
+                    $this->_whatsapp_ad_click($lead_id, $msg);
+                }
             }
             if ($is_meta_cloud) {
                 $auto[] = $this->crm_wa_autoreply->handle($msg['from'], $msg['name'], $msg['text'], (int) $lead_id);
@@ -457,6 +470,24 @@ class Webhooks extends CI_Controller
             return (string) $data['username'];
         }
         return NULL;
+    }
+
+    /** Link a WhatsApp lead to the Google Ads click behind it (reference or timing). */
+    protected function _whatsapp_ad_click($lead_id, array $msg)
+    {
+        $how = $this->crm_ad_click_model->attach_whatsapp_lead($lead_id, $msg['ad_ref'] ?? NULL, !empty($msg['first']));
+        if (!$how) {
+            return;
+        }
+        $this->load->model('crm_lead_activity_model');
+        $this->crm_lead_activity_model->add((int) $lead_id, NULL, 'system',
+            'Came from a Google Ads click ('.($how === 'ref' ? 'WhatsApp button on the website' : 'matched by time to a WhatsApp tap on the website').').',
+            array('source' => 'google_ads', 'match' => $how));
+        // A brand-new conversation: show the lead as a Google Ads lead.
+        $gid = $this->crm_lead_model->source_id_by_slug('google_ads');
+        if (!empty($msg['first']) && $gid > 0) {
+            $this->db->where('id', (int) $lead_id)->update('crm_leads', array('source_id' => $gid));
+        }
     }
 
     protected function _json(array $payload, $code = 200)

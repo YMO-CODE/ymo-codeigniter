@@ -275,6 +275,7 @@ class Crm_lead_model extends CI_Model
         $payload = $this->_filter_known_columns($this->_normalize_followup_payload($payload));
         if (!empty($payload['stage'])) {
             $payload['status'] = crm_lead_stage_status($payload['stage']);
+            $this->_stamp_stage_times($payload['stage']);
         }
         $payload['updated_at'] = date('Y-m-d H:i:s');
         $this->db->where('id', (int) $id)->update(self::TABLE, $payload);
@@ -362,6 +363,7 @@ class Crm_lead_model extends CI_Model
             'updated_at'        => date('Y-m-d H:i:s'),
         );
         $payload = $this->_apply_raw_address_car($payload, $fields['raw'] ?? NULL);
+        $payload = $this->_apply_ad_click($payload, $fields['raw'] ?? NULL);
         $payload = $this->_filter_known_columns($payload);
         $this->db->insert(self::TABLE, $payload);
         return (int) $this->db->insert_id();
@@ -479,6 +481,56 @@ class Crm_lead_model extends CI_Model
             }
         }
         return $payload;
+    }
+
+    /**
+     * Google click id from a website lead's attribution (raw.utm) → lead columns.
+     * Ignored until Crm_ad_click_model has added the columns.
+     */
+    protected function _apply_ad_click(array $payload, $raw)
+    {
+        if (!is_array($raw) || empty($raw['utm']) || !is_array($raw['utm'])) {
+            return $payload;
+        }
+        $this->load->model('crm_ad_click_model');
+        $click = Crm_ad_click_model::click_from_attr($raw['utm']);
+        if ($click && $this->crm_ad_click_model->ensure_schema()) {
+            $payload['ad_click_type'] = $click[0];
+            $payload['ad_click_id'] = $click[1];
+            $payload['ad_match'] = 'form';
+        }
+        return $payload;
+    }
+
+    /** Staff logged the lead as genuinely interested (call outcome "Interested"). */
+    public function mark_qualified($id)
+    {
+        if ($this->db->field_exists('qualified_at', self::TABLE)) {
+            $this->db->set('qualified_at', 'COALESCE(qualified_at, '.$this->db->escape(date('Y-m-d H:i:s')).')', FALSE)
+                ->where('id', (int) $id)->update(self::TABLE);
+        }
+    }
+
+    /**
+     * First time a lead is quoted / booked (Google Ads offline conversions).
+     * Applied to the next update() write via the query builder.
+     */
+    protected function _stamp_stage_times($stage)
+    {
+        static $has = NULL;
+        if ($has === NULL) {
+            $has = $this->db->field_exists('qualified_at', self::TABLE) && $this->db->field_exists('booked_at', self::TABLE);
+        }
+        if (!$has) {
+            return;
+        }
+        $now = $this->db->escape(date('Y-m-d H:i:s'));
+        if (in_array($stage, array('quote_sent', 'booked'), TRUE)) {
+            $this->db->set('qualified_at', 'COALESCE(qualified_at, '.$now.')', FALSE);
+        }
+        if ($stage === 'booked') {
+            $this->db->set('booked_at', 'COALESCE(booked_at, '.$now.')', FALSE);
+        }
     }
 
     protected function _filter_known_columns(array $payload)

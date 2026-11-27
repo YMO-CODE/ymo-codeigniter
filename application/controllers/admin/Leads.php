@@ -374,6 +374,9 @@ class Leads extends Crm_Controller
         } else {
             $this->crm_lead_model->update($id, array());
         }
+        if ($outcome === 'interested') {
+            $this->crm_lead_model->mark_qualified($id); // Google Ads "CRM - Qualified lead"
+        }
         if (empty($lead['assigned_to'])) {
             $this->crm_lead_model->assign($id, (int) $this->admin['id']);
         }
