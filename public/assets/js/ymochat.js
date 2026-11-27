@@ -4,7 +4,7 @@
  *  - Chat window: visitors can write to us, and the team can start a chat
  *    from the CRM (the message pops up here).
  *  - Asks for name + mobile so every chat becomes a CRM lead.
- * Config: window.YMOCHAT = { api, wa, phone }.
+ * Config: window.YMOCHAT = { api, wa, phone, agent }.
  */
 (function () {
     'use strict';
@@ -106,7 +106,7 @@
         '.ymc-f{display:flex;gap:8px;padding:8px;border-top:1px solid #e5e5e5;background:#fff}' +
         '.ymc-f textarea{flex:1;resize:none;border:1px solid #ccd;border-radius:10px;padding:8px 10px;font:inherit;max-height:90px}' +
         '.ymc-f button{border:0;border-radius:10px;background:#1b5e20;color:#fff;padding:0 14px;font-weight:600;cursor:pointer}' +
-        '.ymc-p{position:fixed;right:20px;bottom:150px;z-index:1080;max-width:280px;background:#fff;border-radius:14px;padding:10px 12px;box-shadow:0 8px 28px rgba(0,0,0,.22);font:14px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#1d1d1d;cursor:pointer;display:none}' +
+        '.ymc-p{position:fixed;right:20px;bottom:150px;z-index:1080;max-width:300px;max-height:60vh;overflow-y:auto;background:#fff;border-radius:14px;padding:10px 26px 10px 12px;box-shadow:0 8px 28px rgba(0,0,0,.22);font:14px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#1d1d1d;cursor:pointer;display:none}' +
         '.ymc-p.on{display:block;animation:ymcin .3s ease-out}.ymc-p b{display:block;font-size:12px;color:#1b5e20;margin-bottom:2px}' +
         '.ymc-p .ymc-px{position:absolute;top:2px;right:8px;border:0;background:none;font-size:18px;color:#889;cursor:pointer}' +
         '@keyframes ymcin{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}' +
@@ -144,7 +144,7 @@
         if (!ui) { return; }
         var mine = m.sender === 'visitor';
         if (m.sender === 'system') { ui.b.appendChild(el('div', 'ymc-s', esc(m.body))); }
-        else { ui.b.appendChild(el('div', 'ymc-m ' + (mine ? 'me' : 'them'), esc(m.body) + '<small>' + (m.sender === 'agent' && m.agent_name ? esc(m.agent_name) + ' · ' : '') + esc((m.created_at || '').slice(11, 16)) + '</small>')); }
+        else { ui.b.appendChild(el('div', 'ymc-m ' + (mine ? 'me' : 'them'), esc(m.body) + '<small>' + (m.sender === 'agent' && agentName(m) ? esc(agentName(m)) + ' · ' : '') + esc((m.created_at || '').slice(11, 16)) + '</small>')); }
         ui.b.scrollTop = ui.b.scrollHeight;
     }
     function markSeen() {
@@ -153,9 +153,11 @@
         if (ui) { ui.p.classList.remove('on'); }
         badge(0);
     }
+    // One friendly name for every team reply (CFG.agent, e.g. "Shreya"), else the agent's first name.
+    function agentName(m) { return CFG.agent || m.agent_name || ''; }
     function preview(m) {
-        ui.p.querySelector('b').textContent = (m.agent_name || 'YMO') + ' from YMO';
-        ui.p.querySelector('span').textContent = m.body.length > 140 ? m.body.slice(0, 140) + '…' : m.body;
+        ui.p.querySelector('b').textContent = (agentName(m) || 'YMO') + ' from YMO';
+        ui.p.querySelector('span').textContent = m.body.length > 400 ? m.body.slice(0, 400) + '…' : m.body;
         ui.p.classList.add('on');
         badge(msgs.filter(function (x) { return x.sender === 'agent' && x.id > seenAgent; }).length);
     }

@@ -43,6 +43,8 @@ $config['ymochat_enabled'] = (getenv('YMO_YMOCHAT') === FALSE || trim((string) g
 if ($config['ymochat_enabled']) {
     $config['livechat_license'] = 0;
 }
+// Name visitors see on team replies in YMOChat ("Shreya from YMO"), whoever answers.
+$config['ymochat_agent_name'] = trim((string) getenv('YMO_YMOCHAT_AGENT')) ?: 'Shreya';
 
 // Cities where service is currently offered. Used to populate the signup
 // dropdown and to validate the chosen city. Add a new row here when expanding.
