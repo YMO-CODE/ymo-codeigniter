@@ -73,8 +73,8 @@ class Ads extends CI_Controller
             return $this->output->set_status_header(401)->set_output('Unauthorized');
         }
 
+        // First line = column headers (Data manager maps them); time zone goes in each timestamp.
         $lines = array(
-            'Parameters:TimeZone=+0530',
             'Google Click ID,Conversion Name,Conversion Time,Conversion Value,Conversion Currency',
         );
         // qualified.csv / booked.csv: one Google Ads connection per conversion action.
@@ -87,7 +87,7 @@ class Ads extends CI_Controller
             $lines[] = implode(',', array(
                 $this->_csv($r['gclid']),
                 $this->_csv($r['name']),
-                $this->_csv(date('Y-m-d H:i:s', strtotime($r['time']))),
+                $this->_csv(date('Y-m-d H:i:sP', strtotime($r['time']))),
                 number_format((float) $r['value'], 2, '.', ''),
                 'INR',
             ));
