@@ -5,6 +5,7 @@ $bs_js_v  = (int) @filemtime(FCPATH.'assets/vendor/bootstrap/js/bootstrap.bundle
 ?>
 <script src="<?= base_url('assets/vendor/bootstrap/js/bootstrap.bundle.min.js?v='.$bs_js_v); ?>" defer></script>
 <script src="<?= base_url('assets/js/ymo.js?v='.$ymo_js_v); ?>" defer></script>
+<?php $this->load->view('layout/partials/form_submit_lock'); ?>
 <?php
 $ci = &get_instance();
 $ci->load->view('layout/partials/livechat');
