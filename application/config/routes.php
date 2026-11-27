@@ -558,6 +558,7 @@ if (ymo_is_admin_host_request()) {
     $route['api/webhooks/whatsapp'] = 'api/webhooks/whatsapp';
     $route['api/ads/wa-click'] = 'api/ads/wa_click';
     $route['api/google-ads/conversions\.csv'] = 'api/ads/conversions';
+    $route['api/google-ads/(qualified|booked)\.csv'] = 'api/ads/conversions/$1';
     $route['api/offers/active'] = 'api/offers/active';
     $route['api/offers/preview/(:num)'] = 'api/offers/preview/$1';
 }

@@ -7,6 +7,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  *  POST /api/ads/wa-click                  beacon from google_tag.php when an ad
  *                                          visitor taps a WhatsApp link
  *  GET  /api/google-ads/conversions.csv    offline conversions for Google Ads
+ *  GET  /api/google-ads/qualified.csv      only "CRM - Qualified lead"
+ *  GET  /api/google-ads/booked.csv         only "CRM - Booking completed"
  *                                          scheduled uploads (HTTP Basic auth,
  *                                          YMO_GADS_FEED_USER / YMO_GADS_FEED_PASS)
  */
@@ -52,7 +54,7 @@ class Ads extends CI_Controller
         $this->output->set_status_header($ok ? 204 : 202);
     }
 
-    public function conversions()
+    public function conversions($type = '')
     {
         $user = (string) getenv('YMO_GADS_FEED_USER');
         $pass = (string) getenv('YMO_GADS_FEED_PASS');
@@ -75,7 +77,13 @@ class Ads extends CI_Controller
             'Parameters:TimeZone=+0530',
             'Google Click ID,Conversion Name,Conversion Time,Conversion Value,Conversion Currency',
         );
+        // qualified.csv / booked.csv: one Google Ads connection per conversion action.
+        $only = array('qualified' => Crm_ad_click_model::CONV_QUALIFIED, 'booked' => Crm_ad_click_model::CONV_BOOKED);
+        $type = (string) $type;
         foreach ($this->crm_ad_click_model->feed_rows(60) as $r) {
+            if (isset($only[$type]) && $r['name'] !== $only[$type]) {
+                continue;
+            }
             $lines[] = implode(',', array(
                 $this->_csv($r['gclid']),
                 $this->_csv($r['name']),
