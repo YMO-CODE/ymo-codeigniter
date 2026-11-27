@@ -37,7 +37,9 @@ class Ymochat extends CI_Controller
             $this->ymochat_model->event((int) $v['id'], $in['evt']);
         }
         $this->_json($this->_state($v, isset($in['after']) ? (int) $in['after'] : 0));
-        if (!empty($v['is_new_visit'])) {
+        // Visits from outside India are almost always data-centre crawlers: no alert.
+        $country = strtoupper((string) ($v['country'] ?? ''));
+        if (!empty($v['is_new_visit']) && ($country === '' || $country === 'IN')) {
             $this->ymochat_model->push_notify('visit', $v);
         }
     }

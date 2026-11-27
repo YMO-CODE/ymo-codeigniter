@@ -693,7 +693,7 @@ SQL;
 
     public static function is_bot($ua)
     {
-        return $ua === '' || (bool) preg_match('/bot|crawl|spider|slurp|mediapartners|adsbot|lighthouse|pagespeed|headlesschrome|facebookexternalhit|preview|python|curl|wget/i', (string) $ua);
+        return $ua === '' || (bool) preg_match('/bot|crawl|spider|slurp|mediapartners|adsbot|lighthouse|pagespeed|headlesschrome|headless|phantomjs|puppeteer|playwright|selenium|electron\/|facebookexternalhit|preview|python|curl|wget|google-inspectiontool|googleother|google-read-aloud|feedfetcher|ahrefs|semrush|mj12|dotbot|petalbot|bytespider|gptbot|claudebot|amazonbot|applebot|yandex|baidu|duckduck|ia_archiver|screaming frog|siteimprove|uptime|pingdom|monitor|statuscake|datadog|scrapy|httpclient|okhttp|go-http|java\//i', (string) $ua);
     }
 
     protected static function clean_attr(array $attr)
