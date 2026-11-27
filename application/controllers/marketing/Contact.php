@@ -178,7 +178,7 @@ class Contact extends Marketing_Controller
 
         // Links, random strings, sales pitches: keep a record but file it as spam, no email.
         $spam = ymo_spam_reason($payload['name'], $payload['message']);
-        if ($spam) {
+        if ($spam && !$this->crm_lead_model->last_ingest_merged) { // never file an existing lead as spam
             $this->crm_lead_model->set_stage($lead_id, 'lost', 'spam');
             $this->crm_lead_activity_model->add($lead_id, NULL, 'system',
                 'Filed as spam automatically ('.$spam.'). No notification sent.', array('source' => 'marketing_contact'));

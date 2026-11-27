@@ -3,6 +3,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Crm_lead_model extends CI_Model
 {
+    /** TRUE when the last ingest() added to an open lead instead of creating one. */
+    public $last_ingest_merged = FALSE;
+
+    /** Set by ingest_chat_message() so a merge doesn't repeat the chat text. */
+    protected $_ingest_from_chat = FALSE;
+
     const TABLE = 'crm_leads';
 
     public function pipeline_stages()
@@ -345,6 +351,16 @@ class Crm_lead_model extends CI_Model
             }
         }
 
+        // Same person with a lead still open (New / Contacted / Quote sent):
+        // add this enquiry to that lead instead of creating a duplicate.
+        $this->last_ingest_merged = FALSE;
+        $open = !empty($fields['mobile']) ? $this->find_open_by_mobile($fields['mobile']) : NULL;
+        if ($open) {
+            $this->_merge_into_open_lead($open, $source_id, $fields, $external_id, $provider);
+            $this->last_ingest_merged = TRUE;
+            return (int) $open['id'];
+        }
+
         $payload = array(
             'source_id'         => $source_id,
             'name'              => $fields['name'] ?? 'Unknown',
@@ -424,7 +440,9 @@ class Crm_lead_model extends CI_Model
             return (int) $existing['id'];
         }
 
+        $this->_ingest_from_chat = TRUE;
         $lead_id = $this->ingest($source_slug, $fields, $sender_id, $provider);
+        $this->_ingest_from_chat = FALSE;
         if ($lead_id && $body !== '') {
             $this->crm_lead_activity_model->add($lead_id, NULL, $activity_type, $body, $meta);
         }
@@ -500,6 +518,52 @@ class Crm_lead_model extends CI_Model
             $payload['ad_match'] = 'form';
         }
         return $payload;
+    }
+
+    /**
+     * A repeat enquiry from someone whose lead is still open: note it on that
+     * lead, fill in details it was missing, and link the chat thread / ad click.
+     */
+    protected function _merge_into_open_lead(array $open, $source_id, array $fields, $external_id, $provider)
+    {
+        $this->load->model('crm_lead_activity_model');
+        $src = $this->db->select('label')->where('id', (int) $source_id)->get('crm_lead_sources')->row_array();
+        $label = $src ? $src['label'] : 'another channel';
+        $msg = trim((string) ($fields['message'] ?? ''));
+        $body = 'Enquired again ('.$label.').';
+        if (!$this->_ingest_from_chat && $msg !== '') {
+            $body .= "\n".$msg;
+        }
+        $this->crm_lead_activity_model->add((int) $open['id'], NULL, 'system', $body,
+            array('source' => 'repeat_enquiry', 'provider' => $provider, 'source_id' => (int) $source_id));
+
+        $patch = array();
+        if ($external_id && $provider && empty($open['external_lead_id'])) {
+            // Later messages in this chat go straight to this lead.
+            $patch['external_provider'] = $provider;
+            $patch['external_lead_id'] = $external_id;
+        }
+        $email = strtolower(trim((string) ($fields['email'] ?? '')));
+        if ($email !== '' && trim((string) $open['email']) === '') {
+            $patch['email'] = $email;
+        }
+        $extra = $this->_apply_raw_address_car(array(), $fields['raw'] ?? NULL);
+        foreach (array('address', 'car_type') as $k) {
+            if (!empty($extra[$k]) && trim((string) ($open[$k] ?? '')) === '') {
+                $patch[$k] = $extra[$k];
+            }
+        }
+        if ($patch) {
+            $this->update((int) $open['id'], $patch);
+        }
+        $raw = $fields['raw'] ?? NULL;
+        if (is_array($raw) && !empty($raw['utm']) && is_array($raw['utm'])) {
+            $this->load->model('crm_ad_click_model');
+            $click = Crm_ad_click_model::click_from_attr($raw['utm']);
+            if ($click) {
+                $this->crm_ad_click_model->set_lead_click((int) $open['id'], $click[0], $click[1], 'form');
+            }
+        }
     }
 
     /** Staff logged the lead as genuinely interested (call outcome "Interested"). */
