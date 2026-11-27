@@ -76,7 +76,7 @@
             <?php if ($can_chat): ?>
             <form class="p-2 border-top" id="ymc-form" autocomplete="off">
                 <div class="ymc-quick d-flex flex-wrap gap-1 mb-2">
-                    <button type="button" class="btn btn-outline-secondary btn-sm" data-q="Hi! 👋 I'm from YMO. Looking for a car service? We can pick up your car today.">Hi + pick-up</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-q="Hi! 👋 This is YMO. Need your car serviced? We can schedule a pickup for the earliest available slot. 🚗 Also, your are talking to a real person, not a bot.">Hi + pick-up</button>
                     <button type="button" class="btn btn-outline-secondary btn-sm" data-q="Which car do you have and what does it need? I'll share the exact price.">Ask car</button>
                     <button type="button" class="btn btn-outline-secondary btn-sm" data-q="Share your mobile number and our advisor will call you in 5 minutes.">Ask number</button>
                     <button type="button" class="btn btn-outline-secondary btn-sm" data-q="Complete car service starts at ₹2,499 with free pick-up and drop, and WhatsApp photo updates.">Price</button>
