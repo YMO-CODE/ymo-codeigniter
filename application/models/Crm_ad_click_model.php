@@ -27,8 +27,12 @@ class Crm_ad_click_model extends CI_Model
     const CONV_QUALIFIED = 'CRM - Qualified lead';
     const CONV_BOOKED = 'CRM - Booking completed';
 
-    /** Invisible characters used as base-4 digits 0..3. */
-    const ZW = array("\u{200B}", "\u{200C}", "\u{200D}", "\u{2060}");
+    /**
+     * Invisible characters used as binary digits 0/1: zero-width non-joiner and
+     * zero-width joiner. WhatsApp keeps these (Indic typing and emoji need them);
+     * it trims other invisible characters, so the code also goes mid-message.
+     */
+    const ZW = array("\u{200C}", "\u{200D}");
 
     protected static $schema_ok = NULL;
 
@@ -113,26 +117,28 @@ class Crm_ad_click_model extends CI_Model
 
     // --- invisible WhatsApp reference ---------------------------------------
 
-    /** Find an 8-hex reference hidden in a message. */
+    /** Find an 8-hex reference hidden in a message (32 invisible bits). */
     public static function decode_ref($text)
     {
-        $text = (string) $text;
-        if (!preg_match('/[\x{200B}\x{200C}\x{200D}\x{2060}]{16}/u', $text, $m)) {
+        if (!preg_match('/[\x{200C}\x{200D}]{32}/u', (string) $text, $m)) {
             return NULL;
         }
-        $chars = preg_split('//u', $m[0], -1, PREG_SPLIT_NO_EMPTY);
         $n = 0;
-        foreach ($chars as $c) {
-            $d = array_search($c, self::ZW, TRUE);
-            $n = ($n * 4) + (int) $d;
+        foreach (preg_split('//u', $m[0], -1, PREG_SPLIT_NO_EMPTY) as $c) {
+            $n = ($n * 2) + ($c === self::ZW[1] ? 1 : 0);
         }
         return sprintf('%08x', $n);
     }
 
-    /** Message text without the invisible characters. */
+    /**
+     * Message text without the hidden reference. Only removes a run of 32+
+     * (or the older 16-character form), so emoji and Indic text keep theirs.
+     */
     public static function strip_ref($text)
     {
-        return trim(preg_replace('/[\x{200B}\x{200C}\x{200D}\x{2060}]+/u', '', (string) $text));
+        $text = preg_replace('/[\x{200C}\x{200D}]{32,}/u', '', (string) $text);
+        $text = preg_replace('/[\x{200B}\x{200C}\x{200D}\x{2060}]{16,}/u', '', $text);
+        return trim($text);
     }
 
     /**
