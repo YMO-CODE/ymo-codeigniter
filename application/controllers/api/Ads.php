@@ -92,6 +92,17 @@ class Ads extends CI_Controller
                 'INR',
             ));
         }
+        if (count($lines) === 1) {
+            // Google's Data manager needs at least one row to read the columns.
+            // This click id matches no ad click, so Google rejects the row and counts nothing.
+            $lines[] = implode(',', array(
+                'NO_CONVERSIONS_YET',
+                $this->_csv(isset($only[$type]) ? $only[$type] : Crm_ad_click_model::CONV_QUALIFIED),
+                date('Y-m-d H:i:sP'),
+                '1.00',
+                'INR',
+            ));
+        }
         $this->output
             ->set_content_type('text/csv', 'utf-8')
             ->set_header('Content-Disposition: inline; filename="conversions.csv"')
