@@ -45,6 +45,10 @@ if ($config['ymochat_enabled']) {
 }
 // Name visitors see on team replies in YMOChat ("Shreya from YMO"), whoever answers.
 $config['ymochat_agent_name'] = trim((string) getenv('YMO_YMOCHAT_AGENT')) ?: 'Shreya';
+// Late-night hours (IST, 24h clock): the chat says we're not available and asks
+// for name, mobile, city and car so a lead is waiting for the morning team.
+$config['ymochat_offline_from'] = 23;
+$config['ymochat_offline_until'] = 9;
 
 // Cities where service is currently offered. Used to populate the signup
 // dropdown and to validate the chosen city. Add a new row here when expanding.

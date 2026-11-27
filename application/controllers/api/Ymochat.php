@@ -80,9 +80,16 @@ class Ymochat extends CI_Controller
             return $this->_json(array('ok' => FALSE, 'error' => $v ? 'mobile' : 'unknown'));
         }
         $name = isset($in['name']) ? (string) $in['name'] : '';
-        $this->ymochat_model->save_contact($v, $name, $mobile);
+        $after = $this->_after_hours();
+        $this->ymochat_model->save_contact($v, $name, $mobile, array(
+            'city'        => isset($in['city']) ? (string) $in['city'] : '',
+            'car'         => isset($in['car']) ? (string) $in['car'] : '',
+            'need'        => isset($in['need']) ? (string) $in['need'] : '',
+            'after_hours' => $after,
+        ));
         $this->ymochat_model->system_message((int) $v['id'], 'Thanks'.($name !== '' ? ' '.trim(strip_tags($name)) : '')
-            .'! We will call you on '.substr($mobile, 0, 5).' '.substr($mobile, 5).' shortly.');
+            .'! We will call you on '.substr($mobile, 0, 5).' '.substr($mobile, 5)
+            .($after ? ' after '.$this->_reopen_label().' in the morning.' : ' shortly.'));
         $v = $this->ymochat_model->visitor((int) $v['id']);
         $this->_json($this->_state($v, isset($in['after']) ? (int) $in['after'] : 0));
         $this->ymochat_model->push_notify('contact', $v, trim(strip_tags($name)).($name !== '' ? ' · ' : '').$mobile.' – call them back');
@@ -126,7 +133,24 @@ class Ymochat extends CI_Controller
             'known'        => !empty($v['mobile']),
             'agent_online' => $seen > 0 && (time() - $seen) < 90,
             'open_hours'   => $hour >= 9 && $hour < 20,
+            'after_hours'  => $this->_after_hours(),
+            'reopen'       => $this->_reopen_label(),
         );
+    }
+
+    /** Late night (default 11 PM to 9 AM IST): chat shows "we're not available" and asks for details. */
+    protected function _after_hours()
+    {
+        $from = (int) ($this->config->item('ymochat_offline_from') ?? 23);
+        $until = (int) ($this->config->item('ymochat_offline_until') ?? 9);
+        $hour = (int) (new DateTime('now', new DateTimeZone('Asia/Kolkata')))->format('G');
+        return $from > $until ? ($hour >= $from || $hour < $until) : ($hour >= $from && $hour < $until);
+    }
+
+    protected function _reopen_label()
+    {
+        $h = (int) ($this->config->item('ymochat_offline_until') ?? 9);
+        return ($h % 12 ?: 12).' '.($h < 12 ? 'AM' : 'PM');
     }
 
     /** POST only, from our own pages. */

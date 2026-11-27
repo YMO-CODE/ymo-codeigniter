@@ -302,13 +302,26 @@ SQL;
      *
      * @return int lead id (0 when the CRM is unavailable)
      */
-    public function save_contact(array $visitor, $name, $mobile)
+    public function save_contact(array $visitor, $name, $mobile, array $extra = array())
     {
         $mobile = ymo_indian_mobile($mobile);
         $name   = self::clip(trim(strip_tags((string) $name)), 120);
         if ($mobile === '') {
             return 0;
         }
+        // Optional details from the after-hours form: city, car, what they need.
+        $given = array();
+        foreach (array('city' => 'City', 'car' => 'Car', 'need' => 'Needs') as $k => $label) {
+            $v = isset($extra[$k]) ? self::clip(trim(strip_tags((string) $extra[$k])), $k === 'need' ? 300 : 80) : '';
+            if ($v !== '') {
+                $extra[$k] = $v;
+                $given[] = $label.': '.$v;
+            } else {
+                unset($extra[$k]);
+            }
+        }
+        $given_txt = $given ? implode('. ', $given).'.' : '';
+        $after_hours = !empty($extra['after_hours']);
         $upd = array('mobile' => $mobile);
         if ($name !== '') {
             $upd['name'] = $name;
@@ -316,10 +329,18 @@ SQL;
         $this->db->where('id', (int) $visitor['id'])->update('ymochat_visitors', $upd);
         $visitor = array_merge($visitor, $upd);
 
-        if (!empty($visitor['lead_id']) || !$this->db->table_exists('crm_leads')) {
+        if (!$this->db->table_exists('crm_leads')) {
             return (int) $visitor['lead_id'];
         }
         $this->load->model(array('crm_lead_model', 'crm_lead_activity_model'));
+        if (!empty($visitor['lead_id'])) {
+            if ($given_txt !== '') {
+                $this->crm_lead_activity_model->add((int) $visitor['lead_id'], NULL, 'note',
+                    ($after_hours ? 'Left details in YMOChat after hours. ' : 'More details from YMOChat. ').$given_txt,
+                    array('source' => 'ymochat'));
+            }
+            return (int) $visitor['lead_id'];
+        }
         $attr = !empty($visitor['attribution']) ? (json_decode($visitor['attribution'], TRUE) ?: array()) : array();
         $is_ad = $visitor['source'] === 'google_ads';
         $source = ($is_ad && $this->crm_lead_model->source_id_by_slug('google_ads') > 0) ? 'google_ads' : 'website';
@@ -331,7 +352,9 @@ SQL;
             }
         }
         $where = trim($visitor['city'].($visitor['region'] !== '' ? ', '.$visitor['region'] : ''), ', ');
-        $message = 'YMOChat. '.($where !== '' ? 'Location: '.$where.'. ' : '')
+        $message = 'YMOChat'.($after_hours ? ' (after hours - call back in the morning)' : '').'. '
+            .($given_txt !== '' ? $given_txt.' ' : '')
+            .($where !== '' ? 'Location: '.$where.'. ' : '')
             .'Source: '.self::source_label($visitor['source'], $visitor['source_detail']).'. '
             .'Page: '.$visitor['current_url'].($lines ? "\n".implode("\n", array_slice($lines, -8)) : '');
         $lead_id = (int) $this->crm_lead_model->ingest($source, array(
@@ -339,7 +362,9 @@ SQL;
             'mobile'  => $mobile,
             'email'   => '',
             'message' => $message,
-            'raw'     => array('ymochat_visitor' => (int) $visitor['id'], 'ip' => $visitor['ip'], 'utm' => $attr),
+            'raw'     => array('ymochat_visitor' => (int) $visitor['id'], 'ip' => $visitor['ip'], 'utm' => $attr,
+                // city / make_name fill the lead's Address and Car fields.
+                'city' => $extra['city'] ?? '', 'make_name' => $extra['car'] ?? '', 'need' => $extra['need'] ?? ''),
         ), NULL, 'ymochat');
         if (!$lead_id) {
             return 0;

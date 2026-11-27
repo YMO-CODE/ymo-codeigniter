@@ -3,7 +3,8 @@
  *  - Tells the CRM who is on the site and which page they are on (heartbeat).
  *  - Chat window: visitors can write to us, and the team can start a chat
  *    from the CRM (the message pops up here).
- *  - Asks for name + mobile so every chat becomes a CRM lead.
+ *  - Asks for name + mobile so every chat becomes a CRM lead; late at night
+ *    (after_hours) it says we're away and asks for name, mobile, city and car.
  * Config: window.YMOCHAT = { api, wa, phone, agent }.
  */
 (function () {
@@ -23,7 +24,7 @@
     var vid = store.get('ymochat_vid');
     if (!/^[a-f0-9]{32}$/.test(vid || '')) { vid = newId(); store.set('ymochat_vid', vid); }
 
-    var lastId = 0, msgs = [], open = false, known = false, agentOnline = false, openHours = true;
+    var lastId = 0, msgs = [], open = false, known = false, agentOnline = false, openHours = true, afterHours = false, reopen = '9 AM';
     var seenAgent = parseInt(store.get('ymochat_seen_agent') || '0', 10) || 0;
     var askedContact = store.get('ymochat_asked', true) === '1', waitTimer = null, beatTimer = null;
 
@@ -46,6 +47,7 @@
 
     function apply(d) {
         known = !!d.known; agentOnline = !!d.agent_online; openHours = d.open_hours !== false;
+        afterHours = !!d.after_hours; if (d.reopen) { reopen = d.reopen; }
         var fresh = [];
         (d.msgs || []).forEach(function (m) { if (m.id > lastId) { lastId = m.id; msgs.push(m); fresh.push(m); } });
         if (!ui) {
@@ -55,6 +57,7 @@
             fresh.forEach(function (m) { addBubble(m); });
         }
         status();
+        if (open) { nightNotice(); }
         var unseen = msgs.filter(function (m) { return m.sender === 'agent' && m.id > seenAgent; });
         if (fresh.some(function (m) { return m.sender === 'agent'; })) { clearTimeout(waitTimer); hideNudge(); }
         if (open) { markSeen(); } else if (unseen.length) { preview(unseen[unseen.length - 1]); }
@@ -100,7 +103,7 @@
         '.ymc-s{align-self:center;font-size:12px;color:#445;background:#fff;border-radius:999px;padding:3px 10px;text-align:center}' +
         '.ymc-card{align-self:stretch;background:#fff;border-radius:12px;padding:10px;box-shadow:0 1px 2px rgba(0,0,0,.08)}' +
         '.ymc-card p{margin:0 0 6px;font-size:13px}' +
-        '.ymc-card input{width:100%;box-sizing:border-box;border:1px solid #ccd;border-radius:8px;padding:8px;margin-bottom:6px;font:inherit}' +
+        '.ymc-card input,.ymc-card textarea{width:100%;resize:none;box-sizing:border-box;border:1px solid #ccd;border-radius:8px;padding:8px;margin-bottom:6px;font:inherit}' +
         '.ymc-card button{width:100%;border:0;border-radius:8px;padding:9px;background:#1b5e20;color:#fff;font-weight:600;cursor:pointer}' +
         '.ymc-wa{display:inline-block;margin-top:6px;background:#25d366;color:#0b3d1f;font-weight:600;border-radius:999px;padding:6px 12px;text-decoration:none}' +
         '.ymc-f{display:flex;gap:8px;padding:8px;border-top:1px solid #e5e5e5;background:#fff}' +
@@ -138,7 +141,8 @@
     }
     function status() {
         if (!ui) { return; }
-        ui.st.textContent = agentOnline ? 'Online now · we reply in a few minutes' : (openHours ? 'We usually reply within minutes' : 'We reply 9 AM–8 PM · leave your number');
+        ui.st.textContent = afterHours && !agentOnline ? 'Offline now · back at ' + reopen
+            : (agentOnline ? 'Online now · we reply in a few minutes' : (openHours ? 'We usually reply within minutes' : 'We reply 9 AM–8 PM · leave your number'));
     }
     function addBubble(m) {
         if (!ui) { return; }
@@ -172,22 +176,39 @@
         build();
         open = on;
         ui.w.classList.toggle('on', on);
-        if (on) { markSeen(); setTimeout(function () { ui.ta.focus(); }, 50); beat(); } else { schedule(); }
+        if (on) { markSeen(); nightNotice(); setTimeout(function () { ui.ta.focus(); }, 50); beat(); } else { schedule(); }
     }
     window.YMOChat = { open: function () { toggle(true); } };
 
-    function contactCard(text) {
+    // full = after-hours form: also city, car and what they need, so the lead is complete.
+    function contactCard(text, full) {
         if (known || ui.b.querySelector('.ymc-card')) { return; }
         var c = el('div', 'ymc-card');
         c.innerHTML = '<p>' + esc(text) + '</p><input name="n" placeholder="Your name" maxlength="120" autocomplete="name">' +
-            '<input name="m" placeholder="Mobile number" inputmode="tel" maxlength="16" autocomplete="tel"><button type="button">Call me back</button>';
+            '<input name="m" placeholder="Mobile number" inputmode="tel" maxlength="16" autocomplete="tel">' +
+            (full ? '<input name="c" placeholder="City (e.g. Pune)" maxlength="80" autocomplete="address-level2">' +
+                '<input name="car" placeholder="Car model (e.g. Swift 2019)" maxlength="80">' +
+                '<textarea name="need" rows="2" maxlength="300" placeholder="What do you need? (service, AC, repair…)"></textarea>' : '') +
+            '<button type="button">' + (full ? 'Request a call back' : 'Call me back') + '</button>';
+        function val(k) { var f = c.querySelector('[name=' + k + ']'); return f ? f.value.trim() : ''; }
         c.querySelector('button').onclick = function () {
-            var n = c.querySelector('[name=n]').value.trim(), mob = c.querySelector('[name=m]').value.trim();
+            var n = val('n'), mob = val('m');
+            if (full && n.length < 2) { c.querySelector('[name=n]').focus(); c.querySelector('p').textContent = 'Please enter your name.'; return; }
             if (!/^(\+?91[\s-]*)?0?[6-9](\s*-?\d){9}$/.test(mob)) { c.querySelector('[name=m]').focus(); c.querySelector('p').textContent = 'Please enter a valid 10-digit mobile number.'; return; }
+            if (full && val('c').length < 2) { c.querySelector('[name=c]').focus(); c.querySelector('p').textContent = 'Please enter your city.'; return; }
             c.querySelector('button').disabled = true;
-            post('contact', { name: n, mobile: mob }).then(function (d) { if (d && d.ok) { c.remove(); } else { c.querySelector('button').disabled = false; } });
+            post('contact', { name: n, mobile: mob, city: val('c'), car: val('car'), need: val('need') }).then(function (d) { if (d && d.ok) { c.remove(); } else { c.querySelector('button').disabled = false; } });
         };
         ui.b.appendChild(c); ui.b.scrollTop = ui.b.scrollHeight;
+    }
+    // Late night: say we're not available and ask for the details the team needs in the morning.
+    function nightNotice() {
+        if (!ui || !afterHours || agentOnline || ui.b.querySelector('.ymc-night')) { return; }
+        ui.b.appendChild(el('div', 'ymc-m them ymc-night', esc(
+            'We are not available right now – our team is back at ' + reopen + '. ' +
+            (known ? 'We have your number and will call you in the morning.' : 'Please share your name, mobile number, city and car below and we will call you first thing in the morning.'))));
+        if (!known) { contactCard('Your details:', true); }
+        ui.b.scrollTop = ui.b.scrollHeight;
     }
     function hideNudge() { var n = ui && ui.b.querySelector('.ymc-nudge'); if (n) { n.remove(); } }
     function send() {
@@ -195,6 +216,7 @@
         ui.ta.value = '';
         post('send', { text: t }).then(function (d) {
             if (!d || !d.ok) { ui.ta.value = t; ui.b.appendChild(el('div', 'ymc-s', 'Message not sent. Please try again.')); return; }
+            if (afterHours && !agentOnline) { nightNotice(); return; }
             if (!known && !askedContact) {
                 askedContact = true; store.set('ymochat_asked', '1', true);
                 contactCard('So we can call you back if you get disconnected:');
