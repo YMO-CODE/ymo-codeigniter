@@ -74,14 +74,14 @@ class Crm_lead_model extends CI_Model
                 ->order_by('l.priority', 'DESC')
                 ->order_by('l.next_follow_up_at IS NULL', 'ASC', FALSE)
                 ->order_by('l.next_follow_up_at', 'ASC')
-                ->order_by('l.created_at', 'ASC');
+                ->order_by('l.created_at', 'ASC')
+                ->order_by("FIELD(l.stage, 'new', 'contacted', 'quote_sent', 'booked', 'lost')", '', FALSE)
+                ->order_by('l.id', 'ASC');
+        } else {
+            // Default: latest enquiry at the top.
+            $this->db->order_by('l.created_at', 'DESC')->order_by('l.id', 'DESC');
         }
         $rows = $this->db
-            ->order_by("FIELD(l.stage, 'new', 'contacted', 'quote_sent', 'booked', 'lost')", '', FALSE)
-            ->order_by('l.priority', 'DESC')
-            ->order_by('l.next_follow_up_at IS NULL', 'ASC', FALSE)
-            ->order_by('l.next_follow_up_at', 'ASC')
-            ->order_by('l.created_at', 'DESC')
             ->limit((int) $limit, (int) $offset)
             ->get()
             ->result_array();

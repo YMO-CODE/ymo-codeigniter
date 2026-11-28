@@ -44,7 +44,8 @@ class Leads extends Crm_Controller
             'priority'    => $this->input->get('priority'),
             'mine'        => $this->input->get('mine'),
             'admin_id'    => $this->admin['id'],
-            'sort'        => 'call_first',
+            // Newest leads first; ?sort=call_first orders by who needs a call soonest.
+            'sort'        => $this->input->get('sort') === 'call_first' ? 'call_first' : 'newest',
         );
         // Default view: my open leads plus unassigned ones. ?who=all shows the whole team.
         $who = $this->input->get('who') === 'all' ? 'all' : 'me';

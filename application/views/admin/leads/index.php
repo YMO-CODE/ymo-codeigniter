@@ -27,15 +27,20 @@ $today_end = strtotime('today 23:59:59');
         <a href="<?= $url_with(array('who' => 'all')); ?>" class="btn <?= $who === 'all' ? 'btn-primary' : 'btn-outline-secondary'; ?>">Everyone</a>
     </div>
     <form method="get" action="<?= admin_url('leads'); ?>" class="flex-grow-1" style="min-width:12rem;max-width:22rem">
-        <?php foreach (array('stage', 'who', 'source', 'assigned_to', 'due') as $keep): if (!empty($_GET[$keep])): ?>
+        <?php foreach (array('stage', 'who', 'source', 'assigned_to', 'due', 'sort') as $keep): if (!empty($_GET[$keep])): ?>
             <input type="hidden" name="<?= $keep; ?>" value="<?= html_escape($_GET[$keep]); ?>">
         <?php endif; endforeach; ?>
         <input class="form-control form-control-sm" type="search" name="q" placeholder="Search name, mobile, car, area…" value="<?= html_escape((string) $filters['q']); ?>">
     </form>
+    <?php $sort = (string) ($filters['sort'] ?? 'newest'); ?>
+    <div class="btn-group btn-group-sm" role="group" aria-label="Sort leads">
+        <a href="<?= $url_with(array('sort' => NULL)); ?>" class="btn <?= $sort !== 'call_first' ? 'btn-primary' : 'btn-outline-secondary'; ?>" title="Latest enquiry at the top">Newest</a>
+        <a href="<?= $url_with(array('sort' => 'call_first')); ?>" class="btn <?= $sort === 'call_first' ? 'btn-primary' : 'btn-outline-secondary'; ?>" title="Overdue calls first, then new leads, then calls due today">Call first</a>
+    </div>
     <details class="ymo-filter-menu">
         <summary class="btn btn-sm <?= $active_filters ? 'btn-primary' : 'btn-outline-secondary'; ?>"><span class="mi mi-sm mi-leading">filter_list</span>Filter<?= $active_filters ? ' ('.$active_filters.')' : ''; ?></summary>
         <form method="get" action="<?= admin_url('leads'); ?>" class="ymo-card ymo-filter-pop">
-            <?php foreach (array('stage', 'who', 'q') as $keep): if (!empty($_GET[$keep])): ?>
+            <?php foreach (array('stage', 'who', 'q', 'sort') as $keep): if (!empty($_GET[$keep])): ?>
                 <input type="hidden" name="<?= $keep; ?>" value="<?= html_escape($_GET[$keep]); ?>">
             <?php endif; endforeach; ?>
             <label class="small ymo-muted mb-1">Source</label>
