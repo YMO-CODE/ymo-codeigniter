@@ -2,7 +2,7 @@
 /*
  * Admin sidebar, grouped by the job each part does:
  *   Overview (Today, Reports) · Sales (enquiries → customers) · Workshop (bookings → job cards,
- *   the people and price lists behind them) · Marketing (getting new customers) · Team & settings.
+ *   the people and price lists behind them) · Money (invoices, payments) · Marketing (getting new customers) · Team & settings.
  * A group heading shows only when the user can see something in it.
  */
 $can = function ($perm) { return !function_exists('crm_can') || crm_can($perm); };
@@ -48,6 +48,15 @@ if ($can('packages.view')) {
     $g[] = $item('packages', 'build', 'Packages', admin_nav_active('packages'));
 }
 $groups['Workshop'] = $g;
+
+// Money: what customers owe us and what came in
+$g = array();
+if ($can('bookings.view')) {
+    $g[] = $item('invoices', 'receipt_long', 'Invoices', admin_nav_active('invoices'));
+    $g[] = $item('payments', 'account_balance_wallet', 'Payments', admin_nav_active('payments'));
+}
+if ($can('settings.manage')) { $g[] = $item('billing-setup', 'tune', 'Billing setup', admin_nav_active('billing-setup')); }
+$groups['Money'] = $g;
 
 // Marketing: bringing new customers in, and keeping our name good
 $g = array();

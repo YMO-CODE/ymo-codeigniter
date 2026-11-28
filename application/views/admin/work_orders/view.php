@@ -335,6 +335,53 @@ $wsname = ($wo['workshop'] !== '' && isset($workshops[$wo['workshop']])) ? $work
 </div>
 
 <div class="col-lg-4">
+    <!-- Invoice & payment -->
+    <?php $this->load->library('job_invoice_service'); $ifmt = function ($n) { return Work_order_customer_money::fmt($n); }; ?>
+    <div class="ymo-card mb-3" id="invoice">
+        <h3 class="h6">Invoice &amp; payment</h3>
+        <?php if ($invoice): $ib = array('unpaid' => 'bg-danger', 'partly_paid' => 'bg-warning text-dark', 'paid' => 'bg-success'); ?>
+            <div class="d-flex justify-content-between align-items-start">
+                <div><a class="fw-semibold" href="<?= admin_url('invoices/'.(int) $invoice['id']); ?>"><?= html_escape($invoice['invoice_number']); ?></a>
+                    <span class="badge <?= $ib[$invoice['status']] ?? 'bg-light'; ?>"><?= Crm_billing_model::STATUS[$invoice['status']]; ?></span>
+                    <div class="small ymo-muted"><?= html_escape(date('d M Y', strtotime($invoice['invoice_date']))); ?><?= $invoice['sent_at'] ? ' · sent on WhatsApp' : ''; ?></div></div>
+                <div class="text-end"><div class="fw-semibold"><?= $ifmt($invoice['grand_total']); ?></div>
+                    <?php if ((float) $invoice['balance'] > 0): ?><div class="small text-danger"><?= $ifmt($invoice['balance']); ?> due</div><?php else: ?><div class="small text-success">Paid</div><?php endif; ?></div>
+            </div>
+            <?php if (abs((float) $invoice['grand_total'] - round((float) $wo['grand_total'])) >= 1): ?>
+                <div class="alert alert-warning small py-1 px-2 mt-2 mb-0">The job card total (<?= $ifmt($wo['grand_total']); ?>) changed after this invoice. Cancel and raise it again if the bill should change.</div>
+            <?php endif; ?>
+            <?php if (!empty($can_edit)): ?>
+            <div class="d-flex flex-wrap gap-2 mt-2">
+                <a class="btn btn-sm btn-outline-secondary" href="<?= admin_url('invoices/'.(int) $invoice['id'].'/pdf'); ?>" target="_blank">PDF</a>
+                <?= form_open(admin_url('invoices/'.(int) $invoice['id'].'/send'), array('class' => 'd-inline', 'onsubmit' => "return confirm('Send the invoice to the customer on WhatsApp?');")); ?><input type="hidden" name="kind" value="invoice"><input type="hidden" name="back" value="job"><button class="btn btn-sm btn-success">Send on WhatsApp</button><?= form_close(); ?>
+            </div>
+            <?php if ((float) $invoice['balance'] > 0): ?><div class="mt-2"><?php $this->load->view('admin/billing/_payment_form', array('inv' => $invoice, 'accounts' => $pay_accounts, 'back' => 'job')); ?></div><?php endif; ?>
+            <?php endif; ?>
+        <?php elseif (!empty($can_edit) && $wo['status'] !== 'draft' && $wo['status'] !== 'returned'): ?>
+            <?php if (trim((string) ($billing['bill_gstin'] ?? '')) === ''): ?>
+                <p class="small text-danger mb-2">Add the GSTIN in <a href="<?= admin_url('billing-setup'); ?>">Billing setup</a> before raising invoices.</p>
+            <?php endif; ?>
+            <?= form_open(admin_url('job-cards/'.(int) $wo['id'].'/invoice'), array('onsubmit' => "return confirm('Raise the invoice now? Its number is final.');")); ?>
+                <div class="row g-2">
+                    <div class="col-6"><label class="small ymo-muted">Invoice date</label><input class="form-control form-control-sm" type="date" name="invoice_date" value="<?= date('Y-m-d'); ?>"></div>
+                    <div class="col-6"><label class="small ymo-muted">GST</label><select class="form-select form-select-sm" name="gst_type"><option value="intra">CGST + SGST</option><option value="inter">IGST (other state)</option></select></div>
+                    <div class="col-12"><a class="small" data-bs-toggle="collapse" href="#wo-b2b">Company bill (customer GSTIN / name / address)</a>
+                        <div class="collapse" id="wo-b2b"><div class="row g-2 mt-1">
+                            <div class="col-12"><input class="form-control form-control-sm" name="bill_name" maxlength="160" placeholder="Bill to name (default: <?= html_escape($wo['customer_name']); ?>)"></div>
+                            <div class="col-12"><input class="form-control form-control-sm text-uppercase" name="bill_gstin" maxlength="15" placeholder="Customer GSTIN"></div>
+                            <div class="col-12"><textarea class="form-control form-control-sm" name="bill_address" rows="2" maxlength="400" placeholder="Billing address"></textarea></div>
+                        </div></div></div>
+                </div>
+                <button class="btn btn-sm btn-primary mt-2"><span class="mi mi-sm mi-leading">receipt_long</span>Raise invoice (<?= $ifmt(round((float) $wo['grand_total'])); ?>)</button>
+            <?= form_close(); ?>
+        <?php else: ?>
+            <p class="small ymo-muted mb-0"><?= $wo['status'] === 'draft' ? 'Start the work first; raise the invoice when the car is ready.' : 'No invoice.'; ?></p>
+        <?php endif; ?>
+        <?php $old = array_filter($invoices, function ($x) { return $x['status'] === 'cancelled'; }); if ($old): ?>
+            <div class="small ymo-muted mt-2">Cancelled: <?php foreach ($old as $i => $x): ?><?= $i ? ', ' : ''; ?><a class="ymo-muted" href="<?= admin_url('invoices/'.(int) $x['id']); ?>"><?= html_escape($x['invoice_number']); ?></a><?php endforeach; ?></div>
+        <?php endif; ?>
+    </div>
+
     <!-- Details -->
     <div class="ymo-card mb-3" id="details">
         <h3 class="h6">Job details</h3>

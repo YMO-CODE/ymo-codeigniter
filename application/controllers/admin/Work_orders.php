@@ -201,6 +201,10 @@ class Work_orders extends Admin_Controller
             'tech_list'   => $this->crm_technician_model->all(TRUE),
             'photos'      => $this->crm_work_order_model->photos($id),
             'estimates'   => $this->crm_work_order_model->estimates($id),
+            'invoice'     => $this->_billing('for_work_order', $id),
+            'invoices'    => $this->_billing('all_for_work_order', $id),
+            'pay_accounts'=> $this->_billing('accounts'),
+            'billing'     => $this->_billing('settings'),
             'workshops'   => ymo_review_workshops(),
             'can_edit'    => crm_can('bookings.edit'),
         ));
@@ -436,6 +440,16 @@ class Work_orders extends Admin_Controller
         }
         $this->load->library('job_photo_service');
         $this->job_photo_service->stream($p, (bool) $this->input->get('t'));
+    }
+
+    /** Billing model call that never breaks the job card if billing tables are missing. */
+    protected function _billing($method, $arg = NULL)
+    {
+        $this->load->model('crm_billing_model');
+        if (!$this->crm_billing_model->ensure_schema()) {
+            return $method === 'for_work_order' ? NULL : array();
+        }
+        return $arg === NULL ? $this->crm_billing_model->$method() : $this->crm_billing_model->$method($arg);
     }
 
     /** POST scope=pending|all, note, photo_ids[]: send an estimate on WhatsApp (PDF + Approve / Call me). */

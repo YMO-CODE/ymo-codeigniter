@@ -80,6 +80,30 @@ $config['wa_template_library'] = array(
         'buttons'  => array(),
     ),
     array(
+        'name'     => 'invoice_pay',
+        'category' => 'UTILITY',
+        'event'    => 'invoice_pay',
+        'header'   => array('type' => 'document'),
+        'body'     => "Thank you for servicing your car with us. Invoice {{1}} for {{2}} is attached.\n\nAmount due: Rs {{3}}\n\nTap Pay now to pay by UPI (GPay, PhonePe, Paytm or any bank app).",
+        'examples' => array('INV2097', 'MH12AB1234', '7,407.00'),
+        'footer'   => 'Your Mechanic Online',
+        'buttons'  => array(
+            array('type' => 'URL', 'text' => 'Pay now', 'url' => 'https://www.yourmechaniconline.com/pay/{{1}}', 'example' => 'https://www.yourmechaniconline.com/pay/Xy7Kq2Lm9Pz4Rt6Vb8Nc1Wd3'),
+        ),
+    ),
+    array(
+        'name'     => 'payment_reminder',
+        'category' => 'UTILITY',
+        'event'    => 'payment_reminder',
+        'header'   => NULL,
+        'body'     => "Friendly reminder: invoice {{1}} for your car {{2}} has Rs {{3}} pending.\n\nTap Pay now to pay by UPI. If you have already paid, please ignore this message or reply here with the payment screenshot.",
+        'examples' => array('INV2097', 'MH12AB1234', '7,407.00'),
+        'footer'   => 'Your Mechanic Online',
+        'buttons'  => array(
+            array('type' => 'URL', 'text' => 'Pay now', 'url' => 'https://www.yourmechaniconline.com/pay/{{1}}', 'example' => 'https://www.yourmechaniconline.com/pay/Xy7Kq2Lm9Pz4Rt6Vb8Nc1Wd3'),
+        ),
+    ),
+    array(
         'name'     => 'service_reminder',
         'category' => 'UTILITY',
         'event'    => 'service_reminder',

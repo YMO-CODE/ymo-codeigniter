@@ -83,6 +83,21 @@ $config['crm_whatsapp_templates'] = array(
         'params' => array('ref', 'msg'),
         'header' => 'image',
     ),
+    // Job card invoice with a "Pay now" link to the UPI pay page (falls back to invoice_sent).
+    'invoice_pay' => array(
+        'name'       => getenv('YMO_WA_TPL_INVOICE_PAY') ?: 'invoice_pay',
+        'lang'       => getenv('YMO_WA_TPL_LANG') ?: 'en',
+        'params'     => array('ref', 'vehicle', 'amount'),
+        'header'     => 'document',
+        'url_button' => 'pay_token',
+    ),
+    // Payment due reminder from Money → Invoices (falls back to resending the invoice).
+    'payment_reminder' => array(
+        'name'       => getenv('YMO_WA_TPL_PAYMENT_REMINDER') ?: 'payment_reminder',
+        'lang'       => getenv('YMO_WA_TPL_LANG') ?: 'en',
+        'params'     => array('ref', 'vehicle', 'amount'),
+        'url_button' => 'pay_token',
+    ),
     // Estimate / quotation PDF from the booking page outside the 24h window.
     'estimate_sent' => array(
         'name'   => getenv('YMO_WA_TPL_ESTIMATE_SENT') ?: 'estimate_sent',

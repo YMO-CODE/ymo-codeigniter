@@ -62,6 +62,16 @@ class Work_order_flow
                 }
             }
         }
+        if ($to === 'delivered') {
+            $this->CI->load->model('crm_billing_model');
+            $inv = $this->CI->crm_billing_model->ensure_schema() ? $this->CI->crm_billing_model->for_work_order($id) : NULL;
+            if (!$inv) {
+                $msg .= ' No invoice raised yet: raise it from the Invoice & payment box.';
+                $level = 'warning';
+            } elseif ((float) $inv['balance'] > 0) {
+                $msg .= ' '.$inv['invoice_number'].' still has '.number_format((float) $inv['balance'], 2).' due.';
+            }
+        }
         // Short WhatsApp / SMS update for the customer (unless the booking just sent one).
         $this->CI->load->library('work_order_customer');
         $line = $this->CI->work_order_customer->notify_stage($wo, $to, $b_to !== NULL);

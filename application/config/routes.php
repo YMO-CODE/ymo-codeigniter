@@ -39,6 +39,18 @@ if (ymo_is_admin_host_request()) {
     $route['job-cards/(:num)/lines/(:num)/delete'] = 'admin/work_orders/line_delete/$1/$2';
     $route['job-cards/(:num)/lines/(:num)/done'] = 'admin/work_orders/line_done/$1/$2';
     $route['job-cards/(:num)/note'] = 'admin/work_orders/note/$1';
+    $route['job-cards/(:num)/invoice'] = 'admin/billing/raise/$1';
+    $route['invoices'] = 'admin/billing/index';
+    $route['invoices/(:num)'] = 'admin/billing/view/$1';
+    $route['invoices/(:num)/pdf'] = 'admin/billing/pdf/$1';
+    $route['invoices/(:num)/payment'] = 'admin/billing/payment/$1';
+    $route['invoices/(:num)/payments/(:num)/void'] = 'admin/billing/void_payment/$1/$2';
+    $route['invoices/(:num)/send'] = 'admin/billing/send/$1';
+    $route['invoices/(:num)/cancel'] = 'admin/billing/cancel/$1';
+    $route['invoices/(:num)/date'] = 'admin/billing/set_date/$1';
+    $route['payments'] = 'admin/billing/payments';
+    $route['billing-setup'] = 'admin/billing/setup';
+    $route['billing-setup/account'] = 'admin/billing/account_save';
     $route['job-cards/(:num)/estimate'] = 'admin/work_orders/estimate_send/$1';
     $route['job-cards/(:num)/approval'] = 'admin/work_orders/approval/$1';
     $route['job-cards/(:num)/estimates/(:num)/respond'] = 'admin/work_orders/estimate_respond/$1/$2';
@@ -236,6 +248,18 @@ if (ymo_is_admin_host_request()) {
     $route['admin/job-cards/(:num)/lines/(:num)/delete'] = 'admin/work_orders/line_delete/$1/$2';
     $route['admin/job-cards/(:num)/lines/(:num)/done'] = 'admin/work_orders/line_done/$1/$2';
     $route['admin/job-cards/(:num)/note'] = 'admin/work_orders/note/$1';
+    $route['admin/job-cards/(:num)/invoice'] = 'admin/billing/raise/$1';
+    $route['admin/invoices'] = 'admin/billing/index';
+    $route['admin/invoices/(:num)'] = 'admin/billing/view/$1';
+    $route['admin/invoices/(:num)/pdf'] = 'admin/billing/pdf/$1';
+    $route['admin/invoices/(:num)/payment'] = 'admin/billing/payment/$1';
+    $route['admin/invoices/(:num)/payments/(:num)/void'] = 'admin/billing/void_payment/$1/$2';
+    $route['admin/invoices/(:num)/send'] = 'admin/billing/send/$1';
+    $route['admin/invoices/(:num)/cancel'] = 'admin/billing/cancel/$1';
+    $route['admin/invoices/(:num)/date'] = 'admin/billing/set_date/$1';
+    $route['admin/payments'] = 'admin/billing/payments';
+    $route['admin/billing-setup'] = 'admin/billing/setup';
+    $route['admin/billing-setup/account'] = 'admin/billing/account_save';
     $route['admin/job-cards/(:num)/estimate'] = 'admin/work_orders/estimate_send/$1';
     $route['admin/job-cards/(:num)/approval'] = 'admin/work_orders/approval/$1';
     $route['admin/job-cards/(:num)/estimates/(:num)/respond'] = 'admin/work_orders/estimate_respond/$1/$2';
@@ -425,6 +449,8 @@ if (ymo_is_admin_host_request()) {
     $route['geo/city']             = 'marketing/geo/city';
     $route['contact-us']           = 'marketing/contact/index';
     $route['request-callback']        = 'marketing/contact/callback';
+    $route['pay/([A-Za-z0-9]{24})'] = 'pay/show/$1';
+    $route['pay/([A-Za-z0-9]{24})/invoice.pdf'] = 'pay/pdf/$1';
     $route['review/([a-z]+)']        = 'marketing/review_link/go/$1';
     $route['review']                 = 'marketing/review_link/go';
     $route['media/gbp/(:num)/([a-f0-9]+)'] = 'marketing/gbp_media/show/$1/$2';
@@ -464,6 +490,8 @@ if (ymo_is_admin_host_request()) {
     $route['(.+)'] = 'marketing/legacy/go';
 
 } else {
+    $route['pay/([A-Za-z0-9]{24})'] = 'pay/show/$1';
+    $route['pay/([A-Za-z0-9]{24})/invoice.pdf'] = 'pay/pdf/$1';
 
     // -------------------------------------------------------------------
     // PUBLIC / BOOKING HOST (default behaviour)
@@ -529,6 +557,18 @@ if (ymo_is_admin_host_request()) {
     $route['admin/job-cards/(:num)/lines/(:num)/delete'] = 'admin/work_orders/line_delete/$1/$2';
     $route['admin/job-cards/(:num)/lines/(:num)/done'] = 'admin/work_orders/line_done/$1/$2';
     $route['admin/job-cards/(:num)/note'] = 'admin/work_orders/note/$1';
+    $route['admin/job-cards/(:num)/invoice'] = 'admin/billing/raise/$1';
+    $route['admin/invoices'] = 'admin/billing/index';
+    $route['admin/invoices/(:num)'] = 'admin/billing/view/$1';
+    $route['admin/invoices/(:num)/pdf'] = 'admin/billing/pdf/$1';
+    $route['admin/invoices/(:num)/payment'] = 'admin/billing/payment/$1';
+    $route['admin/invoices/(:num)/payments/(:num)/void'] = 'admin/billing/void_payment/$1/$2';
+    $route['admin/invoices/(:num)/send'] = 'admin/billing/send/$1';
+    $route['admin/invoices/(:num)/cancel'] = 'admin/billing/cancel/$1';
+    $route['admin/invoices/(:num)/date'] = 'admin/billing/set_date/$1';
+    $route['admin/payments'] = 'admin/billing/payments';
+    $route['admin/billing-setup'] = 'admin/billing/setup';
+    $route['admin/billing-setup/account'] = 'admin/billing/account_save';
     $route['admin/job-cards/(:num)/estimate'] = 'admin/work_orders/estimate_send/$1';
     $route['admin/job-cards/(:num)/approval'] = 'admin/work_orders/approval/$1';
     $route['admin/job-cards/(:num)/estimates/(:num)/respond'] = 'admin/work_orders/estimate_respond/$1/$2';
