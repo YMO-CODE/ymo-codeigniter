@@ -9,7 +9,7 @@ if (!$draft && $editing) {
         'when'       => $editing['status'] === 'scheduled' ? 'date' : 'draft',
     );
 }
-$sel = isset($draft['workshops']) ? (array) $draft['workshops'] : array_keys($connected);
+$sel = isset($draft['workshops']) ? (array) $draft['workshops'] : ($ws !== '' && isset($connected[$ws]) ? array($ws) : array_keys($connected));
 $when_sel = isset($draft['when']) ? $draft['when'] : 'now';
 $status_badge = array(
     'draft'     => array('Draft', 'bg-secondary'),
@@ -19,6 +19,18 @@ $status_badge = array(
     'failed'    => array('Failed', 'bg-danger'),
 );
 $cta_label = array('CALL' => 'Call now', 'BOOK' => 'Book', 'LEARN_MORE' => 'Learn more', 'NONE' => 'No button');
+// Same colour for a workshop everywhere on the page, so posts are easy to tell apart.
+$ws_palette = array('#1d4ed8', '#047857', '#c2410c', '#7c3aed', '#be185d', '#0e7490');
+$ws_color = array();
+foreach (array_keys($workshops) as $i => $slug) {
+    $ws_color[$slug] = $ws_palette[$i % count($ws_palette)];
+}
+// URL for this page with the current tab / workshop filter, changed by $set (NULL removes a key).
+$gp_url = function (array $set = array()) use ($tab, $ws) {
+    $q = array_merge(array('tab' => $tab, 'ws' => $ws), $set);
+    $q = array_filter($q, function ($v) { return $v !== NULL && $v !== ''; });
+    return admin_url('google-posts'.($q ? '?'.http_build_query($q) : ''));
+};
 ?>
 <style>
 .gp-item { border: 1px solid #e5e7eb; border-radius: 10px; padding: .75rem .9rem; margin-bottom: .6rem; background: #fff; }
@@ -28,6 +40,12 @@ $cta_label = array('CALL' => 'Call now', 'BOOK' => 'Book', 'LEARN_MORE' => 'Lear
 .gp-text { white-space: pre-wrap; }
 .gp-text.is-clamped { max-height: 6.4em; overflow: hidden; -webkit-mask-image: linear-gradient(#000 60%, transparent); mask-image: linear-gradient(#000 60%, transparent); }
 .gp-more { font-size: .8rem; }
+.gp-ws { display: inline-block; padding: .1rem .5rem; border-radius: 999px; font-size: .75rem; font-weight: 600; color: #fff; text-decoration: none; }
+a.gp-ws:hover { color: #fff; opacity: .85; }
+.gp-ws.is-failed { background: #fff !important; color: #b91c1c; border: 1px solid #b91c1c; }
+.gp-item { border-left-width: 4px; }
+.gp-wsf .btn { font-size: .8rem; padding: .2rem .65rem; border-radius: 999px; }
+.gp-wsf .btn .gp-dot { display: inline-block; width: .55rem; height: .55rem; border-radius: 50%; margin-right: .3rem; vertical-align: .05rem; }
 </style>
 
 <?php if (!$google_on): ?>
@@ -41,12 +59,13 @@ $cta_label = array('CALL' => 'Call now', 'BOOK' => 'Book', 'LEARN_MORE' => 'Lear
     <div class="ymo-card p-3 mb-3">
         <div class="d-flex justify-content-between align-items-center">
             <h2 class="h6 mb-1"><?= $editing ? 'Edit post #'.(int) $editing['id'] : 'New post'; ?></h2>
-            <?php if ($editing): ?><a class="small" href="<?= admin_url('google-posts?tab='.$tab); ?>#posts">Cancel edit</a><?php endif; ?>
+            <?php if ($editing): ?><a class="small" href="<?= html_escape($gp_url()); ?>#posts">Cancel edit</a><?php endif; ?>
         </div>
         <p class="small ymo-muted mb-2">Shows on your Google listing in Search and Maps ("Updates"). Aim for one a week per workshop<?= $last ? ' · last post '.html_escape(date('d M', strtotime($last))) : ''; ?>.</p>
         <?php if ($can_edit): ?>
         <?= form_open_multipart(admin_url('google-posts/save'), array('id' => 'gp-form')); ?>
             <?php if ($editing): ?><input type="hidden" name="post_id" value="<?= (int) $editing['id']; ?>"><?php endif; ?>
+            <?php if ($ws !== ''): ?><input type="hidden" name="ws" value="<?= html_escape($ws); ?>"><?php endif; ?>
             <label class="small fw-semibold mb-1" for="gp-text">Text</label>
             <textarea id="gp-text" name="summary" class="form-control form-control-sm mb-1" rows="7" maxlength="<?= (int) $max_text; ?>" required
                 placeholder="e.g. Monsoon check-up: free 25-point inspection with every service this week. Brakes, wipers, tyres and AC checked, with WhatsApp photo updates of everything we find."><?= html_escape(isset($draft['summary']) ? $draft['summary'] : ''); ?></textarea>
@@ -100,18 +119,29 @@ $cta_label = array('CALL' => 'Call now', 'BOOK' => 'Book', 'LEARN_MORE' => 'Lear
 <div class="col-lg-7">
     <div class="ymo-card p-3 mb-3" id="posts">
         <h2 class="h6 mb-2">Posts</h2>
+        <?php if (count($workshops) > 1): ?>
+        <div class="gp-wsf d-flex flex-wrap align-items-center gap-1 mb-2" role="group" aria-label="Filter by workshop">
+            <span class="small ymo-muted me-1">Workshop:</span>
+            <a class="btn <?= $ws === '' ? 'btn-dark' : 'btn-outline-secondary'; ?>" href="<?= html_escape($gp_url(array('ws' => NULL, 'p' => NULL))); ?>#posts">All <span class="opacity-75"><?= (int) $tab_total; ?></span></a>
+            <?php foreach ($workshops as $slug => $w):
+                $on = $ws === $slug; $c = $ws_color[$slug]; ?>
+                <a class="btn <?= $on ? '' : 'btn-outline-secondary'; ?>" style="<?= $on ? 'background:'.$c.';border-color:'.$c.';color:#fff' : ''; ?>" href="<?= html_escape($gp_url(array('ws' => $slug, 'p' => NULL))); ?>#posts"><span class="gp-dot" style="background:<?= $on ? '#fff' : $c; ?>"></span><?= html_escape($w['label']); ?> <span class="opacity-75"><?= (int) $ws_counts[$slug]; ?></span></a>
+            <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
         <ul class="nav nav-pills gp-tabs flex-wrap gap-1 mb-3">
             <?php foreach (array('draft' => 'Drafts', 'scheduled' => 'Scheduled', 'live' => 'Live', 'failed' => 'Failed', 'all' => 'All') as $k => $lbl):
                 if (in_array($k, array('failed'), TRUE) && !$tabs[$k] && $tab !== $k) { continue; } ?>
-                <li class="nav-item"><a class="nav-link <?= $tab === $k ? 'active' : ''; ?>" href="<?= admin_url('google-posts?tab='.$k); ?>#posts"><?= $lbl; ?> <span class="badge <?= $tab === $k ? 'bg-light text-dark' : 'bg-secondary'; ?>"><?= (int) $tabs[$k]; ?></span></a></li>
+                <li class="nav-item"><a class="nav-link <?= $tab === $k ? 'active' : ''; ?>" href="<?= html_escape($gp_url(array('tab' => $k, 'p' => NULL))); ?>#posts"><?= $lbl; ?> <span class="badge <?= $tab === $k ? 'bg-light text-dark' : 'bg-secondary'; ?>"><?= (int) $tabs[$k]; ?></span></a></li>
             <?php endforeach; ?>
         </ul>
-        <?php if (!$posts): ?><p class="small ymo-muted mb-0"><?= $tab === 'draft' ? 'No drafts.' : ($tab === 'all' ? 'No posts yet.' : 'Nothing here.'); ?></p><?php endif; ?>
+        <?php if (!$posts): ?><p class="small ymo-muted mb-0"><?= $tab === 'draft' ? 'No drafts' : ($tab === 'all' ? 'No posts yet' : 'Nothing here'); ?><?= $ws !== '' ? ' for '.html_escape($workshops[$ws]['label']).'. <a href="'.html_escape($gp_url(array('ws' => NULL))).'#posts">Show all workshops</a>' : '.'; ?></p><?php endif; ?>
         <?php foreach ($posts as $p):
             $res = json_decode((string) $p['results'], TRUE) ?: array();
             $b = isset($status_badge[$p['status']]) ? $status_badge[$p['status']] : array($p['status'], 'bg-light');
         ?>
-            <div class="gp-item">
+            <?php $p_ws = array_values(array_filter(explode(',', $p['workshops']))); ?>
+            <div class="gp-item" style="border-left-color: <?= isset($p_ws[0], $ws_color[$p_ws[0]]) ? (count($p_ws) > 1 ? '#6b7280' : $ws_color[$p_ws[0]]) : '#e5e7eb'; ?>">
                 <div class="d-flex gap-2">
                     <?php if (!empty($p['has_image'])): ?>
                         <img class="gp-thumb" src="<?= html_escape($this->gbp_post_service->image_url($p)); ?>" alt="" loading="lazy">
@@ -120,15 +150,16 @@ $cta_label = array('CALL' => 'Call now', 'BOOK' => 'Book', 'LEARN_MORE' => 'Lear
                         <div class="d-flex justify-content-between flex-wrap gap-1 mb-1">
                             <span><span class="badge <?= $b[1]; ?>"><?= $b[0]; ?></span>
                                 <span class="ymo-muted"><?= $p['status'] === 'draft' ? '#'.(int) $p['id'] : ''; ?><?= $p['status'] === 'scheduled' ? 'goes live '.html_escape(date('D d M', strtotime($p['publish_on']))) : ($p['published_at'] ? html_escape(date('d M, H:i', strtotime($p['published_at']))) : ''); ?> · <?= html_escape($cta_label[$p['cta_type']] ?? $p['cta_type']); ?></span></span>
-                            <span class="ymo-muted"><?php foreach (array_filter(explode(',', $p['workshops'])) as $w):
+                            <span class="d-flex flex-wrap gap-1"><?php foreach ($p_ws as $w):
                                 $r = isset($res[$w]) ? $res[$w] : NULL;
                                 $lbl = isset($workshops[$w]) ? $workshops[$w]['label'] : $w;
+                                $c = isset($ws_color[$w]) ? $ws_color[$w] : '#6b7280';
                                 if ($r && !empty($r['ok']) && !empty($r['url'])) {
-                                    echo '<a href="'.html_escape($r['url']).'" target="_blank" rel="noopener">'.html_escape($lbl).' ↗</a> ';
+                                    echo '<a class="gp-ws" style="background:'.$c.'" href="'.html_escape($r['url']).'" target="_blank" rel="noopener" title="Open on Google">'.html_escape($lbl).' ↗</a>';
                                 } elseif ($r && empty($r['ok'])) {
-                                    echo '<span class="text-danger" title="'.html_escape((string) $r['error']).'">'.html_escape($lbl).' ✕</span> ';
+                                    echo '<span class="gp-ws is-failed" title="'.html_escape((string) $r['error']).'">'.html_escape($lbl).' ✕</span>';
                                 } else {
-                                    echo html_escape($lbl).' ';
+                                    echo '<span class="gp-ws" style="background:'.$c.'">'.html_escape($lbl).'</span>';
                                 }
                             endforeach; ?></span>
                         </div>
@@ -142,7 +173,7 @@ $cta_label = array('CALL' => 'Call now', 'BOOK' => 'Book', 'LEARN_MORE' => 'Lear
                         <div class="d-flex gap-2 mt-2 align-items-center">
                             <?= form_open(admin_url('google-posts/'.(int) $p['id'].'/publish'), array('onsubmit' => $p['status'] === 'draft' ? "return confirm('Publish this post to Google now?');" : '')); ?><button class="btn btn-sm <?= $p['status'] === 'draft' ? 'btn-primary' : 'btn-outline-primary'; ?>"><?= in_array($p['status'], array('draft', 'scheduled'), TRUE) ? 'Publish now' : 'Retry'; ?></button><?= form_close(); ?>
                             <?php if (in_array($p['status'], array('draft', 'scheduled', 'failed'), TRUE)): ?>
-                            <a class="btn btn-sm btn-outline-secondary" href="<?= admin_url('google-posts?'.http_build_query(array_filter(array('tab' => $tab, 'p' => isset($_GET['p']) ? (int) $_GET['p'] : NULL, 'edit' => (int) $p['id'])))); ?>#gp-form">Edit</a>
+                            <a class="btn btn-sm btn-outline-secondary" href="<?= html_escape($gp_url(array('p' => isset($_GET['p']) ? (int) $_GET['p'] : NULL, 'edit' => (int) $p['id']))); ?>#gp-form">Edit</a>
                             <?php endif; ?>
                             <?php if (in_array($p['status'], array('draft', 'scheduled', 'failed'), TRUE)): ?>
                             <?= form_open(admin_url('google-posts/'.(int) $p['id'].'/delete'), array('onsubmit' => "return confirm('Remove this post?');")); ?><button class="btn btn-sm btn-link text-danger">Remove</button><?= form_close(); ?>

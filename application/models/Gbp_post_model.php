@@ -123,10 +123,11 @@ CREATE TABLE IF NOT EXISTS gbp_posts (
     }
 
     /** Count per status tab: draft, scheduled, live (published + partial), failed, all. */
-    public function tab_counts()
+    public function tab_counts($ws = '')
     {
         $this->ensure_schema();
         $out = array('draft' => 0, 'scheduled' => 0, 'live' => 0, 'failed' => 0, 'all' => 0);
+        $this->_where_workshop($ws);
         foreach ($this->db->select('status, COUNT(*) n', FALSE)->group_by('status')->get('gbp_posts')->result_array() as $r) {
             $n = (int) $r['n'];
             $out['all'] += $n;
@@ -142,15 +143,48 @@ CREATE TABLE IF NOT EXISTS gbp_posts (
      * One page of posts for a tab.
      * @return array{rows:array, total:int}
      */
-    public function page($tab, $limit, $offset)
+    /** Posts that go to this workshop listing ($ws = slug; '' = every workshop). */
+    protected function _where_workshop($ws)
+    {
+        $ws = (string) $ws;
+        if ($ws !== '') {
+            $this->db->where('FIND_IN_SET('.$this->db->escape($ws).', workshops) >', 0, FALSE);
+        }
+    }
+
+    /**
+     * How many posts each workshop listing has in a status tab: slug => n.
+     * A post that goes to two listings counts for both.
+     */
+    public function workshop_counts($tab, array $slugs)
     {
         $this->ensure_schema();
         $map = array('draft' => array('draft'), 'scheduled' => array('scheduled'), 'live' => array('published', 'partial'), 'failed' => array('failed'));
-        $apply = function () use ($tab, $map) {
+        $this->db->select('workshops');
+        if (isset($map[$tab])) {
+            $this->db->where_in('status', $map[$tab]);
+        }
+        $out = array_fill_keys($slugs, 0);
+        foreach ($this->db->get('gbp_posts')->result_array() as $r) {
+            foreach (array_filter(explode(',', (string) $r['workshops'])) as $w) {
+                if (isset($out[$w])) {
+                    $out[$w]++;
+                }
+            }
+        }
+        return $out;
+    }
+
+    public function page($tab, $limit, $offset, $ws = '')
+    {
+        $this->ensure_schema();
+        $map = array('draft' => array('draft'), 'scheduled' => array('scheduled'), 'live' => array('published', 'partial'), 'failed' => array('failed'));
+        $apply = function () use ($tab, $map, $ws) {
             $this->db->from('gbp_posts');
             if (isset($map[$tab])) {
                 $this->db->where_in('status', $map[$tab]);
             }
+            $this->_where_workshop($ws);
         };
         $apply();
         $total = (int) $this->db->count_all_results();

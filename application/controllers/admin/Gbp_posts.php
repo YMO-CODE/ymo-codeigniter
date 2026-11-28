@@ -27,26 +27,36 @@ class Gbp_posts extends Crm_Controller
                 $editing = $row;
             }
         }
+        // ?ws={slug}: only posts for that workshop listing (tab counts follow the filter).
+        $workshops = ymo_review_workshops();
+        $ws = (string) $this->input->get('ws');
+        if (!isset($workshops[$ws])) {
+            $ws = '';
+        }
         // Status tabs + 15 per page. Default tab: drafts while there are any.
-        $tabs = $this->gbp_post_model->tab_counts();
+        $tabs = $this->gbp_post_model->tab_counts($ws);
         $tab = (string) $this->input->get('tab');
         if (!in_array($tab, array('draft', 'scheduled', 'live', 'failed', 'all'), TRUE)) {
             $tab = $tabs['draft'] ? 'draft' : 'all';
         }
         $per = 15;
         $page = max(1, (int) $this->input->get('p'));
-        $res = $this->gbp_post_model->page($tab, $per, ($page - 1) * $per);
+        $res = $this->gbp_post_model->page($tab, $per, ($page - 1) * $per, $ws);
         if ($res['total'] && ($page - 1) * $per >= $res['total']) {
             $page = (int) ceil($res['total'] / $per);
-            $res = $this->gbp_post_model->page($tab, $per, ($page - 1) * $per);
+            $res = $this->gbp_post_model->page($tab, $per, ($page - 1) * $per, $ws);
         }
+        $all_tabs = $ws === '' ? $tabs : $this->gbp_post_model->tab_counts();
         $this->render('admin/gbp_posts/index', array(
             'title'     => 'Google posts',
             'posts'     => $res['rows'],
             'tab'       => $tab,
             'tabs'      => $tabs,
             'pager'     => array('page' => $page, 'pages' => (int) ceil($res['total'] / $per), 'total' => $res['total'], 'per' => $per, 'param' => 'p', 'anchor' => 'posts', 'path' => 'google-posts', 'noun' => 'posts'),
-            'workshops' => ymo_review_workshops(),
+            'workshops' => $workshops,
+            'ws'        => $ws,
+            'ws_counts' => $this->gbp_post_model->workshop_counts($tab, array_keys($workshops)),
+            'tab_total' => (int) $all_tabs[$tab],
             'connected' => $this->gbp_post_service->connected_workshops(),
             'google_on' => (bool) $this->gbp_review_model->setting('gbp_oauth_token', NULL),
             'last'      => $this->gbp_post_model->last_published_on(),
@@ -161,7 +171,8 @@ class Gbp_posts extends Crm_Controller
         } else {
             $this->flash('success', 'Saved as a draft. It stays here until you publish it.');
         }
-        redirect(admin_url('google-posts'));
+        $ws = (string) $this->input->post('ws');
+        redirect(admin_url('google-posts'.(isset(ymo_review_workshops()[$ws]) ? '?ws='.rawurlencode($ws) : '')));
     }
 
     /** POST google-posts/{id}/publish — publish a draft or scheduled post now, or retry a failed one. */
