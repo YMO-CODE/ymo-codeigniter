@@ -25,6 +25,7 @@ $item = function ($path, $icon, $label, $active) {
 <?php endif; ?>
 <?php if ($can('bookings.view')): ?>
 <?= $item('bookings', 'event_note', 'Bookings', admin_nav_active('bookings')); ?>
+<?= $item('job-cards', 'assignment', 'Job cards', admin_nav_active('job-cards')); ?>
 <?php endif; ?>
 <?php if ($crm && crm_can('contacts.view')): ?>
 <?= $item('customers', 'groups', 'Customers', admin_nav_active('customers') || admin_nav_active('online-accounts')); ?>

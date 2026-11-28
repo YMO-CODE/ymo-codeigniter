@@ -216,6 +216,7 @@ class Bookings extends Admin_Controller
             'review_sent'      => $this->_review_sent($booking),
             'can_edit'  => function_exists('crm_can') ? crm_can('bookings.edit') : TRUE,
             'wa'        => $this->_wa_panel_data($booking),
+            'work_order' => $this->_work_order_for($id),
         ));
     }
 
@@ -233,62 +234,11 @@ class Bookings extends Admin_Controller
 
         $new_status = $this->input->post('status');
         $reason     = $this->input->post('cancel_reason');
-        $previous   = $booking['status'];
 
-        $this->booking_model->update_status($id, $new_status, $reason);
-        $this->audit->log('admin', $this->admin['id'], 'booking.status_change', 'booking', $id, array(
-            'from' => $previous, 'to' => $new_status, 'reason' => $reason,
-        ));
-
-        // Auto-create reminders the first time a booking flips to completed
-        if ($new_status === 'completed' && $previous !== 'completed') {
-            $months = (int) $this->config->item('reminder_months');
-            $review_days = (int) $this->config->item('reminder_review_days');
-
-            // Next-service reminder
-            $this->reminder_model->create(array(
-                'booking_id'   => (int) $id,
-                'type'         => 'next_service',
-                'channel'      => 'both',
-                'scheduled_at' => date('Y-m-d H:i:s', strtotime("+$months months")),
-                'status'       => 'pending',
-            ));
-            // Review reminder - earliest send date
-            $this->reminder_model->create(array(
-                'booking_id'   => (int) $id,
-                'type'         => 'review',
-                'channel'      => 'both',
-                'scheduled_at' => date('Y-m-d H:i:s', strtotime("+$review_days days")),
-                'status'       => 'pending',
-            ));
-
-            $this->load->library('referral_service');
-            $this->referral_service->complete_for_booking((int) $id);
-        }
-
-        if ($new_status === 'cancelled' && $previous !== 'cancelled') {
-            $this->load->library('referral_service');
-            $this->referral_service->cancel_for_booking((int) $id);
-        }
-
-        // Customer notification on every status change after `pending`
-        $notice = '';
-        $notice_ok = TRUE;
-        if ($new_status !== $previous && in_array($new_status, array('confirmed', 'in_progress', 'completed', 'cancelled'))) {
-            $detailed = $this->booking_model->find_detailed($id);
-            list($notice_ok, $notice) = $this->_notify_customer_status($detailed);
-        }
-
-        // Ask for a Google review right after delivery (config/reviews.php).
-        if ($new_status === 'completed' && $previous !== 'completed') {
-            $this->config->load('reviews', TRUE);
-            if ($this->config->item('review_request_on_complete', 'reviews')) {
-                $this->load->library('review_service');
-                $detailed = isset($detailed) && $detailed ? $detailed : $this->booking_model->find_detailed($id);
-                $rr = $this->review_service->ask_for_booking($detailed, '', array('source' => 'auto', 'admin_id' => (int) $this->admin['id']));
-                $notice .= ' Google review: '.$rr['message'];
-            }
-        }
+        // Reminders, referral, customer notice and review request live in Booking_status_service
+        // so job cards trigger exactly the same steps.
+        $this->load->library('booking_status_service');
+        list($notice_ok, $notice) = $this->booking_status_service->change($id, $new_status, $reason, (int) $this->admin['id'], 'booking');
 
         $this->flash($notice_ok ? 'success' : 'warning', 'Booking marked '.str_replace('_', ' ', $new_status).'.'.($notice !== '' ? ' '.$notice : ''));
         redirect(admin_url('bookings/'.$id));
@@ -685,6 +635,16 @@ class Bookings extends Admin_Controller
      *
      * @return array{0: bool, 1: string} [anything delivered, admin-facing summary]
      */
+    /** The booking's job card (id, ro_number, status), if one was opened. */
+    protected function _work_order_for($booking_id)
+    {
+        $this->load->model('crm_work_order_model');
+        if (!$this->crm_work_order_model->ensure_schema()) {
+            return NULL;
+        }
+        return $this->crm_work_order_model->find_open_for_booking($booking_id);
+    }
+
     protected function _notify_customer_status(array $booking)
     {
         $msg_ok = $this->customer_notifier->notify($booking['user_mobile'], 'booking_status', array(

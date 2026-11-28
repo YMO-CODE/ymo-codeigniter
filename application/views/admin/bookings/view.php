@@ -119,6 +119,18 @@ $status_icons = array(
     </div>
 
     <div class="col-lg-4">
+        <div class="md-card-elevated mb-3">
+            <h6 class="mb-2"><span class="mi mi-sm mi-leading">assignment</span>Job card</h6>
+            <?php if (!empty($work_order)): ?>
+                <a class="btn btn-sm btn-outline-primary" href="<?= admin_url('job-cards/'.(int) $work_order['id']); ?>">Open <?= html_escape($work_order['ro_number']); ?></a>
+                <span class="small ymo-muted ms-1"><?= html_escape(Crm_work_order_model::STATUSES[$work_order['status']] ?? $work_order['status']); ?></span>
+            <?php elseif (!empty($can_edit) && !in_array($booking['status'], array('completed', 'cancelled'), TRUE)): ?>
+                <p class="small ymo-muted mb-2">When the car arrives, open its job card. Customer, car and package carry over, and the booking follows the job card's status.</p>
+                <a class="btn btn-sm btn-primary" href="<?= admin_url('job-cards/new?booking_id='.(int) $booking['id']); ?>"><span class="mi mi-sm mi-leading">assignment_add</span>Open job card</a>
+            <?php else: ?>
+                <p class="small ymo-muted mb-0">No job card.</p>
+            <?php endif; ?>
+        </div>
         <?php if (!empty($can_edit)): ?>
         <div class="md-card-elevated mb-3">
             <h6 class="mb-3"><span class="mi mi-sm mi-leading">flag</span>Update status</h6>
