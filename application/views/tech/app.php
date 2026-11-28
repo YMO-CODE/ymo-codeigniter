@@ -63,7 +63,10 @@ label.l { display: block; font-weight: 700; margin: 12px 2px 6px; }
 .photos div { position: relative; aspect-ratio: 4/3; background: #dfe5e2; border-radius: 8px; overflow: hidden; }
 .photos img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .photos span { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.55); color: #fff; font-size: 11px; padding: 2px 4px; }
-.photos .wait::after { content: '⏳'; position: absolute; top: 4px; right: 6px; }
+.photos .wait img { opacity: .55; }
+.photos .upl { position: absolute; top: 50%; left: 0; right: 0; transform: translateY(-50%); text-align: center; color: #fff; font-size: 12px; text-shadow: 0 1px 2px rgba(0,0,0,.8); }
+.photos .wait .upl::before { content: ''; display: inline-block; width: 11px; height: 11px; margin-right: 4px; vertical-align: -1px; border: 2px solid #fff; border-right-color: transparent; border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 .kinds { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
 .kinds button { border: 2px solid var(--g); background: #fff; color: var(--g); border-radius: 12px; padding: 12px 6px; font-weight: 700; font-size: 15px; }
 .note { padding: 8px 10px; border-radius: 10px; margin-bottom: 6px; font-size: 15px; }
@@ -109,7 +112,7 @@ var T = {
     e_gen: 'Something went wrong. Try again.', e_photo: 'Could not read that photo.', changed: 'The advisor changed this job. Updated.',
     logout: 'Sign out', logout_q: '{n} change(s) are not sent yet. Signing out deletes them. Sign out?', lang: 'Language',
     advisor: 'Advisor', km: 'km', you: 'You', updated: 'Updated {t}',
-    wait_ok: 'Waiting for customer OK – do not start yet', waiting_n: '{n} waiting for customer OK'
+    uploading: 'Uploading…', wait_ok: 'Waiting for customer OK – do not start yet', waiting_n: '{n} waiting for customer OK'
   },
   hi: {
     title: 'YMO वर्कशॉप', mobile: 'मोबाइल नंबर', pin: '4 अंकों का PIN', sign_in: 'लॉग इन करें',
@@ -131,7 +134,7 @@ var T = {
     e_gen: 'कुछ गड़बड़ हुई। फिर से कोशिश करें।', e_photo: 'यह फ़ोटो नहीं खुली।', changed: 'एडवाइज़र ने इस काम में बदलाव किया। अपडेट हो गया।',
     logout: 'लॉग आउट', logout_q: '{n} बदलाव अभी भेजे नहीं गए। लॉग आउट करने पर वे मिट जाएँगे। लॉग आउट करें?', lang: 'भाषा',
     advisor: 'एडवाइज़र', km: 'कि.मी.', you: 'आप', updated: '{t} पर अपडेट',
-    wait_ok: 'ग्राहक की मंज़ूरी का इंतज़ार – अभी शुरू न करें', waiting_n: 'ग्राहक की मंज़ूरी बाकी: {n}'
+    uploading: 'अपलोड हो रहा है…', wait_ok: 'ग्राहक की मंज़ूरी का इंतज़ार – अभी शुरू न करें', waiting_n: 'ग्राहक की मंज़ूरी बाकी: {n}'
   },
   mr: {
     title: 'YMO वर्कशॉप', mobile: 'मोबाईल नंबर', pin: '4 अंकी PIN', sign_in: 'लॉग इन करा',
@@ -153,7 +156,7 @@ var T = {
     e_gen: 'काहीतरी चुकले. पुन्हा प्रयत्न करा.', e_photo: 'हा फोटो उघडला नाही.', changed: 'अ‍ॅडव्हायझरने या कामात बदल केला. अपडेट झाले.',
     logout: 'लॉग आउट', logout_q: '{n} बदल अजून पाठवलेले नाहीत. लॉग आउट केल्यास ते पुसले जातील. लॉग आउट करायचे?', lang: 'भाषा',
     advisor: 'अ‍ॅडव्हायझर', km: 'कि.मी.', you: 'तुम्ही', updated: '{t} ला अपडेट',
-    wait_ok: 'ग्राहकाच्या मंजुरीची वाट – अजून सुरू करू नका', waiting_n: 'ग्राहकाची मंजुरी बाकी: {n}'
+    uploading: 'अपलोड होत आहे…', wait_ok: 'ग्राहकाच्या मंजुरीची वाट – अजून सुरू करू नका', waiting_n: 'ग्राहकाची मंजुरी बाकी: {n}'
   }
 };
 var LANGS = { en: 'English', hi: 'हिंदी', mr: 'मराठी' };
@@ -423,7 +426,7 @@ function renderJob() {
     b += '<div class="photos">' + j.photos.map(function (p) {
       return '<div><a href="' + BASE + '/photo/' + p.id + '" target="_blank"><img loading="lazy" src="' + BASE + '/photo/' + p.id + '?t=1" alt=""></a><span>' + esc(t('k_' + p.kind)) + '</span></div>';
     }).join('') + mine.map(function (p) {
-      return '<div class="wait"><img data-blob="' + p.uid + '" alt=""><span>' + esc(t('k_' + p.kind)) + '</span></div>';
+      return '<div class="wait"><img data-blob="' + p.uid + '" alt=""><b class="upl">' + esc(navigator.onLine ? t('uploading') : t('saved')) + '</b><span>' + esc(t('k_' + p.kind)) + '</span></div>';
     }).join('') + '</div>';
   }
   b += '<div class="kinds">' + ['before', 'during', 'after', 'damage', 'part'].map(function (k) { return '<button data-kind="' + k + '">📷 ' + esc(t('k_' + k)) + '</button>'; }).join('') + '</div></div>';

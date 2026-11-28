@@ -81,5 +81,41 @@ $page_title = isset($title) ? $title.' - Admin · '.$brand_name : 'Admin · '.$b
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<?= base_url('assets/js/ymo.js?v='.(int) @filemtime(FCPATH.'assets/js/ymo.js')); ?>"></script>
+<script>
+/* Any form that uploads a file: the button turns into "Uploading…" with a spinner and can't be
+   pressed again until the next page loads. Skipped when another handler cancelled the submit
+   (a confirm box answered No, a size check failed). */
+(function () {
+    function hasFile(form) {
+        return Array.prototype.some.call(form.querySelectorAll('input[type=file]'), function (i) { return i.files && i.files.length; });
+    }
+    document.addEventListener('submit', function (e) {
+        var form = e.target;
+        if (!(form instanceof HTMLFormElement) || !hasFile(form)) { return; }
+        if (form.dataset.uploading === '1') { e.preventDefault(); return; }
+        if (e.defaultPrevented) { return; }
+        form.dataset.uploading = '1';
+        var btn = e.submitter || form.querySelector('button[type=submit], button:not([type]), input[type=submit]');
+        if (!btn) { return; }
+        btn.dataset.label = btn.tagName === 'INPUT' ? btn.value : btn.innerHTML;
+        btn.classList.add('disabled');
+        btn.setAttribute('aria-disabled', 'true');
+        btn.style.pointerEvents = 'none';
+        if (btn.tagName === 'INPUT') { btn.value = 'Uploading…'; }
+        else { btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Uploading…'; }
+    });
+    // Coming back with the browser's Back button: give the button back.
+    window.addEventListener('pageshow', function (e) {
+        if (!e.persisted) { return; }
+        document.querySelectorAll('form[data-uploading="1"]').forEach(function (form) {
+            form.dataset.uploading = '';
+            form.querySelectorAll('[aria-disabled="true"][data-label]').forEach(function (btn) {
+                if (btn.tagName === 'INPUT') { btn.value = btn.dataset.label; } else { btn.innerHTML = btn.dataset.label; }
+                btn.classList.remove('disabled'); btn.removeAttribute('aria-disabled'); btn.style.pointerEvents = '';
+            });
+        });
+    });
+})();
+</script>
 </body>
 </html>

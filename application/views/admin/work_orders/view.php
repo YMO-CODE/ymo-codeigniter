@@ -310,8 +310,8 @@ $wsname = ($wo['workshop'] !== '' && isset($workshops[$wo['workshop']])) ? $work
         <?= form_open_multipart(admin_url('job-cards/'.(int) $wo['id'].'/photos'), array('class' => 'row g-2 align-items-end mt-2')); ?>
             <div class="col-sm-4"><label class="small ymo-muted">Kind</label>
                 <select class="form-select form-select-sm" name="kind"><?php foreach (Crm_work_order_model::PHOTO_KINDS as $k => $klabel): ?><option value="<?= $k; ?>"><?= $klabel; ?></option><?php endforeach; ?></select></div>
-            <div class="col-sm-6"><label class="small ymo-muted">Photos</label><input class="form-control form-control-sm" type="file" name="photos[]" accept="image/*" multiple required></div>
-            <div class="col-sm-2"><button class="btn btn-sm btn-outline-primary w-100">Upload</button></div>
+            <div class="col-sm-5"><label class="small ymo-muted">Photos</label><input class="form-control form-control-sm" type="file" name="photos[]" accept="image/*" multiple required></div>
+            <div class="col-sm-3"><button class="btn btn-sm btn-outline-primary w-100 text-nowrap">Upload</button></div>
         <?= form_close(); ?>
         <?php endif; ?>
     </div>
