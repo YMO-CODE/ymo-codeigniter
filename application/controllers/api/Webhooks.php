@@ -346,21 +346,18 @@ class Webhooks extends CI_Controller
         }
 
         foreach (crm_parse_meta_messaging_events(is_array($data) ? $data : array()) as $event) {
+            // Instagram DMs and Facebook Messenger messages both become chat leads.
+            $is_ig = $event['channel'] === 'instagram';
             $name = $event['name'];
-            if (strpos($name, 'Instagram ') === 0 && $name === 'Instagram '.$event['sender_id']) {
+            if ($name === ($is_ig ? 'Instagram ' : 'Facebook ').$event['sender_id']) {
                 $fetched = $this->_fetch_meta_sender_name($event['sender_id']);
                 if ($fetched) {
                     $name = $fetched;
                 }
             }
 
-            $source = ($event['channel'] === 'instagram') ? 'instagram' : 'meta';
-            if ($event['channel'] !== 'instagram') {
-                continue;
-            }
-
             $lead_id = $this->crm_lead_model->ingest_chat_message(
-                $source,
+                $is_ig ? 'instagram' : 'meta',
                 array(
                     'name'    => $name,
                     'mobile'  => '',
@@ -371,14 +368,14 @@ class Webhooks extends CI_Controller
                 ),
                 $event['sender_id'],
                 $event['message_id'] ?: NULL,
-                'instagram_dm',
+                $is_ig ? 'instagram_dm' : 'messenger_dm',
                 'webhook',
-                'instagram'
+                $is_ig ? 'instagram' : 'messenger'
             );
 
             if ($lead_id) {
                 $lead_ids[] = $lead_id;
-                $this->crm_integration_model->log('meta', 'instagram_dm_received', $event, 'inbound', 200);
+                $this->crm_integration_model->log('meta', $is_ig ? 'instagram_dm_received' : 'messenger_received', $event, 'inbound', 200);
             }
         }
 

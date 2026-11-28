@@ -97,7 +97,7 @@ $lead_car_type = crm_lead_field($lead, 'car_type');
 
         <?php if (!empty($chat_channel) && $can_edit): ?>
         <div class="md-card-elevated mb-3">
-            <h6 class="mb-2"><span class="mi mi-sm mi-leading">forum</span><?= $chat_channel === 'whatsapp' ? 'WhatsApp chat' : 'Instagram chat'; ?></h6>
+            <h6 class="mb-2"><span class="mi mi-sm mi-leading">forum</span><?= $chat_channel === 'whatsapp' ? 'WhatsApp chat' : ($chat_channel === 'messenger' ? 'Messenger chat' : 'Instagram chat'); ?></h6>
             <div class="ymo-chat-thread mb-2">
                 <?php if (empty($chat_messages)): ?>
                     <p class="ymo-muted small mb-0">No messages yet.</p>

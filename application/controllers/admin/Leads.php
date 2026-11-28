@@ -283,7 +283,7 @@ class Leads extends Crm_Controller
         $meta = array(
             'direction'  => 'outbound',
             'channel'    => $channel,
-            'provider'   => $channel === 'whatsapp' ? 'whatsapp' : 'instagram_dm',
+            'provider'   => $channel === 'whatsapp' ? 'whatsapp' : ($channel === 'messenger' ? 'messenger_dm' : 'instagram_dm'),
             'message_id' => $result['message_id'] ?? NULL,
             'sender_id'  => $recipient,
             'text'       => $text,

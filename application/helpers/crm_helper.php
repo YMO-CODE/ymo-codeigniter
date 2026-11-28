@@ -510,10 +510,13 @@ if (!function_exists('crm_parse_meta_messaging_events')) {
     function crm_parse_meta_messaging_events(array $data)
     {
         $out = array();
+        // object "instagram" = Instagram DMs, "page" = Facebook Messenger.
+        $object = strtolower((string) ($data['object'] ?? ''));
+        $msg_channel = $object === 'instagram' ? 'instagram' : 'messenger';
 
         foreach ($data['entry'] ?? array() as $entry) {
             foreach ($entry['messaging'] ?? array() as $event) {
-                $parsed = _crm_parse_meta_messaging_event($event, 'messaging');
+                $parsed = _crm_parse_meta_messaging_event($event, $msg_channel);
                 if ($parsed) {
                     $out[] = $parsed;
                 }
@@ -552,7 +555,6 @@ if (!function_exists('crm_parse_meta_messaging_events')) {
             }
         }
 
-        $object = strtolower((string) ($data['object'] ?? ''));
         if ($object === 'instagram' && empty($out)) {
             foreach ($data['entry'] ?? array() as $entry) {
                 foreach ($entry['messaging'] ?? array() as $event) {
@@ -589,7 +591,7 @@ if (!function_exists('_crm_parse_meta_messaging_event')) {
         }
         return array(
             'sender_id'  => $sender,
-            'name'       => 'Instagram '.$sender,
+            'name'       => ($default_channel === 'instagram' ? 'Instagram ' : 'Facebook ').$sender,
             'text'       => $text,
             'message_id' => (string) ($message['mid'] ?? ($message['id'] ?? '')),
             'channel'    => $default_channel === 'instagram' ? 'instagram' : 'messenger',
@@ -599,7 +601,7 @@ if (!function_exists('_crm_parse_meta_messaging_event')) {
 }
 
 if (!function_exists('crm_lead_chat_channel')) {
-    /** @return string|null whatsapp|instagram */
+    /** @return string|null whatsapp|instagram|messenger */
     function crm_lead_chat_channel($lead)
     {
         if (!$lead || !is_array($lead)) {
@@ -614,6 +616,9 @@ if (!function_exists('crm_lead_chat_channel')) {
         if ($provider === 'instagram_dm' && !empty($lead['external_lead_id'])) {
             return 'instagram';
         }
+        if ($provider === 'messenger_dm' && !empty($lead['external_lead_id'])) {
+            return 'messenger';
+        }
         return NULL;
     }
 }
@@ -624,7 +629,7 @@ if (!function_exists('crm_lead_chat_recipient')) {
         if ($channel === 'whatsapp') {
             return preg_replace('/\D/', '', (string) ($lead['mobile'] ?? ''));
         }
-        if ($channel === 'instagram') {
+        if ($channel === 'instagram' || $channel === 'messenger') {
             return (string) ($lead['external_lead_id'] ?? '');
         }
         return '';
