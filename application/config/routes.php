@@ -63,6 +63,8 @@ if (ymo_is_admin_host_request()) {
     $route['technicians/new'] = 'admin/technicians/create';
     $route['technicians/(:num)/edit'] = 'admin/technicians/edit/$1';
     $route['technicians/(:num)/signout'] = 'admin/technicians/signout/$1';
+    $route['okmechanic-archive'] = 'admin/okm_archive/index';
+    $route['okmechanic-archive/(:num)'] = 'admin/okm_archive/view/$1';
     $route['tech'] = 'tech/index';
     $route['tech/sw.js'] = 'tech/sw';
     $route['tech/manifest.webmanifest'] = 'tech/manifest';
@@ -272,6 +274,8 @@ if (ymo_is_admin_host_request()) {
     $route['admin/technicians/new'] = 'admin/technicians/create';
     $route['admin/technicians/(:num)/edit'] = 'admin/technicians/edit/$1';
     $route['admin/technicians/(:num)/signout'] = 'admin/technicians/signout/$1';
+    $route['admin/okmechanic-archive'] = 'admin/okm_archive/index';
+    $route['admin/okmechanic-archive/(:num)'] = 'admin/okm_archive/view/$1';
     $route['admin/tech'] = 'tech/index';
     $route['admin/tech/sw.js'] = 'tech/sw';
     $route['admin/tech/manifest.webmanifest'] = 'tech/manifest';
@@ -581,6 +585,8 @@ if (ymo_is_admin_host_request()) {
     $route['admin/technicians/new'] = 'admin/technicians/create';
     $route['admin/technicians/(:num)/edit'] = 'admin/technicians/edit/$1';
     $route['admin/technicians/(:num)/signout'] = 'admin/technicians/signout/$1';
+    $route['admin/okmechanic-archive'] = 'admin/okm_archive/index';
+    $route['admin/okmechanic-archive/(:num)'] = 'admin/okm_archive/view/$1';
     $route['admin/tech'] = 'tech/index';
     $route['admin/tech/sw.js'] = 'tech/sw';
     $route['admin/tech/manifest.webmanifest'] = 'tech/manifest';

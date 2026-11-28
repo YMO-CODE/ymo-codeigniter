@@ -72,6 +72,7 @@ if ($crm && crm_can('team.view'))        { $g[] = $item('team', 'group', 'Team',
 if ($crm && crm_can('roles.view'))       { $g[] = $item('roles', 'admin_panel_settings', 'Roles', admin_nav_active('roles')); }
 if ($crm && crm_can('recruitment.view')) { $g[] = $item('recruitment', 'badge', 'Recruitment', admin_nav_active('recruitment')); }
 if ($can('settings.manage'))             { $g[] = $item('settings', 'settings', 'Settings', admin_nav_active('settings')); }
+if ($can('bookings.view'))               { $g[] = $item('okmechanic-archive', 'inventory', 'OkMechanic archive', admin_nav_active('okmechanic-archive')); }
 $groups['Team & settings'] = $g;
 ?>
 <?php foreach ($groups as $label => $links): if (!$links) { continue; } ?>

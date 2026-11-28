@@ -31,3 +31,5 @@ node_modules/
 /storage/sync/
 /storage/ymochat_vapid.json
 /storage/backups/
+/storage/import/okm/*
+!/storage/import/okm/.gitkeep
