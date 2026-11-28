@@ -45,6 +45,7 @@ if ($can('packages.view'))   { $setup[] = $item('packages', 'build', 'Packages',
 if ($can('packages.view'))   { $setup[] = $item('catalogue', 'inventory_2', 'Catalogue', admin_nav_active('catalogue')); }
 if ($can('offers.view'))     { $setup[] = $item('offers', 'local_offer', 'Offers', admin_nav_active('offers')); }
 if ($crm && crm_can('team.view'))  { $setup[] = $item('team', 'group', 'Team', admin_nav_active('team')); }
+if ($crm && (crm_can('team.view') || crm_can('bookings.edit'))) { $setup[] = $item('technicians', 'engineering', 'Technicians', admin_nav_active('technicians')); }
 if ($crm && crm_can('roles.view')) { $setup[] = $item('roles', 'admin_panel_settings', 'Roles', admin_nav_active('roles')); }
 if ($can('settings.manage')) { $setup[] = $item('settings', 'settings', 'Settings', admin_nav_active('settings')); }
 ?>

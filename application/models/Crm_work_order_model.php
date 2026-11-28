@@ -14,8 +14,19 @@ class Crm_work_order_model extends CI_Model
 {
     const T = 'crm_work_orders';
     const T_LINES = 'crm_work_order_lines';
-    const T_TECH = 'crm_work_order_technicians';
+    const T_TECH = 'crm_work_order_techs';
     const T_EVENTS = 'crm_work_order_events';
+    const T_PHOTOS = 'crm_work_order_photos';
+
+    /** Photo kinds shown on the job card. */
+    const PHOTO_KINDS = array('before' => 'Before', 'during' => 'During work', 'after' => 'After', 'damage' => 'Damage / issue', 'part' => 'Old part');
+
+    /** Statuses a technician can move a job to, from => list of to. */
+    const TECH_MOVES = array(
+        'draft'       => array('in_progress'),
+        'in_progress' => array('on_hold', 'ready'),
+        'on_hold'     => array('in_progress'),
+    );
 
     /** Status => label. Order is the normal flow. */
     const STATUSES = array(
@@ -104,33 +115,71 @@ class Crm_work_order_model extends CI_Model
   `technician_id`   INT UNSIGNED NULL,
   `done_at`         DATETIME NULL,
   `done_by`         INT UNSIGNED NULL,
+  `done_by_tech`    INT UNSIGNED NULL,
   `created_by`      INT UNSIGNED NULL,
   `created_at`      DATETIME NOT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_wol_wo` (`work_order_id`, `type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
-            self::T_TECH => "CREATE TABLE IF NOT EXISTS `crm_work_order_technicians` (
+            self::T_TECH => "CREATE TABLE IF NOT EXISTS `crm_work_order_techs` (
   `work_order_id` BIGINT UNSIGNED NOT NULL,
-  `admin_id`      INT UNSIGNED NOT NULL,
+  `technician_id` INT UNSIGNED NOT NULL,
   `created_at`    DATETIME NOT NULL,
-  PRIMARY KEY (`work_order_id`, `admin_id`),
-  KEY `idx_wot_admin` (`admin_id`)
+  PRIMARY KEY (`work_order_id`, `technician_id`),
+  KEY `idx_wot_tech` (`technician_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+            self::T_PHOTOS => "CREATE TABLE IF NOT EXISTS `crm_work_order_photos` (
+  `id`            BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `work_order_id` BIGINT UNSIGNED NOT NULL,
+  `kind`          VARCHAR(20) NOT NULL DEFAULT 'during',
+  `object_name`   VARCHAR(200) NOT NULL,
+  `thumb_name`    VARCHAR(200) NOT NULL DEFAULT '',
+  `bytes`         INT UNSIGNED NOT NULL DEFAULT 0,
+  `width`         SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+  `height`        SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+  `caption`       VARCHAR(200) NOT NULL DEFAULT '',
+  `admin_id`      INT UNSIGNED NULL,
+  `technician_id` INT UNSIGNED NULL,
+  `client_uid`    VARCHAR(40) NULL,
+  `created_at`    DATETIME NOT NULL,
+  `deleted_at`    DATETIME NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_wop_uid` (`client_uid`),
+  KEY `idx_wop_wo` (`work_order_id`, `id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
             self::T_EVENTS => "CREATE TABLE IF NOT EXISTS `crm_work_order_events` (
   `id`            BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `work_order_id` BIGINT UNSIGNED NOT NULL,
   `admin_id`      INT UNSIGNED NULL,
+  `technician_id` INT UNSIGNED NULL,
   `type`          VARCHAR(30) NOT NULL,
   `detail`        VARCHAR(500) NOT NULL DEFAULT '',
+  `client_uid`    VARCHAR(40) NULL,
   `created_at`    DATETIME NOT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_woe_uid` (`client_uid`),
   KEY `idx_woe_wo` (`work_order_id`, `id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
         );
+        $this->load->model('crm_technician_model');
+        if (!$this->crm_technician_model->ensure_schema()) {
+            return $this->ready = FALSE;
+        }
         foreach ($sql as $table => $q) {
             if (!$this->db->table_exists($table) && !$this->db->query($q)) {
                 log_message('error', '[work_orders] schema failed for '.$table.': '.$this->db->error()['message']);
                 return $this->ready = FALSE;
+            }
+        }
+        // Columns added after the first release of job cards.
+        $add = array(
+            array(self::T_LINES, 'done_by_tech', 'INT UNSIGNED NULL AFTER `done_by`'),
+            array(self::T_EVENTS, 'technician_id', 'INT UNSIGNED NULL AFTER `admin_id`'),
+            array(self::T_EVENTS, 'client_uid', 'VARCHAR(40) NULL AFTER `detail`, ADD UNIQUE KEY `uq_woe_uid` (`client_uid`)'),
+        );
+        foreach ($add as $a) {
+            if (!$this->db->field_exists($a[1], $a[0])) {
+                $this->db->query('ALTER TABLE `'.$a[0].'` ADD COLUMN `'.$a[1].'` '.$a[2]);
             }
         }
         return $this->ready = TRUE;
@@ -238,8 +287,9 @@ class Crm_work_order_model extends CI_Model
     public function lines($work_order_id)
     {
         $this->ensure_schema();
-        return $this->db->select('l.*, t.name AS technician_name', FALSE)
-            ->from(self::T_LINES.' l')->join('admin_users t', 't.id = l.technician_id', 'left')
+        return $this->db->select('l.*, t.name AS technician_name, dt.name AS done_by_tech_name', FALSE)
+            ->from(self::T_LINES.' l')->join('crm_technicians t', 't.id = l.technician_id', 'left')
+            ->join('crm_technicians dt', 'dt.id = l.done_by_tech', 'left')
             ->where('l.work_order_id', (int) $work_order_id)
             ->order_by('l.type', 'DESC')->order_by('l.id', 'ASC')->get()->result_array();
     }
@@ -251,19 +301,21 @@ class Crm_work_order_model extends CI_Model
             ->get(self::T_LINES)->row_array();
     }
 
-    /** @return array of admin rows (id, name) */
+    /** @return array of technician rows (id, name) */
     public function technicians($work_order_id)
     {
         $this->ensure_schema();
-        return $this->db->select('a.id, a.name')->from(self::T_TECH.' t')->join('admin_users a', 'a.id = t.admin_id')
-            ->where('t.work_order_id', (int) $work_order_id)->order_by('a.name', 'ASC')->get()->result_array();
+        return $this->db->select('c.id, c.name')->from(self::T_TECH.' t')->join('crm_technicians c', 'c.id = t.technician_id')
+            ->where('t.work_order_id', (int) $work_order_id)->order_by('c.name', 'ASC')->get()->result_array();
     }
 
     public function events($work_order_id, $limit = 100)
     {
         $this->ensure_schema();
-        return $this->db->select('e.*, a.name AS admin_name', FALSE)->from(self::T_EVENTS.' e')
+        return $this->db->select('e.*, a.name AS admin_name, c.name AS tech_name', FALSE)->from(self::T_EVENTS.' e')
             ->join('admin_users a', 'a.id = e.admin_id', 'left')
+            ->join('crm_technicians c', 'c.id = e.technician_id', 'left')
+            ->where('e.type !=', 'sync')
             ->where('e.work_order_id', (int) $work_order_id)->order_by('e.id', 'DESC')->limit((int) $limit)
             ->get()->result_array();
     }
@@ -320,16 +372,16 @@ class Crm_work_order_model extends CI_Model
         return $this->db->where('id', (int) $id)->update(self::T, $d);
     }
 
-    public function set_technicians($id, array $admin_ids)
+    public function set_technicians($id, array $tech_ids)
     {
         $this->ensure_schema();
-        $admin_ids = array_values(array_unique(array_filter(array_map('intval', $admin_ids))));
+        $tech_ids = array_values(array_unique(array_filter(array_map('intval', $tech_ids))));
         $this->db->where('work_order_id', (int) $id)->delete(self::T_TECH);
         $now = date('Y-m-d H:i:s');
-        foreach ($admin_ids as $aid) {
-            $this->db->insert(self::T_TECH, array('work_order_id' => (int) $id, 'admin_id' => $aid, 'created_at' => $now));
+        foreach ($tech_ids as $tid) {
+            $this->db->insert(self::T_TECH, array('work_order_id' => (int) $id, 'technician_id' => $tid, 'created_at' => $now));
         }
-        return $admin_ids;
+        return $tech_ids;
     }
 
     /** Fills taxable / tax_amount / amount from qty, rate, discount, tax. */
@@ -374,7 +426,7 @@ class Crm_work_order_model extends CI_Model
             return FALSE;
         }
         $l = self::compute_line(array_merge($cur, $l));
-        unset($l['id'], $l['work_order_id'], $l['created_at'], $l['created_by'], $l['technician_name']);
+        unset($l['id'], $l['work_order_id'], $l['created_at'], $l['created_by'], $l['technician_name'], $l['done_by_tech_name']);
         $this->db->where('id', (int) $line_id)->update(self::T_LINES, $l);
         $this->recalc($work_order_id);
         return TRUE;
@@ -388,13 +440,13 @@ class Crm_work_order_model extends CI_Model
         return $this->db->affected_rows() >= 0;
     }
 
-    public function set_line_done($work_order_id, $line_id, $done, $admin_id)
+    public function set_line_done($work_order_id, $line_id, $done, $admin_id, $tech_id = NULL)
     {
         $this->ensure_schema();
         return $this->db->where('id', (int) $line_id)->where('work_order_id', (int) $work_order_id)
             ->update(self::T_LINES, $done
-                ? array('done_at' => date('Y-m-d H:i:s'), 'done_by' => (int) $admin_id ?: NULL)
-                : array('done_at' => NULL, 'done_by' => NULL));
+                ? array('done_at' => date('Y-m-d H:i:s'), 'done_by' => (int) $admin_id ?: NULL, 'done_by_tech' => (int) $tech_id ?: NULL)
+                : array('done_at' => NULL, 'done_by' => NULL, 'done_by_tech' => NULL));
     }
 
     public function recalc($work_order_id)
@@ -413,7 +465,7 @@ class Crm_work_order_model extends CI_Model
      * Move to a new status if the move is allowed. Stamps started / ready / delivered times.
      * @return bool
      */
-    public function set_status($id, $to, $admin_id, $note = '')
+    public function set_status($id, $to, $admin_id, $note = '', $tech_id = NULL)
     {
         $wo = $this->find($id);
         if (!$wo || !in_array($to, self::MOVES[$wo['status']] ?? array(), TRUE)) {
@@ -432,7 +484,7 @@ class Crm_work_order_model extends CI_Model
         }
         $this->update($id, $d);
         $reopen = in_array($wo['status'], array('delivered', 'returned'), TRUE);
-        $this->log($id, $admin_id, 'status', ($reopen ? 'Reopened: ' : '').self::STATUSES[$wo['status']].' → '.self::STATUSES[$to].($note !== '' ? ' ('.$note.')' : ''));
+        $this->log($id, $admin_id, 'status', ($reopen ? 'Reopened: ' : '').self::STATUSES[$wo['status']].' → '.self::STATUSES[$to].($note !== '' ? ' ('.$note.')' : ''), $tech_id);
         return TRUE;
     }
 
@@ -441,15 +493,117 @@ class Crm_work_order_model extends CI_Model
         return $this->update($id, array('deleted_at' => date('Y-m-d H:i:s')));
     }
 
-    public function log($work_order_id, $admin_id, $type, $detail)
+    /**
+     * Activity entry. $client_uid makes a phone's retried action count once.
+     * @return bool FALSE when that client_uid was already logged
+     */
+    public function log($work_order_id, $admin_id, $type, $detail, $tech_id = NULL, $client_uid = NULL)
     {
         $this->ensure_schema();
-        $this->db->insert(self::T_EVENTS, array(
+        $row = array(
             'work_order_id' => (int) $work_order_id,
             'admin_id'      => (int) $admin_id ?: NULL,
+            'technician_id' => (int) $tech_id ?: NULL,
             'type'          => mb_substr((string) $type, 0, 30),
             'detail'        => mb_substr((string) $detail, 0, 500),
+            'client_uid'    => $client_uid !== NULL && $client_uid !== '' ? mb_substr((string) $client_uid, 0, 40) : NULL,
             'created_at'    => date('Y-m-d H:i:s'),
-        ));
+        );
+        if ($row['client_uid'] !== NULL && $this->uid_seen($row['client_uid'])) {
+            return FALSE;
+        }
+        return (bool) $this->db->insert(self::T_EVENTS, $row);
+    }
+
+    public function uid_seen($client_uid)
+    {
+        $this->ensure_schema();
+        return (bool) $this->db->select('id')->where('client_uid', (string) $client_uid)->limit(1)->get(self::T_EVENTS)->row_array();
+    }
+
+    // ---- photos --------------------------------------------------------------
+
+    public function photos($work_order_id)
+    {
+        $this->ensure_schema();
+        return $this->db->select('p.*, a.name AS admin_name, c.name AS tech_name', FALSE)->from(self::T_PHOTOS.' p')
+            ->join('admin_users a', 'a.id = p.admin_id', 'left')
+            ->join('crm_technicians c', 'c.id = p.technician_id', 'left')
+            ->where('p.work_order_id', (int) $work_order_id)->where('p.deleted_at IS NULL', NULL, FALSE)
+            ->order_by('p.id', 'ASC')->get()->result_array();
+    }
+
+    public function find_photo($id)
+    {
+        $this->ensure_schema();
+        return $this->db->where('id', (int) $id)->where('deleted_at IS NULL', NULL, FALSE)->get(self::T_PHOTOS)->row_array();
+    }
+
+    public function find_photo_by_uid($client_uid)
+    {
+        $this->ensure_schema();
+        return $this->db->where('client_uid', (string) $client_uid)->get(self::T_PHOTOS)->row_array();
+    }
+
+    public function add_photo(array $d)
+    {
+        $this->ensure_schema();
+        $d['created_at'] = date('Y-m-d H:i:s');
+        return $this->db->insert(self::T_PHOTOS, $d) ? (int) $this->db->insert_id() : 0;
+    }
+
+    public function delete_photo($id)
+    {
+        $this->ensure_schema();
+        return $this->db->where('id', (int) $id)->update(self::T_PHOTOS, array('deleted_at' => date('Y-m-d H:i:s')));
+    }
+
+    /** id => photo count, for job lists. */
+    public function photo_counts(array $ids)
+    {
+        $out = array();
+        if (!$ids) {
+            return $out;
+        }
+        $rows = $this->db->select('work_order_id, COUNT(*) n', FALSE)->where_in('work_order_id', array_map('intval', $ids))
+            ->where('deleted_at IS NULL', NULL, FALSE)->group_by('work_order_id')->get(self::T_PHOTOS)->result_array();
+        foreach ($rows as $r) {
+            $out[(int) $r['work_order_id']] = (int) $r['n'];
+        }
+        return $out;
+    }
+
+    // ---- technician phone ----------------------------------------------------
+
+    /**
+     * Open jobs for the technician app.
+     * @param string $scope mine (assigned to them) | workshop (their workshop, or all if none set)
+     */
+    public function jobs_for_technician(array $tech, $scope = 'mine')
+    {
+        $this->ensure_schema();
+        $this->_base_select();
+        $this->db->select('(SELECT COUNT(*) FROM crm_work_order_lines l WHERE l.work_order_id = w.id) AS line_count,
+                           (SELECT COUNT(*) FROM crm_work_order_lines l WHERE l.work_order_id = w.id AND l.done_at IS NOT NULL) AS done_count', FALSE)
+            ->where_in('w.status', array('draft', 'in_progress', 'on_hold', 'ready'));
+        if ($scope === 'mine') {
+            $tid = (int) $tech['id'];
+            $this->db->where("(EXISTS (SELECT 1 FROM crm_work_order_techs t WHERE t.work_order_id = w.id AND t.technician_id = {$tid})
+                              OR EXISTS (SELECT 1 FROM crm_work_order_lines l WHERE l.work_order_id = w.id AND l.technician_id = {$tid}))", NULL, FALSE);
+        } elseif ((string) $tech['workshop'] !== '') {
+            $this->db->where('w.workshop', $tech['workshop']);
+        }
+        return $this->db->order_by("FIELD(w.status, 'in_progress', 'draft', 'on_hold', 'ready')", '', FALSE)
+            ->order_by('w.expected_delivery_at IS NULL', '', FALSE)->order_by('w.expected_delivery_at', 'ASC')
+            ->order_by('w.id', 'DESC')->limit(60)->get()->result_array();
+    }
+
+    /** Whether the technician may open this job: assigned, or it is at their workshop (or they have none). */
+    public function technician_can_see(array $tech, array $wo)
+    {
+        if ((string) $tech['workshop'] === '' || (string) $wo['workshop'] === (string) $tech['workshop'] || (string) $wo['workshop'] === '') {
+            return TRUE;
+        }
+        return in_array((int) $tech['id'], array_map('intval', array_column($this->technicians($wo['id']), 'id')), TRUE);
     }
 }

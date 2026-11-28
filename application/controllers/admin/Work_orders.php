@@ -11,7 +11,7 @@ class Work_orders extends Admin_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->model(array('crm_work_order_model', 'crm_catalog_model', 'admin_model', 'booking_model'));
+        $this->load->model(array('crm_work_order_model', 'crm_catalog_model', 'crm_technician_model', 'admin_model', 'booking_model'));
         $this->load->helper('review');
         $this->load->library('audit');
     }
@@ -198,6 +198,8 @@ class Work_orders extends Admin_Controller
             'events'      => $this->crm_work_order_model->events($id, 50),
             'history'     => $this->crm_work_order_model->history_for_vehicle($wo['vehicle_id'], $id, 8),
             'admins'      => $this->admin_model->list_active(),
+            'tech_list'   => $this->crm_technician_model->all(TRUE),
+            'photos'      => $this->crm_work_order_model->photos($id),
             'workshops'   => ymo_review_workshops(),
             'can_edit'    => crm_can('bookings.edit'),
         ));
@@ -348,41 +350,83 @@ class Work_orders extends Admin_Controller
         $this->require_perm('bookings.edit');
         $this->_post_only();
         $wo = $this->_wo_or_404($id);
-        $to = (string) $this->input->post('to');
-        $note = mb_substr(trim((string) $this->input->post('note')), 0, 200);
-        if ($to === 'delivered' && !$this->crm_work_order_model->lines($id)) {
-            $this->flash('error', 'Add at least one service or part before delivering.');
-            redirect(admin_url('job-cards/'.$id));
-        }
-        if (!$this->crm_work_order_model->set_status($id, $to, (int) $this->admin['id'], $note)) {
-            $this->flash('error', 'That status change is not allowed from '.Crm_work_order_model::STATUSES[$wo['status']].'.');
-            redirect(admin_url('job-cards/'.$id));
-        }
-        $msg = Crm_work_order_model::STATUSES[$to].'.';
-
-        // Keep the booking in step: work started → In progress; delivered → Completed
-        // (reminders, referral, customer notice and review request run as on the booking page).
-        if (!empty($wo['booking_id'])) {
-            $b_to = NULL;
-            if (in_array($to, array('in_progress', 'on_hold', 'ready'), TRUE) && in_array($wo['booking_status'], array('pending', 'confirmed'), TRUE)) {
-                $b_to = 'in_progress';
-            } elseif ($to === 'delivered' && $wo['booking_status'] !== 'completed' && $wo['booking_status'] !== 'cancelled') {
-                $b_to = 'completed';
-            }
-            if ($b_to) {
-                $this->load->library('booking_status_service');
-                list($ok, $notice) = $this->booking_status_service->change((int) $wo['booking_id'], $b_to, NULL, (int) $this->admin['id'], 'job_card');
-                $msg .= ' Booking '.$wo['booking_reference'].' marked '.str_replace('_', ' ', $b_to).'.'.($notice !== '' ? ' '.$notice : '');
-                $this->crm_work_order_model->log($id, (int) $this->admin['id'], 'booking', 'Booking '.$wo['booking_reference'].' → '.str_replace('_', ' ', $b_to));
-                if (!$ok) {
-                    $this->flash('warning', $msg);
-                    redirect(admin_url('job-cards/'.$id));
-                }
-            }
-        }
-        $this->audit->log('admin', $this->admin['id'], 'work_order.status', 'work_order', (int) $id, array('from' => $wo['status'], 'to' => $to));
-        $this->flash('success', $msg);
+        $this->load->library('work_order_flow');
+        list($ok, $msg, $level) = $this->work_order_flow->change(
+            $wo, (string) $this->input->post('to'), mb_substr(trim((string) $this->input->post('note')), 0, 200), (int) $this->admin['id']
+        );
+        $this->flash($level, $msg);
         redirect(admin_url('job-cards/'.$id));
+    }
+
+    /** POST: a note on the job (shows in the activity log and on the technicians' phones). */
+    public function note($id)
+    {
+        $this->require_perm('bookings.edit');
+        $this->_post_only();
+        $this->_wo_or_404($id);
+        $text = mb_substr(trim((string) $this->input->post('note')), 0, 500);
+        if ($text !== '') {
+            $this->crm_work_order_model->log($id, (int) $this->admin['id'], 'note', $text);
+            $this->flash('success', 'Note added.');
+        }
+        redirect(admin_url('job-cards/'.$id).'#activity');
+    }
+
+    /** POST multipart photos[] + kind: the advisor adds photos (same storage as the technicians' phones). */
+    public function photo_add($id)
+    {
+        $this->require_perm('bookings.edit');
+        $this->_post_only();
+        $this->_wo_or_404($id);
+        $this->load->library('job_photo_service');
+        $kind = (string) $this->input->post('kind');
+        $files = $this->job_photo_service->files_from_upload('photos');
+        if (!$files) {
+            $this->flash('error', 'Choose one or more photos.');
+            redirect(admin_url('job-cards/'.$id).'#photos');
+        }
+        $saved = 0;
+        $err = '';
+        foreach ($files as $f) {
+            list($pid, $e) = $this->job_photo_service->save((int) $id, $f, $kind, (int) $this->admin['id'], NULL, NULL);
+            if ($pid) {
+                $saved++;
+            } else {
+                $err = $e;
+            }
+        }
+        if ($saved) {
+            $this->crm_work_order_model->log($id, (int) $this->admin['id'], 'photo', 'Added '.$saved.' photo'.($saved > 1 ? 's' : '').' ('.(Crm_work_order_model::PHOTO_KINDS[$kind] ?? 'During work').')');
+        }
+        $this->flash($err === '' ? 'success' : ($saved ? 'warning' : 'error'), ($saved ? 'Added '.$saved.' photo'.($saved > 1 ? 's' : '').'. ' : '').$err);
+        redirect(admin_url('job-cards/'.$id).'#photos');
+    }
+
+    public function photo_delete($id, $photo_id)
+    {
+        $this->require_perm('bookings.edit');
+        $this->_post_only();
+        $this->_wo_or_404($id);
+        $p = $this->crm_work_order_model->find_photo($photo_id);
+        if ($p && (int) $p['work_order_id'] === (int) $id) {
+            $this->load->library('job_photo_service');
+            $this->job_photo_service->remove($p);
+            $this->crm_work_order_model->log($id, (int) $this->admin['id'], 'photo', 'Removed a photo');
+            $this->flash('success', 'Photo removed.');
+        }
+        redirect(admin_url('job-cards/'.$id).'#photos');
+    }
+
+    /** GET: streams a job photo from storage (?t=1 for the thumbnail). Staff only. */
+    public function photo($photo_id)
+    {
+        $this->require_perm('bookings.view');
+        $p = $this->crm_work_order_model->find_photo($photo_id);
+        if (!$p) {
+            show_404();
+        }
+        $this->load->library('job_photo_service');
+        $this->job_photo_service->stream($p, (bool) $this->input->get('t'));
     }
 
     /** POST: remove a draft job card opened by mistake. */

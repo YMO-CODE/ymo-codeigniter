@@ -28,6 +28,12 @@ $wsname = ($wo['workshop'] !== '' && isset($workshops[$wo['workshop']])) ? $work
 .wo-pick-list button { display: block; width: 100%; text-align: left; border: 0; background: none; padding: .45rem .75rem; font-size: .9rem; }
 .wo-pick-list button:hover, .wo-pick-list button.active { background: #eef5f0; }
 .wo-sum td { padding: .2rem .5rem; }
+.wo-photo { position: relative; width: 112px; }
+.wo-photo img { width: 112px; height: 84px; object-fit: cover; border-radius: .4rem; background: #eef1ef; display: block; }
+.wo-photo form { position: absolute; top: 2px; right: 2px; }
+.wo-photo-x { border: 0; background: rgba(0,0,0,.55); color: #fff; border-radius: 50%; width: 22px; height: 22px; font-size: 11px; line-height: 22px; padding: 0; }
+.wo-photo-by { font-size: .7rem; color: #6c757d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wo-note { background: #fff8e1; border-radius: .3rem; padding: .15rem .35rem; }
 </style>
 
 <a href="<?= admin_url('job-cards'); ?>" class="small"><span class="mi mi-sm mi-leading">arrow_back</span>All job cards</a>
@@ -117,6 +123,7 @@ $wsname = ($wo['workshop'] !== '' && isset($workshops[$wo['workshop']])) ? $work
                             <?php if ((float) $l['discount_pct'] > 0): ?> · <?= $num($l['discount_pct']); ?>% off<?php endif; ?>
                             <?php if ((float) $l['tax_pct'] > 0): ?> · <?= $num($l['tax_pct']); ?>% GST <?= (int) $l['tax_inclusive'] ? 'incl.' : 'extra'; ?><?php endif; ?>
                             <?php if (!empty($l['technician_name'])): ?> · <?= html_escape($l['technician_name']); ?><?php endif; ?>
+                            <?php if ($done && !empty($l['done_by_tech_name'])): ?> · <span class="text-success">done by <?= html_escape($l['done_by_tech_name']); ?></span><?php endif; ?>
                         </div>
                     </td>
                     <td class="text-end text-nowrap"><?= $money($l['amount']); ?></td>
@@ -141,7 +148,7 @@ $wsname = ($wo['workshop'] !== '' && isset($workshops[$wo['workshop']])) ? $work
                             <select class="form-select form-select-sm" name="tax_inclusive"><option value="1" <?= (int) $l['tax_inclusive'] ? 'selected' : ''; ?>>Included in rate</option><option value="0" <?= (int) $l['tax_inclusive'] ? '' : 'selected'; ?>>Added on top</option></select></div>
                         <div class="col-8 col-md-6"><label class="small ymo-muted">Technician</label>
                             <select class="form-select form-select-sm" name="technician_id"><option value="">—</option>
-                                <?php foreach ($admins as $a): ?><option value="<?= (int) $a['id']; ?>" <?= (int) $l['technician_id'] === (int) $a['id'] ? 'selected' : ''; ?>><?= html_escape($a['name']); ?></option><?php endforeach; ?>
+                                <?php foreach ($tech_list as $a): ?><option value="<?= (int) $a['id']; ?>" <?= (int) $l['technician_id'] === (int) $a['id'] ? 'selected' : ''; ?>><?= html_escape($a['name']); ?></option><?php endforeach; ?>
                             </select></div>
                         <div class="col-4 col-md-6 text-end"><button class="btn btn-sm btn-primary">Save</button></div>
                     <?= form_close(); ?>
@@ -185,7 +192,7 @@ $wsname = ($wo['workshop'] !== '' && isset($workshops[$wo['workshop']])) ? $work
                     <select class="form-select form-select-sm" name="tax_inclusive" id="wo_incl"><option value="1">Included in rate</option><option value="0">Added on top</option></select></div>
                 <div class="col-8 col-md-6"><label class="small ymo-muted">Technician</label>
                     <select class="form-select form-select-sm" name="technician_id"><option value="">—</option>
-                        <?php foreach ($admins as $a): ?><option value="<?= (int) $a['id']; ?>" <?= count($tech_ids) === 1 && $tech_ids[0] === (int) $a['id'] ? 'selected' : ''; ?>><?= html_escape($a['name']); ?></option><?php endforeach; ?>
+                        <?php foreach ($tech_list as $a): ?><option value="<?= (int) $a['id']; ?>" <?= count($tech_ids) === 1 && $tech_ids[0] === (int) $a['id'] ? 'selected' : ''; ?>><?= html_escape($a['name']); ?></option><?php endforeach; ?>
                     </select></div>
                 <div class="col-4 col-md-6 text-end"><button class="btn btn-sm btn-primary"><span class="mi mi-sm mi-leading">add</span>Add</button></div>
             <?= form_close(); ?>
@@ -193,13 +200,56 @@ $wsname = ($wo['workshop'] !== '' && isset($workshops[$wo['workshop']])) ? $work
         <?php endif; ?>
     </div>
 
+    <!-- Photos -->
+    <div class="ymo-card mb-3" id="photos">
+        <div class="d-flex align-items-center mb-2">
+            <h3 class="h6 mb-0">Photos <span class="ymo-muted">(<?= count($photos); ?>)</span></h3>
+        </div>
+        <?php if (!$photos): ?><p class="small ymo-muted">No photos yet. Technicians add them from their phone; you can add them here too.</p><?php endif; ?>
+        <?php
+        $by_kind = array();
+        foreach ($photos as $p) { $by_kind[$p['kind']][] = $p; }
+        foreach (Crm_work_order_model::PHOTO_KINDS as $k => $klabel): if (empty($by_kind[$k])) { continue; } ?>
+            <div class="small fw-semibold mt-2 mb-1"><?= $klabel; ?></div>
+            <div class="d-flex flex-wrap gap-2">
+            <?php foreach ($by_kind[$k] as $p): ?>
+                <div class="wo-photo">
+                    <a href="<?= admin_url('job-cards/photo/'.(int) $p['id']); ?>" target="_blank" title="<?= html_escape(date('d M, H:i', strtotime($p['created_at'])).' · '.($p['tech_name'] ?: $p['admin_name'] ?: '')); ?>">
+                        <img src="<?= admin_url('job-cards/photo/'.(int) $p['id']).'?t=1'; ?>" alt="<?= html_escape($klabel); ?>" loading="lazy" width="112" height="84">
+                    </a>
+                    <?php if ($edit): ?>
+                    <?= form_open(admin_url('job-cards/'.(int) $wo['id'].'/photos/'.(int) $p['id'].'/delete'), array('onsubmit' => "return confirm('Remove this photo?');")); ?>
+                        <button class="wo-photo-x" title="Remove">✕</button>
+                    <?= form_close(); ?>
+                    <?php endif; ?>
+                    <div class="wo-photo-by"><?= html_escape($p['tech_name'] ?: $p['admin_name'] ?: ''); ?></div>
+                </div>
+            <?php endforeach; ?>
+            </div>
+        <?php endforeach; ?>
+        <?php if (!empty($can_edit)): ?>
+        <?= form_open_multipart(admin_url('job-cards/'.(int) $wo['id'].'/photos'), array('class' => 'row g-2 align-items-end mt-2')); ?>
+            <div class="col-sm-4"><label class="small ymo-muted">Kind</label>
+                <select class="form-select form-select-sm" name="kind"><?php foreach (Crm_work_order_model::PHOTO_KINDS as $k => $klabel): ?><option value="<?= $k; ?>"><?= $klabel; ?></option><?php endforeach; ?></select></div>
+            <div class="col-sm-6"><label class="small ymo-muted">Photos</label><input class="form-control form-control-sm" type="file" name="photos[]" accept="image/*" multiple required></div>
+            <div class="col-sm-2"><button class="btn btn-sm btn-outline-primary w-100">Upload</button></div>
+        <?= form_close(); ?>
+        <?php endif; ?>
+    </div>
+
     <!-- Activity -->
-    <div class="ymo-card mb-3">
+    <div class="ymo-card mb-3" id="activity">
         <h3 class="h6">Activity</h3>
+        <?php if (!empty($can_edit)): ?>
+        <?= form_open(admin_url('job-cards/'.(int) $wo['id'].'/note'), array('class' => 'd-flex gap-2 mb-2')); ?>
+            <input class="form-control form-control-sm" name="note" maxlength="500" placeholder="Add a note for the team (technicians see it on their phone)" required>
+            <button class="btn btn-sm btn-outline-secondary">Add</button>
+        <?= form_close(); ?>
+        <?php endif; ?>
         <?php if (!$events): ?><p class="small ymo-muted mb-0">Nothing yet.</p><?php endif; ?>
         <ul class="list-unstyled small mb-0">
-            <?php foreach ($events as $e): ?>
-                <li class="mb-1"><span class="ymo-muted"><?= html_escape(date('d M, H:i', strtotime($e['created_at']))); ?></span> · <?= html_escape($e['detail']); ?><?php if (!empty($e['admin_name'])): ?> <span class="ymo-muted">— <?= html_escape($e['admin_name']); ?></span><?php endif; ?></li>
+            <?php foreach ($events as $e): $is_note = in_array($e['type'], array('note', 'tech_note'), TRUE); ?>
+                <li class="mb-1 <?= $is_note ? 'wo-note' : ''; ?>"><span class="ymo-muted"><?= html_escape(date('d M, H:i', strtotime($e['created_at']))); ?></span> · <?php if ($e['type'] === 'tech_note'): ?><span class="badge bg-warning text-dark">From workshop</span> <?php endif; ?><?= html_escape($e['detail']); ?><?php if (!empty($e['tech_name'])): ?> <span class="ymo-muted">— <?= html_escape($e['tech_name']); ?> (technician)</span><?php elseif (!empty($e['admin_name'])): ?> <span class="ymo-muted">— <?= html_escape($e['admin_name']); ?></span><?php endif; ?></li>
             <?php endforeach; ?>
         </ul>
     </div>
@@ -226,9 +276,10 @@ $wsname = ($wo['workshop'] !== '' && isset($workshops[$wo['workshop']])) ? $work
                 <div class="col-6"><label class="small ymo-muted">Bay</label><input class="form-control form-control-sm" name="bay" maxlength="20" value="<?= html_escape($wo['bay']); ?>"></div>
                 <div class="col-12"><label class="small ymo-muted">Technicians</label>
                     <div class="border rounded p-2" style="max-height:9rem;overflow:auto">
-                        <?php foreach ($admins as $a): ?>
-                            <label class="form-check small mb-0"><input class="form-check-input" type="checkbox" name="technicians[]" value="<?= (int) $a['id']; ?>" <?= in_array((int) $a['id'], $tech_ids, TRUE) ? 'checked' : ''; ?>> <span class="form-check-label"><?= html_escape($a['name']); ?></span></label>
+                        <?php foreach ($tech_list as $a): ?>
+                            <label class="form-check small mb-0"><input class="form-check-input" type="checkbox" name="technicians[]" value="<?= (int) $a['id']; ?>" <?= in_array((int) $a['id'], $tech_ids, TRUE) ? 'checked' : ''; ?>> <span class="form-check-label"><?= html_escape($a['name']); ?><?php if ($a['workshop'] !== '' && isset($workshops[$a['workshop']])): ?> <span class="ymo-muted">· <?= html_escape($workshops[$a['workshop']]['label']); ?></span><?php endif; ?></span></label>
                         <?php endforeach; ?>
+                        <?php if (!$tech_list): ?><span class="small ymo-muted">No technicians yet. <a href="<?= admin_url('technicians'); ?>">Add them</a> so they can use the phone screen.</span><?php endif; ?>
                     </div></div>
                 <div class="col-12"><label class="small ymo-muted">Expected delivery</label><input class="form-control form-control-sm" type="datetime-local" name="expected_delivery_at" value="<?= $wo['expected_delivery_at'] ? date('Y-m-d\TH:i', strtotime($wo['expected_delivery_at'])) : ''; ?>"></div>
                 <div class="col-12"><label class="small ymo-muted">Customer complaint</label><textarea class="form-control form-control-sm" name="complaint" rows="2" maxlength="3000"><?= html_escape((string) $wo['complaint']); ?></textarea></div>
