@@ -5,6 +5,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * CRM CLI utilities (server-side import, etc.)
  *
  *   php index.php cli/crm import_contacts <csv_path> [merge_notes|skip|update]
+ *   php index.php cli/crm import_catalog [csv_path]
+ *       Services and spare parts from the OkMechanic export into the Catalogue
+ *       (default: application/data/okmechanic_catalogue_2026-11-28.csv). Safe to re-run:
+ *       matched on the OkMechanic id; items edited in the CRM are left as they are.
  *   php index.php cli/crm merge_duplicate_leads [apply]
  *       Same mobile with more than one open lead: keep the oldest, move the others'
  *       notes, tasks, tags and chat links onto it, archive the others (restorable).
@@ -158,6 +162,58 @@ class Crm extends CI_Controller
         echo $merged === 0 ? "No duplicate open leads.\n"
             : ($apply ? "Merged $merged duplicate lead(s). The merged ones are archived, not deleted.\n"
                       : "\n$merged duplicate lead(s) would be merged. Run with `apply` to do it.\n");
+    }
+
+    public function import_catalog($path = '')
+    {
+        $resolved = $path === '' ? APPPATH.'data/okmechanic_catalogue_2026-11-28.csv' : $this->_resolve_path($path);
+        if (!is_readable($resolved)) {
+            $this->_die("CSV not readable: $path (resolved: $resolved)\n");
+        }
+        $this->load->model('crm_catalog_model');
+        if (!$this->crm_catalog_model->ensure_schema()) {
+            $this->_die("Could not create the crm_catalog_items table (see the log).\n");
+        }
+        $fh = fopen($resolved, 'r');
+        $head = fgetcsv($fh);
+        if (!$head) {
+            $this->_die("Empty CSV.\n");
+        }
+        $head[0] = preg_replace('/^\xEF\xBB\xBF/', '', (string) $head[0]); // Excel BOM
+        $head = array_map('trim', $head);
+        foreach (array('okm_id', 'type', 'name') as $need) {
+            if (!in_array($need, $head, TRUE)) {
+                $this->_die("CSV needs a '$need' column.\n");
+            }
+        }
+        $stats = array('created' => 0, 'updated' => 0, 'kept' => 0, 'skipped' => 0);
+        $by_type = array('service' => 0, 'part' => 0);
+        $this->db->trans_start();
+        while (($row = fgetcsv($fh)) !== FALSE) {
+            if (count($row) < count($head)) {
+                $row = array_pad($row, count($head), '');
+            }
+            $r = array_combine($head, array_slice($row, 0, count($head)));
+            $res = $this->crm_catalog_model->import_okm_row($r);
+            $stats[$res]++;
+            if ($res !== 'skipped' && isset($by_type[$r['type']])) {
+                $by_type[$r['type']]++;
+            }
+        }
+        fclose($fh);
+        $this->db->trans_complete();
+        if (!$this->db->trans_status()) {
+            $this->_die("Import failed - nothing was saved (transaction rolled back).\n");
+        }
+        $c = $this->crm_catalog_model->counts();
+        fwrite(STDOUT, sprintf(
+            "Catalogue import: %d created, %d updated, %d kept (edited in CRM), %d skipped.\n"
+            ."Rows read: %d services, %d parts.\n"
+            ."Catalogue now: %d services (%d with price set on job), %d parts (%d with price set on job).\n",
+            $stats['created'], $stats['updated'], $stats['kept'], $stats['skipped'],
+            $by_type['service'], $by_type['part'],
+            $c['service'], $c['service_no_price'], $c['part'], $c['part_no_price']
+        ));
     }
 
     protected function _resolve_path($path)

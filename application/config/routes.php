@@ -54,6 +54,10 @@ if (ymo_is_admin_host_request()) {
     $route['packages/new']                    = 'admin/packages/create';
     $route['packages/(:num)/edit']           = 'admin/packages/edit/$1';
     $route['packages/(:num)/delete']         = 'admin/packages/delete/$1';
+    $route['catalogue'] = 'admin/catalogue/index';
+    $route['catalogue/new'] = 'admin/catalogue/create';
+    $route['catalogue/(:num)/edit'] = 'admin/catalogue/edit/$1';
+    $route['catalogue/(:num)/toggle'] = 'admin/catalogue/toggle/$1';
 
     $route['offers']                          = 'admin/offers/index';
     $route['offers/new']                      = 'admin/offers/create';
@@ -204,6 +208,10 @@ if (ymo_is_admin_host_request()) {
     $route['admin/packages/new']               = 'admin/packages/create';
     $route['admin/packages/(:num)/edit']      = 'admin/packages/edit/$1';
     $route['admin/packages/(:num)/delete']    = 'admin/packages/delete/$1';
+    $route['admin/catalogue'] = 'admin/catalogue/index';
+    $route['admin/catalogue/new'] = 'admin/catalogue/create';
+    $route['admin/catalogue/(:num)/edit'] = 'admin/catalogue/edit/$1';
+    $route['admin/catalogue/(:num)/toggle'] = 'admin/catalogue/toggle/$1';
     $route['admin/offers']                    = 'admin/offers/index';
     $route['admin/offers/new']                = 'admin/offers/create';
     $route['admin/offers/(:num)/edit']        = 'admin/offers/edit/$1';
@@ -453,6 +461,10 @@ if (ymo_is_admin_host_request()) {
     $route['admin/packages/new'] = 'admin/packages/create';
     $route['admin/packages/(:num)/edit'] = 'admin/packages/edit/$1';
     $route['admin/packages/(:num)/delete'] = 'admin/packages/delete/$1';
+    $route['admin/catalogue'] = 'admin/catalogue/index';
+    $route['admin/catalogue/new'] = 'admin/catalogue/create';
+    $route['admin/catalogue/(:num)/edit'] = 'admin/catalogue/edit/$1';
+    $route['admin/catalogue/(:num)/toggle'] = 'admin/catalogue/toggle/$1';
     $route['admin/offers'] = 'admin/offers/index';
     $route['admin/offers/new'] = 'admin/offers/create';
     $route['admin/offers/(:num)/edit'] = 'admin/offers/edit/$1';

@@ -1,0 +1,1874 @@
+﻿okm_id,type,name,code,category,unit,rate,purchase_rate,tax_pct,tax_inclusive,okm_stock,low_stock,created
+33528,service,Amaron Battery,101,Service 1.0,,101,,,1,,,08-08-2023
+33004,service,CSC Clutch Cylinder R/F,101,Service 1.0,,101,,,1,,,26-07-2023
+21304,service,"Suspension R/F and Lower, upper Ball Joints R/F",,Service 1.0,,2000,,,1,,,01-07-2023
+46116,service,ABS Module R/F,,Service 1.0,,1500,,,1,,,22-11-2023
+15992,service,ABS R/F Lab,,Service 1.0,,450,,,1,,,18-02-2023
+43810,service,ABS Sensor R/F,,Service 1.0,,500,,,1,,,04-10-2023
+62291,service,ABS Sensor Wiring Work,101,Service 1.0,,101,,,1,,,03-07-2024
+87434,service,Absorber Front Bumper lower R/F,101,,,350,,18,1,,,08-12-2025
+16394,service,Ac air went replacement,,Service 1.0,,101,,,1,,,03-03-2023
+95049,service,AC belt R/F,,Service 1.0,,101,,,1,,,28-10-2026
+45296,service,AC Blower Motor Cleaning,,Service 1.0,,400,,,1,,,30-10-2023
+85201,service,AC Blower motor R/F,,Service 1.0,,2000,,,1,,,24-09-2025
+85196,service,Ac blower motor Repair Work,101,Service 1.0,,101,,18,1,,,24-09-2025
+43732,service,AC Blower R/F,,,,600,,,1,,,01-10-2023
+20136,service,AC Compressor and Condenser R/F Labour,,Service 1.0,,1500,,,1,,,15-06-2023
+80037,service,Ac Compressor assembly R/F,101,,,101,,18,1,,,04-05-2025
+16090,service,Ac compressor belt replacement,,Service 1.0,,101,,,1,,,20-02-2023
+56247,service,AC Compressor valve R/F,,Service 1.0,,1200,,,1,,,02-04-2024
+68415,service,Ac Condenser assembly R/F,101,Service 1.0,,101,,,1,,,21-09-2024
+80116,service,AC Condenser Fan R/F,,,,101,,18,1,,,06-05-2025
+16015,service,AC Condenser Valve R/F,,Service 1.0,,1500,,,1,,,19-02-2023
+45803,service,AC Cooling Testing and Gas test,,Service 1.0,,600,,,1,,,13-11-2023
+89387,service,AC discharge pipe repair,100001,,,101,,,1,,,18-02-2026
+70920,service,AC fan R/F,101,,,101,,18,1,,,09-11-2024
+15113,service,Ac filter cleaning,,Service 1.0,,101,,,1,,,29-01-2023
+14395,service,AC Filter Replacement,,Service 1.0,,290,,,1,,,20-01-2023
+88813,service,AC Flap Motor R/F,,Service 1.0,,500,,,1,,,28-01-2026
+43920,service,AC Flap Motor work,,Service 1.0,,500,,,1,,,07-10-2023
+18118,service,AC Foam Application,,Service 1.0,,420,,,1,,,18-04-2023
+16302,service,AC Gas Filling,,Service 1.0,,1500,,,1,,,27-02-2023
+49737,service,AC Gas Intake Pipe Re-moulding,,Service 1.0,,3500,,,1,,,18-12-2023
+86602,service,AC gas topup,,Service 1.0,,500,,,1,,,07-11-2025
+17363,service,AC Leakage Nitrogen testing,,Service 1.0,,500,,,1,,,28-03-2023
+62547,service,AC Module control system repair ECMA,,Service 1.0,,12000,,,1,,,08-07-2024
+34831,service,AC Pipes and Valve R/F labour,,Service 1.0,,650,,,1,,,02-09-2023
+15974,service,AC Servicing,,Service 1.0,,1450,,,1,,,18-02-2023
+34015,service,AC Vent R/F,,Service 1.0,,650,,,1,,,20-08-2023
+20257,service,AC Water Drain Pipes Cleaning,,Service 1.0,,500,,,1,,,17-06-2023
+14059,service,AC Wiring work & Blower R/F,,Service 1.0,,2500,,,1,,,14-01-2023
+17900,service,Accelerate Cable R/F,,Service 1.0,,400,,,1,,,11-04-2023
+84332,service,Acceleration padle R/F,,Service 1.0,,800,,,1,,,01-09-2025
+52117,service,Actuator R/F,,,,101,,,1,,,21-01-2024
+93793,service,Air Filter assembly R/F,,Body,,101,,,1,,,01-09-2026
+14776,service,Air Filter Change,,Service 1.0,,101,,,1,,,22-01-2023
+15112,service,Air filter cleaning,,Service 1.0,,101,,,1,,,29-01-2023
+74862,service,Air filter to turbo hose pipe R/F,,,,101,,,1,,,06-01-2025
+85397,service,Air Suspension Electrical Coding work,,Service 1.0,,1500,,,1,,,29-09-2025
+16214,service,All Bushes Press Fitting work,,Service 1.0,,101,,,1,,,24-02-2023
+15524,service,All Door demping,,Door demping,,101,,,1,,,04-02-2023
+86626,service,All Door Speaker fitting Work,101,,,101,,18,1,,,08-11-2025
+76470,service,All Engine Mounts R/F,101,Service 1.0,,101,,18,1,,,15-02-2025
+79486,service,All Hose Pipes R/F,,Service 1.0,,2000,,,1,,,20-04-2025
+87088,service,All pipes R/f labour,,Service 1.0,,1500,,,1,,,24-11-2025
+83386,service,All removing Fitting work,,Service 1.0,,2000,,,1,,,03-08-2025
+16761,service,All System R/F Labour,,Service 1.0,,300,,,1,,,14-03-2023
+81186,service,All Tyres Nitrogen filling,101,Service 1.0,,101,,18,1,,,04-06-2025
+81185,service,All Tyres Replacement,101,Service 1.0,,101,,18,1,,,04-06-2025
+16091,service,Alternate belt replacement,,Service 1.0,,101,,,1,,,20-02-2023
+23782,service,Alternator Assembly R/F,,Service 1.0,,2500,,,1,,,10-07-2023
+77703,service,Alternator belt pulley R/F,,,,101,,,1,,,21-03-2025
+15033,service,Alternator Belt Servicing R/F,,Service 1.0,,650,,,1,,,28-01-2023
+58794,service,Alternator Repair and Servicing,,Service 1.0,,2200,,,1,,,10-05-2024
+78283,service,Alternator service and cleaning,,Service 1.0,,800,,,1,,,06-04-2025
+77704,service,Alternator tensioner assembly R/F,,,,101,,,1,,,21-03-2025
+23674,service,Alternator Testing,,Service 1.0,,2000,,,1,,,08-07-2023
+19809,service,Amplify system resetting,,Service 1.0,,350,,,1,,,04-06-2023
+16101,service,Arms Bush Lathe Fitting,,Service 1.0,,250,,,1,,,20-02-2023
+52054,service,Axle oil seal R/F,,,,101,,,1,,,19-01-2024
+94856,service,Balance Amount,,Service 1.0,,5200,,,1,,,19-10-2026
+80795,service,Balance rod bushes with labor,,,,800,,,1,,,24-05-2025
+15758,service,"Basic Service Package (Engine Oil Topup, Air Filter Cleaning,Oil Filter Check, Battery service, coolant top-up, break oil top-up, gear oil top up , AC Filter cleaning, front and rear break greasing and cleaning, Door setting, Vehicle Dynamic Testing, Vehicle suspension testing, Wiper Testing, Light Testing, AC Testing)",,Service 1.0,,1499,,,1,,,11-02-2023
+61614,service,Battery bracket,101,Service 1.0,,101,,,1,,,16-06-2024
+61615,service,Battery bracket fixing,101,,,101,,,1,,,16-06-2024
+17725,service,Battery charging,,,,101,,,1,,,05-04-2023
+55357,service,Battery Charging and testing,,Service 1.0,,500,,,1,,,10-03-2024
+16749,service,Battery Cheaking,,Service 1.0,,101,,,1,,,14-03-2023
+38027,service,Battery Jump Start,,Service 1.0,,450,,,1,,,17-09-2023
+14150,service,Battery R/F,,Service 1.0,,200,,,1,,,16-01-2023
+53522,service,Battery Replacement Advance,,Service 1.0,,1400,,,1,,,08-02-2024
+86656,service,Battery Service,,Service 1.0,,500,,,1,,,10-11-2025
+24076,service,Battery Support Rod,,Service 1.0,,200,,,1,,,14-07-2023
+75120,service,Battery terminal R/F,,,,101,,,1,,,11-01-2025
+19808,service,Battery Wire Connector Repair and Drill,,Service 1.0,,250,,,1,,,04-06-2023
+18013,service,BCM Recording H657,,Service 1.0,,500,,,1,,,15-04-2023
+45778,service,BCM Repair Work,,Service 1.0,,2500,,,1,,,12-11-2023
+14974,service,Bearing Press Fitting,,Service 1.0,,101,,,1,,,26-01-2023
+59037,service,Blower motor replacement,,Service 1.0,,600,,,1,,,15-05-2024
+63445,service,BMW Service Center Diagnosis cost,,Body,,1500,,,1,,,21-07-2024
+83950,service,Body Panel Cutting and Welding Work,101,Service 1.0,,101,,18,1,,,19-08-2025
+88675,service,Bonnet Cable R/F,101,,,18,,,1,,,23-01-2026
+16439,service,Bonnet Denting And Painting,,Body,,3000,,,1,,,04-03-2023
+34837,service,Bonnet removing and fitting,101,Service 1.0,,101,,,1,,,03-09-2023
+90176,service,Bonnet Shocker R/F,101,,,101,,18,1,,,24-03-2026
+92359,service,Bonut assembly R/F,,Service 1.0,,1500,,,1,,,24-06-2026
+15664,service,Bonut Denting and Painting,,Service 1.0,,3000,,,1,,,07-02-2023
+75988,service,Bonut Painting work,,Service 1.0,,3500,,,1,,,02-02-2025
+63126,service,Boot cover R/F Labour,,Service 1.0,,500,,,1,,,13-07-2024
+35104,service,Both Head lamp bulb fitting,,,,101,,,1,,,11-09-2023
+21287,service,Both Head Lights R/F Labour,,Service 1.0,,500,,,1,,,01-07-2023
+17332,service,Brake Booster R/F,,Service 1.0,,800,,,1,,,28-03-2023
+19806,service,Brake Cylinder R/F,,Service 1.0,,350,,,1,,,04-06-2023
+63438,service,Brake drum assembly screaming,,Service 1.0,,650,,,1,,,21-07-2024
+68445,service,Brake master cylinder R/F,,Service 1.0,,1000,,,1,,,22-09-2024
+34799,service,Brake oil leakage fixing,,Service 1.0,,500,,,1,,,02-09-2023
+20012,service,Brake Oil replacement Labour,,Service 1.0,,800,,,1,,,11-06-2023
+13962,service,Brake oil top-up,,Service 1.0,,101,,,1,,,11-01-2023
+14661,service,Brake pads R/F,,Service 1.0,,200,,,1,,,20-01-2023
+93012,service,Brake Pipe Repair,101,,,101,,18,1,,,24-07-2026
+18236,service,Brake Protector allingment,,Service 1.0,,400,,,1,,,22-04-2023
+68820,service,Brake sensor R/F,,,,101,,,1,,,30-09-2024
+35114,service,Brake Switch R/F,101,Service 1.0,,101,,,1,,,11-09-2023
+85539,service,Brakes calliper testing a d allingment,,Service 1.0,,500,,,1,,,04-10-2025
+18234,service,Break testing,,,,101,,,1,,,22-04-2023
+51343,service,Bulb R/F,,Service 1.0,,150,,,1,,,02-01-2024
+16478,service,Bumper and Condensor assembly R/F,,Service 1.0,,1000,,,1,,,05-03-2023
+56142,service,Bumper and Fender assembly R/F Labour,,Service 1.0,,1000,,,1,,,31-03-2024
+13737,service,Bumper R/F,,Service 1.0,,450,,,1,,,09-01-2023
+89823,service,Bumper side panel denting paining,,Service 1.0,,1500,,,1,,,08-03-2026
+90237,service,Caddling R/F cost,,Service 1.0,,500,,,1,,,27-03-2026
+14772,service,Caliper greasing,,Service 1.0,,101,,,1,,,22-01-2023
+32733,service,Caliper Greasing And Pin Alignment,101,,,101,,18,0,,,21-07-2023
+16249,service,Caliper pins lathe work,,Service 1.0,,900,,,1,,,25-02-2023
+15654,service,Caliper service,,Service 1.0,,101,,,1,,,07-02-2023
+65428,service,Calliper Bolt,,Service 1.0,,250,,,1,,,10-08-2024
+19822,service,Calliper carrier R/F,,,,101,,,1,,,05-06-2023
+93772,service,Calliper carrier Rethreading,,Service 1.0,,500,,,1,,,31-08-2026
+13678,service,Calliper Greasing and Pins Allingment,,Service 1.0,,120,,,1,,,08-01-2023
+16233,service,Camera R/F,,Service 1.0,,101,,,1,,,24-02-2023
+15115,service,Car All Lights testing,,Service 1.0,,101,,,1,,,29-01-2023
+16254,service,Car body wash,,Service 1.0,,200,,,1,,,25-02-2023
+15634,service,Car bonnet Painting,,Service 1.0,,101,,,1,,,06-02-2023
+89838,service,Car buzzer fixing,101,,,101,,,1,,,08-03-2026
+45537,service,Car External and Internal Washing + Internal Panel polishing,,Service 1.0,,300,,18,0,,,06-11-2023
+15109,service,Car General testing,,Service 1.0,,101,,,1,,,29-01-2023
+76207,service,Car Internal cleaning,101,,,101,,18,1,,,08-02-2025
+15111,service,Car Internal deep cleaning,,Service 1.0,,1500,,,1,,,29-01-2023
+15899,service,Car Pickup Drop,,Service 1.0,,300,,,1,,,15-02-2023
+91688,service,Car Regeneration,,Service 1.0,,1500,,,1,,,28-05-2026
+68585,service,Car Towing Service,101,Service 1.0,,101,,,1,,,25-09-2024
+14149,service,Car Wiring work,,Service 1.0,,101,,,1,,,16-01-2023
+60228,service,"Car wiring work ( Complete Engine compartment, power steering BCM, ACM, ECM,)",,Service 1.0,,35000,,,1,,,01-06-2024
+18466,service,Catalyst Convertor R/F,,Service 1.0,,500,,,1,,,01-05-2023
+81934,service,Catalytic Converter Assembly R/F and cleaning,101,,,15000,,18,1,,,24-06-2025
+69600,service,Catalytic Converter cleaning and Wiring work,,Service 1.0,,101,,,1,,,18-10-2024
+16796,service,Center locking Repair work,,Service 1.0,,101,,,1,,,15-03-2023
+15829,service,Center Mirror Fixing,,Service 1.0,,101,,,1,,,11-02-2023
+69440,service,Charging points with connection,800,Service 1.0,,800,,,1,,,15-10-2024
+54682,service,Check Engine Light R16H5 Coading,,Service 1.0,,700,,,1,,,26-02-2024
+34800,service,Clip noise fixing,,Service 1.0,,500,,,1,,,02-09-2023
+18491,service,Clock Spring R/F,,Service 1.0,,500,,,1,,,02-05-2023
+20199,service,Cluster Repair Work,,Service 1.0,,3500,,,1,,,16-06-2023
+89869,service,Cluster wiring work,,Service 1.0,,500,,,1,,,10-03-2026
+68586,service,Clutch assembly and flywheel assembly R/F,,Service 1.0,,3200,,,1,,,25-09-2024
+51774,service,Clutch Assembly and Flywheel Assembly Replacement Labour,,Service 1.0,,5500,,,1,,,13-01-2024
+14797,service,Clutch Assembly R/F,,Service 1.0,,3000,,,1,,,23-01-2023
+17489,service,Clutch Cable R/F,,Service 1.0,,500,,,1,,,29-03-2023
+15761,service,Clutch Cylinder replacement,,Service 1.0,,101,,,1,,,11-02-2023
+75969,service,Clutch fork bush R/F,101,,,101,,,1,,,01-02-2025
+75968,service,Clutch fork R/F,100,,,101,,,1,,,01-02-2025
+18620,service,Clutch Padle Complete Clamp fitting,,Service 1.0,,500,,,1,,,07-05-2023
+18593,service,Clutch Pedle Welding Work,,Service 1.0,,101,,,1,,,06-05-2023
+90427,service,Clutch pipe R/F,201,,,101,,,1,,,06-04-2026
+57275,service,Clutch pressure pipe R/F,,Service 1.0,,800,,,1,,,28-04-2024
+82382,service,Clutch Switch Repair,,Service 1.0,,500,,,1,,,06-07-2025
+49612,service,CMS Clutch Cylinder Replacement,,Service 1.0,,1000,,,1,,,17-12-2023
+77652,service,CNG Filter Replacement,101,Service 1.0,,101,,18,1,,,19-03-2025
+83434,service,CNG Tank assembly R/F,,Service 1.0,,800,,,1,,,05-08-2025
+83208,service,CNG tank Bracket welding,100,,,101,,18,0,,,30-07-2025
+33618,service,CNG Tank Fitting,101,,,101,,,1,,,09-08-2023
+18482,service,Coil Spring R/F,,,,101,,,1,,,01-05-2023
+80790,service,Color coading,,Service 1.0,,2000,,,1,,,24-05-2025
+16022,service,Combination switch replacement,,Service 1.0,,101,,,1,,,19-02-2023
+18693,service,"Complete AC Service ( Cooling Coil Cleaning, Compressor Oil replacement, AC Gas Filling, Pipes Cleaning N2, Condenser Flow Check, All Switches Gear Service, Complete Dashboard R/F)",,Service 1.0,,7500,,,1,,,10-05-2023
+16511,service,Complete AC System Nitrogen Cleaning,,Service 1.0,,1000,,,1,,,06-03-2023
+69071,service,"Complete AC System work ( Expansion valve repair, R16 relay and wiring work)",,Service 1.0,,2500,,,1,,,06-10-2024
+13959,service,Complete AC Testing,,Service 1.0,,350,,,1,,,11-01-2023
+83384,service,Complete boot space Repair work,,Service 1.0,,5000,,,1,,,03-08-2025
+65426,service,Complete Brake Service,,Service 1.0,,800,,,1,,,10-08-2024
+59360,service,Complete Car Body Painting work,,Service 1.0,,60000,,,1,,,19-05-2024
+15517,service,Complete Car Ceramic Coating,,Service 1.0,,101,,,1,,,04-02-2023
+59361,service,Complete Car Denting charges,,Service 1.0,,15000,,,1,,,19-05-2024
+13966,service,Complete car electrical Scanning,,Service 1.0,,101,,,1,,,11-01-2023
+20517,service,Complete Car Electrical Scanning and Recoading,,Service 1.0,,800,,,1,,,23-06-2023
+18910,service,Complete Car General testing,,Service 1.0,,500,,,1,,,14-05-2023
+66644,service,Complete Car Internal Cleaning,101,Service 1.0,,101,,,1,,,26-08-2024
+18632,service,Complete car internal deep cleaning,,Service 1.0,,1500,,,1,,,08-05-2023
+86516,service,Complete car internal disassembled including floor section,,Service 1.0,,1500,,,1,,,05-11-2025
+32672,service,Complete Car Rubbing and Polishing plus wax coating,,,,6500,,,1,,,19-07-2023
+13707,service,Complete car testing,,Service 1.0,,101,,0,1,,,09-01-2023
+18988,service,Complete Car Wiring System,,Service 1.0,,5000,,,1,,,15-05-2023
+14773,service,Complete clutch testing,,complete clutch testing,,101,,,1,,,22-01-2023
+20080,service,Complete Compressor unit Repair,,Service 1.0,,9500,,,1,,,13-06-2023
+17885,service,Complete Coolant Flushing,,Service 1.0,,101,,,1,,,11-04-2023
+18282,service,Complete Dashboard assembly R/F,,Service 1.0,,3000,,,1,,,25-04-2023
+69255,service,Complete Engine Exhaust hose system cleaning,,Service 1.0,,6000,,,1,,,09-10-2024
+91559,service,Complete Engine Flow units Carbon Cleaning,,Service 1.0,,101,,,1,,,22-05-2026
+18017,service,Complete Fuel Line Cleaning,,Service 1.0,,1000,,,1,,,15-04-2023
+23787,service,Complete Fuse Box Assembly R/F Labour,,Service 1.0,,8500,,,1,,,10-07-2023
+68404,service,Complete Gear Box Dis assembly,,Service 1.0,,5500,,,1,,,21-09-2024
+56498,service,"Complete Labor work (Engine, GearBox, Turbo, Body parts R/F)",,Service 1.0,,45000,,,1,,,06-04-2024
+18305,service,Complete Lock System repair,,Service 1.0,,2000,,,1,,,26-04-2023
+91466,service,Complete Manifold assembly R/F labour,,Service 1.0,,101,,,1,,,19-05-2026
+56390,service,Complete Painting work,,Service 1.0,,15000,,,1,,,05-04-2024
+18253,service,Complete Suspension Testing,,,,101,,,1,,,23-04-2023
+74844,service,Complete Vehicle Dent Paint Work,101,Service 1.0,,101,,18,1,,,05-01-2025
+23790,service,Complete Wiring Harness Testing,,Service 1.0,,800,,,1,,,10-07-2023
+16759,service,Complete Wiring Testing,,Service 1.0,,400,,,1,,,14-03-2023
+51777,service,Complete Wiring Work,,Service 1.0,,1500,,,1,,,13-01-2024
+54627,service,Complete Work Labour,,Service 1.0,,5000,,,1,,,24-02-2024
+14662,service,"Comprehensive Servicing Package (Engine oil replacement, Oil Filter Replacement, Air Filter Replacement,Battery service, Coolant top-up, Brake oil top-up, Gear oil top up , AC Filter cleaning, Front and Rear break greasing and cleaning, Door setting, Vehicle Dynamic Testing, Vehicle suspension testing, Wiper Testing, Light Testing, AC Testing, Complete Car Electrical Scanning, Tyre Rotation and Testing",,Service 1.0,,4199,,18,0,,,20-01-2023
+16510,service,Compressor assembly and Condensor assembly R/F,,Service 1.0,,101,,,1,,,06-03-2023
+20118,service,Compressor Thread Re Coiling,,Service 1.0,,600,,,1,,,14-06-2023
+16457,service,Compressor valve and Expansion Valve R/F,,Service 1.0,,500,,,1,,,04-03-2023
+44765,service,Console Assembly R/F,,Service 1.0,,1000,,,1,,,17-10-2023
+18989,service,Control Arms and Trailing Arms R/F,,Service 1.0,,2500,,,1,,,15-05-2023
+33137,service,"Control arms, lower arms and balance rod bushes R/F",,,,2500,,,1,,,29-07-2023
+19938,service,Coolant,,Service 1.0,,101,,,1,,,09-06-2023
+71184,service,Coolant EGR Hose Pipes,101,,,101,,18,1,,,16-11-2024
+71185,service,Coolant EGR hose Pipes R/F,101,Service 1.0,,101,,18,1,,,16-11-2024
+83065,service,Coolant Elbow R/F,101,,,101,,18,1,,,26-07-2025
+54360,service,Coolant hose pipe R/F,,,,101,,,1,,,17-02-2024
+56852,service,Coolant Leakage Fixing,,Service 1.0,,3800,,,1,,,17-04-2024
+14771,service,Coolant replacement,,Service 1.0,,101,,,1,,,22-01-2023
+64524,service,Coolant tank R/F,,Service 1.0,,500,,,1,,,26-07-2024
+15114,service,Coolant top-up,,Service 1.0,,101,,,1,,,29-01-2023
+17576,service,Cooling Coil R/F ( Dashboard Disassemble),,Service 1.0,,3000,,,1,,,01-04-2023
+16397,service,Crank Bearing R/F,,Service 1.0,,1500,,,1,,,03-03-2023
+53195,service,Crank oil Seal R/F,,Service 1.0,,5500,,,1,,,06-02-2024
+85875,service,Crank pulley R/F,,Service 1.0,,1500,,,1,,,14-10-2025
+19512,service,Crank Sensor R/F,,Service 1.0,,400,,,1,,,27-05-2023
+91641,service,CRD R/F labour,,Service 1.0,,101,,,1,,,26-05-2026
+16476,service,Cross Member Welding work and allingment,,Service 1.0,,1800,,,1,,,05-03-2023
+19810,service,CVT GB Calibration,,Service 1.0,,1000,,,1,,,04-06-2023
+16331,service,Cylinder head Finishing Work,,Service 1.0,,101,,,1,,,28-02-2023
+16332,service,Cylinder head Gasket,,Service 1.0,,101,,,1,,,28-02-2023
+16333,service,Cylinder head gasket replacement,,Service 1.0,,101,,,1,,,28-02-2023
+53123,service,Dash Cam System Fitting work,,Service 1.0,,2200,,,1,,,04-02-2024
+89794,service,Dash panel R/F labor,,Service 1.0,,101,,,1,,,06-03-2026
+66861,service,Dashcam fitting,,,,101,,18,1,,,31-08-2024
+51775,service,Dead Axle Assembly R/F,,Service 1.0,,3000,,,1,,,13-01-2024
+52214,service,Dead Axle Bushes Press Fitting,,Service 1.0,,350,,,1,,,23-01-2024
+43966,service,Dickey Door Opening labour,,Service 1.0,,500,,,1,,,09-10-2023
+51607,service,Dickey lock R/F,,Service 1.0,,400,,,1,,,09-01-2024
+65128,service,Dickey lock Repair,101,Service 1.0,,101,,,1,,,02-08-2024
+62287,service,Dickey lock repair work,,Service 1.0,,550,,,1,,,03-07-2024
+63153,service,Dickey lower body Acetylene Gas weld with painting,,Service 1.0,,101,,,1,,,14-07-2024
+82845,service,Dickey panel fixing,,,,100,,,1,,,19-07-2025
+24127,service,Dickey Shocker R/F,,Service 1.0,,600,,,1,,,15-07-2023
+16602,service,Dicky Denting and painting,,Service 1.0,,101,,,1,,,10-03-2023
+19987,service,Dicky Repair,,,,101,,,1,,,11-06-2023
+93665,service,Dicky shocker R/F,,,,101,,,1,,,25-08-2026
+83223,service,Dicky Switch R/F,1001,,,350,,18,1,,,30-07-2025
+33163,service,Dicky Water leakage fixing,101,Service 1.0,,101,,,1,,,29-07-2023
+15108,service,Diesel filter assembly Lab R/F,,Service 1.0,,101,,,1,,,29-01-2023
+92897,service,Diesel Return pipe R/F,,Service 1.0,,101,,,1,,,17-07-2026
+68350,service,Differential Taper Roller Bearing R/F,101,Service 1.0,,101,,,1,,,20-09-2024
+16243,service,Disc roter Though,,Service 1.0,,900,,,1,,,25-02-2023
+75656,service,Discharge pipe R/F labour,,Service 1.0,,800,,,1,,,24-01-2025
+16458,service,Door Assembly R/F,,Service 1.0,,101,,,1,,,04-03-2023
+89141,service,Door cover fixing,,Service 1.0,,500,,,1,,,08-02-2026
+15116,service,Door greasing,,Service 1.0,,101,,,1,,,29-01-2023
+55323,service,Door Handle R/F Labour,,Service 1.0,,800,,,1,,,09-03-2024
+17353,service,Door Latch R/F,,Service 1.0,,500,,,1,,,28-03-2023
+40554,service,Door Latch Rusting Removing and assembly R/F,,,,800,,,1,,,27-09-2023
+24212,service,Door Lock assembly repair,,Service 1.0,,500,,,1,,,18-07-2023
+84559,service,Door lock with key Repair Work,101,Service 1.0,,101,,18,1,,,07-09-2025
+84550,service,Door panel R/F,101,,,101,,,1,,,07-09-2025
+16100,service,Door Strips Remove,,Service 1.0,,101,,,1,,,20-02-2023
+20077,service,Drain bolt Threading,,Service 1.0,,101,,,1,,,13-06-2023
+15836,service,Drive Axle Shaft R/F,,Service 1.0,,101,,,1,,,12-02-2023
+19327,service,Drive shaft Axle & Wheel Bearing R/F,,Service 1.0,,800,,,1,,,23-05-2023
+55437,service,Drive Shaft Axle Repair,101,Service 1.0,,101,,,1,,,13-03-2024
+19326,service,Drive Shaft Axle ReThread,,Service 1.0,,500,,,1,,,23-05-2023
+55450,service,Drive shaft oil seal replacement cost,,Service 1.0,,350,,,1,,,13-03-2024
+15381,service,Driver side door panel switch repairing,,Service 1.0,,101,,,1,,,31-01-2023
+88449,service,Driver side Glass Machine,101,,,101,,,1,,,16-01-2026
+45106,service,Driver Side Seat Assembly R/after Labour,,,,6000,,,1,,,25-10-2023
+69723,service,Drum Brake Adjuster R/F,,,,101,,,1,,,21-10-2024
+81994,service,ECM and Immobilizer system Repair and recording,,Service 1.0,,6500,,,1,,,26-06-2025
+62548,service,ECMA System R/F Labour,,Service 1.0,,1000,,,1,,,08-07-2024
+34012,service,ECU assembly R/F,,Service 1.0,,3500,,,1,,,19-08-2023
+34011,service,ECU Repair and Coading,,Service 1.0,,35000,,,1,,,19-08-2023
+45599,service,EGR cleaning,,,,101,,,1,,,07-11-2023
+84803,service,"EGR, Intercooler, Hoses, Manifolds, exhaust system cleaning",,Service 1.0,,7500,,,1,,,13-09-2025
+87963,service,"EGR,Intercooler and Maifold cleaning",101,,,101,,18,1,,,27-12-2025
+15993,service,Electrical Scanning,,Service 1.0,,300,,,1,,,18-02-2023
+33015,service,Electronic diagnosis,101,,,500,,,1,,,26-07-2023
+89057,service,Engine A mount bolts Re threading,101,,,5500,,18,1,,,04-02-2026
+87772,service,"Engine A, Mount Replace",101,Service 1.0,,101,,18,1,,,20-12-2025
+56389,service,Engine Assembly R/F labour,,Service 1.0,,40000,,,1,,,05-04-2024
+76106,service,Engine Block Service and testing,,Service 1.0,,1500,,,1,,,04-02-2025
+51086,service,Engine C mount Re Threading,,Service 1.0,,500,,,1,,,27-12-2023
+16102,service,Engine Check Light Scanning,,Service 1.0,,500,,,1,,,20-02-2023
+70028,service,Engine compartment diesel wash,,,,101,,,1,,,27-10-2024
+95288,service,"Engine cylinder surface finishing work ( Main Cylinder Reaming, sleeve Finishing, Cylinder wall Surface finishing)",,Service 1.0,,101,,,1,,,09-11-2026
+75637,service,Engine D mount R/F labour,101,,,101,,,1,,,24-01-2025
+65283,service,Engine guard fixing,,,,101,,,1,,,07-08-2024
+16396,service,Engine Head Assembly R/F,,Service 1.0,,3500,,,1,,,03-03-2023
+88975,service,Engine Head CNC surface finning work,,,,101,,,1,,,02-02-2026
+16395,service,Engine Head Finishing Work and Valve allingment,,Service 1.0,,101,,,1,,,03-03-2023
+16334,service,Engine head gasket,,Service 1.0,,101,,,1,,,28-02-2023
+16335,service,Engine head gasket replacement,,Service 1.0,,101,,,1,,,28-02-2023
+87689,service,Engine Inner cylinder Surface finishing work,,Service 1.0,,3000,,,1,,,17-12-2025
+66628,service,Engine Mount A R/F Labour,,Service 1.0,,101,,,1,,,25-08-2024
+66629,service,Engine Mount B Labour R/F,,Service 1.0,,101,,,1,,,25-08-2024
+66630,service,Engine Mount C Labour R/F,,Service 1.0,,101,,,1,,,25-08-2024
+18536,service,Engine mount R/F,,Service 1.0,,500,,,1,,,03-05-2023
+51085,service,Engine Mount Re Threading,,Service 1.0,,500,,,1,,,27-12-2023
+17577,service,Engine oil & Oil Filter Replacement,,Service 1.0,,500,,,1,,,01-04-2023
+37494,service,Engine oil chamber R/F,101,Service 1.0,,101,,,1,,,16-09-2023
+45683,service,Engine Oil Leakage Fixing,,Service 1.0,,800,,,1,,,08-11-2023
+64429,service,Engine oil replacement labour,,Service 1.0,,450,,,1,,,24-07-2024
+14778,service,Engine Oil Synthetic 5W30,,Service 1.0,,101,,,1,,,22-01-2023
+76568,service,Engine oil Top-up (5W40),101,,,101,,18,1,,,17-02-2025
+18009,service,Engine Twining and spark plugs cleaning,,Service 1.0,,101,,,1,,,15-04-2023
+64536,service,Engine wiring work,,Service 1.0,,1500,,,1,,,27-07-2024
+82548,service,"EV Car Servicing package: 1) Battery and Regeneration System testing 2) Coolant Testing 3) Battery Cooling System testing 5)Coolant top up 6) Door setting 7) Light testing 8) Wiper testing 9) AC filter Cleaning and AC test 10)Exterior Cleaning and internal polishing plus Vacuuming 11)Full vehicle Dynamic testing. 12) Front and Rear brakes Cleaning and Greasing 13) All Fluids(Coolant Brake Oil, Gear Oil) Topups 14) Complete car suspension testing 15) Complete tyre testing 16) Complete Car Electrical Scanning 16) Servicing Labour",,Service 1.0,,2999,,,1,,,11-07-2025
+17130,service,Exhaust Assembly R/F,,Service 1.0,,500,,,1,,,25-03-2023
+16303,service,Expansion Valve R/F,,Service 1.0,,101,,,1,,,27-02-2023
+51203,service,External Body Wash,,Service 1.0,,200,,,1,,,29-12-2023
+66489,service,Fender lining R/F,,Service 1.0,,500,,,1,,,21-08-2024
+19347,service,Fender Repair,,Service 1.0,,500,,,1,,,24-05-2023
+91599,service,FICD unit replacement labour,,Service 1.0,,101,,,1,,,24-05-2026
+49198,service,Filter Oil Seal R/F,,,,500,,,1,,,06-12-2023
+17331,service,Fly wheel R/F,,Service 1.0,,500,,,1,,,28-03-2023
+18515,service,Flywheel Reaming work,,Service 1.0,,6000,,,1,,,02-05-2023
+68482,service,Fog lamp assembly R/F,,Service 1.0,,500,,,1,,,22-09-2024
+20256,service,Fog lamp fixing,,Service 1.0,,200,,,1,,,17-06-2023
+19763,service,Fog Lamps Replacement,,Service 1.0,,500,,,1,,,02-06-2023
+81651,service,Foglamp cover R/F,1000,,,101,,,1,,,17-06-2025
+15039,service,From brake disc replacement,,Service 1.0,,101,,,1,,,28-01-2023
+77902,service,From Fender and Bonnet Alignment Work,101,Service 1.0,,101,,18,1,,,26-03-2025
+14775,service,Front & Rear Brake Cleaning,,Service 1.0,,101,,,1,,,22-01-2023
+88411,service,Front and Rear Brake disc R/F labour,,Service 1.0,,850,,,1,,,14-01-2026
+76469,service,Front And Rear Brake Pads R/ F,101,Service 1.0,,18,,,1,,,15-02-2025
+22763,service,Front and Rear Bumper Touch upsa and Allingment,,Service 1.0,,500,,,1,,,05-07-2023
+33954,service,Front and Rear Cooling Coil testing and Cleaning,,Service 1.0,,5000,,,1,,,18-08-2023
+74994,service,Front And Rear Lower arm R/F,101,Service 1.0,,101,,18,1,,,08-01-2025
+46117,service,Front and Rear Wiper fixing,,Service 1.0,,500,,,1,,,22-11-2023
+16157,service,Front balance rod bush replacement,,Service 1.0,,101,,,1,,,22-02-2023
+35089,service,Front Brake Disc R/F,,Service 1.0,,800,,,1,,,10-09-2023
+15040,service,Front brake disc replacement,,Service 1.0,,101,,,1,,,28-01-2023
+35090,service,Front Brake Disc Screaming,,Service 1.0,,2000,,,1,,,10-09-2023
+35088,service,Front Brake Disc Screeming,,Service 1.0,,2000,,,1,,,10-09-2023
+92585,service,Front Brake hose Replacement,101,,,101,,,1,,,03-07-2026
+18063,service,Front Brake pads and Brake Disc replacement,,Service 1.0,,101,,,1,,,17-04-2023
+33140,service,Front brake pads R/F,101,Service 1.0,,101,,,1,,,29-07-2023
+15142,service,Front brake pads replacement,,Service 1.0,,101,,,1,,,30-01-2023
+92936,service,Front Brake Rotors Skimming,101,,,101,,,1,,,20-07-2026
+34004,service,Front brake service,,,,420,,,1,,,19-08-2023
+15973,service,Front Bumper bottom pulling & Bonnet/Fender Line Matching,,Service 1.0,,2200,,,1,,,18-02-2023
+13736,service,Front Bumper D/P,,Service 1.0,,2500,,,1,,,09-01-2023
+16437,service,Front bumper Denting And Painting,,Body,,3000,,,1,,,04-03-2023
+85847,service,Front Bumper fixing,101,,,101,,,1,,,13-10-2025
+75792,service,Front bumper Grill Paint Work,101,,,101,,18,1,,,28-01-2025
+16235,service,Front Bumper Holder and Bumper fixing,,Service 1.0,,500,,,1,,,24-02-2023
+34528,service,Front Bumper Painting,,Service 1.0,,3008,,,1,,,27-08-2023
+16670,service,Front Bumper R/F Labour,,Body,,500,,,1,,,13-03-2023
+59985,service,Front bumper repair,,,,101,,,1,,,27-05-2024
+16098,service,Front Bumper Replacement,,Service 1.0,,101,,,1,,,20-02-2023
+18175,service,Front Bumper Rework,,Service 1.0,,400,,,1,,,19-04-2023
+75987,service,Front bumper spoiler painting,,Service 1.0,,3500,,,1,,,02-02-2025
+54905,service,Front Bumper/Grill Repair Work,,Service 1.0,,2000,,,1,,,04-03-2024
+75275,service,Front Bushing kit replacement work,,,,150,,,1,,,15-01-2025
+23709,service,Front Door Glass Machine R/F,,Service 1.0,,500,,,1,,,09-07-2023
+17648,service,Front Fender and Bumper R/F,,Service 1.0,,500,,,1,,,03-04-2023
+67578,service,Front Fender R/F Labour,,Service 1.0,,800,,,1,,,14-09-2024
+16213,service,Front LH Door D/P,,Service 1.0,,2800,,,1,,,24-02-2023
+93010,service,Front LH wheel housing Repair and Paint,129,,,1500,,18,1,,,24-07-2026
+84109,service,Front Lower arm bush Press Fitting Work,101,,,101,,18,1,,,24-08-2025
+16159,service,Front Lower arm bush replacement,,Service 1.0,,101,,,1,,,22-02-2023
+15038,service,Front lower arm replacement,,Service 1.0,,101,,,1,,,28-01-2023
+17893,service,Front Lower Arms R/F,,Service 1.0,,101,,18,0,,,11-04-2023
+34838,service,Front Mirror Cap Both Painting,101,Service 1.0,,101,,,1,,,03-09-2023
+69701,service,Front RH Side Axel boot R/F,101,Service 1.0,,101,,18,1,,,20-10-2024
+16455,service,Front RH Side Door Denting And Painting,,complete clutch testing,,3000,,,1,,,04-03-2023
+61963,service,Front RH wheel hub R/F,101,,,101,,,1,,,24-06-2024
+43806,service,Front Right ABS Sensor,,Service 1.0,,5800,,,1,,,04-10-2023
+15035,service,Front shock absorber assembly replacement,,Service 1.0,,101,,,1,,,28-01-2023
+16156,service,Front shock absorber replacement,,Service 1.0,,101,,,1,,,22-02-2023
+18066,service,Front Shock Absorbers R/F,,Service 1.0,,101,,,1,,,17-04-2023
+84560,service,Front shocker assembly R/F,101,Service 1.0,,101,,18,1,,,07-09-2025
+76009,service,Front shocker mount cap R/P,,,,101,,,1,,,02-02-2025
+17915,service,Front Shocker Mount R/F,,Service 1.0,,101,,,1,,,12-04-2023
+82701,service,Front Shocker mount Stud Nut R/F,101,,,101,,18,1,,,15-07-2025
+80961,service,Front Shocker Repair cost,,Service 1.0,,2500,,,1,,,28-05-2025
+82078,service,Front shockers R/F,101,,,101,,18,1,,,28-06-2025
+91654,service,Front Show Repair,101,,,101,,18,1,,,26-05-2026
+85127,service,Front Supporting member repair,,Service 1.0,,680,,,1,,,22-09-2025
+37493,service,Front Suspension Removing and fitting,101,Service 1.0,,101,,,1,,,16-09-2023
+86448,service,Front Suspension testing and proper checking,,Service 1.0,,1200,,,1,,,02-11-2025
+16569,service,Front upper and Lower Arms R/F,,Service 1.0,,101,,,1,,,08-03-2023
+16158,service,Front Upper arm bush replacement,,Service 1.0,,101,,,1,,,22-02-2023
+22665,service,Front Windshield Glass ANA Bond application,,Service 1.0,,101,,,1,,,03-07-2023
+53124,service,Front Wiper Assembly R/F,,Service 1.0,,1500,,,1,,,04-02-2024
+51714,service,Front Wiper Linkage Rod R/F,,,,101,,,1,,,12-01-2024
+20006,service,Fuel Filter R/F,,Service 1.0,,400,,,1,,,11-06-2023
+51031,service,Fuel Indicator Repair and Recode,,Service 1.0,,1500,,,1,,,26-12-2023
+16794,service,Fuel injector Cleaning and R/F Labour,,Service 1.0,,101,,,1,,,15-03-2023
+92904,service,Fuel injectors wiring work,101,,,181,,18,1,,,18-07-2026
+56524,service,Fuel Lid Cap Painting,,,,101,,,1,,,06-04-2024
+92124,service,Fuel line leakage fixing and air filter body repair,,,,350,,18,1,,,16-06-2026
+44789,service,Fuel Motor assembly R/F,101,,,101,,,1,,,18-10-2023
+93150,service,Fuel pipe fitting,,,,101,,18,1,,,31-07-2026
+89142,service,Fuel pressure pump R/F,,Service 1.0,,500,,,1,,,08-02-2026
+34534,service,Fuel Pump Assembly R/F,,Service 1.0,,1500,,,1,,,27-08-2023
+15384,service,Fuel Refilling,,Service 1.0,,1000,,,1,,,31-01-2023
+67065,service,Fuel Tank Cleaning,,Service 1.0,,1000,,,1,,,04-09-2024
+93860,service,Fuel vapour unit R/F,,Service 1.0,,101,,,1,,,04-09-2026
+74843,service,Full Vehicle Dent paint Work,101,Service 1.0,,101,,18,1,,,05-01-2025
+93946,service,Garnish front bumper CTR paint,,Service 1.0,,101,,,1,,,08-09-2026
+33022,service,Gear box assembly R/F,101,,,101,,,1,,,26-07-2023
+38065,service,Gear Box Assembly Shifter R/F,,Service 1.0,,800,,,1,,,18-09-2023
+77386,service,Gear Box input shaft R/F ( Gear dismantle process),,Service 1.0,,3500,,,1,,,12-03-2025
+55041,service,Gear Box O Ring Fitment,,Service 1.0,,1800,,,1,,,06-03-2024
+21255,service,Gear Box Oil leakage fixing,,Service 1.0,,1200,,,1,,,30-06-2023
+22691,service,Gear Box Oil Leakage Fixing,,,,101,,,1,,,04-07-2023
+14030,service,Gear Box R/F and Testing,,Service 1.0,,1000,,,1,,,13-01-2023
+20385,service,Gear bushes replacement,,,,900,,,1,,,21-06-2023
+74123,service,Gear Cable and Console assembly R/F,,Service 1.0,,4500,,,1,,,16-12-2024
+14929,service,Gear Cable R/F,,Service 1.0,,600,,,1,,,25-01-2023
+19659,service,Gear Lever Bushing kit R/F,,,,101,,,1,,,31-05-2023
+56228,service,Gear Oil Replace,,,,101,,,1,,,02-04-2024
+18237,service,Gear Oil Topup,,Service 1.0,,500,,,1,,,22-04-2023
+66140,service,Gear Shifter Cable Bush,101,Service 1.0,,101,,,1,,,12-08-2024
+53020,service,Gear Shifter Cable Replacement,101,Service 1.0,,101,,,1,,,02-02-2024
+90719,service,Gear shifting Actuators Tuning,9011,,,18,,,1,,,19-04-2026
+66488,service,Gender lining R/F,,Service 1.0,,500,,,1,,,21-08-2024
+17550,service,General Servicing Package 1) Engine oil Topup(Synthetic 5W30) 2)Oil filter Check 3) Air filter Replacement4) Battery servicing 5)Coolant top up 6) Door setting 7) Light testing 8) Wiper testing 9) AC filter Cleaning and AC test 10) Head Light polishing 11)Exterior Cleaning and internal polishing plus Vacuuming 12)Full vehicle Dynamic testing. 13) Front and Rear brakes Cleaning and Greasing 14) All Fluids Topups 15) Complete car suspension testing,,Service 1.0,,101,,18,1,,,01-04-2023
+51347,service,Glass Machine R/F,,Service 1.0,,400,,,1,,,02-01-2024
+51346,service,Glass Winder LH Repair work,,Service 1.0,,800,,,1,,,02-01-2024
+87006,service,Gudgeon pin press fitting,,Service 1.0,,300,,,1,,,22-11-2025
+16578,service,H8 Head lamp Bulb,,Service 1.0,,370,,,1,,,09-03-2023
+77180,service,Hand Brake Cable R/F,101,Service 1.0,,101,,18,1,,,05-03-2025
+88356,service,Hand brake lever assembly R/F,,,,101,,,1,,,12-01-2026
+59285,service,Head Lamp assembly R/F Labour,,Service 1.0,,5000,,,1,,,17-05-2024
+44926,service,Head Lamp Polishing,,Service 1.0,,200,,,1,,,20-10-2023
+34529,service,Head lamp R/F labour,,Service 1.0,,500,,,1,,,27-08-2023
+17662,service,Head light holder R/F,,Service 1.0,,200,,,1,,,03-04-2023
+86821,service,Headlamp assembly repair Work,101,Service 1.0,,101,,18,1,,,15-11-2025
+75144,service,Headlamp bulb Replacement,101,,,101,,18,1,,,12-01-2025
+19258,service,Headlamp Polish,,,,500,,,1,,,21-05-2023
+19257,service,Headlight Polish,,,,500,,,1,,,21-05-2023
+64509,service,Heat Shield R/F,,Service 1.0,,600,,,1,,,26-07-2024
+67616,service,Heater Coil hose R/F,,Service 1.0,,500,,,1,,,15-09-2024
+34551,service,Heater pipe replacement,,Service 1.0,,101,,,1,,,28-08-2023
+54583,service,Heater plugs R/F,,,,101,,,1,,,23-02-2024
+54601,service,Heater plugs Recoil Work,,Service 1.0,,2000,,,1,,,23-02-2024
+18909,service,Heights pads R/F,,Service 1.0,,400,,,1,,,14-05-2023
+75989,service,Hood Lock Member R/F,101,Service 1.0,,101,,18,1,,,02-02-2025
+18490,service,Horn assembly R/F,,Service 1.0,,400,,,1,,,02-05-2023
+89998,service,Horn Wiring work,,Service 1.0,,500,,,1,,,14-03-2026
+51098,service,"Horn work ( Press Switch, System Cable)",,,,101,,,1,,,27-12-2023
+21141,service,Hose replacement,,,,200,,,1,,,25-06-2023
+61601,service,Ignition coil and Sparkplug R/F,101,Service 1.0,,101,,,1,,,16-06-2024
+22786,service,Ignition Coil R/F Labour,,Service 1.0,,650,,,1,,,05-07-2023
+84331,service,Ignition Key switch Repair,101,,,101,,,1,,,01-09-2025
+84149,service,Ignition Starter Switch R/F,101,Service 1.0,,101,,18,1,,,26-08-2025
+56963,service,Imobolizer system Recording,,Service 1.0,,4000,,,1,,,19-04-2024
+82549,service,"In the EV vehicle Servicing we include: 1) Battery and Regeneration System testing 2) Coolant Testing 3) Battery Cooling System testing 5)Coolant top up 6) Door setting 7) Light testing 8) Wiper testing 9) AC filter Cleaning and AC test 10)Exterior Cleaning and internal polishing plus Vacuuming 11)Full vehicle Dynamic testing. 12) Front and Rear brakes Cleaning and Greasing 13) All Fluids(Coolant Brake Oil, Gear Oil) Topups 14) Complete car suspension testing 15) Complete tyre testing 16) Complete Car Electrical Scanning 16) Servicing Labour",101,,,2999,,18,1,,,11-07-2025
+84578,service,Indicator bulbs Wiring Work,101,Service 1.0,,101,,18,1,,,08-09-2025
+16892,service,Infotainment system Fitting Charges,,Body,,500,,,1,,,19-03-2023
+15385,service,Injection Assembly R/F,,Service 1.0,,2000,,,1,,,31-01-2023
+17535,service,Injector assembly and Tappet Cover R/F,,Service 1.0,,3500,,,1,,,31-03-2023
+16277,service,Injector R/F Labour,,Service 1.0,,1500,,,1,,,26-02-2023
+15386,service,Injector Recoading and Scanning,,Service 1.0,,1000,,,1,,,31-01-2023
+16146,service,Injector Service,,Service 1.0,,101,,,1,,,21-02-2023
+66626,service,Injector Service and Repair,101,Service 1.0,,101,,,1,,,25-08-2024
+17593,service,Insurance Processing fee,,Service 1.0,,500,,,1,,,02-04-2023
+82376,service,Intake hose pipe R/F,,Service 1.0,,101,,,1,,,06-07-2025
+21167,service,Intercooler and Hose Cleaning + Service Labour,,Service 1.0,,2500,,,1,,,26-06-2023
+34612,service,Intercooler assembly R/F,101,Service 1.0,,101,,,1,,,29-08-2023
+54462,service,Intercooler hose pipe R/F,,,,101,,,1,,,20-02-2024
+37480,service,Intercooler repair,,,,101,,,1,,,16-09-2023
+83944,service,Internal all seat and system R/F,101,Service 1.0,,101,,18,1,,,19-08-2025
+95244,service,Joint cross R/F,,Service 1.0,,101,,,1,,,06-11-2026
+66974,service,Key Lock System Repair Work,101,Service 1.0,,101,,,1,,,02-09-2024
+67368,service,Key module R/F Labour,,Service 1.0,,500,,,1,,,10-09-2024
+18307,service,Key System Re Coding,,Service 1.0,,800,,,1,,,26-04-2023
+86990,service,Knuckle assembly R/F,,Service 1.0,,2000,,,1,,,21-11-2025
+13679,service,Labour,,Service 1.0,,101,,,1,,,08-01-2023
+14060,service,Labour R/F,,Service 1.0,,600,,,1,,,14-01-2023
+87430,service,LH Apron Repair,101,,,101,,,1,,,08-12-2025
+14056,service,LH Back door D/P,,Service 1.0,,2800,,,1,,,14-01-2023
+92414,service,LH door handle R/F,101,,,101,,,1,,,28-06-2026
+87431,service,LH fender Assembly R/F,101,,,400,,18,1,,,08-12-2025
+14057,service,LH Fender Denting and painting,,Service 1.0,,2800,,,1,,,14-01-2023
+13961,service,LH Front brake ABS Sensor replacement,,Service 1.0,,101,,,1,,,11-01-2023
+16095,service,LH Front Door DP,,Service 1.0,,101,,,1,,,20-02-2023
+76807,service,LH Front Door Glass Winder R/F,101,Service 1.0,,101,,18,1,,,23-02-2025
+80847,service,LH Front Door Handle R/F,101,Service 1.0,,101,,18,1,,,25-05-2025
+76819,service,LH front door latch Repair Work,101,Service 1.0,,101,,18,1,,,23-02-2025
+74782,service,LH Front Fender D/P,101,Service 1.0,,101,,18,1,,,03-01-2025
+43909,service,LH front fender Denting and painting,101,Service 1.0,,101,,,1,,,06-10-2023
+83148,service,LH Front Fender lining R/F,101,Service 1.0,,101,,18,1,,,28-07-2025
+62978,service,LH Front Glass Winder assembly R/F,101,Service 1.0,,101,,,1,,,10-07-2024
+83918,service,LH front handle R/F,101,Service 1.0,,101,,18,1,,,18-08-2025
+93008,service,LH front Pillar Denting,101,,,400,,18,1,,,24-07-2026
+93009,service,LH front Pillar Paint,101,,,1200,,18,1,,,24-07-2026
+15110,service,LH front side fender lining replacement,,Service 1.0,,101,,,1,,,29-01-2023
+15382,service,LH Front side Lower arm replacement,,Service 1.0,,101,,,1,,,31-01-2023
+93688,service,LH front wheel bearing replacement,101,,,100,,,1,,,26-08-2026
+83037,service,LH front wheel hub R/F,101,,,101,,18,1,,,25-07-2025
+76774,service,LH Headlamp Washer Fitting Work,101,Service 1.0,,101,,18,1,,,22-02-2025
+76773,service,LH Headlamp washer Paint Work,101,Service 1.0,,101,,18,1,,,22-02-2025
+87432,service,LH headlight assembly R/F,101,,,250,,18,1,,,08-12-2025
+14054,service,LH Quarter Panel D/P,,Service 1.0,,2800,,,1,,,14-01-2023
+56676,service,LH Quater panel D/P,,,,101,,,1,,,12-04-2024
+60004,service,LH Rear Door D/P,,,,101,,,1,,,27-05-2024
+16096,service,LH Rear Door DP,,Service 1.0,,101,,,1,,,20-02-2023
+88161,service,LH rear door handle Painting,10001,,,101,,,1,,,04-01-2026
+38009,service,LH Rear Quarter panel D/P,101,Service 1.0,,101,,,1,,,16-09-2023
+17840,service,LH Rear Wheel bearing,,Service 1.0,,101,,,1,,,09-04-2023
+17843,service,LH Rear Wheel bearing replacement,,Service 1.0,,101,,,1,,,09-04-2023
+92296,service,LH Running Board D/P,,Service 1.0,,101,,,1,,,23-06-2026
+87211,service,LH Side Brake Caliper R/F,101,,,101,,18,1,,,29-11-2025
+61969,service,LH side door handle painting,,Service 1.0,,500,,,1,,,24-06-2024
+16441,service,LH side Fender Denting And Painting,,Body,,3000,,,1,,,04-03-2023
+34605,service,LH Side Fender Repair ( TIG Aluminum welding),,Service 1.0,,12000,,,1,,,29-08-2023
+33234,service,LH Side Front Door Denting And Painting,101,,,3000,,,1,,,31-07-2023
+16381,service,LH Side Mirror Tes,,Service 1.0,,101,,,1,,,03-03-2023
+33235,service,LH Side Rear Door Denting And Painting,101,,,3000,,,1,,,31-07-2023
+16472,service,LH side Roof Piller Denting And Painting,,Body,,3000,,,1,,,05-03-2023
+33232,service,LH Side Running Board,101,,,3000,,,1,,,31-07-2023
+45258,service,LH Tail lights R/F,,,,101,,,1,,,29-10-2023
+16286,service,LHS Axle Assembly Repairing,,Service 1.0,,101,,,1,,,27-02-2023
+56883,service,Light Wiring work,,Service 1.0,,500,,,1,,,17-04-2024
+93815,service,Link rod R/F,,Service 1.0,,101,,,1,,,02-09-2026
+18306,service,Lock and Steering Assembly R/F,,Service 1.0,,1500,,,1,,,26-04-2023
+17847,service,Lock Carriage assembly R/F,,Service 1.0,,101,,,1,,,10-04-2023
+49490,service,Lock Carriage Assembly Repair,,Service 1.0,,2500,,,1,,,13-12-2023
+16160,service,Lower arm ball joint replacement,,Service 1.0,,101,,,1,,,22-02-2023
+24128,service,Lower arms and bushing system Allingment,,Service 1.0,,1500,,,1,,,15-07-2023
+21183,service,Lower arms and stabilize link R/F,,Service 1.0,,1500,,,1,,,27-06-2023
+15825,service,Lower body Diesel wash,,Service 1.0,,101,,,1,,,11-02-2023
+83418,service,Lower boot space welding work,,Service 1.0,,4500,,,1,,,04-08-2025
+16620,service,Lower Suspension Testing,,Body,,101,,,1,,,11-03-2023
+18016,service,MAF Sensor R/F,,Service 1.0,,101,,,1,,,15-04-2023
+88939,service,Mechatronics assembly R/F,1001,,,101,,18,1,,,01-02-2026
+66431,service,Member Repair Work,,Service 1.0,,900,,,1,,,20-08-2024
+24125,service,Mercedes GLE Servicing cost: 1) Engine Oil Replacement (Fully Synthetic 5W40) 2) Oil filter replacement 3) Air filter replacement 4) Cabin Filter Replacement(Inner and Outer) 5) Battery servicing 6)Coolant top up and Testing 7) Door setting 8) Light testing 8) Wiper testing 10) AC Cooling test 11)Exterior Cleaning and internal polishing plus Vacuuming 12)Full vehicle Dynamic testing. 13) Complete car Scanning 14) Calliper Greasing and testing 15) Wheel Allingment and Balancing with tyre testing 16) Service Labour,,,,34684,,,1,,,15-07-2023
+92906,service,Metal wiring joints,,Service 1.0,,101,,,1,,,18-07-2026
+54680,service,Mirror assembly R/F,,Service 1.0,,250,,,1,,,26-02-2024
+90849,service,Mirror assembly repair,,Service 1.0,,101,,,1,,,25-04-2026
+78025,service,Module system R/F,,Service 1.0,,800,,,1,,,29-03-2025
+19762,service,Mud Flap R/F,,Service 1.0,,300,,,1,,,02-06-2023
+18516,service,Multi Clutch Assembly R/F,,Service 1.0,,6000,,,1,,,02-05-2023
+33529,service,New Amaron Battery,101,Service 1.0,,101,,,1,,,08-08-2023
+17544,service,New Front Bumper,,Body,,101,,,1,,,01-04-2023
+59374,service,New No Plate,,Service 1.0,,1000,,,1,,,20-05-2024
+92668,service,New Remote key making,,Service 1.0,,2000,,,1,,,08-07-2026
+19463,service,No. Plate R/F,,Service 1.0,,200,,,1,,,26-05-2023
+65429,service,Normal Starter service,,Service 1.0,,2500,,,1,,,10-08-2024
+88357,service,Number plate fixing,,,,101,,,1,,,12-01-2026
+19309,service,O Ring and Injectors checking,,,,500,,,1,,,23-05-2023
+74590,service,O2 Sensor R/F,,Service 1.0,,600,,,1,,,27-12-2024
+61610,service,O2 Sensor wiring work,101,Service 1.0,,101,,,1,,,16-06-2024
+22695,service,Oil Chamber Fixing and ANA Bond application,,,,101,,,1,,,04-07-2023
+59556,service,Oil chamber re-threading,,,,101,,,1,,,20-05-2024
+18117,service,Oil Chamber Recoil Work,,Service 1.0,,500,,,1,,,18-04-2023
+37495,service,Oil chamber removing and fitting,101,Service 1.0,,101,,,1,,,16-09-2023
+49566,service,Oil Cooler assembly replacement,101,Service 1.0,,101,,,1,,,15-12-2023
+15653,service,Oil filter assembly cap replacement,,Service 1.0,,101,,,1,,,07-02-2023
+19282,service,Oil Filter Assembly R/F,,Service 1.0,,2500,,,1,,,22-05-2023
+77909,service,Oil Filter body ring R/F,,Service 1.0,,600,,,1,,,26-03-2025
+94958,service,Oil filter Case Oring R/F,,,,101,,18,1,,,24-10-2026
+14777,service,Oil Filter Change,,Service 1.0,,101,,,1,,,22-01-2023
+54681,service,Oil Pressure sensor wiring fixing,,Service 1.0,,500,,,1,,,26-02-2024
+16891,service,Oil Pressure Switch R/F,,Service 1.0,,250,,,1,,,19-03-2023
+37496,service,Oil Pump removing and fitting,101,Service 1.0,,101,,,1,,,16-09-2023
+93770,service,Oil Separator assembly R/F,,Service 1.0,,101,,,1,,,31-08-2026
+77111,service,Oil Separator pipe R/F,,,,101,,,1,,,03-03-2025
+16278,service,Paid Service,,Service 1.0,,950,,0,0,,,27-02-2023
+16561,service,Painting Touch up and repair work,,Service 1.0,,101,,,1,,,08-03-2023
+84762,service,Panel polishing,,Service 1.0,,500,,,1,,,12-09-2025
+61068,service,Plasma cutting,,,,101,,,1,,,09-06-2024
+18388,service,Power steering module R/F,,,,1000,,,1,,,29-04-2023
+18386,service,Power Steering Module Repair work,,Service 1.0,,8000,,,1,,,29-04-2023
+85595,service,Power steering motor R/F,101,,,101,,,1,,,05-10-2025
+24203,service,Power Steering pump R/F,,Service 1.0,,2000,,,1,,,18-07-2023
+33210,service,Power window switch R/F,,,,101,,,1,,,31-07-2023
+16279,service,Power Window Switch Repair,,Service 1.0,,600,,0,0,,,27-02-2023
+65230,service,Power window switch testing,,Service 1.0,,500,,,1,,,05-08-2024
+18987,service,Premium Car Servicing cost: 1) Engine oil change (Fully Synthetic 5W30) 2) Oil filter replacement 3) Air filter replacement 4) Cabin Filter Replacement 5) Fuel Filter Replacement 6)Battery servicing 6)Coolant top up and Testing 7) Door setting 8) Light testing 8) Wiper testing 10) AC Cooling test 11)Exterior Cleaning and internal polishing plus Vacuuming 12)Full vehicle Dynamic testing. 13) Complete car Scanning 14) Calliper Greasing and testing. 15) Wheel Allingment and Balancing 16) Service Labour,14687,Service 1.0,,24687,,,1,,,15-05-2023
+55352,service,Premium Car Servicing cost: 1) Engine oil change (Fully Synthetic 5W30) 2) Oil filter replacement 3) Air filter replacement 4) Cabin Filter cleaning 5) Fuel Filter Cleaning 6)Battery servicing 6)Coolant top up and Testing 7) Door setting 8) Light testing 8) Wiper testing 10) AC Cooling test 11)Exterior Cleaning and internal polishing plus Vacuuming 12)Full vehicle Dynamic testing. 13) Complete car Scanning 14) Calliper Greasing and testing. 15) Wheel Allingment and Balancing 16) Service Labour,,Service 1.0,,9999,,,1,,,10-03-2024
+92722,service,Press Clip,,,,101,,,1,,,10-07-2026
+65183,service,Pressure switch R/F,,Service 1.0,,500,,,1,,,03-08-2024
+90423,service,Pump intake metal pipe R/F,,,,101,,,1,,,06-04-2026
+43974,service,Quater panel and AC Unit R/F,,Service 1.0,,1500,,,1,,,09-10-2023
+43975,service,Quater panel Repair and Gas welding work,,Service 1.0,,1000,,,1,,,09-10-2023
+16451,service,Quater Pannel Denting And Painting,,Body,,3000,,,1,,,04-03-2023
+18020,service,R6 Fuse,,Service 1.0,,200,,,1,,,15-04-2023
+16976,service,Radiator assembly Cleaning,,Service 1.0,,101,,,1,,,22-03-2023
+71912,service,Radiator assembly Cleaning Work,101,Service 1.0,,101,,18,1,,,03-12-2024
+33966,service,Radiator assembly R/F,101,Service 1.0,,101,,,1,,,18-08-2023
+16475,service,Radiator Assembly Repair,,Service 1.0,,1500,,,1,,,05-03-2023
+20442,service,Radiator Assembly Repair Work,,Service 1.0,,6500,,,1,,,22-06-2023
+16082,service,Radiator assembly replacement,,Service 1.0,,101,,,1,,,20-02-2023
+35079,service,Radiator Blockage rember,,,,2000,,,1,,,10-09-2023
+71796,service,Radiator Cap,101,Service 1.0,,101,,18,1,,,30-11-2024
+87085,service,Radiator Cleaning,101,,,101,,,1,,,24-11-2025
+17352,service,Radiator Fan Assembly R/F,,Service 1.0,,500,,,1,,,28-03-2023
+15005,service,Radiator Flushing charges,,Service 1.0,,300,,,1,,,27-01-2023
+84905,service,Radiator Frame repair,,Service 1.0,,3000,,,1,,,16-09-2025
+71136,service,Radiator hose pipe R/F,,,,101,,,1,,,15-11-2024
+51798,service,Radiator Repair and Complete Cleaning,,Service 1.0,,2500,,,1,,,14-01-2024
+43762,service,Rail Pressure Wiring and pump work,,Service 1.0,,1500,,,1,,,03-10-2023
+86633,service,Rat Protection Grill fitting Work,101,Service 1.0,,101,,18,1,,,09-11-2025
+86517,service,Rat protection mat,,Service 1.0,,750,,,1,,,05-11-2025
+63467,service,Rat Protection Spray,101,Service 1.0,,101,,,1,,,22-07-2024
+58605,service,RC Lever R/F,,Service 1.0,,450,,,1,,,06-05-2024
+58604,service,RC liver R/F,,,,101,,,1,,,06-05-2024
+83216,service,Rear balance rod bush Replacement,101,,,101,,18,1,,,30-07-2025
+41184,service,Rear brake disc replacement,101,Service 1.0,,101,,,1,,,30-09-2023
+88353,service,Rear Brake discs screaming,101,,,101,,,1,,,12-01-2026
+18381,service,Rear brake drum finishing,,,,101,,,1,,,29-04-2023
+32851,service,Rear brake light R/F,,,,101,,,1,,,24-07-2023
+14910,service,Rear Brake light Switch repair,,Service 1.0,,400,,,1,,,25-01-2023
+16281,service,Rear Brake Liner R/F Lab,,Service 1.0,,150,,0,0,,,27-02-2023
+19514,service,Rear Brake pads and Disc replacement,,Service 1.0,,500,,,1,,,27-05-2023
+17288,service,Rear Brake pads Replacement,,Service 1.0,,500,,,1,,,25-03-2023
+92882,service,Rear brake Rotars skimming,101,,,101,,,1,,,17-07-2026
+56391,service,Rear brake service,,,,101,,,1,,,05-04-2024
+15048,service,Rear Brake wheel cylinder R/F,,Service 1.0,,800,,,1,,,28-01-2023
+18064,service,Rear Brake wheel Cylinder replacement,,Service 1.0,,101,,,1,,,17-04-2023
+69027,service,Rear Brake wheel Cylinder T&R,,Service 1.0,,1100,,,1,,,04-10-2024
+87190,service,Rear break liners R/F,101,Service 1.0,,101,,18,1,,,28-11-2025
+56793,service,Rear Bumper D/P,,,,101,,,1,,,16-04-2024
+16471,service,Rear Bumper Denting And Painting,,Body,,101,,,1,,,05-03-2023
+16161,service,Rear bumper fixing,,Body,,300,,,1,,,22-02-2023
+54260,service,Rear Bumper Guard R/F,,,,101,,,1,,,14-02-2024
+14052,service,Rear Bumper Painting,,Service 1.0,,101,,,1,,,14-01-2023
+16669,service,Rear Bumper R/F,,Service 1.0,,400,,,1,,,13-03-2023
+14053,service,Rear Bumper Repair,,Service 1.0,,101,,,1,,,14-01-2023
+69216,service,Rear Bushes completely R/F Labour,,Service 1.0,,3000,,,1,,,09-10-2024
+45976,service,Rear coil spring pads fitting,101,Service 1.0,,101,,,1,,,17-11-2023
+87929,service,Rear cooling coil R/F,101,,,101,,,1,,,26-12-2025
+92087,service,Rear Dead axle Re threading,,Service 1.0,,101,,,1,,,14-06-2026
+15514,service,Rear Dickey Dent Painting,,Service 1.0,,101,,,1,,,04-02-2023
+71071,service,Rear Fender lining R/F,101,Service 1.0,,101,,18,1,,,13-11-2024
+75571,service,Rear light fitting,101,,,400,,18,1,,,22-01-2025
+43751,service,Rear parking sensor Fitting,,,,101,,,1,,,02-10-2023
+43807,service,Rear Right ABS Sensor,,,,1500,,,1,,,04-10-2023
+38059,service,Rear shock absorber assembly,101,,,101,,,1,,,18-09-2023
+33346,service,Rear shock absorber R/F,101,Service 1.0,,101,,,1,,,02-08-2023
+15036,service,Rear shock absorber replacement,,Service 1.0,,101,,,1,,,28-01-2023
+14043,service,Rear Shockers R/F,,Service 1.0,,101,,,1,,,13-01-2023
+69257,service,Rear Shockers R/F labour and Repair work,,Service 1.0,,850,,,1,,,09-10-2024
+71521,service,Rear Silencer Assembly fitting,,,,101,,,1,,,22-11-2024
+19265,service,REAR SKIRT PANEL PAINTING,,,,101,,,1,,,21-05-2023
+19264,service,REAR SKIRT PANEL RERAIR,,,,101,,,1,,,21-05-2023
+15137,service,Rear Speed Sensor fixing,,Service 1.0,,1000,,,1,,,30-01-2023
+93790,service,Rear suspension work,,,,101,,,1,,,01-09-2026
+54888,service,Rear Tail Lamp R/F,,Service 1.0,,350,,,1,,,03-03-2024
+15518,service,Rear Torque Sensor Fixing,,Service 1.0,,101,,,1,,,04-02-2023
+16889,service,Rear wheel bearing replacement,,Service 1.0,,101,,,1,,,19-03-2023
+20277,service,Rear Wheel Brake Cylinder Repair,,Service 1.0,,101,,,1,,,17-06-2023
+84278,service,Rear Wheel cylinder and Liner R/F,101,Service 1.0,,101,,18,1,,,30-08-2025
+20278,service,Rear wheel cylinder R/F,,Service 1.0,,101,,,1,,,17-06-2023
+15759,service,Rear window greasing,,Service 1.0,,350,,,1,,,11-02-2023
+49647,service,Rear Windshield glass bond application,101,Service 1.0,,101,,,1,,,18-12-2023
+52512,service,Rear Wiper Arms R/F,,Service 1.0,,250,,,1,,,30-01-2024
+83751,service,Regeneration system Manual cleaning including EGR and Intercooler,,,,9500,,,1,,,13-08-2025
+51335,service,Remote Key Re Coading,,Service 1.0,,1800,,,1,,,02-01-2024
+71639,service,Remote key Repair Work,101,Service 1.0,,101,,18,1,,,26-11-2024
+81760,service,Remote key unlock work,101,,,350,,18,1,,,20-06-2025
+59362,service,Removal and refitting charges,101,,,20000,,,1,,,19-05-2024
+13972,service,Reverse brake issue,,Service 1.0,,200,,,1,,,11-01-2023
+63091,service,Reverse Sensor fixing,101,Service 1.0,,101,,,1,,,12-07-2024
+16919,service,Reverse Switch R/F,,Service 1.0,,101,,,1,,,20-03-2023
+83853,service,RH Fender Alignment Work,101,Service 1.0,,101,,18,1,,,16-08-2025
+14058,service,RH Fender D/P,,Service 1.0,,2800,,,1,,,14-01-2023
+71182,service,RH front Abs Sensor R/F,101,Service 1.0,,101,,18,1,,,16-11-2024
+16380,service,RH Front Door DP,,Service 1.0,,101,,,1,,,03-03-2023
+45978,service,RH front door glass winder repair,101,Service 1.0,,101,,,1,,,17-11-2023
+45979,service,RH front door glass winder repair,101,,,101,,,1,,,17-11-2023
+70907,service,RH front door handle Painting Work,101,,,500,,18,1,,,09-11-2024
+16099,service,RH Front Door Inner side corrosion Paint,,Service 1.0,,101,,,1,,,20-02-2023
+84699,service,RH Front door lock Repair Work,101,Service 1.0,,101,,18,1,,,10-09-2025
+59536,service,RH front door stopper replacement,101,Service 1.0,,101,,,1,,,20-05-2024
+77179,service,RH front door Winder assembly R/F,101,,,101,,18,1,,,05-03-2025
+20279,service,RH front door winder motor repair,,Service 1.0,,101,,,1,,,17-06-2023
+43064,service,RH front drive axle shaft repaired,101,Service 1.0,,101,,,1,,,01-10-2023
+75136,service,RH Front Fender D/P,101,Service 1.0,,101,,18,1,,,12-01-2025
+15120,service,RH front fender lining d/p,,Service 1.0,,101,,,1,,,29-01-2023
+15987,service,RH front headlamp replacement,,Service 1.0,,101,,,1,,,18-02-2023
+38399,service,RH front latch assembly R/F,101,Service 1.0,,101,,,1,,,23-09-2023
+16474,service,RH front Side fender deating and Painting,,Service 1.0,,101,,,1,,,05-03-2023
+17839,service,RH front Wheel bearing,,Service 1.0,,101,,,1,,,09-04-2023
+17841,service,RH front Wheel bearing replacement,,Service 1.0,,101,,,1,,,09-04-2023
+14051,service,RH Quater Panel D/P,,Service 1.0,,101,,,1,,,14-01-2023
+52378,service,RH Quater Panel Rework/adjoining Welding,,Service 1.0,,9500,,,1,,,27-01-2024
+13958,service,RH Rear Door D/P,,Service 1.0,,2500,,,1,,,11-01-2023
+16234,service,RH Rear Door DP,,Service 1.0,,3000,,,1,,,24-02-2023
+83919,service,RH Rear Door handle R/F,101,Service 1.0,,18,,,1,,,18-08-2025
+74588,service,RH Rear Door Removing Fitting,,Service 1.0,,1500,,,1,,,27-12-2024
+38010,service,RH Rear Quarter panel D/P,101,Service 1.0,,101,,,1,,,16-09-2023
+17842,service,RH Rear Wheel bearing replacement,,Service 1.0,,101,,,1,,,09-04-2023
+74597,service,RH Running Bord D/P,101,,,101,,,1,,,28-12-2024
+33236,service,RH Side Front Door Denting And Painting,101,,,3000,,,1,,,31-07-2023
+18256,service,RH Side Head Light Replacement Labour,,,,101,,,1,,,23-04-2023
+33613,service,RH Side Quarter Panel Denting And Painting,101,,,3000,,,1,,,09-08-2023
+33238,service,RH Side Rear Door Denting And Painting,101,,,3000,,,1,,,31-07-2023
+24086,service,RH side Rear Wheel Bearing R/F,,,,101,,,1,,,14-07-2023
+94688,service,RHS axle assembly repairing,123,,,101,,18,1,,,09-10-2026
+83317,service,Right Fender and Bonnet Alignment Work,101,Service 1.0,,1300,,18,1,,,01-08-2025
+18014,service,Roof Light Fixing,,Service 1.0,,250,,,1,,,15-04-2023
+16443,service,Roof Top Denting And Painting,,Body,,3000,,,1,,,04-03-2023
+16436,service,Roof Top Denting painting,,Body,,3000,,,1,,,04-03-2023
+56545,service,"Running parts R/F labour ( Mounts, Bumpers, head lights, pulley)",,Service 1.0,,10000,,,1,,,07-04-2024
+95481,service,Seat adjust button R/F,123,,,2500,,18,1,,,20-11-2026
+75362,service,Seat belt R/F,101,,,101,,,1,,,17-01-2025
+50587,service,Seat Compression Spring R/F,,Service 1.0,,600,,,1,,,20-12-2023
+82827,service,Seat cover fixing,101,,,101,,18,1,,,19-07-2025
+91191,service,Seatbelt Wiring work,101,,,2500,,18,1,,,08-05-2026
+51721,service,Sensor Testing,,Service 1.0,,300,,,1,,,12-01-2024
+55820,service,Service Charge,,Service 1.0,,800,,,1,,,24-03-2024
+45802,service,Service Labour,,Service 1.0,,2500,,,1,,,13-11-2023
+18644,service,Sets Cover fitting,,Service 1.0,,,,,1,,,08-05-2023
+18067,service,Shockers Repair work,,Service 1.0,,400,,,1,,,17-04-2023
+80935,service,Showroom Bill,,Service 1.0,,2500,,,1,,,27-05-2025
+17654,service,Side Mirror Cap Painting,,Service 1.0,,101,,18,1,,,03-04-2023
+18065,service,Side mirror Cover Painting,,Service 1.0,,500,,,1,,,17-04-2023
+16646,service,Side Mirror Guard painting,,Service 1.0,,600,,,1,,,12-03-2023
+33211,service,Silencer Assembly R/F,,,,101,,,1,,,31-07-2023
+87475,service,Silencer assembly Repair work,,Service 1.0,,1200,,,1,,,10-12-2025
+85058,service,Silencer Gas/Acetylene welding,,Service 1.0,,3800,,,1,,,20-09-2025
+15037,service,Silencer Gas/Acetylene welding and R/F labour,,Service 1.0,,1200,,18,0,,,28-01-2023
+76200,service,Silencer packing R/F,101,,,101,,18,1,,,08-02-2025
+13957,service,Silencer Welding,,Service 1.0,,101,,,1,,,11-01-2023
+44920,service,Sket Panel Denting and Painting,101,Service 1.0,,101,,,1,,,20-10-2023
+61722,service,Skoda System ESCS Basic Setting and Coding,,Service 1.0,,4500,,,1,,,19-06-2024
+79229,service,Skurt Panel Repair work,,Body,,5800,,,1,,,13-04-2025
+15714,service,Spark plug sanding,,Service 1.0,,101,,,1,,,09-02-2023
+16386,service,Sparkplug replacement,,Service 1.0,,101,,,1,,,03-03-2023
+52246,service,Speaker Fixing,,Service 1.0,,500,,,1,,,24-01-2024
+80386,service,Speedometer sensor R/F,101,,,101,,18,1,,,14-05-2025
+51776,service,Spool Oil Assembly R/F,,Service 1.0,,800,,,1,,,13-01-2024
+66467,service,Spring Buffer fitting,,,,101,,,1,,,21-08-2024
+15839,service,Stablizer link assembly R/F,,Service 1.0,,101,,,1,,,12-02-2023
+16094,service,Starter assembly R/F,,Service 1.0,,400,,,1,,,20-02-2023
+16093,service,Starter Repair/Servicing (Bush kit and Brush plate and engage gear replacement),,Service 1.0,,2500,,,1,,,20-02-2023
+23710,service,Starter Servicing (Brush plate and engage gear),,,,2000,,,1,,,09-07-2023
+65427,service,Starter Wiring Work,101,Service 1.0,,101,,,1,,,10-08-2024
+87757,service,Steering angle sensor and Clock spring assembly R/F Labor,,Service 1.0,,2000,,,1,,,19-12-2025
+85857,service,Steering ball joint R/F,,Service 1.0,,500,,,1,,,13-10-2025
+62156,service,Steering column calibration,,Service 1.0,,2500,,,1,,,29-06-2024
+22634,service,Steering column R/F Labour,,Service 1.0,,1800,,,1,,,02-07-2023
+50535,service,Steering Control Sensor Coading,,Service 1.0,,3500,,,1,,,19-12-2023
+90307,service,Steering intermediate shaft alignment,,Service 1.0,,101,,,1,,,31-03-2026
+81274,service,Steering pipe R/F,,Service 1.0,,800,,,1,,,07-06-2025
+17805,service,Steering Rack assembly R/F,,Service 1.0,,1500,,18,0,,,08-04-2023
+17663,service,Steering Rack assembly Repair,,Service 1.0,,1000,,,1,,,03-04-2023
+43929,service,Steering rack ball joint replacement,101,Service 1.0,,101,,,1,,,07-10-2023
+33680,service,Steering Rack R/F,101,,,101,,,1,,,11-08-2023
+69986,service,Steering Torque Motor R/F,101,Service 1.0,,101,,,1,,,26-10-2024
+54330,service,Stud bolt threading,,,,101,,,1,,,16-02-2024
+89469,service,Suction pipe R / F,101,,,101,,,1,,,20-02-2026
+89468,service,Suction pipe repair,101,,,101,,,1,,,20-02-2026
+79237,service,Sunroof Motor and CC repair,,Body,,4500,,,1,,,13-04-2025
+14109,service,Suspension Assembly R/F Labour,,Service 1.0,,1200,,0,0,,,15-01-2023
+16280,service,Suspension Components R/F Lab,,Service 1.0,,300,,0,0,,,27-02-2023
+16521,service,Suspension Frame R/F,,Service 1.0,,1500,,,1,,,06-03-2023
+71848,service,Suspension frame Re threading,,Service 1.0,,800,,,1,,,02-12-2024
+89198,service,Suspension frame repairing,,,,101,,,1,,,10-02-2026
+22790,service,Suspension Repair Work,,,,4000,,,1,,,05-07-2023
+83385,service,Tail light Howling repair,,Service 1.0,,3000,,,1,,,03-08-2025
+16883,service,Tappet cover fitting and Cleaning,,Service 1.0,,500,,,1,,,19-03-2023
+76471,service,Tappet oil Seal R/F,101,,,101,,18,1,,,15-02-2025
+81033,service,Tata DEF Diesel Exhaust Fluid,101,Service 1.0,,101,,18,1,,,30-05-2025
+90720,service,TCM(Transmission Control Module) Coding,9002,,,101,,,1,,,19-04-2026
+52663,service,Temperature Control valve R/F,,Service 1.0,,1452,,,1,,,31-01-2024
+16800,service,Temperature Switch R/F,,Service 1.0,,500,,,1,,,15-03-2023
+66920,service,Tension Spring set,,Service 1.0,,200,,,1,,,01-09-2024
+24204,service,Tensioner Pulley (Hydraulic) assembly R/F,,Service 1.0,,1000,,,1,,,18-07-2023
+58799,service,Tensioner pulley System R/F Labour,,Service 1.0,,800,,,1,,,10-05-2024
+93988,service,Thermostat Body R/F,123,Service 1.0,,101,,18,1,,,09-09-2026
+91155,service,Thermostat resistance Assembly R/F,06,,,101,,18,1,,,06-05-2026
+69131,service,Thermostat valve R/F,,Service 1.0,,1500,,,1,,,07-10-2024
+16647,service,Throttle body Cleaning,,Service 1.0,,101,,,1,,,12-03-2023
+94245,service,Throttle body R / F,,,,101,,,1,,,21-09-2026
+14774,service,Throttle Body Spray,,Service 1.0,,850,,,1,,,22-01-2023
+22635,service,Tie Member and Ball Joints R/F Labour,,Service 1.0,,1500,,,1,,,02-07-2023
+75791,service,Tie Member frame alignment Work,101,,,101,,18,1,,,28-01-2025
+75826,service,Tie Member Paint Work,101,,,101,,18,1,,,29-01-2025
+49042,service,Tie member R/F,,,,101,,,1,,,01-12-2023
+16473,service,Tie Member Repair,,Body,,101,,,1,,,05-03-2023
+19621,service,Tie Rod End R/F,,Service 1.0,,400,,,1,,,30-05-2023
+77602,service,Timing belt R/F,,,,101,,,1,,,18-03-2025
+76252,service,Timing Case assembly R/F,,,,2200,,,1,,,10-02-2025
+92905,service,Timing chain and belt assembly R/F,,Service 1.0,,101,,,1,,,18-07-2026
+45512,service,Timing Chain Assembly Replacement,,Service 1.0,,3500,,,1,,,05-11-2023
+75151,service,Timing setting,,Service 1.0,,2500,,,1,,,12-01-2025
+53069,service,Top shaft oil seal R/F,,,,101,,,1,,,03-02-2024
+89736,service,Total Insurance amount,,Service 1.0,,17200,,,1,,,04-03-2026
+15850,service,Tow Service,,Service 1.0,,101,,,1,,,13-02-2023
+75697,service,TPMS Sensor R/F,,Service 1.0,,800,,,1,,,25-01-2025
+57277,service,Transmission oil chamber R/F,,,,101,,,1,,,28-04-2024
+67652,service,Transmission Oil Replacement Labour,,Service 1.0,,600,,,1,,,16-09-2024
+74649,service,Transmission System Re Coading,,Service 1.0,,500,,,1,,,29-12-2024
+16418,service,Transportation Cost,,Service 1.0,,400,,,1,,,04-03-2023
+81845,service,Turbo Assembly R/F,,Service 1.0,,1200,,,1,,,22-06-2025
+34610,service,Turbo bushes R/F,,Service 1.0,,500,,,1,,,29-08-2023
+63130,service,Turbo Pressure testing and service ( Pressure turbine replacement),,Service 1.0,,10000,,,1,,,13-07-2024
+94206,service,Turbocharger hose pipe R/F,001,,,101,,18,1,,,19-09-2026
+64352,service,Tyre Puncture Repair,101,Service 1.0,,101,,,1,,,23-07-2024
+59699,service,Tyre repairing,,,,200,,,1,,,22-05-2024
+81184,service,Tyre replacement,,Service 1.0,,500,,,1,,,04-06-2025
+93331,service,Tyre rim replacement,101,,,101,,,1,,,10-08-2026
+19259,service,Upper Cylinder CMC R/F,,Service 1.0,,500,,,1,,,21-05-2023
+78282,service,Valve and Timing VW basic setting,,Service 1.0,,1500,,,1,,,06-04-2025
+18287,service,VH8 Clutch Clearance Coading,,Service 1.0,,3500,,,1,,,25-04-2023
+20102,service,Water Jacket and pipe R/F Labour,,Service 1.0,,1000,,,1,,,14-06-2023
+66655,service,Water leakage fixing,,Service 1.0,,350,,,1,,,26-08-2024
+15125,service,Water pump R/F,,Service 1.0,,800,,,1,,,29-01-2023
+13677,service,Wheel Alignment,,Service 1.0,,101,,18,1,,,08-01-2023
+13680,service,Wheel Balancing,,Service 1.0,,1.84,,,1,,,08-01-2023
+16084,service,Wheel Bearing Lathe Press Fitting,,Service 1.0,,400,,,1,,,20-02-2023
+51597,service,Wheel Bearing plate assembly R/F,,Service 1.0,,3500,,,1,,,09-01-2024
+14987,service,Wheel Bearing R/F,,Service 1.0,,500,,,1,,,27-01-2023
+56504,service,Wheel Cal Painting,,Service 1.0,,650,,,1,,,06-04-2024
+56505,service,Wheel Cap Painting,,Service 1.0,,700,,,1,,,06-04-2024
+89803,service,Wheel Hub grinding,,,,1010,,,1,,,07-03-2026
+16393,service,Wheel Nut and bolt replacement,,Service 1.0,,101,,,1,,,03-03-2023
+59701,service,Wheel Rim repair,101,Service 1.0,,101,,,1,,,22-05-2024
+32671,service,Wheel Stud and nut R/F,,Service 1.0,,300,,,1,,,19-07-2023
+45515,service,Window motor R/F Labor,,Service 1.0,,800,,,1,,,05-11-2023
+13739,service,Windshield glass Processing labour,,Service 1.0,,1500,,,1,,,09-01-2023
+16132,service,Windshield R/F,,Service 1.0,,500,,,1,,,21-02-2023
+56677,service,Windshield replacement,,,,101,,,1,,,12-04-2024
+65380,service,Windshield Tank Motor R/F,101,Service 1.0,,101,,,1,,,09-08-2024
+16890,service,Windshield tank R/F,,Service 1.0,,250,,,1,,,19-03-2023
+17803,service,Windshield Testing and AC Cabin Test,,Service 1.0,,500,,,1,,,07-04-2023
+82808,service,Wiper arm painting,,,,101,,,1,,,18-07-2025
+23708,service,Wiper Arms R/F Labour,,Service 1.0,,600,,,1,,,09-07-2023
+23673,service,Wiper Assembly R/F,,Service 1.0,,500,,,1,,,08-07-2023
+15117,service,Wiper blades Replacement,,Service 1.0,,101,,,1,,,29-01-2023
+94959,service,Wiper Coul Panel Fixing,,,,101,,18,1,,,24-10-2026
+20280,service,Wiper linkage assembly repair,,Service 1.0,,101,,,1,,,17-06-2023
+21289,service,Wiper Motor Replacement,,Service 1.0,,350,,,1,,,01-07-2023
+13750,service,Wiper nozzle fitment and repair,,Service 1.0,,1,,,1,,,10-01-2023
+82843,service,Wiper panel fixing,,Service 1.0,,500,,,1,,,19-07-2025
+95118,service,Wiper pipe work,123,Body,,101,,18,1,,,01-11-2026
+89563,service,Wiper water flow work,101,,,101,,,1,,,24-02-2026
+91192,service,Wire soldering work,101,,,350,,18,1,,,08-05-2026
+337338,part,Front LH side axle,1425133653450,,UNT,101,101,,1,0,0,
+177413,part,Fuse Box Assembly AFM,9736285238992,,UNT,8500,8500,,1,-1,0,
+149845,part,Rear Tail Light,1308660776354,,UNT,101,101,,1,-7,0,
+333028,part,101,101,,UNT,101,101,,1,0,0,
+237728,part,2 Way Gear Shifting Cable assembly,3140965525526,,UNT,8845,8845,,1,-1,0,
+282224,part,3M Underbody Coat,5085828362964,,UNT,101,101,,1,-2,0,
+197685,part,A mount,7126610121224,,UNT,101,101,,1,-2,0,
+333025,part,"A, Engine mount",101,,UNT,101,101,,1,-5,0,
+497041,part,AB s Control module repair and testing job,6998658588156,,UNT,101,101,,1,0,0,
+242318,part,ABS Control Module assembly,9846722177695,,UNT,28000,28000,,1,-1,0,
+497042,part,ABS Control module repair and testing job,8664940692950,,UNT,101,101,,1,-1,0,
+135696,part,ABS Sensor,2585738331079,,PCS,3700,2600,,1,-8,0,
+336591,part,ABS Sensor with Hub assembly,9023429440334,,UNT,4000,4000,,1,0,0,
+480805,part,Absorber front Bumper lower,3086030607577,,UNT,2632,2632,,1,-1,0,
+190131,part,Ac Air Vents,101,,UNT,101,101,,1,-3,0,
+144950,part,Ac air went,101,,UNT,101,101,,1,-2,0,
+242044,part,AC Belt,5720171649940,,UNT,101,101,,1,-11,0,
+234040,part,AC blower,6901280893478,,UNT,101,101,,1,-2,0,
+476906,part,AC Blower Motor,5985274994745,,UNT,9500,9500,,1,-2,0,
+489492,part,AC Blower motor Coil,7312649789731,,UNT,3500,3500,,1,-1,0,
+456036,part,AC Compress seal,6252599443309,,UNT,1500,1500,,1,-1,0,
+145202,part,AC Compressor Assembly,6509543742984,,UNT,101,101,,1,-13,0,
+302202,part,AC Compressor Assembly,1594338227529,,UNT,22000,22000,,1,-1,0,
+143593,part,Ac compressor belt,101,,UNT,101,101,,1,-6,0,
+164233,part,AC Compressor Oil,9199575386941,,UNT,350,350,,1,-56.4,0,
+486138,part,AC Compressor pulley,5805325545836,,UNT,2500,2500,,1,-2,0,
+165393,part,"AC Compressor Repair ( Compressor Clutch, Compressor Coil, Compressor Magnet, Compressor Oil)",4168655451852,,UNT,101,101,,1,-5,0,
+459122,part,AC Compressor Shaft,9468648572918,,UNT,2500,2500,,1,-1,0,
+347796,part,AC Compressor Valve Assembly,3325168916024,,UNT,9500,9500,,1,-5,0,
+165053,part,Ac Condenser assembly,101,,UNT,101,101,,1,-5,0,
+460358,part,AC Condenser Fan,1302639259025,,UNT,101,101,,1,-1,0,
+143306,part,AC Condenser Filter,1897772262804,,UNT,400,250,,1,-1,0,
+245963,part,AC Condenser O Ring and repair work,5497119517065,,UNT,800,800,,1,-1,0,
+143509,part,AC Condenser Valve,5371887802612,,UNT,3850,2500,,1,-1,0,
+145203,part,AC Condensor Unit,9613763859029,,UNT,101,101,,1,-3,0,
+493705,part,AC Control Module AFM,9323795631993,,UNT,18500,18500,,1,-1,0,
+148085,part,Ac Cooling Coil,101,,UNT,101,101,,1,-40,0,
+145124,part,AC Discharge Pipe,1854523574467,,UNT,500,500,,1,-8,0,
+144493,part,AC Expansion Valve,9417563136201,,UNT,101,101,,1,-80,0,
+134947,part,AC Filter,6768808606080,,PCS,101,101,18,1,-955,0,
+484928,part,AC Flaper Motor,7213769144378,,UNT,2200,2200,,1,-2,0,
+143307,part,AC Gas,3985010849311,,UNT,1250,850,,1,-40.5,0,
+143782,part,AC Gas topup,1544619887601,,UNT,101,101,,1,-2,0,
+363634,part,AC Heater Coil,9171747376210,,UNT,101,101,,1,-2,0,
+469987,part,AC High pressure pipe,3648285742849,,UNT,101,101,,1,-1,0,
+488202,part,AC Intake pipe valve,3418409521225,,UNT,101,101,,1,-1,0,
+477534,part,AC pressure pipe repair,2026630491483,,UNT,1200,1200,,1,-1,0,
+494130,part,AC resistance,101,,UNT,101,101,,1,-1,0,
+353913,part,AC Resistor valve,7449169756844,,UNT,2800,2800,,1,-1,0,
+233195,part,Ac Switch,101,,UNT,101,101,,1,0,0,
+234273,part,AC Switch combi assembly,1297552143689,,UNT,1800,1800,,1,-1,0,
+150779,part,AC Thermostat,9195542526431,,UNT,101,101,,1,-1,0,
+150895,part,AC Thermostat switch repair,5004240572918,,UNT,1200,1200,,1,-2,0,
+293575,part,AC wents and AC vents center,7481549220625,,UNT,5700,5700,,1,0,0,
+149297,part,Accelerator Cable,7452667248435,,UNT,1400,1400,,1,-4,0,
+472960,part,Accelerator Pedal Sensor,3316828117705,,UNT,101,101,,1,-2,0,
+276014,part,Actuator,2155188078060,,UNT,101,101,,1,0,0,
+471229,part,Actuator assembly,1308674065861,,UNT,3500,3500,,1,-1,0,
+487914,part,Add Blue(Diesel Exhaust Fluid),4070475365966,,UNT,101,101,,1,-2,0,
+301724,part,After Market Gear box assembly,5689352469053,,UNT,33000,33000,,1,-1,0,
+237810,part,After Market Gear Box assembly with Mechatronics,1971667569596,,UNT,80000,80000,,1,-1,0,
+297568,part,Air bag and steering assembly,6318073020316,,UNT,17000,17000,,1,-1,0,
+501354,part,Air Booster assembly AFM,6870895664673,,UNT,101,101,,1,0,0,
+136505,part,Air Filter,9828594832681,,UNT,0,420,0,1,-7,0,
+356138,part,Air filter assembly,9665678433608,,UNT,101,101,,1,-3,0,
+481865,part,Air Filter Assembly Bush,101,,UNT,101,101,18,1,-2,0,
+475593,part,Air filter assembly hose pipe,101,,UNT,101,101,18,1,-1,0,
+355873,part,Air Filter Hose Clips,8993058381136,,UNT,1800,1800,,1,-1,0,
+446520,part,Air filter to turbo hose pipe,9258488833904,,UNT,101,101,,1,-3,0,
+295094,part,Air Pipes,6424993583001,,UNT,1250,1250,,1,-2,0,
+471730,part,All bushes press fitting,6745223359670,,UNT,200,200,,1,-20,0,
+490346,part,All coolant hoses,101,,UNT,203.01,101,,1,-1,0,
+473580,part,All Door Weather Strip,101,,UNT,101,101,18,1,0,0,
+143594,part,Alternate belt,101,,UNT,101,101,,1,-28,0,
+139584,part,Alternator belt,101,,UNT,101,101,,1,-24,0,
+140254,part,Alternator belt and pulley system,4014129321090,,UNT,101,101,,1,-2,0,
+257132,part,Alternator pulley,9995195639785,,UNT,101,101,,1,-4,0,
+177404,part,"Alternator Repair ( Coil, T-Magnet, Shaft Screaming, Complete Service)",6873705425299,,UNT,6500,6500,,1,-4,0,
+457963,part,Alternator Service and Magnetic brushes polishing,6417579772882,,UNT,1800,1800,,1,-5,0,
+178294,part,Alternator tensioner assembly,101,,UNT,101,101,,1,-3,0,
+136495,part,Amaron Battery,4436756575945,,UNT,4654,4654,,1,-10,0,
+459238,part,Amaron New Battery,101,,UNT,101,101,18,1,-5,0,
+187455,part,Amplifier,9868915868923,,UNT,2565,2565,,1,-1,0,
+193509,part,Android Car Play,2009937637951,,UNT,8000,8000,,1,-5,0,
+500154,part,Android Car play system with reverse camera,7343921124003,,UNT,101,101,,1,-1,0,
+500148,part,Android Head Unit,123,,UNT,101,101,18,1,0,0,
+238870,part,Anti Torque Seat Motor AFMP,6818282911088,,UNT,15000,15000,,1,-1,0,
+260933,part,Antina,4933269452303,,UNT,2500,2500,,1,-3,0,
+258906,part,Approved Cool Filming,6141686936374,,UNT,7500,7500,,1,-2,0,
+143558,part,Arm bushing kit,1139271649532,,UNT,101,101,,1,-2,0,
+142364,part,Axle Boot,8039896930567,,UNT,101,101,,1,-11,0,
+486414,part,B Mount bolt,8720291948411,,UNT,101,101,,1,-1,0,
+486370,part,B mount bracket,2143848230596,,UNT,101,101,,1,-1,0,
+333026,part,"B, Engine mount",101,,UNT,101,101,,1,-3,0,
+333027,part,"B, Engine mount",1.1,,UNT,101,101,,1,0,0,
+136286,part,Balance Rod Bush,9625913985073,,UNT,490,390,0,1,-163,0,
+143470,part,Battery Bracket,3346304412931,,UNT,400,400,,1,-6,0,
+162281,part,Battery Connector,3693245211150,,UNT,200,200,,1,-1,0,
+495496,part,Battery Control module recoading,1217039462644,,UNT,101,101,,1,-1,0,
+333087,part,Battery Terminal,101,,UNT,101,101,,1,-12,0,
+290041,part,BCM ACM unit AF 16pc,3351389516610,,UNT,65000,65000,,1,-1,0,
+479245,part,Belt idler pulley,101,,UNT,101,101,18,1,-1,0,
+479246,part,Belt Tensioner,101,,UNT,101,101,18,1,-3,0,
+479810,part,Belt Tentioner,5386803550180,,UNT,101,101,,1,0,0,
+497267,part,Bezel Front Fog Lamp LH,123,,UNT,101,101,18,1,-1,0,
+150778,part,Blower Motor,2590229245834,,UNT,101,101,,1,-2,0,
+350825,part,Body guards bolts,1175916378851,,UNT,500,500,,1,-4,0,
+297566,part,Body shell,6895936118438,,UNT,95000,95000,,1,-1,0,
+188609,part,Bolt,1424371428322,,UNT,101,101,,1,-1,0,
+163305,part,Bonnet Cable,101,,UNT,101,101,,1,-2,0,
+334292,part,Bonnet cable handle,6854954244568,,UNT,101,101,,1,-2,0,
+456202,part,Bonnet Cable Lever,101,,UNT,101,101,18,1,0,0,
+446232,part,Bonnet Hinges,101,,UNT,101,101,18,1,-5,0,
+297570,part,Bonnet hood assembly,8139499446377,,UNT,5500,5500,,1,-4,0,
+446233,part,Bonnet Latch,101,,UNT,101,101,18,1,-1,0,
+467569,part,Bonnet Shocker,101,,UNT,101,101,18,1,-2,0,
+471634,part,Bonnet Stay Rod lock,101,,UNT,101,101,18,1,-2,0,
+495464,part,Bonut assembly AFM,4597867806442,,UNT,101,101,,1,0,0,
+496242,part,Bonut Assembly Repair,6867651625070,,UNT,4500,4500,,1,-1,0,
+495463,part,Bonut Hinjes,8154621208552,,UNT,101,101,,1,-2,0,
+479589,part,Bonut lever,2421006939839,,UNT,2200,2200,,1,-1,0,
+495652,part,Bonut Shocker assembly,9534313785377,,UNT,101,101,,1,-2,0,
+142219,part,Boot Hydraulic Lever,1714953872840,,UNT,975,725,,1,0,0,
+497266,part,Bracket Fog Bezel LH,123,,UNT,101,101,18,1,-1,0,
+147640,part,Brake Booster,9016944906674,,UNT,101,101,,1,-2,0,
+136183,part,Brake Bulb,3156066651456,,UNT,101,101,,1,-116,0,
+497311,part,Brake Disc protectors L6 Nuts and bolt,1079364058561,,UNT,101,101,,1,-2,0,
+337340,part,Brake drum assembly,8945230185519,,UNT,6000,6000,,1,0,0,
+241333,part,Brake Master Cylinder,101,,UNT,101,101,,1,-3,0,
+138625,part,Brake oil,6348474560305,,LTR,320,320,,1,-45.8,0,
+163671,part,Brake Oil,4671311236452,,UNT,101,101,,1,-47.3,0,
+242974,part,Brake Oil Cap,4627896687015,,UNT,180,180,,1,-2,0,
+274874,part,Brake Oil DOT4,5175420464016,,UNT,250,250,,1,-51.9,0,
+137505,part,Brake pads,101,,UNT,101,101,,1,-43,0,
+281334,part,Brake pads and Pins set,3349024629686,,UNT,10674,10674,,1,-2,0,
+361284,part,Brake Sensor,5768368129618,,UNT,101,101,,1,-4,0,
+290412,part,Brake stopper bush,9280222501140,,UNT,101,101,,1,-7,0,
+165278,part,Brake Switch,4123140171170,,UNT,1800,1800,,1,-11,0,
+478751,part,Brake Switch Bush,101,,UNT,101,101,18,1,-1,0,
+238203,part,Brake. Calliper Pin Holder,4157219945918,,UNT,850,850,,1,-1,0,
+235310,part,BridgeStone Tyre Front Left,3964482047129,,UNT,9564,9564,,1,-1,0,
+496756,part,Bridgestone Tyre new,5720741795375,,UNT,401,401,,1,-4,0,
+145850,part,Bumper Tow Cap,8617624187376,,UNT,350,350,,1,-1,0,
+333029,part,"C, Engine mount",101,,UNT,101,101,,1,-4,0,
+143595,part,Caliper carriage pin,101,,UNT,101,101,,1,-13,0,
+162427,part,Calliper carrier,9144447416998,,UNT,101,101,,1,-6,0,
+167440,part,Calliper carrier pins,1760735107120,,UNT,101,101,,1,-16,0,
+136138,part,Calliper Greasing and Pins allingment,12765,,UNT,101,101,,1,-7,0,
+500657,part,Cam and rocker,5398627201095,,UNT,101,101,,1,-6,0,
+449833,part,Car Rubbing polishing and Ceramic Coating,5823849564418,,UNT,13000,13000,,1,-1,0,
+463470,part,Car Rubbing Polishing and Wax Coating,3738141974434,,UNT,6000,6000,,1,-3,0,
+151577,part,Catalyst Convertor Muffler,4905477332882,,UNT,500,500,,1,-3,0,
+136518,part,Catcher,8252184864133,,UNT,20,16,0,1,0,0,
+471522,part,Center Joint bearing,7489544345065,,UNT,2500,2500,,1,-1,0,
+155643,part,Cladding,2077813476789,,UNT,101,101,,1,-1,0,
+356103,part,Clock Spring,2847603746689,,UNT,3950,3950,,1,-5,0,
+151635,part,Clock Spring Adjuster,2371150482911,,UNT,2500,2500,,1,-1,0,
+138568,part,Clutch bearing,8436455385293,,UNT,101,101,,1,-65,0,
+138632,part,Clutch bearing and folk assembly,3042386980727,,UNT,4875,4875,,1,-1,0,
+480748,part,Clutch bearing lock pin,1639251599553,,UNT,456,456,,1,-1,0,
+139676,part,Clutch Cable,101,,UNT,101,101,,1,-44,0,
+479257,part,Clutch cable bush,1958859376143,,UNT,450,450,,1,-2,0,
+154332,part,Clutch CMC Cylinder,101,,UNT,101,101,,1,-17,0,
+154333,part,Clutch CSC Cylinder,101,,UNT,101,101,,1,-29,0,
+449569,part,Clutch Fork,2820084290578,,UNT,101,101,,1,-1,0,
+449655,part,Clutch fork bolt,2196349404286,,UNT,101,101,,1,-1,0,
+449571,part,Clutch fork bush,3306230860762,,UNT,101,101,,1,-2,0,
+283886,part,Clutch Oil Ring,3141643797513,,UNT,2245,2245,,1,-3,0,
+481797,part,Clutch padel and sensor assembly,5378474888857,,UNT,101,101,,1,-1,0,
+479209,part,Clutch Pedal switch,101,,UNT,101,101,18,1,0,0,
+138566,part,Clutch plate,4944180846214,,UNT,101,101,,1,-11,0,
+139675,part,Clutch Plate,101,,UNT,101,101,,1,-1,0,
+219078,part,Clutch Plate/ Pressure Plate/ O Ring,4358829577919,,UNT,101,101,,1,-65,0,
+197729,part,Clutch pressure switch,9145134427119,,UNT,1280,1280,,1,-1,0,
+257139,part,CMC Pipe O Ring,1858442495577,,UNT,580,580,,1,-1,0,
+454946,part,CNG Filter,101,,UNT,101,101,18,1,-3,0,
+454859,part,CNG Filter Replacement,5594959100708,,UNT,101,101,,1,0,0,
+151620,part,Coil Spring,2146410046145,,UNT,1846,1846,,1,-3,0,
+151726,part,Coil Spring Coil Nuts,3074463266879,,UNT,200,200,,1,-2,0,
+135030,part,Combination Filter,101,,UNT,101,101,,1,0,0,
+445210,part,Combination switch,101,,UNT,101,101,18,1,0,0,
+362921,part,"Complete AC Servicing ( Expansion valve replacement, AC Gas Filling, Compressor oil filling, Radiator n all cleaning)",7375556538812,,UNT,5500,5500,,1,-1,0,
+497321,part,Complete AC wiring harness and Relay system,2944903062190,,UNT,101,101,,1,-2,0,
+288442,part,Complete Engine 2.2 System,6131361253093,,UNT,340000,340000,,1,-1,0,
+444150,part,Complete Engine assembly AFMT,5659488661680,,UNT,35000,35000,,1,-1,0,
+350398,part,Complete engine Timing system R/F,4583097996190,,UNT,10000,10000,,1,-1,0,
+336410,part,Complete Engine with injector assembly,3626748187001,,UNT,120000,120000,,1,-1,0,
+274950,part,Complete Fly wheel Assembly,8398531351238,,UNT,101,101,,1,-1,0,
+481572,part,Complete Gas kit,2839799629058,,UNT,2350,2350,,1,-1,0,
+362242,part,Complete Rear arms Bushings,9185621324460,,UNT,12800,12800,,1,-1,0,
+260199,part,Compressor Bearing pulley,8391275087371,,UNT,101,101,,1,-1,0,
+260200,part,Compressor clutch,5251756103243,,UNT,101,101,,1,-2,0,
+145088,part,Compressor valve,1552018207963,,UNT,101,101,,1,-4,0,
+178280,part,Compressor Valve and Oil Topup,6905206553637,,UNT,101,101,,1,-2,0,
+167538,part,Compressor Valve Assembly,5593078117817,,UNT,9265,9265,,1,-1,0,
+333847,part,Compressor valve ring,2461409737356,,UNT,550,550,,1,-2,0,
+498278,part,Connecting Bearing,5908370111137,,UNT,5500,5500,18,1,-4,0,
+481571,part,Connecting Rod main Bearing,7931251791305,,UNT,1190,1190,,1,-5,0,
+481570,part,Connecting Set,4216352403629,,UNT,1275,1275,,1,-1,0,
+199334,part,Connector R16M,2478396607097,,UNT,5800,5800,,1,-8,0,
+482070,part,"Consumables ( Lock pins, 3m Bolts, lock clips, Diesel treatment liquid)",5297029033768,,UNT,101,101,,1,-1,0,
+153722,part,Control Arms Bushes,5826868830714,,UNT,4800,4800,,1,-4,0,
+153726,part,Control Relay,4650709964334,,UNT,1500,1500,,1,-2,0,
+369311,part,Coolant EGR Hose Pipes,101,,UNT,101,101,18,1,-11,0,
+469162,part,Coolant Elbow Hose Pipe,101,,UNT,101,101,18,1,-2,0,
+469161,part,Coolant Elbow hose Rear,101,,UNT,101,101,18,1,-1,0,
+482387,part,Coolant Elbow Packing,101,,UNT,101,101,18,1,-2,0,
+139378,part,Coolant Flush,9079689968843,,UNT,1250,1250,,1,-10,0,
+136509,part,Coolant Hose Pipe,5550395463593,,UNT,1897,800,0,1,-19,0,
+480325,part,Coolant Inlet L-Bow,101,,UNT,101,101,18,1,-2,0,
+349874,part,Coolant pressure switch,5092107045464,,UNT,2200,2200,,1,-1,0,
+369224,part,Coolant reservoir,9316423714626,,UNT,101,101,,1,0,0,
+479811,part,Coolant return Pipe,5850157517008,,UNT,101,101,,1,-3,0,
+135113,part,Coolant synthetic,3762823351658,,UNT,450,300,,1,-548.9,0,
+347547,part,Coolant Tank,1410044522024,,UNT,3800,3800,,1,-4,0,
+136507,part,Coolant Thermostat Valve,1735525317955,,UNT,3876,3876,0,1,-13,0,
+490671,part,Cooling coil support frame,3688300747424,,UNT,101,101,,1,-1,0,
+176418,part,Cord Wire,101,,UNT,101,101,,1,-18,0,
+480802,part,Cover comp Front bumper lower,5967867181636,,UNT,240,240,,1,-1,0,
+480804,part,Cover engine under,5668701471295,,UNT,977,977,,1,-1,0,
+480806,part,Cover Front end side LWR LH,3819050344172,,UNT,49,49,,1,-1,0,
+496364,part,Cowl top beeding,101,,UNT,101,101,,1,0,0,
+144966,part,Crank Bearing,5524012224748,,UNT,101,101,,1,-1,0,
+479660,part,Crank oil seal front,7481848626397,,UNT,950,950,,1,-2,0,
+500360,part,Crank Oil seal small,2210232174489,,UNT,101,101,18,1,-1,0,
+479176,part,Crank pulley bearing,6147445207461,,UNT,1850,1850,,1,-1,0,
+476506,part,Crank pully,1293514325283,,UNT,101,101,,1,-1,0,
+155646,part,Crank Sensor,8684112280607,,UNT,101,101,,1,-3,0,
+350405,part,Crank Shaft oil Seal,101,,UNT,101,101,,1,-11,0,
+290255,part,Crankshaft Sensor,101,,UNT,101,101,,1,-2,0,
+289530,part,Cross member Lower,5613687063567,,UNT,6912,6912,,1,0,0,
+490543,part,Crown gears,1874432857614,,UNT,101,101,,1,-2,0,
+151607,part,CSLV Clutch Cylinder,8476359769701,,UNT,5846,5846,,1,-1,0,
+452980,part,Dead axle assembly,101,,UNT,101,101,18,1,0,0,
+453030,part,Dead Axle assembly Gas Acetylene welding,3772229611407,,UNT,2500,2500,,1,-1,0,
+197381,part,Dead axle bush,101,,UNT,101,101,,1,-8,0,
+457928,part,Dickey AFM,6532770658843,,UNT,5500,5500,,1,-1,0,
+475358,part,Dickey Handle,101,,UNT,101,101,18,1,-2,0,
+457942,part,Dickey Hinges,7891760320402,,UNT,1200,1200,,1,-2,0,
+281263,part,Dickey latch,101,,UNT,101,101,,1,-6,0,
+235143,part,Dickey Lock AF,2880080981180,,UNT,2800,2800,,1,-3,0,
+475670,part,Dickey Mats,101,,UNT,101,101,181,1,-1,0,
+466500,part,Dickey Switch,101,,UNT,101,101,18,1,-2,0,
+178188,part,Diesel Filter,3060015724040,,UNT,101,101,,1,-67,0,
+134868,part,Diesel filter assembly,1642589864321,,UNT,1800,1800,,1,-132,0,
+474158,part,Diesel particulate filter sensor,5492990377824,,UNT,1350,1350,,1,-1,0,
+363563,part,Diesel Particulate Sensor DPF,3855065504554,,UNT,101,101,,1,-1,0,
+494833,part,Diesel return pipe,2482011877000,,UNT,101,101,,1,-1,0,
+165386,part,Diesel Treatment,6218862098641,,UNT,600,600,,1,-3,0,
+360032,part,Differential Taper Roller Bearing,101,,UNT,101,101,,1,0,0,
+360034,part,Differential Taper Roller Bearing LH,101,,UNT,101,101,,1,-1,0,
+360033,part,Differential Taper Roller Bearing RH,101,,UNT,101,101,,1,-1,0,
+140794,part,Disc roter plate,1566918813623,,UNT,101,101,,1,0,0,
+144220,part,Distilled Water,5201167713385,,LTR,20,20,0,1,-14,0,
+189302,part,Distilled water,7600677233189,,UNT,80,80,,1,-2,0,
+301682,part,Distributor unit assembly,9235835994593,,UNT,22000,22000,,1,-1,0,
+154590,part,Door Beading,1468367157969,,UNT,1180,1180,,1,-5,0,
+493344,part,Door handle cap,101,,UNT,203.01,101,,1,-2,0,
+496919,part,Door handle knob,101,,UNT,101,101,,1,-2,0,
+493711,part,Door handle rear lh,101,,UNT,101,101,,1,-1,0,
+489216,part,Door jane cap,5377246940042,,UNT,101,101,,1,-1,0,
+148997,part,Door Latch machine,5584054864943,,UNT,101,101,,1,-3,0,
+490037,part,Door panel arm rest cover,101,,UNT,101,101,,1,-4,0,
+453807,part,Door Strips,3860627287067,,UNT,1000,1000,,1,-1,0,
+143511,part,Drain bolt,4011433898005,,UNT,101,101,,1,-23,0,
+142414,part,Drive Axle Bush and Greasing,9177649254444,,UNT,101,101,,1,-1,0,
+274330,part,Drive shaft axle Coupling,2296918898355,,UNT,2200,2200,,1,-1,0,
+483974,part,Driver Side glass Machine,1200295366346,,UNT,101,101,,1,-3,0,
+363804,part,Drum Brake Adjuster,7914654877036,,UNT,101,101,,1,-2,0,
+297908,part,Earthing Cable,101,,UNT,101,101,,1,-1,0,
+190136,part,ECU Block Unit,9878404933493,,UNT,8000,8000,,1,-1,0,
+499399,part,EGR hose pipe,3846061345655,,UNT,450,450,18,1,-1,0,
+482597,part,EGR metal hose pipe,4978796631097,,UNT,550,550,,1,-1,0,
+164136,part,Elbow inlet pipe,5531726731453,,UNT,101,101,,1,0,0,
+489943,part,Electronic Clutch Actuators,3173727023880,,UNT,101,101,,1,-1,0,
+493300,part,Emblem,101,,UNT,101,101,18,1,-1,0,
+144290,part,End Joint,3546286011114,,UNT,575,575,,1,-2,0,
+197686,part,Engine A Mount,7588271618355,,UNT,5000,5000,,1,-20,0,
+276383,part,Engine B Mount,8195256972685,,UNT,7954,7954,,1,-6,0,
+500145,part,Engine belt,4828545748721,,UNT,101,101,,1,0,0,
+276384,part,Engine C Mount,1400608062278,,UNT,5846,5846,,1,-16,0,
+276282,part,Engine D Mount,2616982026025,,UNT,3854,3854,,1,-1,0,
+136490,part,Engine Flushing agent,4325411914847,,UNT,1124,1124,,1,-31.4,0,
+256474,part,Engine Guard,1514190657995,,UNT,2100,2100,,1,-8,0,
+144560,part,Engine head gasket,101,,UNT,101,101,,1,-5,0,
+333000,part,Engine Mount A,2362653114832,,UNT,101,101,,1,-2,0,
+333001,part,Engine Mount B,9336859980598,,UNT,101,101,,1,-2,0,
+333002,part,Engine Mount Bottom 1,9405814277008,,UNT,101,101,,1,-1,0,
+333003,part,Engine Mount Bottom 2,1084541635587,,UNT,101,101,,1,-1,0,
+232697,part,"Engine mount, C",101,,UNT,101,101,,1,-2,0,
+451366,part,Engine oil ( 5W40),101,,UNT,101,101,18,1,-3,0,
+136161,part,Engine Oil (5W30),2963426649104,,LTR,1800,1800,,1,-213.6,0,
+278630,part,Engine Oil Cap,9366822866257,,UNT,850,850,,1,-1,0,
+142156,part,Engine Oil OW20,1542153889779,,UNT,101,101,,1,-6,0,
+197384,part,Engine oil pump packing,101,,UNT,101,101,,1,-5,0,
+135112,part,Engine Oil Topup,1696926289238,,LTR,350,250,,1,-34.8,0,
+481568,part,Engine Valve Oil seal,3306361651979,,UNT,450,450,,1,-8,0,
+481567,part,Engine Valve set,1821713599376,,UNT,1230,1230,,1,-10,0,
+144929,part,"Engine, C Mount",101,,UNT,101,101,,1,-6,0,
+241551,part,Exaust and injector cleaner Fluid,3047682067845,,UNT,950,950,,1,0,0,
+147241,part,Exhaust Silencer,101,,UNT,101,101,,1,-1,0,
+166716,part,Exide Battery,4091671271249,,UNT,101,101,,1,-15,0,
+471546,part,Expansion valve O ring,8486399366054,,UNT,200,200,,1,-2,0,
+483452,part,F. L.C.D Vaccum Valve,6251228612381,,UNT,3800,3800,18,1,-1,0,
+453157,part,Fender Abro,7355737541336,,UNT,101,101,,1,-1,0,
+151193,part,Fender Indicator,6308973068837,,UNT,350,350,,1,-4,0,
+149888,part,Fender lining,4413279615342,,UNT,3800,3800,,1,-11,0,
+242453,part,Floor Lamination,2389982947148,,UNT,3800,3800,,1,-2,0,
+234348,part,Floor Mats,8834764660336,,UNT,200,200,,1,-14,0,
+289544,part,Flywheel assembly,101,,UNT,101,101,,1,-2,0,
+285039,part,Flywheel assembly calibration,5113483668770,,UNT,10500,10500,,1,-1,0,
+350327,part,Flywheel assembly oil Seal,101,,UNT,101,101,,1,0,0,
+143508,part,Flywheel Bearing,2017750539816,,UNT,101,101,,1,-17,0,
+457781,part,FlyWheel Nuts,1461400903761,,UNT,101,101,,1,-8,0,
+497268,part,Fog Lamp Assy LH,123,,UNT,101,101,18,1,-1,0,
+141958,part,Fog lamp bulb,9307210624217,,UNT,101,101,,1,-17,0,
+163539,part,Fog Lamp Bulb,5166110122576,,UNT,380,380,,1,-9,0,
+360222,part,Fog lamps assembly,1294115772936,,UNT,2500,2500,,1,-7,0,
+477870,part,Fog lamps assembly Wire harness,101,,UNT,101,101,18,1,0,0,
+289529,part,Fog Lamps Cover,7118528164457,,UNT,2846,2846,,1,-4,0,
+360224,part,Fog lamps wiring harness,8225655884947,,UNT,1200,1200,,1,-2,0,
+486140,part,Fog light bulb,5061883889138,,UNT,101,101,,1,0,0,
+482724,part,Fron Bumper Upper Grill assembly,101,,UNT,101,101,18,1,-2,0,
+483861,part,Front and Rear Brake Disc Screaming,1918141486123,,UNT,101,101,,1,-10,0,
+450609,part,Front and Rear Dash cam assembly,1515065431129,,UNT,10500,10500,,1,-1,0,
+143943,part,Front balance rod bush,101,,UNT,101,101,,1,-56,0,
+240075,part,Front Balance Rod Bush,9614742006175,,UNT,101,101,,1,-32,0,
+139594,part,Front brake disc,101,,UNT,101,101,,1,-113,0,
+136515,part,Front Brake Pads,7605269363615,,PCS,101,101,0,1,-214,0,
+139814,part,Front brake pads,101,,UNT,101,101,,1,-29,0,
+147410,part,Front Brake pads Sensor,6207626501098,,UNT,101,101,,1,-6,0,
+136280,part,Front Buffer Kits,8771298725157,,UNT,750,600,0,1,-6,0,
+135077,part,Front Bumper,9261988714337,,UNT,101,101,,1,-23,0,
+482726,part,Front Bumper Assembly,101,,UNT,101,101,18,1,-5,0,
+136165,part,Front Bumper Bracket,5671034850645,,UNT,950,450,,1,-9,0,
+448087,part,Front Bumper Cladding,101,,UNT,101,101,18,1,-1,0,
+186852,part,Front Bumper Grill,8966677979566,,UNT,101,101,,1,-4,0,
+258870,part,Front bumper Grill and LOGO,2411451176274,,UNT,101,101,,1,-1,0,
+299753,part,Front Bumper Grill Logo,101,,UNT,101,101,,1,-2,0,
+335430,part,Front bumper guard,2471371453255,,UNT,101,101,,1,-3,0,
+297572,part,Front bumper holder,1404673297889,,UNT,350,350,,1,-6,0,
+151192,part,Front Bumper Holders,8209972744807,,UNT,180,180,,1,-9,0,
+289528,part,Front Bumper Lower,2240638714283,,UNT,5231,5231,,1,-2,0,
+193471,part,Front Bumper New,101,,UNT,101,101,,1,-4,0,
+145822,part,Front Bumper Painting,2574897349346,,UNT,101,101,,1,0,0,
+497262,part,Front bumper upper,124,,UNT,101,101,18,1,0,0,
+497263,part,Front bumper upper assembly,1234,,UNT,101,101,18,1,-1,0,
+138579,part,Front Bushing Kits,5697233574464,,UNT,28000,28000,,1,-8,0,
+177376,part,Front Caliper Carriage,101,,UNT,101,101,,1,-4,0,
+355917,part,Front Dashcam,2454717022366,,UNT,101,101,18,1,-1,0,
+297571,part,Front grill,2929179542232,,UNT,8000,8000,,1,-1,0,
+167459,part,Front Head Lamp Both,1019020327832,,UNT,101,101,,1,-12,0,
+151760,part,Front Headlamp bulb,101,,UNT,101,101,,1,-47,0,
+151764,part,Front headlamp parking bulb,101,,UNT,101,101,,1,-1,0,
+369226,part,Front headlights,5101961544249,,UNT,101,101,,1,0,0,
+161550,part,Front LH Axle Repair,6350219794083,,UNT,4000,4000,,1,-10,0,
+186853,part,Front LH Side Head Lamp,9376936470624,,UNT,101,101,,1,-3,0,
+167386,part,Front LH Side Power Window Switch,3347597757354,,UNT,101,101,,1,-3,0,
+480650,part,Front LH wheel nut,4758208828046,,UNT,101,101,,1,-7,0,
+480649,part,Front LH wheel stud,9518295017071,,UNT,101,101,,1,-5,0,
+139596,part,Front Lower arm,8357705519068,,UNT,101,101,,1,-159,0,
+451594,part,Front Lower arm ball joints,101,,UNT,101,101,18,1,-16,0,
+143942,part,Front Lower arm bush,101,,UNT,101,101,,1,-24,0,
+190146,part,Front Lower arm bush kit,101,,UNT,101,101,,1,-8,0,
+190147,part,Front Lower arm bushing kit,101,,UNT,101,101,,1,-12,0,
+290120,part,Front Lower Arms,8067940511275,,UNT,11845,11845,,1,-63,0,
+166862,part,Front Lower Arms bushes,8040614232886,,UNT,101,101,,1,-22,0,
+480795,part,Front Lower Bumper,3351448483299,,UNT,101,101,,1,-1,0,
+497264,part,Front lower bumper assembly,123,,UNT,101,101,18,1,-1,0,
+186848,part,Front Lower Control arm bush,6200457362923,,UNT,101,101,,1,-2,0,
+453776,part,Front RH door molding,9628392928745,,UNT,101,101,,1,0,0,
+467625,part,Front RH seatbelt assembly,5826167831197,,UNT,101,101,,1,-1,0,
+363749,part,Front RH Side Axel boot,101,,UNT,101,101,18,1,-2,0,
+187001,part,Front RH Side Head Lamp,1012800796423,,UNT,101,101,,1,-2,0,
+453777,part,Front RH side new door,4228547217790,,UNT,101,101,,1,0,0,
+447825,part,Front RH side seat belt,4029942866880,,UNT,101,101,,1,-1,0,
+480648,part,Front RH wheel nut,3706932008266,,UNT,101,101,,1,-7,0,
+480647,part,Front RH wheel stud,8445999975781,,UNT,101,101,,1,0,0,
+497103,part,Front RHs glass motor,7505639237817,,UNT,4500,4500,,1,-1,0,
+234459,part,Front Right ABS Sensor,8159942870493,,UNT,5800,5800,,1,-5,0,
+178510,part,Front Shock Absorber,5761702496558,,UNT,101,101,,1,-47,0,
+143944,part,Front shock absorber assembly,101,,UNT,101,101,,1,-58,0,
+197664,part,Front shock absorber bearing,101,,UNT,101,101,,1,-20,0,
+167381,part,Front Shock Absorber Boot,5646965763065,,UNT,101,101,,1,0,0,
+332934,part,Front shock absorber Cap,101,,UNT,101,101,,1,-4,0,
+234191,part,Front shock absorber Dust Cover,101,,UNT,101,101,,1,-2,0,
+246181,part,Front shock absorber kit,7183701526839,,UNT,101,101,,1,-17,0,
+145250,part,Front Shock Absorber Mount,1551093679852,,UNT,101,101,,1,-86,0,
+136278,part,Front Shock Absorbers,4110845826100,,UNT,4500,1000,0,1,-10,0,
+139761,part,Front Shock Absorbers Mount and Kit,3143740509636,,UNT,12486,12486,,1,-14,0,
+468425,part,Front Shocker,101,,UNT,101,101,18,1,-4,0,
+136512,part,Front Shocker Assembly,7536867933347,,UNT,3500,3500,0,1,-32,0,
+492283,part,Front shocker assembly repair,1814656937960,,UNT,2200,2200,,1,-2,0,
+136514,part,Front Shocker Bearing,4871007527224,,UNT,1000,1000,0,1,-15,0,
+468429,part,Front shocker Boot,101,,UNT,101,101,18,1,0,0,
+136513,part,Front Shocker Buffer Kit,9271989900618,,UNT,1000,1000,0,1,-32,0,
+139592,part,Front Shocker kit,101,,UNT,101,101,,1,-19,0,
+138812,part,Front Shocker Mount and Bearing,1016613937914,,UNT,1746,1746,,1,-18,0,
+293760,part,Front Shocker Mount Cap,4127946065273,,UNT,986,986,,1,-4,0,
+136279,part,Front Shocker Mounts,3402973630465,,UNT,1250,1000,0,1,-52,0,
+447243,part,Front Shocker stopper cap,4475175364408,,UNT,800,800,,1,-2,0,
+472080,part,Front Stabilizer link rod bush,101,,UNT,101,101,18,1,-14,0,
+257151,part,Front Stablize Link assembly,5862960957922,,UNT,2000,2000,,1,-234,0,
+145476,part,Front Upper Arm Ball Joint,2887707314454,,UNT,101,101,,1,-2,0,
+143941,part,Front Upper arm bush,101,,UNT,101,101,,1,-9,0,
+290119,part,Front Upper arms,6209937190636,,UNT,101,101,,1,0,0,
+144167,part,Front upper arms Ball Joint,6854837187100,,UNT,101,101,,1,-2,0,
+480794,part,Front Upper Bumper,2492073102854,,UNT,101,101,,1,-1,0,
+472079,part,Front Upper Lower arm bush,101,,UNT,101,101,18,1,-4,0,
+139228,part,Front Wheel Bearing,9826553956605,,UNT,101,101,,1,-10,0,
+143887,part,Front Windshield,7985625134315,,UNT,3800,3800,,1,-7,0,
+334584,part,Front Windshield Glass,101,,UNT,101,101,,1,-5,0,
+136510,part,Front Wiper Blades,2748081785161,,UNT,370,370,0,1,-437,0,
+136062,part,Fuel,AS,,UNT,1000,1000,,1,-2,0,
+288055,part,Fuel Cap,5617575684096,,UNT,550,550,,1,-1,0,
+288832,part,Fuel Cap Lock,2672428047284,,UNT,550,550,,1,-1,0,
+142216,part,Fuel Filter,6747130418661,,UNT,950,650,,1,-5,0,
+475473,part,Fuel Hand Pump,101,,UNT,101,101,18,1,-1,0,
+448333,part,Fuel indication Sensor AFM,6451254362240,,UNT,6000,6000,,1,-1,0,
+140255,part,Fuel Injector,3113938531372,,UNT,101,101,,1,-2,0,
+192330,part,Fuel Pump Assembly,6487114729825,,UNT,9389,9389,,1,-3,0,
+483401,part,Fuel Pump fuse box assembly,1626076664309,,UNT,2500,2500,,1,-1,0,
+192331,part,Fuel Pump Intake pipe,7264427757821,,UNT,480,480,,1,-4,0,
+498543,part,Fuel pump O-ring,101,,UNT,101,101,,1,-1,0,
+217329,part,Fuel pump pressure valve,9482525287196,,UNT,860,860,,1,-2,0,
+497154,part,Fuel vapour store unit,6845099636819,,UNT,101,101,18,1,-1,0,
+446674,part,Full Vehicle Painting Work and Restoration,9843561387155,,UNT,77000,77000,,1,-4,0,
+167637,part,Fuse Adaptor,3612742328550,,UNT,101,101,,1,-2,0,
+260613,part,Fuse Charging point,9065029492136,,UNT,250,250,,1,-1,0,
+480800,part,Garnish Front Bumper Lower,8753329068887,,UNT,825,825,,1,-1,0,
+497270,part,Garnish Front Bumper Side LH,123,,UNT,101,101,18,1,-1,0,
+164613,part,Gasket packing,8837430910207,,UNT,350,350,,1,-1,0,
+288814,part,Gear Box Assembly Repair and Test Collaboration,2462105087470,,UNT,30000,30000,,1,-1,0,
+453904,part,Gear box Input shaft oil Seal,101,,UNT,101,101,18,1,-1,0,
+140253,part,Gear Box seal switch,9965262237470,,UNT,101,101,,1,-1,0,
+139304,part,Gear Cable,9165021330583,,UNT,101,101,,1,-4,0,
+451051,part,Gear Cable Bush,101,,UNT,101,101,18,1,-10,0,
+142214,part,Gear Knob,2199527360964,,UNT,750,620,,1,-11,0,
+463103,part,Gear knob Cover,101,,UNT,101,101,18,1,-1,0,
+447244,part,Gear Lever bushing system,7535361164715,,UNT,1500,1500,,1,-1,0,
+142380,part,Gear nob,9406440220773,,UNT,101,101,,1,-3,0,
+136061,part,Gear Oil,123,,UNT,2500,2500,,1,-136.5,0,
+138627,part,Gear oil,9754814630374,,UNT,600,600,,1,-53.8,0,
+168608,part,Gear Oil Leakage Fixing,2284715953748,,UNT,101,101,,1,0,0,
+139801,part,Gear Oil Topup,1496520767919,,UNT,101,101,,1,-21.3,0,
+276079,part,Gear Shifter Actuator & Hydraulic Cylinder assembly AF,1957318019587,,UNT,19500,19500,,1,-2,0,
+239740,part,Gear Shifter Bush,6130543770268,,UNT,250,250,,1,-1,0,
+278308,part,Gear Shifter Cable,101,,UNT,101,101,,1,-1,0,
+294857,part,Gear Shifter cable and Console assembly,5307242713868,,UNT,19845,19845,,1,-1,0,
+353978,part,Gear Shifter Cables bushes,8326620761770,,UNT,101,101,,1,-2,0,
+237733,part,Gear Shifter Console,6415671050082,,UNT,4500,4500,,1,-2,0,
+196019,part,Gear Shifter Kit assembly,2582187580876,,UNT,5800,5800,,1,-1,0,
+164138,part,Gear Shifter Naal and kit,5302202600054,,UNT,1800,1800,,1,-2,0,
+489572,part,Gearbox mount,101,,UNT,101,101,,1,0,0,
+483453,part,Glass machine Rivets,8767103515565,,UNT,25,25,,1,-20,0,
+357271,part,Glass Rubber strips,4156014657579,,UNT,500,500,,1,-1,0,
+347728,part,Glove box lock,3123373080044,,UNT,101,101,,1,-2,0,
+496244,part,Good Year Tyre,9274939324706,,UNT,101,101,,1,-1,0,
+497265,part,Grille Compradiator Lower,123,,UNT,101,101,18,1,-1,0,
+480807,part,Guard Assembly Front Fender Splash LH,8474664462730,,UNT,360,360,,1,-2,0,
+497269,part,Guard Assy Front Fender Splash LH,123,,UNT,101,101,18,1,0,0,
+500412,part,H1 bulb,123,,UNT,101,101,18,1,-1,0,
+489489,part,H11 headlight bulb,7121064645703,,UNT,18,18,,1,-3,0,
+261773,part,H15 Front Bulb,1667812653817,,UNT,1200,1200,,1,-1,0,
+136491,part,H7 Bulb,6211817293427,,UNT,101,101,,1,-9,0,
+143611,part,H7 Head Lamp Bulb,1393077995162,,UNT,101,101,,1,-25,0,
+481799,part,H8 Fog lamp bulbs,5784919073339,,UNT,101,101,,1,-1,0,
+193466,part,H8 Fog Lamp Holder,7385686110705,,UNT,680,680,,1,-2,0,
+483669,part,Hand brake lever assembly,5607391013763,,UNT,101,101,,1,-1,0,
+453233,part,HandBrake Cable,101,,UNT,101,101,18,1,-3,0,
+148362,part,Hazard lights fuse,7583152961917,,UNT,101,101,,1,-3,0,
+193465,part,Head lamp motor,3044314550235,,UNT,1200,1200,,1,-2,0,
+177425,part,Head Lamp Socket,9806975850835,,UNT,250,250,,1,-3,0,
+167442,part,Head Light Assembly RH and LH,6084920639637,,UNT,101,101,,1,-4,0,
+140725,part,Head light bulb H4,4192065554205,,UNT,250,250,,1,-73,0,
+143515,part,Head light Combination switch,101,,UNT,101,101,,1,-5,0,
+447577,part,Head light cut out assembly,8631500654388,,UNT,101,101,,1,-2,0,
+193467,part,Head Light Holder Bracket,1600433337967,,UNT,200,200,,1,-8,0,
+153364,part,Head Light LH,6328846091870,,UNT,3800,3800,,1,-5,0,
+165114,part,Head light Relay,3747824049089,,UNT,101,101,,1,-4,0,
+153851,part,Head light RH,2333973775152,,UNT,101,101,,1,-2,0,
+451591,part,Head light washer,8044222721830,,UNT,5747,5747,,1,-1,0,
+151765,part,Headlamp bulb Fuse,101,,UNT,101,101,,1,-6,0,
+135582,part,Headlight Holder,5108458851929,,UNT,101,101,,1,-12,0,
+447535,part,Headlight Wiring Harness,1908019973430,,UNT,101,101,,1,0,0,
+358078,part,Heater Coil Hose,4979072240646,,UNT,1800,1800,,1,-3,0,
+197679,part,Heater Coolant Pipes,101,,UNT,101,101,,1,-4,0,
+479808,part,Heater hose,1220746028237,,UNT,101,101,,1,-2,0,
+149909,part,Heater plug,9645640299655,,UNT,101,101,,1,-17,0,
+486053,part,Heater plug module,1343201266601,,UNT,101,101,,1,-1,0,
+293569,part,High Beam 200W H4 Head Light,8321061661466,,UNT,10000,10000,,1,-2,0,
+290883,part,High Pressure clutch pipe,1307465642690,,UNT,3854,3854,,1,-2,0,
+144965,part,High Temperature ANA Bonds,7260819662827,,UNT,101,101,,1,-102.6,0,
+362782,part,HL Fuse,7842612322885,,UNT,85,85,,1,-15,0,
+167486,part,Horn Clip,101,,UNT,101,101,,1,-13,0,
+360447,part,Hose Pipe Clip,101,,UNT,101,101,,1,-15,0,
+191444,part,Hydraulic thrust bearing,3090144215151,,UNT,3274,3274,,1,-8,0,
+489944,part,Hydraulic Valve Manifold,6482562405057,,UNT,101,101,18,1,-1,0,
+167383,part,Ignition Coil,1635308756493,,UNT,101,101,,1,-19,0,
+472312,part,Ignition Starter Switch,101,,UNT,101,101,18,1,-2,0,
+178463,part,Indicator Bulb,9247425006702,,UNT,101,101,,1,-19,0,
+235396,part,Indicator bulb holder,8536360718309,,UNT,101,101,,1,-2,0,
+463505,part,Infinity Speaker Set,9135726189240,,UNT,101,101,,1,-5,0,
+146713,part,"Infotainment System ( Stablize Frame, Reverse Camera, Connectors, Wirings)",7768992516677,,UNT,101,101,,1,-2,0,
+297567,part,Injector assembly,1215194748248,,UNT,13000,13000,,1,-1,0,
+146193,part,Injector O Ring and Washers,2006610504351,,UNT,101,101,,1,-1,0,
+144416,part,Injector System Nozzle and 0 Ring,2745360650587,,UNT,101,101,,1,-1,0,
+148051,part,Injectors Oil Seals,1737131131347,,UNT,101,101,,1,-4,0,
+276081,part,Inter FICD Unit,7745531033258,,UNT,3500,3500,,1,-3,0,
+260871,part,Intercooler Assembly R19,3855672882404,,UNT,12854,12854,,1,-2,0,
+282242,part,Intercooler assembly service,8470630650874,,UNT,2000,2000,,1,-1,0,
+192660,part,Intercooler Bushes,101,,UNT,101,101,,1,-1,0,
+282225,part,Intercooler Hose Pipe,7747263769619,,UNT,101,101,,1,-5,0,
+485635,part,Intermediate shaft,1310496723279,,UNT,101,101,,1,-1,0,
+149901,part,Internal Diesel Filter,9730326028540,,UNT,4000,4000,,1,-1,0,
+261549,part,Key Battery,1996169402264,,UNT,500,500,,1,-2,0,
+289687,part,Key Imobolizer System,3624467777088,,UNT,4500,4500,,1,-1,0,
+150835,part,Key Module system,7986164220608,,UNT,4800,4800,,1,-1,0,
+199427,part,Latch Cable,101,,UNT,101,101,,1,-1,0,
+136508,part,LBow Pipe,1429849949199,,UNT,1324,1324,0,1,-2,0,
+467604,part,LH and RH AC vents,7235346665140,,UNT,101,101,,1,-2,0,
+457924,part,LH Axle Boot,101,,UNT,101,101,18,1,-5,0,
+168435,part,LH Axle Boot and LH Axle Oil Seal,2933711096644,,UNT,101,101,,1,-5,0,
+489180,part,LH axle nut,4161766084842,,UNT,101,101,,1,-1,0,
+275719,part,LH Axle Oil Seal,8942017288878,,UNT,101,101,,1,-7,0,
+136162,part,LH Fender,3825916891451,,UNT,2350,1750,,1,-4,0,
+136168,part,LH Fender Bulb,7666873032692,,UNT,190,150,,1,-1,0,
+452808,part,LH Fog lamp cover,5326122728642,,UNT,101,101,,1,-1,0,
+239132,part,LH Fog Lamp Grill,8483230097219,,UNT,101,101,,1,-1,0,
+480799,part,LH foglamp Garnish,1113164238166,,UNT,240,240,,1,-1,0,
+241403,part,LH front ABS Sensor,101,,UNT,101,101,,1,-7,0,
+167392,part,LH Front Axel oil Seal,101,,UNT,101,101,,1,-1,0,
+494022,part,LH front Brake hose,2348380971699,,UNT,101,101,,1,-1,0,
+335814,part,LH Front Door Glass Winder assembly,101,,UNT,101,101,,1,-5,0,
+461388,part,LH Front Door Handle,9356835296377,,UNT,350,350,18,1,-7,0,
+497471,part,LH front door handle,1557451650965,,UNT,101,101,18,1,0,0,
+445929,part,LH front door Latch assembly,101,,UNT,101,101,18,1,-1,0,
+471534,part,LH front Door Power window switch,101,,UNT,101,101,18,1,-1,0,
+442456,part,LH Front Door RC Lever,101,,UNT,101,101,18,1,-1,0,
+299749,part,LH front Door Weatherstrip,101,,UNT,101,101,,1,-1,0,
+176976,part,LH Front Door Winder Glass assembly,101,,UNT,101,101,,1,-2,0,
+240159,part,LH Front door Winder Motor,101,,UNT,101,101,,1,-1,0,
+285297,part,LH front drive shaft axle oil seal,101,,UNT,101,101,,1,-1,0,
+446241,part,LH front fender assembly,101,,UNT,101,101,18,1,-3,0,
+136166,part,LH Front Fender Lining,7496536926832,,UNT,950,700,,1,-9,0,
+139678,part,LH front fender lining,101,,UNT,101,101,,1,0,0,
+176980,part,LH Front Fogalmp bulb,101,,UNT,101,101,,1,-1,0,
+446234,part,LH front foglamp assembly,101,,UNT,101,101,18,1,-1,0,
+176982,part,LH Front Foglamp bulb,101,,UNT,101,101,,1,-8,0,
+464460,part,LH front foglamp cover,4930760933086,,UNT,101,101,,1,-2,0,
+242698,part,LH Front H8 headlamp Bulb,101,,UNT,101,101,,1,-2,0,
+295291,part,LH Front Head Light assembly with cutout,5481447093188,,UNT,82000,82000,,1,-1,0,
+481299,part,LH front hub washer,5763736960478,,UNT,101,101,,1,-1,0,
+471633,part,LH front Inner Handle,101,,UNT,101,101,18,1,-1,0,
+479048,part,LH front Knuckle,8924325915984,,UNT,101,101,,1,-1,0,
+485290,part,LH front Seat belt assembly,3208062178455,,UNT,101,101,,1,0,0,
+301847,part,LH Front Shock absorber assembly,101,,UNT,101,101,,1,-2,0,
+301862,part,LH front Shock absorber Mount,101,,UNT,101,101,,1,-1,0,
+140266,part,LH front side Lower arm,101,,UNT,101,101,,1,-1,0,
+177768,part,LH Front Side Mirror Cap,101,,UNT,101,101,,1,-3,0,
+240160,part,LH Front Wheel ABS Sensor,101,,UNT,101,101,,1,-1,0,
+192401,part,LH Front Wheel Bearing,4853975210804,,UNT,101,101,,1,-8,0,
+476300,part,LH Front Wheel Nut,101,,UNT,101,101,18,1,-1,0,
+162593,part,LH Headlamp assembly,101,,UNT,101,101,,1,-4,0,
+357887,part,LH headlamp bulb,101,,UNT,101,101,,1,-5,0,
+480793,part,LH headlight Assembly,4796064071822,,UNT,101,101,,1,-2,0,
+451595,part,LH Headlight Washer,101,,UNT,101,101,18,1,0,0,
+282770,part,LH Mirror,4929741706233,,UNT,101,101,,1,-1,0,
+489865,part,LH Quarter panel partial repair and welding,8106710195541,,UNT,7800,7800,,1,-1,0,
+446341,part,LH Rear Abs Sensor,101,,UNT,101,101,18,1,-5,0,
+464476,part,LH Rear Door Beading,101,,UNT,101,101,18,1,-1,0,
+468439,part,LH Rear door glass Winder assembly,101,,UNT,101,101,18,1,-2,0,
+498041,part,LH rear door handle,7434924708213,,UNT,101,101,18,1,-1,0,
+497155,part,LH rear door latch assembly,2367302740924,,UNT,101,101,18,1,-2,0,
+261333,part,LH Rear door Power window switch,101,,UNT,101,101,,1,-4,0,
+284921,part,LH Rear door Rc level handle,101,,UNT,101,101,,1,-1,0,
+299750,part,LH Rear Door Weatherstrip,101,,UNT,101,101,,1,-1,0,
+468440,part,LH Rear door Winder motor,101,,UNT,101,101,18,1,-1,0,
+238221,part,LH Rear Tailamp,101,,UNT,101,101,,1,-7,0,
+148987,part,LH Rear Wheel bearing,101,,UNT,101,101,,1,-23,0,
+240263,part,LH Rear wheel Nut and Stud,101,,UNT,101,101,,1,-8,0,
+495351,part,LH rear wheel stud and nut,1845434909220,,UNT,101,101,18,1,-2,0,
+196015,part,LH Side Drive Shaft axle Repair,5629740231204,,UNT,8500,8500,,1,-11,0,
+146628,part,LH Side Fender,8355118432082,,UNT,101,101,,1,-3,0,
+446231,part,LH Side Front Bumper Holder,101,,UNT,101,101,18,1,-3,0,
+489859,part,LH SIDE MIRROR ASSEMBLY,101,,UNT,203.01,101,,1,-4,0,
+472965,part,LH Side Mirror Galss,101,,UNT,101,101,18,1,-1,0,
+136164,part,LH Side Mirror Hub,9300455459859,,UNT,2360,1750,,1,0,0,
+145832,part,LH Side Rear bumper holder,101,,UNT,101,101,,1,-1,0,
+239523,part,LH Tail light,3375065006781,,UNT,101,101,,1,-3,0,
+274331,part,LH Wheel Bearing plate assembly,6000688342377,,UNT,6500,6500,,1,-1,0,
+442816,part,LH wheel Hub,8214906249195,,UNT,101,101,,1,-1,0,
+480675,part,LH wheel nuts and Studs,8733549336437,,UNT,101,101,,1,-6,0,
+469988,part,LH wheel studs,7571862022858,,UNT,480,480,,1,-4,0,
+334413,part,LHS axle new,1305054504424,,UNT,101,101,,1,0,0,
+289531,part,LHS Fender Cladding,3629698922857,,UNT,2800,2800,,1,-2,0,
+295031,part,Linkage Rod,6931343662086,,UNT,2408,2408,,1,-8,0,
+149033,part,Lock Carriage assembly,2722406439948,,UNT,101,101,,1,-5,0,
+290132,part,Lock Carrier assembly,101,,UNT,101,101,,1,-1,0,
+145322,part,Lower Arm,2358472544234,,UNT,101,101,,1,-6,0,
+143945,part,Lower arm ball joint,101,,UNT,101,101,,1,-16,0,
+190148,part,Lower arm Bush Press Fitting,101,,UNT,101,101,,1,-2,0,
+197733,part,Lower Arms Ball Joints,7139116708654,,UNT,4800,4800,,1,-14,0,
+149155,part,Lower arms bushes replacement,3748349728528,,UNT,101,101,,1,-2,0,
+487022,part,Lower arms Washer,3852686925791,,UNT,101,101,,1,-1,0,
+142411,part,Lower CSC Cylinder assembly,8067530279979,,UNT,101,101,,1,-3,0,
+497819,part,Lower Engine Cover,123456,,UNT,101,101,18,1,-1,0,
+149900,part,MAF Sensor,2462114923633,,UNT,8000,8000,,1,-5,0,
+495227,part,Master cylinder Ring assembly,1307658057659,,UNT,101,101,,1,-1,0,
+288855,part,Mechatronic oil seal,5734916670713,,UNT,2200,2200,,1,-2,0,
+485218,part,Mechatronics assembly AFM,6273624915163,,UNT,60000,60000,,1,-1,0,
+485219,part,Mechatronics oil,1992288094945,,UNT,101,101,,1,-1.5,0,
+480798,part,Member Radiator support,1016513975337,,UNT,1019,1019,,1,-1,0,
+450644,part,Memory card,1465100797358,,UNT,850,850,,1,-1,0,
+474367,part,Mercedes logo,5848139284644,,UNT,5800,5800,,1,-1,0,
+275791,part,Mobile Holder Stand,101,,UNT,101,101,,1,-1,0,
+334502,part,Monogram badge,9152283268515,,UNT,101,101,,1,-2,0,
+335516,part,Monogram name,6551870996132,,UNT,600,600,,1,-5,0,
+136282,part,Mount Cap,2984282127581,,UNT,450,300,0,1,-2,0,
+478303,part,MRF New Tyres,9793974027037,,UNT,4850,4850,,1,-4,0,
+276961,part,Mud Flaps,3692292687483,,UNT,101,101,,1,-24,0,
+336587,part,Mudflaps,101,,UNT,101,101,,1,-1,0,
+151691,part,Multi Clutch Assembly,1916493834462,,UNT,49562,49562,,1,-1,0,
+151692,part,Multi Clutch Setting Coding work,8632754553575,,UNT,3000,3000,,1,-1,0,
+146036,part,N10 Fuse,5394295689184,,UNT,250,250,,1,-8,0,
+497320,part,"New AC kit ( Compressor, condenser, Cooling coil, Expansion valve, complete pipe lines)",4361048632301,,UNT,101,101,,1,-2,0,
+197585,part,New Battery SF,101,,UNT,101,101,,1,-8,0,
+146772,part,New Bumper,9713162782602,,UNT,2400,2400,,1,-1,0,
+153727,part,"New Clothes fitting(Roof Top, Side panels, pillars)",9738292495254,,UNT,32000,32000,,1,-1,0,
+194248,part,New Horn,101,,UNT,101,101,,1,-5,0,
+151634,part,New Horn Assembly,2167950330302,,UNT,1356,1356,,1,-14,0,
+356170,part,New Key And Coading Work,101,,UNT,101,101,,1,-1,0,
+479582,part,New Piston,3707142792176,,UNT,3852,3852,,1,-4,0,
+370664,part,New Remote key,101,,UNT,101,101,18,1,-1,0,
+146034,part,NEW SF Battery (Exide Manufacturers),2075832560658,,UNT,4500,4500,,1,-14,0,
+477987,part,No. Plate light,7219588448293,,UNT,1200,1200,,1,-1,0,
+458876,part,Number Plate Bracket,101,,UNT,101,101,18,1,-1,0,
+498277,part,O Ring set,8431280989199,,UNT,2220,2220,18,1,0,0,
+445115,part,O2 Sensor,9482714076992,,UNT,8900,8900,,1,-1,0,
+289546,part,Oil Chamber assembly,4408827559091,,UNT,4521,4521,,1,-7,0,
+167394,part,Oil Chamber Packing,101,,UNT,101,101,,1,-2,0,
+154759,part,Oil Cooler assembly,101,,UNT,101,101,,1,-4,0,
+458407,part,Oil Cooler Hose,4561528484337,,UNT,2400,2400,,1,-2,0,
+499398,part,Oil cooler O ring,2368380108848,,UNT,500,500,18,1,-1,0,
+239183,part,Oil Crank Seal,3259381885174,,UNT,2210,2210,,1,-5,0,
+136516,part,Oil Filter,5358948407229,,UNT,0,290,0,1,-20,0,
+142218,part,Oil Filter,2455391568597,,UNT,350,350,,1,-5,0,
+282392,part,Oil Filter,101,,UNT,101,101,,1,-2,0,
+154811,part,Oil Filter assembly Body & Sub Components,8720393436495,,UNT,7000,7000,,1,-1,0,
+141582,part,Oil filter assembly Cap,101,,UNT,101,101,,1,-5,0,
+455556,part,Oil Filter Body O-Ring,011,,UNT,101,101,18,1,-1,0,
+499780,part,Oil Filter Case O ring,1234,,UNT,101,101,18,1,0,0,
+499797,part,Oil filter casing assembly,6509059977252,,UNT,104,104,,1,-1,0,
+300683,part,Oil Filter seal,8189748821780,,UNT,550,550,,1,-3,0,
+135111,part,Oil leakage and coolant leakage issue,123,,UNT,1800,1800,,1,-1,0,
+146679,part,Oil Pressure switch,101,,UNT,101,101,,1,-2,0,
+154812,part,Oil Pressure Switch,8762955986429,,UNT,1200,1200,,1,-3,0,
+500361,part,Oil Pump,5700317716691,,UNT,101,101,18,1,-1,0,
+479159,part,Oil Pump Seal,4525027160998,,UNT,650,650,,1,-2,0,
+245928,part,Oil Seal Ring,4477619095705,,UNT,1950,1950,,1,-2,0,
+497090,part,Oil separator Assembly,7645050005987,,UNT,1700,1700,18,1,-1,0,
+350795,part,Oil Separator pipe,2173744685482,,UNT,5800,5800,,1,-10,0,
+363562,part,Oxygen Sensor,5131707015912,,UNT,101,101,,1,-1,0,
+297573,part,Painting charges,6748516026884,,UNT,50000,50000,,1,0,0,
+301903,part,Parking brake handle,1330246553290,,UNT,7912,7912,,1,-1,0,
+141675,part,Parking Bulb,2691259149461,,UNT,101,101,,1,-46,0,
+167400,part,Parking Bulb,7635294510051,,UNT,80,80,,1,0,0,
+461766,part,Parking sensor,3835937460884,,UNT,101,101,,1,-1,0,
+489942,part,PCB(Printed Circuit Board) Unit,4122684577014,,UNT,101,101,,1,-1,0,
+500658,part,Piston pins,9457197321578,,UNT,101,101,,1,-4,0,
+479583,part,Piston rings,7885402684565,,UNT,1354,1354,,1,-36,0,
+481575,part,Piston Sleave Set,1371133724227,,UNT,3500,3500,,1,-2,0,
+479587,part,Piston with Gudgeon Pins,2459224805701,,UNT,4521,4521,,1,-4,0,
+289625,part,Power Steering Belt,1839942352846,,UNT,1800,1800,,1,0,0,
+499110,part,Power Steering Control Module,5885541842784,,UNT,101,101,18,1,-1,0,
+475949,part,Power steering control sensor and torque motor with bushes,9071403954643,,UNT,9254,9254,,1,-1,0,
+475920,part,Power Steering motor,3749641086440,,UNT,101,101,,1,-3,0,
+178078,part,Power Steering Oil,101,,UNT,101,101,,1,-26.7,0,
+443115,part,Power steering oil bottle cap,3921129234600,,UNT,101,101,,1,0,0,
+177769,part,Power steering pump assembly,101,,UNT,101,101,,1,-2,0,
+490574,part,Power steering pump oil seal,3983839055057,,UNT,101,101,,1,-1,0,
+490575,part,Power steering pump to SR pipe,5095273996703,,UNT,101,101,,1,-1,0,
+444563,part,Power Steering Tank Cap,101,,UNT,101,101,18,1,-1,0,
+454779,part,Power Window Control Module,101,,UNT,101,101,18,1,-1,0,
+282587,part,Power Window Switch,9027966405265,,UNT,101,101,,1,-9,0,
+141876,part,Press bulb,2338937223888,,UNT,80,80,,1,-49,0,
+169122,part,Press Clip,3545277466997,,UNT,20,20,,1,-119,0,
+470171,part,Pressure differentials Sensor,6212087287101,,UNT,4800,4800,,1,-1,0,
+138567,part,Pressure plate,1185545894782,,UNT,101,101,,1,-11,0,
+146145,part,Primary fuel filter assembly,101,,UNT,101,101,,1,-6,0,
+185796,part,PUC,3583154901862,,UNT,150,150,,1,-1,0,
+141295,part,R16 Relay,7922837873455,,UNT,101,101,,1,-39,0,
+143592,part,Radiator assembly,101,,UNT,101,101,,1,-15,0,
+479816,part,Radiator assembly Chemical cleaning,8364573637954,,UNT,3200,3200,,1,-6,0,
+290131,part,Radiator bush,101,,UNT,101,101,,1,-9,0,
+257183,part,Radiator Cap,3326032616663,,UNT,500,500,,1,-12,0,
+363859,part,Radiator Chemical Cleaning,2838732725940,,UNT,2200,2200,,1,-1,0,
+147740,part,Radiator Fan Assembly,8643329430837,,UNT,101,101,,1,-13,0,
+449092,part,Radiator Flushing agent,6522936016786,,UNT,1800,1800,,1,-1.5,0,
+479807,part,Radiator hose,6810595427639,,UNT,101,101,,1,0,0,
+461525,part,Radiator Hose Pipe,101,,UNT,101,101,,1,-7,0,
+148050,part,Radiator Inlet Hose Pipe H6,3901294026523,,UNT,101,101,,1,-4,0,
+499397,part,Radiator Lower hose,2138850231654,,UNT,800,800,18,1,-1,0,
+242455,part,Radiator outlet hose pipe,3891180573031,,UNT,6500,6500,,1,-3,0,
+480797,part,Radiator Upper Grill,4938347628340,,UNT,3628,3628,,1,0,0,
+499396,part,Radiator upper hose,3240412033163,,UNT,672,672,18,1,-1,0,
+450443,part,Rain Wiser set,6289371795486,,UNT,1200,1200,,1,-1,0,
+497560,part,Rat protection spray,1234,,UNT,101,101,18,1,-1,0,
+293937,part,RC liver,1300081462599,,UNT,101,101,,1,-2,0,
+153725,part,Rear ABS Sensor,1148157388903,,UNT,4200,4200,,1,-4,0,
+239036,part,Rear AC Vent Assembly,1055021959822,,UNT,9500,9500,,1,-1,0,
+240074,part,Rear Balance Rod Bush,8519103008322,,UNT,101,101,,1,-8,0,
+151762,part,Rear brake bulb,101,,UNT,101,101,,1,-24,0,
+164838,part,Rear Brake Cylinder,6882604965474,,UNT,101,101,,1,-18,0,
+161253,part,Rear Brake Disc,7560616195201,,UNT,101,101,,1,-13,0,
+494840,part,Rear brake Disc Screaming,3124160601757,,UNT,101,101,,1,-4,0,
+143603,part,Rear Brake Liner,6377123482059,,UNT,750,590,,1,-46,0,
+363745,part,Rear brake liner setting rachet,5497987090144,,UNT,101,101,,1,-2,0,
+136285,part,Rear Brake Liners & Pins,9986486217938,,UNT,3876,2876,0,1,-25,0,
+147401,part,Rear brake pads,101,,UNT,101,101,,1,-34,0,
+147411,part,Rear Brake pads Sensor,4787613013759,,UNT,101,101,,1,-7,0,
+196017,part,Rear Brake Pipes,1569745086599,,UNT,2500,2500,,1,-1,0,
+139615,part,Rear Brake wheel cylinder and locks,8892939364071,,UNT,101,101,,1,-20,0,
+145631,part,Rear bumper,101,,UNT,101,101,,1,-6,0,
+281592,part,Rear Bumper Guard,2890611974988,,UNT,101,101,,1,-3,0,
+369223,part,Rear bumper holders,6627800058573,,UNT,101,101,,1,-2,0,
+499346,part,Rear Bumper LH Corner,1223,,UNT,101,101,18,1,-1,0,
+496413,part,Rear bumper reflector,101,,UNT,100,100,,1,-1,0,
+499928,part,Rear Bush linkage,1940343513153,,UNT,101,101,,1,-2,0,
+138580,part,Rear Bushing Kit,7420985888224,,UNT,27000,27000,,1,-12,0,
+440763,part,Rear Coil Spring,5250642600934,,UNT,2414,2414,,1,-4,0,
+240158,part,Rear Coil Spring Pads,101,,UNT,101,101,,1,-4,0,
+459967,part,Rear Coil Spring Stopper,101,,UNT,101,101,18,1,-2,0,
+482327,part,Rear Cooling Coil,3012513148598,,UNT,101,101,,1,-1,0,
+178276,part,Rear Dickey Shocker,3607055471278,,UNT,101,101,,1,-44,0,
+145091,part,Rear Door After Market,8459166059736,,UNT,101,101,,1,-1,0,
+368875,part,Rear Fender Lining Set,101,,UNT,101,101,18,1,-1,0,
+147667,part,Rear Fogg Light,6370179125573,,UNT,101,101,,1,-1,0,
+287831,part,Rear Glass Shield,4811112178023,,UNT,4500,4500,,1,-1,0,
+446815,part,Rear lower arm bushes,101,,UNT,101,101,18,1,0,0,
+443118,part,Rear RH glass machine,1481830003205,,UNT,101,101,,1,0,0,
+177177,part,Rear RH Wheel Bearing,7277766571845,,UNT,101,101,,1,-6,0,
+276283,part,Rear RH wheel Bearing,9369040080811,,UNT,4658,4658,,1,-2,0,
+488458,part,Rear RHS door cladding,101,,UNT,101,101,,1,0,0,
+465782,part,Rear Roof light,1654420761391,,UNT,1300,1300,,1,-2,0,
+486535,part,Rear seat locks,9080587813165,,UNT,101,101,18,1,-2,0,
+139677,part,Rear shock absorber,101,,UNT,101,101,,1,-70,0,
+197684,part,Rear shock absorber assembly,101,,UNT,101,101,,1,-36,0,
+353250,part,Rear shock absorber buffer,5203924085479,,UNT,101,101,,1,-2,0,
+148975,part,Rear shock absorber buffer kit,4052220859099,,UNT,101,101,,1,-26,0,
+139653,part,Rear Shock Absorber Kit,2146193981636,,UNT,101,101,,1,-5,0,
+148974,part,Rear shock absorber mount,4840859032701,,UNT,101,101,,1,-5,0,
+149034,part,Rear Shock Absorbers Dust cover,8627306823618,,UNT,101,101,,1,-4,0,
+245241,part,Rear Shockeer Boot assembly,8311368954367,,UNT,1387,1387,,1,-4,0,
+468430,part,Rear shocker,101,,UNT,101,101,18,1,-4,0,
+500309,part,Rear Shocker Air Pressure pump,8460612415801,,UNT,401,401,,1,0,0,
+478111,part,"Rear Shocker assembly ( Mount, Kit, Bearing)",9686966615263,,UNT,17542,17542,,1,-2,0,
+500310,part,Rear Shocker Balloon,7130487660877,,UNT,101,101,,1,0,0,
+468432,part,Rear shocker boot,101,,UNT,101,101,18,1,-2,0,
+468431,part,Rear shocker buffer,101,,UNT,101,101,18,1,-6,0,
+153565,part,Rear Shocker Height pads,9332816236186,,UNT,1980,1980,,1,-1,0,
+197966,part,Rear Shocker Mount,3148895987775,,UNT,3500,3500,,1,-6,0,
+442170,part,Rear Shocker Spring pads,1921765800099,,UNT,2800,2800,,1,-2,0,
+136136,part,Rear Shockers Assembly,1234,,UNT,101,101,,1,-24,0,
+370274,part,Rear Silencer Assembly,6114310806617,,UNT,101,101,,1,-2,0,
+240071,part,Rear stabilizer link rod,3272686765063,,UNT,101,101,,1,-10,0,
+151763,part,Rear third brake lamp,101,,UNT,101,101,,1,-1,0,
+144196,part,Rear View Camera,7335530901793,,UNT,101,101,,1,-1,0,
+147078,part,Rear wheel bearing,4165747421793,,UNT,101,101,,1,-2,0,
+177163,part,Rear Wheel Cylinder,1982802743557,,UNT,101,101,,1,-42,0,
+455277,part,Rear Wheel hub nut,4140376037918,,UNT,101,101,,1,-1,0,
+297574,part,Rear windscreen,9371578850317,,UNT,101,101,,1,-1,0,
+364433,part,Rear Wiper Arm,101,,UNT,101,101,,1,-1,0,
+145178,part,Rear wiper balde arm,101,,UNT,101,101,,1,-4,0,
+145177,part,Rear Wiper blade,101,,UNT,101,101,,1,-57,0,
+145179,part,Rear Wiper blade arm,101,,UNT,101,101,,1,-5,0,
+497357,part,Relay and panel,5438439757563,,UNT,101,101,,1,-2,0,
+185787,part,Remote key body,101,,UNT,101,101,,1,-2,0,
+149004,part,Remote key cell,4433669311460,,UNT,100,100,,1,-44,0,
+155058,part,Reverse Brake Switch,4521523659583,,UNT,950,950,,1,-1,0,
+143892,part,Reverse Bulb,7782687695696,,UNT,150,90,,1,-14,0,
+500147,part,Reverse camera,123,,UNT,101,101,18,1,0,0,
+151694,part,Reverse Camera Bracket,9198840398807,,UNT,350,350,,1,-1,0,
+142220,part,Reverse Light Bulb,1646353783085,,UNT,120,75,,1,-1,0,
+451532,part,Reverse Sensor system,1863947708625,,UNT,2315,2315,,1,-1,0,
+146785,part,Reverse Switch,4839772721286,,UNT,101,101,,1,-7,0,
+148889,part,RH Axle boot,7621511639561,,UNT,101,101,,1,-5,0,
+358156,part,RH Axle oil Seal,101,,UNT,101,101,,1,-6,0,
+454955,part,RH Door RC lever,2961541630327,,UNT,880,880,,1,-1,0,
+147742,part,RH Door Window Latch Machine,4360398544464,,UNT,101,101,,1,-2,0,
+161635,part,RH Drive shaft Axle 3mode,9935452241916,,UNT,6500,6500,,1,-1,0,
+279563,part,RH Front ABS Sensor,101,,UNT,101,101,,1,-3,0,
+167391,part,RH Front Axel oil Seal,101,,UNT,101,101,,1,0,0,
+494021,part,RH front Brake hose,7775934056844,,UNT,101,101,,1,-1,0,
+453775,part,RH Front Door assembly,5933340094052,,UNT,10500,10500,,1,-1,0,
+242222,part,RH Front Door Glass Winder Assembly,101,,UNT,101,101,,1,-6,0,
+333661,part,RH front door handle,7242133190389,,UNT,101,101,,1,-2,0,
+199342,part,RH front door latch assembly,101,,UNT,101,101,,1,-7,0,
+297850,part,RH front door Stopper,101,,UNT,101,101,,1,-1,0,
+299745,part,RH Front Door Weatherstrip,101,,UNT,101,101,,1,-1,0,
+468436,part,RH front door Winder Motor,101,,UNT,101,101,18,1,-1,0,
+167474,part,RH front door window switch,101,,UNT,101,101,,1,-2,0,
+234823,part,RH front Fender Cladding,101,,UNT,101,101,,1,-1,0,
+136167,part,RH Front Fender Lining,3410026867873,,UNT,950,700,,1,-4,0,
+139689,part,RH front fender lining,101,,UNT,101,101,,1,-2,0,
+185784,part,RH front foglamp assembly,101,,UNT,101,101,,1,-5,0,
+282660,part,RH Front Foglamp bulb,101,,UNT,101,101,,1,-7,0,
+297855,part,RH front foglamp Cover,101,,UNT,101,101,,1,-1,0,
+199341,part,RH front front door latch assembly,101,,UNT,101,101,,1,0,0,
+185785,part,RH front Glass Run Chanel,101,,UNT,101,101,,1,-1,0,
+282405,part,RH Front Head Light assembly,1625882342457,,UNT,27000,27000,,1,-1,0,
+274106,part,RH front headlamp assembly,101,,UNT,101,101,,1,-2,0,
+357888,part,RH front headlamp bulb,101,,UNT,101,101,,1,-3,0,
+290133,part,RH front headlamp holder,101,,UNT,101,101,,1,-2,0,
+453156,part,RH front headlight,7103116342332,,UNT,101,101,,1,0,0,
+297894,part,RH front Lower arm,101,,UNT,101,101,,1,-1,0,
+197383,part,RH front mirror cap,101,,UNT,101,101,,1,-1,0,
+485444,part,RH front second hand door,9842476052232,,UNT,101,101,,1,0,0,
+447536,part,RH Front Side Bumper holder,101,,UNT,101,101,18,1,0,0,
+148985,part,RH front Wheel bearing,101,,UNT,101,101,,1,-17,0,
+485796,part,RH front wheel bearing,5778102431911,,UNT,101,101,,1,-1,0,
+492117,part,RH front wheel bearing,1487243157811,,UNT,101,101,,1,0,0,
+354423,part,RH front Wheel bolt,101,,UNT,101,101,,1,-1,0,
+354422,part,RH front Wheel Nut,101,,UNT,101,101,,1,-7,0,
+446814,part,RH front wheel Studs,101,,UNT,101,101,18,1,-3,0,
+459966,part,RH front wheel Studs and Nut,101,,UNT,101,101,18,1,-11,0,
+480674,part,RH Front wheel studs and nuts,6548725988715,,UNT,101,101,,1,0,0,
+370318,part,RH FrontSide Mirror Cap Paint Work,101,,UNT,700,700,18,1,0,0,
+258866,part,RH Mirror Trim,7082679891958,,UNT,101,101,,1,-1,0,
+351980,part,RH Rear Abs Sensor,101,,UNT,101,101,,1,-2,0,
+471845,part,RH Rear door glass handle,101,,UNT,101,101,18,1,-1,0,
+257000,part,RH Rear door glass winder assembly,101,,UNT,101,101,,1,-2,0,
+471632,part,RH Rear door handle,101,,UNT,101,101,18,1,-1,0,
+448052,part,RH Rear Door Latch assembly,101,,UNT,101,101,18,1,-2,0,
+299748,part,RH Rear Door Weatherstrip,101,,UNT,101,101,,1,-1,0,
+466566,part,RH rear power window switch,8254378123208,,UNT,101,101,,1,-2,0,
+445107,part,RH Rear Second hand door,7157121292315,,UNT,10350,10350,,1,-1,0,
+185786,part,RH Rear Taillamp assembly,101,,UNT,101,101,,1,-6,0,
+194648,part,RH Rear Wheel Bearing,101,,UNT,101,101,,1,-6,0,
+489491,part,RH rear wheel bearing,2608827440068,,UNT,101,101,18,1,0,0,
+241335,part,RH Rear Wheel Bolt,101,,UNT,101,101,,1,-2,0,
+240950,part,RH Rear Wheel Cap,101,,UNT,101,101,,1,-1,0,
+176413,part,RH Rear Wheel Cylinder,101,,UNT,101,101,,1,-4,0,
+241334,part,RH rear Wheel Nut,101,,UNT,101,101,,1,-9,0,
+482727,part,RH Side Bumper Holder,101,,UNT,101,101,18,1,-3,0,
+196016,part,RH Side Drive Shaft axle Repair,9420295154675,,UNT,8500,8500,,1,-9,0,
+148101,part,RH Side Fender,2876168451271,,UNT,101,101,,1,-5,0,
+482725,part,RH Side Foglamp Grill,101,,UNT,101,101,18,1,-2,0,
+143415,part,RH Side Headlamp bulb,101,,UNT,101,101,,1,-3,0,
+333738,part,RH Side Mirror Assembly,7082342327572,,UNT,18000,18000,,1,-9,0,
+136163,part,RH Side Mirror Hub,3491378812119,,UNT,2360,1750,,1,-2,0,
+496752,part,RH side rear view mirror assembly,8037584329955,,UNT,6800,6800,18,1,0,0,
+166700,part,RH side Rear Wheel Bearing,8433579835109,,UNT,101,101,,1,-2,0,
+167387,part,RH Side Rear Wheel Brake Cylinder,6140849282499,,UNT,101,101,,1,-1,0,
+334412,part,RHS new axle,8797222044784,,UNT,101,101,,1,-1,0,
+142215,part,RHS Power Window Switch,8218471873085,,UNT,800,500,,1,-5,0,
+488459,part,RHS quater panel cladding,101,,UNT,101,101,,1,0,0,
+480157,part,Right Side Mirror Galss,101,,UNT,101,101,18,1,-1,0,
+496494,part,Rodent spray,101,,UNT,101,101,,1,0,0,
+459987,part,Roof lamp,8790786989498,,UNT,101,101,,1,-3,0,
+463475,part,Roof piller Pati,6559661237522,,UNT,2680,2680,,1,-2,0,
+283813,part,Rooflamp bulb,101,,UNT,101,101,,1,-7,0,
+189304,part,Screen wash,7197314240504,,UNT,60,60,,1,-4,0,
+259093,part,Seat Comparison Spring,2401664528995,,UNT,101,101,,1,-1,0,
+238871,part,Seat Control Module repair,3331208806484,,UNT,10000,10000,,1,-1,0,
+459986,part,Seat covers,4318271740339,,UNT,101,101,,1,-2,0,
+146144,part,Secondary fuel filter assembly,101,,UNT,101,101,,1,-5,0,
+361296,part,Secondhand alternator assembly,101,,UNT,101,101,18,1,-1,0,
+473073,part,Secondhand Fuse Box assembly,101,,UNT,101,101,18,1,-1,0,
+475070,part,Secondhand injector assembly,101,,UNT,101,101,18,1,-1,0,
+473826,part,Secondhand Steering rack assembly,101,,UNT,101,101,18,1,-1,0,
+178356,part,SF Exide Manufacturer Battery 12V 95Amp,8259424489922,,UNT,19000,19000,,1,-1,0,
+336468,part,Shaft Boot cover,3897947329562,,UNT,3500,3500,,1,-1,0,
+490036,part,Shark Fin antena,101,,UNT,101,101,,1,-1,0,
+144287,part,Shock Up Kit,5281140599865,,UNT,750,750,,1,0,0,
+144286,part,Shock Up Mount,4677752322517,,UNT,680,680,,1,0,0,
+136281,part,Shocker Bearings,8367497882805,,UNT,489,350,0,1,-4,0,
+497129,part,Shocker dust cover,101,,UNT,101,101,,1,-2,0,
+466987,part,Shocker Mount Nuts,101,,UNT,101,101,18,1,-6,0,
+239179,part,Shocker Stopper,8117223742417,,UNT,1200,1200,,1,-2,0,
+497130,part,Shocker Upper nut plate,101,,UNT,101,101,,1,-2,0,
+497840,part,Side engine cover,4594269224908,,UNT,101,101,,1,-2,0,
+481890,part,Side mirror indicator,6322619804646,,UNT,950,950,,1,-1,0,
+186276,part,Silencer Assembly,2728508322965,,UNT,101,101,,1,-10,0,
+498650,part,Silencer assembly Center,2786960027646,,UNT,101,101,,1,-1,0,
+498649,part,Silencer assembly Rear,7063840558752,,UNT,101,101,,1,-1,0,
+500415,part,Silencer Bolt,123,,UNT,101,101,18,1,-1,0,
+199203,part,Silencer Bush,101,,UNT,101,101,,1,-3,0,
+454954,part,Silencer Clamp,7573363175615,,UNT,1100,1100,,1,-4,0,
+138582,part,Silencer hanger,9556132746860,,UNT,5987,5987,,1,-3,0,
+237272,part,Silencer hanging bush,3451678749173,,UNT,500,500,,1,-8,0,
+347541,part,Silencer Heating Shield,5414264060556,,UNT,4851,4851,,1,0,0,
+246191,part,Silencer packing,101,,UNT,101,101,,1,-3,0,
+500580,part,Slack,123,,UNT,101,101,18,1,-4,0,
+187453,part,Sony Speekar,4698659295216,,UNT,3450,3450,,1,-1,2,
+136137,part,Spark Plugs,7659800,,UNT,101,101,,1,-457.5,0,
+141047,part,Spark plugs Cord Wire (Ignition Coil),9050854914356,,UNT,101,101,,1,-12,0,
+144928,part,Sparkplug,101,,UNT,101,101,,1,-119,0,
+287975,part,Speedometer sensor,1862667955458,,UNT,101,101,,1,-5,0,
+274475,part,Spool Valve packing,101,,UNT,101,101,,1,-1,0,
+195750,part,Stabilize Link Assembly Lower,1412082016002,,UNT,2489,2489,,1,-4,0,
+150463,part,Stabilizer Link Rod,101,,UNT,101,101,,1,-154,0,
+282839,part,Stabilizer link rod bolt,1229799225460,,UNT,101,101,,1,-4,0,
+288857,part,Stablize Mounts,2150074312463,,UNT,4821,4821,,1,-4,0,
+136284,part,Stablizer Link Assembly,5216762294527,,UNT,6987,5987,0,1,-57,0,
+355131,part,Starter assembly,101,,UNT,101,101,,1,-3,0,
+147543,part,Starter Bushes and Coil,5832422248087,,UNT,101,101,,1,-2,0,
+177171,part,Starter Coil And Brushes,3786878604907,,UNT,2500,2500,,1,-3,0,
+147544,part,Starter Pinion gear,7551392510067,,UNT,101,101,,1,-1,0,
+481798,part,Steering Angle sensor,5378299635834,,UNT,101,101,,1,-1,0,
+144288,part,Steering Ball Joint,8711177010089,,UNT,595,595,,1,-24,0,
+144293,part,Steering Boot,3456624843180,,UNT,375,375,,1,-1,0,
+333662,part,Steering column,3260662807617,,UNT,101,101,,1,0,0,
+167489,part,Steering Column Assembly Repair,8987914252094,,UNT,101,101,,1,-5,0,
+334407,part,Steering Column Assembly with TM,5176994493231,,UNT,20000,20000,,1,-1,0,
+459135,part,Steering Column Callibration,1008807058446,,UNT,1,1,,1,-1,0,
+466964,part,Steering Control Module,1626333720516,,UNT,22850,22850,,1,-1,0,
+297983,part,Steering Cover,101,,UNT,101,101,,1,-2,0,
+463497,part,Steering high pressure pipe repair,2018255503382,,UNT,1500,1500,,1,-1,0,
+476169,part,Steering module Second hand,101,,UNT,101,101,18,1,-1,0,
+164139,part,Steering Oil,7387866063509,,UNT,250,250,,1,-3,0,
+136283,part,Steering Rack Assembly,2969316666945,,UNT,13987,11987,0,1,-44,0,
+138581,part,Steering Rack Assembly Repair,1009014041163,,UNT,30000,30000,,1,-13,0,
+466430,part,Steering Rack assembly with Ball joints,6919925066642,,UNT,101,101,,1,-3,0,
+239670,part,Steering rack ball joint,101,,UNT,101,101,,1,-19,0,
+237542,part,Steering Rack Boot,101,,UNT,101,101,,1,-2,0,
+472224,part,Steering rack Tie Rod End,101,,UNT,101,101,18,1,-22,0,
+333177,part,Steering stability sensor,4166725028306,,UNT,4000,4000,,1,-1,0,
+176450,part,Steering Torque Motor,7935640459414,,UNT,7500,7500,,1,-4,0,
+349817,part,Sub mirror,2770074809435,,UNT,500,500,,1,-4,0,
+496856,part,Sunwiser,123,,UNT,101,101,18,1,-2,0,
+497128,part,"Support sub - assy, FR",101,,UNT,101,101,,1,-2,0,
+276380,part,Suspension Bearing,7889447413850,,UNT,500,500,,1,-2,0,
+149916,part,Tail Lamp Holder,6414836371783,,UNT,101,101,,1,-3,0,
+149807,part,Tail Light Bulb,2529453788418,,UNT,101,101,,1,-7,0,
+147818,part,Tapet Cover Packing,6409226485528,,UNT,101,101,,1,-5,0,
+360336,part,Tapet Oil Seal,8030735761858,,UNT,1200,1200,,1,-1,0,
+147817,part,Tapet Seal,5079852740745,,UNT,101,101,,1,0,0,
+290033,part,Tappet Cover Assembly,8747533033136,,UNT,3846,3846,,1,-2,0,
+472111,part,Tappet Cover packing,7812654994428,,UNT,444,444,,1,-12,0,
+167505,part,Tappet cover packing and Seal with labour,9854471037629,,UNT,1200,1200,,1,-13,0,
+283989,part,Tappet Oil Seal,8205861903261,,UNT,2280,2280,,1,-8,0,
+350400,part,Tappet Seal,2079049824271,,UNT,2500,2500,,1,-1,0,
+278038,part,Temperature Control Valve,5870003215037,,UNT,1462,1462,,1,-1,0,
+443905,part,Temperature switch,3303530785720,,UNT,101,101,,1,-2,0,
+294577,part,Tensioner pulley,8977858616970,,UNT,7654,7654,,1,-5,0,
+237350,part,Thermistor Unit,3446298623457,,UNT,2200,2200,,1,-1,0,
+448156,part,Thermometer hose pipes,101,,UNT,101,101,18,1,-3,0,
+492689,part,Thermostat Body,5813328712712,,UNT,101,101,,1,-4,0,
+479805,part,Thermostat Elbow,6725547177251,,UNT,101,101,,1,-3,0,
+479806,part,Thermostat hose,6759214750956,,UNT,101,101,,1,-1,0,
+146186,part,Thermostat relay,3957568020559,,UNT,800,800,,1,0,0,
+490765,part,Thermostat Resistance,9106649840716,,UNT,101,101,18,1,-2,0,
+500363,part,Thermostat Valve,9742583346553,,UNT,101,101,18,1,-1,0,
+498047,part,Throttle body,101,,UNT,101,101,,1,0,0,
+498070,part,Throttle Body Assembly,1270648430567,,UNT,101,101,,1,-1,0,
+142056,part,Throttle body spray,1812327845953,,UNT,101,101,,1,-3,0,
+149857,part,Throttle inflow pipe,8597533218096,,UNT,101,101,,1,-1,0,
+167488,part,Tie member,1308588155545,,UNT,101,101,,1,-14,0,
+161491,part,Tie Rod End,9403163780923,,UNT,101,101,,1,-54,0,
+444175,part,Timing Belt,1255614058114,,UNT,3800,3800,,1,-3,0,
+197621,part,Timing case gasket,101,,UNT,101,101,,1,-1,0,
+197620,part,Timing case oil seal,101,,UNT,101,101,,1,-5,0,
+240303,part,Timing Chain Kit and Assembly,1511248316615,,UNT,6254,6254,,1,-13,0,
+368857,part,Timing plate packing,4938797179143,,UNT,1100,1100,,1,-3,0,
+278531,part,Top Shaft CNC allingment work,3035841217264,,UNT,1500,1500,,1,-1,0,
+278441,part,Top Shaft Oil Seal,7230300034396,,UNT,101,101,,1,-2,0,
+496778,part,Torque motor bearing,2472578535322,,UNT,101,101,,1,-1,0,
+274348,part,Tow Hook Cap,101,,UNT,101,101,,1,-2,0,
+440775,part,Traction Control Sensor,3522081551607,,UNT,1200,1200,,1,-2,0,
+153724,part,Trailing Arms Bushes,9631833582650,,UNT,1800,1800,,1,-4,0,
+497440,part,Trailing arms Rear,7677725124638,,UNT,101,101,18,1,-2,0,
+242460,part,Transmission oil,1212418733164,,UNT,1500,1500,,1,-32.1,0,
+290894,part,Transmission oil filter,2190192481502,,UNT,101,101,,1,-2,0,
+288443,part,Turbo Assembly,8623850667383,,UNT,54000,54000,,1,-1,0,
+192633,part,Turbo Bushes,2104346328414,,UNT,1200,1200,,1,0,0,
+492301,part,Turbo nozle,8507141009904,,UNT,101,101,,1,-1,0,
+276080,part,"Turbo Outlet Pipes A,B,C,D",6756820623762,,UNT,3500,3500,,1,-5,0,
+465248,part,"Turbo Repair (Impeller shaft, Vaccum hose, casing Test)",5196668253280,,UNT,4800,4800,,1,-1,0,
+488034,part,Turbo to air filter hose pipe,1929274023976,,UNT,1900,1900,18,1,0,0,
+468022,part,Turbo to manifold hose pipe,9855003087315,,UNT,101,101,,1,-1,0,
+297565,part,Turbocharger hose,1095380132086,,UNT,101,101,,1,-2,0,
+234501,part,TXA Appoxy Solution,9420536356512,,UNT,1200,1200,,1,-1,0,
+299794,part,Tyre pressure valve,101,,UNT,101,101,,1,-3,0,
+287907,part,Tyre Tube,7362432146444,,UNT,1200,1200,,1,-1,0,
+299730,part,Tyre valve,101,,UNT,101,101,,1,-8,0,
+287180,part,Under Body Rust Protection Coating,5399901853874,,UNT,3800,3800,,1,-2,0,
+145325,part,Upper Lower Arm Ball Joint,5646372634451,,UNT,101,101,,1,-2,0,
+285043,part,Vaccum pipe,1199696060270,,UNT,101,101,,1,-1,0,
+363032,part,Vaccum pump packing,4103882119990,,UNT,850,850,,1,-1,0,
+288856,part,Valve control switch,1064685845747,,UNT,3500,3500,,1,-1,0,
+164137,part,Water Jacket,2660036350600,,UNT,850,850,,1,-1,0,
+139652,part,Water Pump,3003282753750,,UNT,101,101,,1,-16,0,
+499919,part,Water pump and Thermostat valve assembly,1079919120762,,UNT,101,101,,1,-1,0,
+495709,part,Water Pump Assembly,6622608605306,,UNT,101,101,,1,-1,0,
+474737,part,Water pump hose O rings,9275084629189,,UNT,550,550,,1,-4,0,
+496247,part,Water pump hose pipe,9326792443171,,UNT,101,101,,1,-1,0,
+479804,part,Water pump metal pipe,2585683928336,,UNT,101,101,,1,-2,0,
+146148,part,Water temperature sensor,101,,UNT,101,101,,1,-2,0,
+261489,part,Wheel Bearing Lock assembly,2444672204088,,UNT,3500,3500,,1,-1,0,
+333855,part,Wheel Cap,8685901728924,,UNT,2500,2500,,1,-18,0,
+467605,part,Wheel Cap Logo,1589369452092,,UNT,101,101,,1,-8,0,
+139581,part,Wheel cylinder,3450388451572,,UNT,101,101,,1,-3,0,
+144949,part,Wheel Nut and bolt,101,,UNT,101,101,,1,-13,0,
+287872,part,Wheel Rim,9245687869843,,UNT,3800,3800,,1,-5,0,
+144526,part,Wheel Stud Bolt,8397993702441,,UNT,230,140,,1,-21,0,
+144312,part,Wheel stud nut,7832132006064,,UNT,101,101,,1,-35,0,
+234292,part,White LED parking Light,1475759166758,,UNT,600,600,,1,-2,0,
+440426,part,Window glass Winder,2281828325241,,UNT,101,101,,1,-2,0,
+193464,part,Windows glass mirror,1969594326801,,UNT,2800,2800,,1,-1,0,
+167443,part,Windshield Glass,6545586504973,,UNT,5846,5846,,1,-1,0,
+486971,part,Windshield glass rubber,1850847267545,,UNT,101,101,,1,-3,0,
+300556,part,Windshield sealant,1433820242993,,UNT,1250,1250,,1,-9,0,
+146680,part,Windshield tank assembly,101,,UNT,101,101,,1,-4,0,
+276745,part,Windshield tank cap,3930925236083,,UNT,101,101,,1,-6,0,
+176985,part,Windshield tank motor,101,,UNT,101,101,,1,-5,0,
+356627,part,Wiper arms assembly,4421872260514,,UNT,10500,10500,,1,-1,0,
+139572,part,Wiper flow pipe,7389956057537,,UNT,101,101,,1,-18,0,
+176978,part,Wiper linkage assembly with Wiper motor,8061521599534,,UNT,101,101,,1,-1,0,
+278530,part,Wiper lock nuts AFM,3578419637866,,UNT,500,500,,1,-1,0,
+167385,part,Wiper Motor,6232433766126,,UNT,101,101,,1,-14,0,
+256851,part,Wiper Nozzle,101,,UNT,101,101,,1,-12,0,
+500219,part,Wiper pipe,123,,UNT,101,101,18,1,-1,0,
+500220,part,Wiper pipe joint,123,,UNT,101,101,18,1,-1,0,
+479909,part,Wiper Tank Cap,101,,UNT,101,101,18,1,-1,0,
+494866,part,Wire joint,2953320119064,,UNT,18,18,18,1,0,0,
+136511,part,Wiring Kit Clips,2129627682268,,UNT,250,250,0,1,-50,0,
+154028,part,Yokohama Tyres,7551845937501,,UNT,9850,9850,,1,-2,0,
