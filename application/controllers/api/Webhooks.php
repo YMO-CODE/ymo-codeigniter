@@ -350,14 +350,14 @@ class Webhooks extends CI_Controller
             $is_ig = $event['channel'] === 'instagram';
             $name = $event['name'];
             if ($name === ($is_ig ? 'Instagram ' : 'Facebook ').$event['sender_id']) {
-                $fetched = $this->_fetch_meta_sender_name($event['sender_id']);
+                $fetched = $this->_fetch_meta_sender_name($event['sender_id'], $is_ig);
                 if ($fetched) {
                     $name = $fetched;
                 }
             }
 
             $lead_id = $this->crm_lead_model->ingest_chat_message(
-                $is_ig ? 'instagram' : 'meta',
+                $is_ig ? 'instagram' : ($this->crm_lead_model->source_id_by_slug('messenger') ? 'messenger' : 'meta'),
                 array(
                     'name'    => $name,
                     'mobile'  => '',
@@ -444,14 +444,15 @@ class Webhooks extends CI_Controller
         return $this->_parse_meta_lead_fields($data);
     }
 
-    protected function _fetch_meta_sender_name($sender_id)
+    protected function _fetch_meta_sender_name($sender_id, $is_instagram = TRUE)
     {
         $token = $this->config->item('crm_meta_access_token');
         if (!$token || !$sender_id) {
             return NULL;
         }
-        $url = 'https://graph.facebook.com/v19.0/'.urlencode($sender_id)
-            .'?fields=name,username&access_token='.urlencode($token);
+        // Messenger senders (PSIDs) have no "username"; asking for it fails the whole call.
+        $url = 'https://graph.facebook.com/v22.0/'.urlencode($sender_id)
+            .'?fields='.($is_instagram ? 'name,username' : 'name').'&access_token='.urlencode($token);
         $json = @file_get_contents($url);
         if (!$json) {
             return NULL;
