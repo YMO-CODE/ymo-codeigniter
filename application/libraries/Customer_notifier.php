@@ -25,6 +25,9 @@ class Customer_notifier
     /** @var string|null 'whatsapp' | 'sms' | NULL */
     protected $last_channel = NULL;
 
+    /** @var string|null WhatsApp message id (wamid) of the last template sent */
+    protected $last_message_id = NULL;
+
     public function __construct()
     {
         $this->CI = &get_instance();
@@ -40,6 +43,12 @@ class Customer_notifier
     public function last_channel()
     {
         return $this->last_channel;
+    }
+
+    /** WhatsApp message id of the last successful template send (replies quote it). */
+    public function last_message_id()
+    {
+        return $this->last_message_id;
     }
 
     /** True when booking notifications will go out on WhatsApp first. */
@@ -63,6 +72,7 @@ class Customer_notifier
     {
         $this->last_error = NULL;
         $this->last_channel = NULL;
+        $this->last_message_id = NULL;
         $context = isset($opts['context']) ? (string) $opts['context'] : 'notify.'.$event;
         $wa_error = NULL;
 
@@ -75,6 +85,7 @@ class Customer_notifier
                 $res = $this->_send_whatsapp($mobile, $event, $tpl, $vars, $opts);
                 if ($res['ok']) {
                     $this->last_channel = 'whatsapp';
+                    $this->last_message_id = isset($res['message_id']) ? (string) $res['message_id'] : NULL;
                     log_message('info', sprintf('[wa] %s ok template=%s to=%s', $context, $tpl['name'], $mobile));
                     return TRUE;
                 }

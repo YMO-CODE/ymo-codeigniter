@@ -17,6 +17,15 @@ class Crm_work_order_model extends CI_Model
     const T_TECH = 'crm_work_order_techs';
     const T_EVENTS = 'crm_work_order_events';
     const T_PHOTOS = 'crm_work_order_photos';
+    const T_EST = 'crm_work_order_estimates';
+
+    /** Line approval: approved (go ahead), pending (customer must OK first), declined (customer said no; not billed). */
+    const APPROVAL = array('approved' => 'Approved', 'pending' => 'Waiting for customer', 'declined' => 'Customer said no');
+
+    const EST_STATUS = array(
+        'sent' => 'Sent, waiting', 'approved' => 'Approved', 'call_requested' => 'Customer asked for a call',
+        'declined' => 'Declined', 'superseded' => 'Replaced by a newer estimate', 'failed' => 'Not delivered',
+    );
 
     /** Photo kinds shown on the job card. */
     const PHOTO_KINDS = array('before' => 'Before', 'during' => 'During work', 'after' => 'After', 'damage' => 'Damage / issue', 'part' => 'Old part');
@@ -75,6 +84,7 @@ class Crm_work_order_model extends CI_Model
   `expected_delivery_at` DATETIME NULL,
   `complaint`            TEXT NULL,
   `instructions`         TEXT NULL,
+  `notify_customer`      TINYINT(1) NOT NULL DEFAULT 1,
   `lpo_number`           VARCHAR(40) NOT NULL DEFAULT '',
   `lpo_date`             DATE NULL,
   `lpo_amount`           DECIMAL(12,2) NULL,
@@ -116,6 +126,9 @@ class Crm_work_order_model extends CI_Model
   `done_at`         DATETIME NULL,
   `done_by`         INT UNSIGNED NULL,
   `done_by_tech`    INT UNSIGNED NULL,
+  `approval`        ENUM('approved','pending','declined') NOT NULL DEFAULT 'approved',
+  `estimate_id`     BIGINT UNSIGNED NULL,
+  `approved_at`     DATETIME NULL,
   `created_by`      INT UNSIGNED NULL,
   `created_at`      DATETIME NOT NULL,
   PRIMARY KEY (`id`),
@@ -127,6 +140,31 @@ class Crm_work_order_model extends CI_Model
   `created_at`    DATETIME NOT NULL,
   PRIMARY KEY (`work_order_id`, `technician_id`),
   KEY `idx_wot_tech` (`technician_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+            self::T_EST => "CREATE TABLE IF NOT EXISTS `crm_work_order_estimates` (
+  `id`             BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `work_order_id`  BIGINT UNSIGNED NOT NULL,
+  `number`         SMALLINT UNSIGNED NOT NULL DEFAULT 1,
+  `scope`          ENUM('pending','all') NOT NULL DEFAULT 'pending',
+  `line_ids`       VARCHAR(1000) NOT NULL DEFAULT '',
+  `lines_json`     MEDIUMTEXT NULL,
+  `amount`         DECIMAL(12,2) NOT NULL DEFAULT 0,
+  `job_total`      DECIMAL(12,2) NOT NULL DEFAULT 0,
+  `summary`        VARCHAR(1000) NOT NULL DEFAULT '',
+  `pdf_object`     VARCHAR(200) NOT NULL DEFAULT '',
+  `phone`          VARCHAR(20) NOT NULL DEFAULT '',
+  `wa_message_id`  VARCHAR(128) NULL,
+  `status`         ENUM('sent','approved','call_requested','declined','superseded','failed') NOT NULL DEFAULT 'sent',
+  `error`          VARCHAR(500) NOT NULL DEFAULT '',
+  `sent_by`        INT UNSIGNED NULL,
+  `sent_at`        DATETIME NOT NULL,
+  `responded_at`   DATETIME NULL,
+  `response_via`   VARCHAR(20) NOT NULL DEFAULT '',
+  `responded_by`   INT UNSIGNED NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_woest_wo` (`work_order_id`, `id`),
+  KEY `idx_woest_msg` (`wa_message_id`),
+  KEY `idx_woest_phone` (`phone`, `status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
             self::T_PHOTOS => "CREATE TABLE IF NOT EXISTS `crm_work_order_photos` (
   `id`            BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -174,6 +212,10 @@ class Crm_work_order_model extends CI_Model
         // Columns added after the first release of job cards.
         $add = array(
             array(self::T_LINES, 'done_by_tech', 'INT UNSIGNED NULL AFTER `done_by`'),
+            array(self::T_LINES, 'approval', "ENUM('approved','pending','declined') NOT NULL DEFAULT 'approved' AFTER `done_by_tech`"),
+            array(self::T_LINES, 'estimate_id', 'BIGINT UNSIGNED NULL AFTER `approval`'),
+            array(self::T_LINES, 'approved_at', 'DATETIME NULL AFTER `estimate_id`'),
+            array(self::T, 'notify_customer', 'TINYINT(1) NOT NULL DEFAULT 1 AFTER `instructions`'),
             array(self::T_EVENTS, 'technician_id', 'INT UNSIGNED NULL AFTER `admin_id`'),
             array(self::T_EVENTS, 'client_uid', 'VARCHAR(40) NULL AFTER `detail`, ADD UNIQUE KEY `uq_woe_uid` (`client_uid`)'),
         );
@@ -427,6 +469,9 @@ class Crm_work_order_model extends CI_Model
         }
         $l = self::compute_line(array_merge($cur, $l));
         unset($l['id'], $l['work_order_id'], $l['created_at'], $l['created_by'], $l['technician_name'], $l['done_by_tech_name']);
+        if (isset($l['approval']) && !isset(self::APPROVAL[$l['approval']])) {
+            unset($l['approval']);
+        }
         $this->db->where('id', (int) $line_id)->update(self::T_LINES, $l);
         $this->recalc($work_order_id);
         return TRUE;
@@ -452,7 +497,7 @@ class Crm_work_order_model extends CI_Model
     public function recalc($work_order_id)
     {
         $r = $this->db->select('COALESCE(SUM(taxable),0) sub, COALESCE(SUM(tax_amount),0) tax, COALESCE(SUM(amount),0) total', FALSE)
-            ->where('work_order_id', (int) $work_order_id)->get(self::T_LINES)->row_array();
+            ->where('work_order_id', (int) $work_order_id)->where('approval !=', 'declined')->get(self::T_LINES)->row_array();
         $this->db->where('id', (int) $work_order_id)->update(self::T, array(
             'subtotal'    => round((float) $r['sub'], 2),
             'tax_total'   => round((float) $r['tax'], 2),
@@ -521,6 +566,84 @@ class Crm_work_order_model extends CI_Model
         return (bool) $this->db->select('id')->where('client_uid', (string) $client_uid)->limit(1)->get(self::T_EVENTS)->row_array();
     }
 
+    // ---- customer approval / estimates -----------------------------------------
+
+    /** Sets approval on lines; approving stamps approved_at. @param array $line_ids */
+    public function set_approval($work_order_id, array $line_ids, $approval)
+    {
+        $this->ensure_schema();
+        $line_ids = array_values(array_filter(array_map('intval', $line_ids)));
+        if (!$line_ids || !isset(self::APPROVAL[$approval])) {
+            return 0;
+        }
+        $d = array('approval' => $approval, 'approved_at' => $approval === 'approved' ? date('Y-m-d H:i:s') : NULL);
+        $this->db->where('work_order_id', (int) $work_order_id)->where_in('id', $line_ids)->update(self::T_LINES, $d);
+        $n = $this->db->affected_rows();
+        $this->recalc($work_order_id);
+        return $n;
+    }
+
+    public function pending_lines($work_order_id)
+    {
+        return array_values(array_filter($this->lines($work_order_id), function ($l) { return $l['approval'] === 'pending'; }));
+    }
+
+    public function estimates($work_order_id)
+    {
+        $this->ensure_schema();
+        return $this->db->select('e.*, a.name AS sent_by_name, r.name AS responded_by_name', FALSE)->from(self::T_EST.' e')
+            ->join('admin_users a', 'a.id = e.sent_by', 'left')->join('admin_users r', 'r.id = e.responded_by', 'left')
+            ->where('e.work_order_id', (int) $work_order_id)->order_by('e.id', 'DESC')->get()->result_array();
+    }
+
+    public function find_estimate($id)
+    {
+        $this->ensure_schema();
+        return $this->db->where('id', (int) $id)->get(self::T_EST)->row_array();
+    }
+
+    /** @return int new estimate id (earlier open estimates of this job are marked superseded) */
+    public function add_estimate(array $d)
+    {
+        $this->ensure_schema();
+        $wo_id = (int) $d['work_order_id'];
+        $n = (int) $this->db->select('COALESCE(MAX(number),0) n', FALSE)->where('work_order_id', $wo_id)->get(self::T_EST)->row()->n;
+        $this->db->where('work_order_id', $wo_id)->where_in('status', array('sent', 'call_requested'))
+            ->update(self::T_EST, array('status' => 'superseded'));
+        $d['number'] = $n + 1;
+        $d['sent_at'] = date('Y-m-d H:i:s');
+        $this->db->insert(self::T_EST, $d);
+        return (int) $this->db->insert_id();
+    }
+
+    public function update_estimate($id, array $d)
+    {
+        $this->ensure_schema();
+        return $this->db->where('id', (int) $id)->update(self::T_EST, $d);
+    }
+
+    /**
+     * The open estimate a WhatsApp reply belongs to: by the replied-to message id, else the
+     * latest one sent to that number in the last 3 days.
+     */
+    public function estimate_for_reply($phone_e164, $context_message_id)
+    {
+        $this->ensure_schema();
+        if ($context_message_id !== '') {
+            $e = $this->db->where('wa_message_id', $context_message_id)->get(self::T_EST)->row_array();
+            if ($e) {
+                return $e;
+            }
+        }
+        $last10 = substr(preg_replace('/\D/', '', (string) $phone_e164), -10);
+        if (strlen($last10) !== 10) {
+            return NULL;
+        }
+        return $this->db->like('phone', $last10, 'before')->where_in('status', array('sent', 'call_requested'))
+            ->where('sent_at >', date('Y-m-d H:i:s', time() - 3 * 86400))
+            ->order_by('id', 'DESC')->limit(1)->get(self::T_EST)->row_array();
+    }
+
     // ---- photos --------------------------------------------------------------
 
     public function photos($work_order_id)
@@ -583,8 +706,9 @@ class Crm_work_order_model extends CI_Model
     {
         $this->ensure_schema();
         $this->_base_select();
-        $this->db->select('(SELECT COUNT(*) FROM crm_work_order_lines l WHERE l.work_order_id = w.id) AS line_count,
-                           (SELECT COUNT(*) FROM crm_work_order_lines l WHERE l.work_order_id = w.id AND l.done_at IS NOT NULL) AS done_count', FALSE)
+        $this->db->select("(SELECT COUNT(*) FROM crm_work_order_lines l WHERE l.work_order_id = w.id AND l.approval != 'declined') AS line_count,
+                           (SELECT COUNT(*) FROM crm_work_order_lines l WHERE l.work_order_id = w.id AND l.approval != 'declined' AND l.done_at IS NOT NULL) AS done_count,
+                           (SELECT COUNT(*) FROM crm_work_order_lines l WHERE l.work_order_id = w.id AND l.approval = 'pending') AS waiting_count", FALSE)
             ->where_in('w.status', array('draft', 'in_progress', 'on_hold', 'ready'));
         if ($scope === 'mine') {
             $tid = (int) $tech['id'];

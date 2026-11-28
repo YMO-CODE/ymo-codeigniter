@@ -33,6 +33,12 @@ $wsname = ($wo['workshop'] !== '' && isset($workshops[$wo['workshop']])) ? $work
 .wo-photo form { position: absolute; top: 2px; right: 2px; }
 .wo-photo-x { border: 0; background: rgba(0,0,0,.55); color: #fff; border-radius: 50%; width: 22px; height: 22px; font-size: 11px; line-height: 22px; padding: 0; }
 .wo-photo-by { font-size: .7rem; color: #6c757d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wo-line-pending td { background: #fffbeb; }
+.wo-line-declined .wo-line-name, .wo-line-declined td.text-end { text-decoration: line-through; color: #8a8f8c; }
+.wo-pick-photo { position: relative; cursor: pointer; }
+.wo-pick-photo img { width: 84px; height: 63px; object-fit: cover; border-radius: .35rem; display: block; border: 2px solid transparent; }
+.wo-pick-photo input { position: absolute; top: 4px; left: 4px; }
+.wo-pick-photo input:checked + img { border-color: #198754; }
 .wo-note { background: #fff8e1; border-radius: .3rem; padding: .15rem .35rem; }
 </style>
 
@@ -107,7 +113,7 @@ $wsname = ($wo['workshop'] !== '' && isset($workshops[$wo['workshop']])) ? $work
         <table class="ymo-table mb-0">
             <tbody>
             <?php foreach ($by_type[$type] as $l): $done = !empty($l['done_at']); ?>
-                <tr class="<?= $done ? 'wo-line-done' : ''; ?>">
+                <tr class="<?= $done ? 'wo-line-done' : ''; ?> <?= $l['approval'] !== 'approved' ? 'wo-line-'.$l['approval'] : ''; ?>">
                     <td style="width:2.2rem">
                         <?php if (!empty($can_edit)): ?>
                         <?= form_open(admin_url('job-cards/'.(int) $wo['id'].'/lines/'.(int) $l['id'].'/done'), array('class' => 'd-inline')); ?>
@@ -116,7 +122,9 @@ $wsname = ($wo['workshop'] !== '' && isset($workshops[$wo['workshop']])) ? $work
                         <?php endif; ?>
                     </td>
                     <td>
-                        <div class="wo-line-name fw-semibold"><?= html_escape($l['name']); ?></div>
+                        <div class="wo-line-name fw-semibold"><?= html_escape($l['name']); ?>
+                            <?php if ($l['approval'] === 'pending'): ?><span class="badge bg-warning text-dark ms-1">Waiting for customer OK</span><?php elseif ($l['approval'] === 'declined'): ?><span class="badge bg-secondary ms-1">Customer said no · not billed</span><?php endif; ?>
+                        </div>
                         <?php if (!empty($l['description'])): ?><div class="small ymo-muted" style="max-width:34rem"><?= html_escape(mb_strimwidth($l['description'], 0, 160, '…')); ?></div><?php endif; ?>
                         <div class="small ymo-muted">
                             <?= $num($l['qty']); ?> × <?= $money($l['rate']); ?>
@@ -150,7 +158,9 @@ $wsname = ($wo['workshop'] !== '' && isset($workshops[$wo['workshop']])) ? $work
                             <select class="form-select form-select-sm" name="technician_id"><option value="">—</option>
                                 <?php foreach ($tech_list as $a): ?><option value="<?= (int) $a['id']; ?>" <?= (int) $l['technician_id'] === (int) $a['id'] ? 'selected' : ''; ?>><?= html_escape($a['name']); ?></option><?php endforeach; ?>
                             </select></div>
-                        <div class="col-4 col-md-6 text-end"><button class="btn btn-sm btn-primary">Save</button></div>
+                        <div class="col-8 col-md-4"><label class="small ymo-muted">Customer approval</label>
+                            <select class="form-select form-select-sm" name="approval"><?php foreach (Crm_work_order_model::APPROVAL as $ak => $al): ?><option value="<?= $ak; ?>" <?= $l['approval'] === $ak ? 'selected' : ''; ?>><?= $al; ?></option><?php endforeach; ?></select></div>
+                        <div class="col-4 col-md-2 text-end"><button class="btn btn-sm btn-primary">Save</button></div>
                     <?= form_close(); ?>
                 </td></tr>
                 <?php endif; ?>
@@ -195,8 +205,75 @@ $wsname = ($wo['workshop'] !== '' && isset($workshops[$wo['workshop']])) ? $work
                         <?php foreach ($tech_list as $a): ?><option value="<?= (int) $a['id']; ?>" <?= count($tech_ids) === 1 && $tech_ids[0] === (int) $a['id'] ? 'selected' : ''; ?>><?= html_escape($a['name']); ?></option><?php endforeach; ?>
                     </select></div>
                 <div class="col-4 col-md-6 text-end"><button class="btn btn-sm btn-primary"><span class="mi mi-sm mi-leading">add</span>Add</button></div>
+                <div class="col-12"><label class="form-check small mb-0"><input class="form-check-input" type="checkbox" name="ask_customer" value="1" <?= $wo['status'] !== 'draft' ? 'checked' : ''; ?>> <span class="form-check-label">Ask customer first <span class="ymo-muted">— technicians see it as "waiting for customer OK" until approved; send the estimate below</span></span></label></div>
             <?= form_close(); ?>
         </div>
+        <?php endif; ?>
+    </div>
+
+    <!-- Customer approval -->
+    <?php
+    $pending = array_values(array_filter($lines, function ($l) { return $l['approval'] === 'pending'; }));
+    $pending_amt = array_sum(array_map(function ($l) { return (float) $l['amount']; }, $pending));
+    $est_badge = array('sent' => 'bg-info text-dark', 'approved' => 'bg-success', 'call_requested' => 'bg-warning text-dark', 'declined' => 'bg-secondary', 'superseded' => 'bg-light text-dark border', 'failed' => 'bg-danger');
+    $share_photos = array_values(array_filter($photos, function ($p) { return in_array($p['kind'], array('damage', 'part', 'before'), TRUE); }));
+    ?>
+    <div class="ymo-card mb-3" id="approval">
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+            <h3 class="h6 mb-0">Customer approval</h3>
+            <?php if ($pending): ?><span class="badge bg-warning text-dark"><?= count($pending); ?> item<?= count($pending) > 1 ? 's' : ''; ?> waiting · <?= $money($pending_amt); ?></span><?php endif; ?>
+        </div>
+        <?php if (!$pending && !$estimates): ?>
+            <p class="small ymo-muted mb-2">Extra work found during the job? Add it with <strong>Ask customer first</strong> ticked, then send the estimate here. The customer gets a PDF on WhatsApp with <strong>Approve</strong> and <strong>Call me</strong> buttons; tapping Approve marks the work approved here and on the technicians' phones.</p>
+        <?php endif; ?>
+        <?php if ($edit && ($pending || $lines)): ?>
+        <?= form_open(admin_url('job-cards/'.(int) $wo['id'].'/estimate'), array('class' => 'border rounded p-2 mb-2', 'onsubmit' => "return confirm('Send this estimate to the customer on WhatsApp?');")); ?>
+            <div class="d-flex flex-wrap gap-3 small mb-2">
+                <?php if ($pending): ?><label class="form-check mb-0"><input class="form-check-input" type="radio" name="scope" value="pending" checked> <span class="form-check-label">Waiting items only (<?= $money($pending_amt); ?>)</span></label><?php endif; ?>
+                <label class="form-check mb-0"><input class="form-check-input" type="radio" name="scope" value="all" <?= $pending ? '' : 'checked'; ?>> <span class="form-check-label">Whole job (<?= $money($wo['grand_total']); ?>)</span></label>
+            </div>
+            <input class="form-control form-control-sm mb-2" name="note" maxlength="300" placeholder="Short note for the customer (optional), e.g. Front brake pads are down to 2 mm">
+            <?php if ($share_photos): ?>
+            <div class="small ymo-muted mb-1">Send photos with it (max 3):</div>
+            <div class="d-flex flex-wrap gap-2 mb-2">
+                <?php foreach (array_slice($share_photos, 0, 9) as $i => $p): ?>
+                <label class="wo-pick-photo"><input type="checkbox" name="photo_ids[]" value="<?= (int) $p['id']; ?>" <?= $p['kind'] === 'damage' && $i < 3 ? 'checked' : ''; ?>><img src="<?= admin_url('job-cards/photo/'.(int) $p['id']).'?t=1'; ?>" alt="" loading="lazy"></label>
+                <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <button class="btn btn-sm btn-success"><span class="mi mi-sm mi-leading">send</span>Send estimate on WhatsApp</button>
+                <span class="small ymo-muted">to <?= html_escape($wo['customer_mobile']); ?></span>
+            </div>
+        <?= form_close(); ?>
+        <?php if ($pending): ?>
+        <div class="d-flex flex-wrap gap-2 align-items-center small mb-2">
+            <span class="ymo-muted">Customer answered on a call?</span>
+            <?= form_open(admin_url('job-cards/'.(int) $wo['id'].'/approval'), array('class' => 'd-inline')); ?><input type="hidden" name="action" value="approve"><button class="btn btn-sm btn-outline-success">Mark approved</button><?= form_close(); ?>
+            <?= form_open(admin_url('job-cards/'.(int) $wo['id'].'/approval'), array('class' => 'd-inline', 'onsubmit' => "return confirm('Customer said no to the waiting items? They will not be billed.');")); ?><input type="hidden" name="action" value="decline"><button class="btn btn-sm btn-outline-secondary">Customer said no</button><?= form_close(); ?>
+        </div>
+        <?php endif; ?>
+        <?php endif; ?>
+        <?php if ($estimates): ?>
+        <ul class="list-unstyled small mb-0">
+            <?php foreach ($estimates as $e): ?>
+            <li class="py-1 border-top d-flex flex-wrap align-items-center gap-2">
+                <strong>Estimate #<?= (int) $e['number']; ?></strong>
+                <span><?= $money($e['amount']); ?></span>
+                <span class="badge <?= $est_badge[$e['status']] ?? 'bg-light'; ?>"><?= Crm_work_order_model::EST_STATUS[$e['status']] ?? $e['status']; ?><?= $e['response_via'] === 'whatsapp' ? ' on WhatsApp' : ($e['response_via'] === 'advisor' ? ' (advisor)' : ''); ?></span>
+                <span class="ymo-muted"><?= html_escape(date('d M, H:i', strtotime($e['sent_at']))); ?><?= $e['sent_by_name'] ? ' · '.html_escape($e['sent_by_name']) : ''; ?><?= $e['responded_at'] ? ' · answered '.html_escape(date('d M, H:i', strtotime($e['responded_at']))) : ''; ?></span>
+                <?php if ($e['pdf_object'] !== ''): ?><a href="<?= admin_url('job-cards/'.(int) $wo['id'].'/estimates/'.(int) $e['id'].'/pdf'); ?>" target="_blank">PDF</a><?php endif; ?>
+                <?php if ($e['status'] === 'failed' && $e['error'] !== ''): ?><span class="text-danger"><?= html_escape(mb_strimwidth($e['error'], 0, 140, '…')); ?></span><?php endif; ?>
+                <?php if ($edit && in_array($e['status'], array('sent', 'call_requested'), TRUE)): ?>
+                <span class="ms-auto d-flex gap-1">
+                    <?= form_open(admin_url('job-cards/'.(int) $wo['id'].'/estimates/'.(int) $e['id'].'/respond'), array('class' => 'd-inline')); ?><input type="hidden" name="action" value="approve"><button class="btn btn-sm btn-link p-0 text-success">Approved on call</button><?= form_close(); ?>
+                    ·
+                    <?= form_open(admin_url('job-cards/'.(int) $wo['id'].'/estimates/'.(int) $e['id'].'/respond'), array('class' => 'd-inline')); ?><input type="hidden" name="action" value="decline"><button class="btn btn-sm btn-link p-0 text-secondary">Declined</button><?= form_close(); ?>
+                </span>
+                <?php endif; ?>
+            </li>
+            <?php endforeach; ?>
+        </ul>
         <?php endif; ?>
     </div>
 
@@ -222,7 +299,9 @@ $wsname = ($wo['workshop'] !== '' && isset($workshops[$wo['workshop']])) ? $work
                         <button class="wo-photo-x" title="Remove">✕</button>
                     <?= form_close(); ?>
                     <?php endif; ?>
-                    <div class="wo-photo-by"><?= html_escape($p['tech_name'] ?: $p['admin_name'] ?: ''); ?></div>
+                    <div class="wo-photo-by"><?= html_escape($p['tech_name'] ?: $p['admin_name'] ?: ''); ?>
+                        <?php if (!empty($can_edit)): ?> · <a href="#" class="wo-photo-send" data-url="<?= admin_url('job-cards/'.(int) $wo['id'].'/photos/'.(int) $p['id'].'/send'); ?>" title="Send to the customer on WhatsApp">Send</a><?php endif; ?>
+                    </div>
                 </div>
             <?php endforeach; ?>
             </div>
@@ -293,6 +372,7 @@ $wsname = ($wo['workshop'] !== '' && isset($workshops[$wo['workshop']])) ? $work
                     </div></div>
                 </div>
             </div>
+            <label class="form-check small mt-2 mb-0"><input class="form-check-input" type="checkbox" name="notify_customer" value="1" <?= (int) $wo['notify_customer'] ? 'checked' : ''; ?>> <span class="form-check-label">WhatsApp the customer when work starts, the car is ready and when delivered</span></label>
             <?php if (!empty($can_edit)): ?><button class="btn btn-sm btn-primary mt-3">Save details</button><?php endif; ?>
         </fieldset>
         <?= form_close(); ?>
@@ -369,5 +449,18 @@ $wsname = ($wo['workshop'] !== '' && isset($workshops[$wo['workshop']])) ? $work
     list.addEventListener('mousedown', function (e) { var b = e.target.closest('button'); if (b) { e.preventDefault(); choose(+b.getAttribute('data-i')); } });
     input.addEventListener('blur', function () { setTimeout(function () { items = []; render(); }, 150); });
     form.querySelectorAll('[name=type]').forEach(function (r) { r.addEventListener('change', function () { itemId.value = ''; search(); }); });
+})();
+(function () {
+    var csrfName = <?= json_encode($this->security->get_csrf_token_name()); ?>, csrfHash = <?= json_encode($this->security->get_csrf_hash()); ?>;
+    Array.prototype.forEach.call(document.querySelectorAll('.wo-photo-send'), function (a) {
+        a.addEventListener('click', function (e) {
+            e.preventDefault();
+            var text = prompt('Send this photo to the customer on WhatsApp. Message with it (they get Approve / Call me buttons):', 'Photo from the workshop');
+            if (text === null) { return; }
+            var f = document.createElement('form'); f.method = 'post'; f.action = a.getAttribute('data-url');
+            [[csrfName, csrfHash], ['text', text]].forEach(function (kv) { var i = document.createElement('input'); i.type = 'hidden'; i.name = kv[0]; i.value = kv[1]; f.appendChild(i); });
+            document.body.appendChild(f); f.submit();
+        });
+    });
 })();
 </script>

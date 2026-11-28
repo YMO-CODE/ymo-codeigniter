@@ -44,6 +44,9 @@ h2 { font-size: 15px; text-transform: uppercase; letter-spacing: .4px; color: va
 .task.done .nm { text-decoration: line-through; color: var(--mut); }
 .task .nm { font-weight: 700; font-size: 17px; }
 .task.pending { opacity: .75; }
+.task.wait { border-style: dashed; border-color: #e0b44a; background: #fffbeb; }
+.task.wait .box { border-color: #e0b44a; background: #fff; color: #b7791f; font-size: 18px; }
+.task .wl { color: #92400e; font-weight: 700; font-size: 14px; }
 .big { display: block; width: 100%; border: 0; border-radius: 14px; padding: 16px; font-size: 18px; font-weight: 800; margin-bottom: 10px; }
 .b-go { background: var(--g); color: #fff; } .b-hold { background: #fff; color: var(--warn); border: 2px solid var(--warn); }
 .b-ready { background: var(--blue); color: #fff; }
@@ -105,7 +108,8 @@ var T = {
     syncing: 'Sending {n} change(s)…', saved: 'Saved', sent: 'Sent', closed: 'This job is closed.',
     e_gen: 'Something went wrong. Try again.', e_photo: 'Could not read that photo.', changed: 'The advisor changed this job. Updated.',
     logout: 'Sign out', logout_q: '{n} change(s) are not sent yet. Signing out deletes them. Sign out?', lang: 'Language',
-    advisor: 'Advisor', km: 'km', you: 'You', updated: 'Updated {t}'
+    advisor: 'Advisor', km: 'km', you: 'You', updated: 'Updated {t}',
+    wait_ok: 'Waiting for customer OK – do not start yet', waiting_n: '{n} waiting for customer OK'
   },
   hi: {
     title: 'YMO वर्कशॉप', mobile: 'मोबाइल नंबर', pin: '4 अंकों का PIN', sign_in: 'लॉग इन करें',
@@ -126,7 +130,8 @@ var T = {
     syncing: '{n} बदलाव भेजे जा रहे हैं…', saved: 'सेव हुआ', sent: 'भेज दिया', closed: 'यह काम बंद हो चुका है।',
     e_gen: 'कुछ गड़बड़ हुई। फिर से कोशिश करें।', e_photo: 'यह फ़ोटो नहीं खुली।', changed: 'एडवाइज़र ने इस काम में बदलाव किया। अपडेट हो गया।',
     logout: 'लॉग आउट', logout_q: '{n} बदलाव अभी भेजे नहीं गए। लॉग आउट करने पर वे मिट जाएँगे। लॉग आउट करें?', lang: 'भाषा',
-    advisor: 'एडवाइज़र', km: 'कि.मी.', you: 'आप', updated: '{t} पर अपडेट'
+    advisor: 'एडवाइज़र', km: 'कि.मी.', you: 'आप', updated: '{t} पर अपडेट',
+    wait_ok: 'ग्राहक की मंज़ूरी का इंतज़ार – अभी शुरू न करें', waiting_n: 'ग्राहक की मंज़ूरी बाकी: {n}'
   },
   mr: {
     title: 'YMO वर्कशॉप', mobile: 'मोबाईल नंबर', pin: '4 अंकी PIN', sign_in: 'लॉग इन करा',
@@ -147,7 +152,8 @@ var T = {
     syncing: '{n} बदल पाठवत आहे…', saved: 'सेव्ह झाले', sent: 'पाठवले', closed: 'हे काम बंद झाले आहे.',
     e_gen: 'काहीतरी चुकले. पुन्हा प्रयत्न करा.', e_photo: 'हा फोटो उघडला नाही.', changed: 'अ‍ॅडव्हायझरने या कामात बदल केला. अपडेट झाले.',
     logout: 'लॉग आउट', logout_q: '{n} बदल अजून पाठवलेले नाहीत. लॉग आउट केल्यास ते पुसले जातील. लॉग आउट करायचे?', lang: 'भाषा',
-    advisor: 'अ‍ॅडव्हायझर', km: 'कि.मी.', you: 'तुम्ही', updated: '{t} ला अपडेट'
+    advisor: 'अ‍ॅडव्हायझर', km: 'कि.मी.', you: 'तुम्ही', updated: '{t} ला अपडेट',
+    wait_ok: 'ग्राहकाच्या मंजुरीची वाट – अजून सुरू करू नका', waiting_n: 'ग्राहकाची मंजुरी बाकी: {n}'
   }
 };
 var LANGS = { en: 'English', hi: 'हिंदी', mr: 'मराठी' };
@@ -337,6 +343,7 @@ function renderList() {
         '<div class="mut">' + esc(j.model) + ' · ' + esc(j.ro) + (j.bay ? ' · ' + t('bay') + ' ' + esc(j.bay) : '') + '</div>' +
         (j.due ? '<div class="mut ' + (late ? 'late' : '') + '">' + t('due') + ' ' + esc(fmtTime(j.due)) + '</div>' : '') +
         (j.lines ? '<div class="bar"><i style="width:' + pct + '%"></i></div><div class="mut" style="margin-top:4px">' + t('done_of', { d: j.done, n: j.lines }) + '</div>' : '') +
+        (j.waiting ? '<div class="mut" style="color:#92400e;font-weight:700">⏳ ' + t('waiting_n', { n: j.waiting }) + '</div>' : '') +
         '</button>';
     }).join('');
   }
@@ -397,8 +404,9 @@ function renderJob() {
   if (mv.indexOf('on_hold') >= 0) btns += '<button class="big b-hold" data-to="on_hold">❚❚ ' + t('hold') + '</button>';
 
   var task = function (it) {
-    return '<button class="task ' + (it.done ? 'done ' : '') + (it.pending ? 'pending' : '') + '" data-line="' + it.id + '" ' + (j.closed ? 'disabled' : '') + '>' +
-      '<span class="box">' + (it.done ? '✓' : '') + '</span><span><span class="nm">' + esc(it.name) + (it.qty !== '1' ? ' × ' + esc(it.qty) : '') + '</span>' +
+    return '<button class="task ' + (it.done ? 'done ' : '') + (it.pending ? 'pending ' : '') + (it.wait && !it.done ? 'wait' : '') + '" data-line="' + it.id + '" ' + (j.closed ? 'disabled' : '') + '>' +
+      '<span class="box">' + (it.done ? '✓' : (it.wait ? '⏳' : '')) + '</span><span><span class="nm">' + esc(it.name) + (it.qty !== '1' ? ' × ' + esc(it.qty) : '') + '</span>' +
+      (it.wait && !it.done ? '<br><span class="wl">' + t('wait_ok') + '</span>' : '') +
       (it.desc ? '<br><span class="mut">' + esc(it.desc) + '</span>' : '') +
       (it.done && it.by ? '<br><span class="mut">✓ ' + esc(it.by) + '</span>' : (it.tech ? '<br><span class="mut">' + esc(it.tech) + '</span>' : '')) + '</span></button>';
   };
@@ -432,6 +440,7 @@ function renderJob() {
     el.onclick = function () {
       var id = +el.getAttribute('data-line'), cur = applyPending(JSON.parse(JSON.stringify(state.job))).items.filter(function (i) { return i.id === id; })[0];
       if (!cur) return;
+      if (cur.wait && !cur.done) { toast(t('wait_ok')); return; }
       // Replace an unsent tick for the same line instead of stacking them.
       var old = pending.filter(function (x) { return x.type === 'line' && x.job === j.id && x.line === id; });
       Promise.all(old.map(function (o) { return qDel(o.uid); })).then(function () {

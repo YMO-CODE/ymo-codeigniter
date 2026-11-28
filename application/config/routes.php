@@ -39,6 +39,11 @@ if (ymo_is_admin_host_request()) {
     $route['job-cards/(:num)/lines/(:num)/delete'] = 'admin/work_orders/line_delete/$1/$2';
     $route['job-cards/(:num)/lines/(:num)/done'] = 'admin/work_orders/line_done/$1/$2';
     $route['job-cards/(:num)/note'] = 'admin/work_orders/note/$1';
+    $route['job-cards/(:num)/estimate'] = 'admin/work_orders/estimate_send/$1';
+    $route['job-cards/(:num)/approval'] = 'admin/work_orders/approval/$1';
+    $route['job-cards/(:num)/estimates/(:num)/respond'] = 'admin/work_orders/estimate_respond/$1/$2';
+    $route['job-cards/(:num)/estimates/(:num)/pdf'] = 'admin/work_orders/estimate_pdf/$1/$2';
+    $route['job-cards/(:num)/photos/(:num)/send'] = 'admin/work_orders/photo_send/$1/$2';
     $route['job-cards/(:num)/photos'] = 'admin/work_orders/photo_add/$1';
     $route['job-cards/(:num)/photos/(:num)/delete'] = 'admin/work_orders/photo_delete/$1/$2';
     $route['job-cards/photo/(:num)'] = 'admin/work_orders/photo/$1';
@@ -231,6 +236,11 @@ if (ymo_is_admin_host_request()) {
     $route['admin/job-cards/(:num)/lines/(:num)/delete'] = 'admin/work_orders/line_delete/$1/$2';
     $route['admin/job-cards/(:num)/lines/(:num)/done'] = 'admin/work_orders/line_done/$1/$2';
     $route['admin/job-cards/(:num)/note'] = 'admin/work_orders/note/$1';
+    $route['admin/job-cards/(:num)/estimate'] = 'admin/work_orders/estimate_send/$1';
+    $route['admin/job-cards/(:num)/approval'] = 'admin/work_orders/approval/$1';
+    $route['admin/job-cards/(:num)/estimates/(:num)/respond'] = 'admin/work_orders/estimate_respond/$1/$2';
+    $route['admin/job-cards/(:num)/estimates/(:num)/pdf'] = 'admin/work_orders/estimate_pdf/$1/$2';
+    $route['admin/job-cards/(:num)/photos/(:num)/send'] = 'admin/work_orders/photo_send/$1/$2';
     $route['admin/job-cards/(:num)/photos'] = 'admin/work_orders/photo_add/$1';
     $route['admin/job-cards/(:num)/photos/(:num)/delete'] = 'admin/work_orders/photo_delete/$1/$2';
     $route['admin/job-cards/photo/(:num)'] = 'admin/work_orders/photo/$1';
@@ -519,6 +529,11 @@ if (ymo_is_admin_host_request()) {
     $route['admin/job-cards/(:num)/lines/(:num)/delete'] = 'admin/work_orders/line_delete/$1/$2';
     $route['admin/job-cards/(:num)/lines/(:num)/done'] = 'admin/work_orders/line_done/$1/$2';
     $route['admin/job-cards/(:num)/note'] = 'admin/work_orders/note/$1';
+    $route['admin/job-cards/(:num)/estimate'] = 'admin/work_orders/estimate_send/$1';
+    $route['admin/job-cards/(:num)/approval'] = 'admin/work_orders/approval/$1';
+    $route['admin/job-cards/(:num)/estimates/(:num)/respond'] = 'admin/work_orders/estimate_respond/$1/$2';
+    $route['admin/job-cards/(:num)/estimates/(:num)/pdf'] = 'admin/work_orders/estimate_pdf/$1/$2';
+    $route['admin/job-cards/(:num)/photos/(:num)/send'] = 'admin/work_orders/photo_send/$1/$2';
     $route['admin/job-cards/(:num)/photos'] = 'admin/work_orders/photo_add/$1';
     $route['admin/job-cards/(:num)/photos/(:num)/delete'] = 'admin/work_orders/photo_delete/$1/$2';
     $route['admin/job-cards/photo/(:num)'] = 'admin/work_orders/photo/$1';

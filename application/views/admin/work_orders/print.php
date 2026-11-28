@@ -9,7 +9,7 @@ $money = function ($v) { return number_format((float) $v, 2); };
 $num = function ($v) { return rtrim(rtrim(number_format((float) $v, 2, '.', ''), '0'), '.'); };
 $fuel = array(0 => 'Empty', 25 => '1/4', 50 => '1/2', 75 => '3/4', 100 => 'Full');
 $by_type = array('service' => array(), 'part' => array());
-foreach ($lines as $l) { $by_type[$l['type']][] = $l; }
+foreach ($lines as $l) { if ($l['approval'] !== 'declined') { $by_type[$l['type']][] = $l; } }
 ?><!doctype html>
 <html lang="en">
 <head>
@@ -81,7 +81,7 @@ foreach ($lines as $l) { $by_type[$l['type']][] = $l; }
     <?php $i = 0; foreach ($by_type[$type] as $l): $i++; ?>
       <tr>
         <td><?= $i; ?></td>
-        <td><?= html_escape($l['name']); ?><?php if ((float) $l['discount_pct'] > 0): ?> <span class="muted">(<?= $num($l['discount_pct']); ?>% off)</span><?php endif; ?></td>
+        <td><?= html_escape($l['name']); ?><?php if ($l['approval'] === 'pending'): ?> <em class="muted">(waiting for customer OK)</em><?php endif; ?><?php if ((float) $l['discount_pct'] > 0): ?> <span class="muted">(<?= $num($l['discount_pct']); ?>% off)</span><?php endif; ?></td>
         <td class="r"><?= $num($l['qty']); ?></td>
         <td class="r"><?= $money($l['rate']); ?></td>
         <td class="r"><?= (float) $l['tax_pct'] > 0 ? $num($l['tax_pct']).'% '.((int) $l['tax_inclusive'] ? 'incl' : 'extra') : '—'; ?></td>

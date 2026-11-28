@@ -470,7 +470,8 @@ class Crm_messaging
     protected function _graph_url($path, array $query = array())
     {
         $parts = array_map('rawurlencode', explode('/', trim($path, '/')));
-        $url = 'https://graph.facebook.com/'.$this->graph_version.'/'.implode('/', $parts);
+        $base = rtrim((string) ($this->CI->config->item('crm_meta_graph_base') ?: 'https://graph.facebook.com'), '/');
+        $url = $base.'/'.$this->graph_version.'/'.implode('/', $parts);
         return $query ? $url.'?'.http_build_query($query) : $url;
     }
 

@@ -152,6 +152,16 @@ class Webhooks extends CI_Controller
                     $opted_out += $this->_whatsapp_opt_out($msg['from']);
                 }
             }
+            // Approve / Call me on a job card estimate: handled there, not a new enquiry.
+            $this->load->library('work_order_customer');
+            foreach ($messages as $i => $msg) {
+                try {
+                    $messages[$i]['job_reply'] = $this->work_order_customer->handle_reply($msg);
+                } catch (Throwable $e) {
+                    log_message('error', '[webhook] job reply: '.$e->getMessage());
+                    $messages[$i]['job_reply'] = FALSE;
+                }
+            }
         }
 
         $lead_ids = array();
@@ -160,6 +170,9 @@ class Webhooks extends CI_Controller
             $this->load->library('crm_wa_autoreply');
         }
         foreach ($messages as $msg) {
+            if (!empty($msg['job_reply'])) {
+                continue;
+            }
             // "Stop promotions" from someone who never enquired shouldn't become a lead.
             if (crm_whatsapp_is_opt_out($msg['text']) && !$this->_whatsapp_lead_exists($msg['from'])) {
                 if ($is_meta_cloud) {

@@ -41,9 +41,9 @@ class Work_order_flow
         }
         $msg = $S[$to].'.';
         $level = 'success';
+        $b_to = NULL;
 
         if (!empty($wo['booking_id'])) {
-            $b_to = NULL;
             if (in_array($to, array('in_progress', 'on_hold', 'ready'), TRUE) && in_array($wo['booking_status'], array('pending', 'confirmed'), TRUE)) {
                 $b_to = 'in_progress';
             } elseif ($to === 'delivered' && !in_array($wo['booking_status'], array('completed', 'cancelled'), TRUE)) {
@@ -62,6 +62,16 @@ class Work_order_flow
                 }
             }
         }
+        // Short WhatsApp / SMS update for the customer (unless the booking just sent one).
+        $this->CI->load->library('work_order_customer');
+        $line = $this->CI->work_order_customer->notify_stage($wo, $to, $b_to !== NULL);
+        if ($line !== '') {
+            $msg .= ' '.$line.'.';
+            if (strpos($line, 'NOT') !== FALSE) {
+                $level = 'warning';
+            }
+        }
+
         $this->CI->audit->log($tech_id ? 'system' : 'admin', $tech_id ? 0 : (int) $admin_id, 'work_order.status', 'work_order', $id,
             array('from' => $wo['status'], 'to' => $to) + ($tech_id ? array('technician_id' => (int) $tech_id) : array()));
         return array(TRUE, $msg, $level);

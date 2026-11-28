@@ -168,6 +168,9 @@ class Tech extends CI_Controller
             return $this->_json(array('ok' => FALSE, 'error' => 'line_gone'), 404);
         }
         $done = !empty($in['done']);
+        if ($done && $line['approval'] !== 'approved') {
+            return $this->_json(array('ok' => FALSE, 'error' => 'not_approved', 'message' => 'Waiting for the customer\'s OK.'), 409);
+        }
         if ((bool) $line['done_at'] !== $done) {
             $this->crm_work_order_model->set_line_done($id, $line_id, $done, 0, (int) $this->tech['id']);
         }
@@ -284,6 +287,7 @@ class Tech extends CI_Controller
             'due'      => $r['expected_delivery_at'] ? date('Y-m-d\TH:i:s', strtotime($r['expected_delivery_at'])) : NULL,
             'lines'    => (int) ($r['line_count'] ?? 0),
             'done'     => (int) ($r['done_count'] ?? 0),
+            'waiting'  => (int) ($r['waiting_count'] ?? 0),
         );
     }
 
@@ -292,7 +296,11 @@ class Tech extends CI_Controller
         $id = (int) $wo['id'];
         $lines = array();
         foreach ($this->crm_work_order_model->lines($id) as $l) {
+            if ($l['approval'] === 'declined') {
+                continue;   // customer said no: not done, not shown
+            }
             $lines[] = array(
+                'wait'  => $l['approval'] === 'pending',
                 'id'    => (int) $l['id'],
                 'type'  => $l['type'],
                 'name'  => $l['name'],
@@ -319,7 +327,7 @@ class Tech extends CI_Controller
                 );
             }
         }
-        return $this->_job_summary($wo) + array(
+        return array_merge($this->_job_summary($wo), array(
             'complaint'    => (string) $wo['complaint'],
             'instructions' => (string) $wo['instructions'],
             'odometer'     => $wo['odometer_km'] !== NULL ? (int) $wo['odometer_km'] : NULL,
@@ -332,7 +340,8 @@ class Tech extends CI_Controller
             'notes'        => array_slice($notes, 0, 20),
             'lines'        => count($lines),
             'done'         => count(array_filter($lines, function ($l) { return $l['done']; })),
-        );
+            'waiting'      => count(array_filter($lines, function ($l) { return $l['wait']; })),
+        ));
     }
 
     /** @return array|null job card, or NULL after sending the error */

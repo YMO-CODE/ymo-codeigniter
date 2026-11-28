@@ -24,6 +24,8 @@ $config['crm_sms_campaign_tpl']    = getenv('YMO_TPL_CRM_CAMPAIGN') ?: '';
  * from SMS to WhatsApp when CRM_WHATSAPP_NOTIFY=1 (SMS stays the fallback).
  */
 $config['crm_meta_graph_version']      = getenv('CRM_META_GRAPH_VERSION') ?: 'v19.0';
+// Graph API host; only changed for local testing against a mock.
+$config['crm_meta_graph_base']         = getenv('CRM_META_GRAPH_BASE') ?: 'https://graph.facebook.com';
 // System-user token for WhatsApp (falls back to CRM_META_ACCESS_TOKEN when empty).
 $config['crm_whatsapp_access_token']   = getenv('CRM_WHATSAPP_ACCESS_TOKEN') ?: '';
 $config['crm_whatsapp_waba_id']        = getenv('CRM_WHATSAPP_WABA_ID') ?: '';
