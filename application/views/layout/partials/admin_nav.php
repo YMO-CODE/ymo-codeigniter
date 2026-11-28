@@ -1,64 +1,77 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 /*
- * Admin sidebar. Daily work first (Today → Leads → Bookings → Customers); the full
- * follow-up list opens from Today's "Next 7 days" link,
- * then outreach and reports, then setup. Source views (cold calling, Instagram…)
- * live as chips on the Leads page; online accounts are a filter on Customers.
+ * Admin sidebar, grouped by the job each part does:
+ *   Overview (Today, Reports) · Sales (enquiries → customers) · Workshop (bookings → job cards,
+ *   the people and price lists behind them) · Marketing (getting new customers) · Team & settings.
+ * A group heading shows only when the user can see something in it.
  */
 $can = function ($perm) { return !function_exists('crm_can') || crm_can($perm); };
 $crm = function_exists('crm_can');
 $item = function ($path, $icon, $label, $active) {
     return '<a href="'.admin_url($path).'" class="'.($active ? 'active' : '').'"><span class="mi mi-sm mi-leading">'.$icon.'</span>'.$label.'</a>';
 };
-?>
-<?php if ($can('dashboard.view')): ?>
-<?= $item('dashboard', 'today', 'Today', admin_nav_active('dashboard') || admin_nav_active('tasks')); ?>
-<?php elseif ($crm && crm_can('tasks.view')): ?>
-<?= $item('tasks', 'task_alt', 'Follow-ups', admin_nav_active('tasks')); ?>
-<?php endif; ?>
-<?php if ($crm && crm_can('leads.view')): ?>
-<a href="<?= admin_url('inbox'); ?>" class="<?= admin_nav_active('inbox') ? 'active' : ''; ?>"><span class="mi mi-sm mi-leading">forum</span>Inbox<span class="ymo-nav-badge" id="ymo-inbox-badge" hidden></span></a>
-<a href="<?= admin_url('ymochat'); ?>" class="<?= admin_nav_active('ymochat') ? 'active' : ''; ?>"><span class="mi mi-sm mi-leading">travel_explore</span>YMOChat<span class="ymo-nav-badge ymochat-live-badge" hidden></span></a>
-<?= $item('leads', 'person_search', 'Leads', admin_nav_active('leads')); ?>
-<?= $item('reviews', 'reviews', 'Google reviews', admin_nav_active('reviews')); ?>
-<?php if (crm_can('campaigns.view')): ?><?= $item('google-posts', 'storefront', 'Google posts', admin_nav_active('google-posts')); ?><?php endif; ?>
-<?php endif; ?>
-<?php if ($can('bookings.view')): ?>
-<?= $item('bookings', 'event_note', 'Bookings', admin_nav_active('bookings')); ?>
-<?= $item('job-cards', 'assignment', 'Job cards', admin_nav_active('job-cards')); ?>
-<?php endif; ?>
-<?php if ($crm && crm_can('contacts.view')): ?>
-<?= $item('customers', 'groups', 'Customers', admin_nav_active('customers') || admin_nav_active('online-accounts')); ?>
-<?php elseif ($can('customers.view')): ?>
-<?= $item('online-accounts', 'person', 'Customers', admin_nav_active('online-accounts')); ?>
-<?php endif; ?>
-<?php if ($crm && crm_can('campaigns.view')): ?>
-<?= $item('campaigns', 'campaign', 'Campaigns', admin_nav_active('campaigns') || admin_nav_active('whatsapp-templates')); ?>
-<?php endif; ?>
-<?php if ($crm && crm_can('reports.view')): ?>
-<?= $item('reports', 'analytics', 'Reports', admin_nav_active('reports')); ?>
-<?php endif; ?>
+$groups = array();
 
-<?php
-$setup = array();
-if ($can('packages.view'))   { $setup[] = $item('packages', 'build', 'Packages', admin_nav_active('packages')); }
-if ($can('packages.view'))   { $setup[] = $item('catalogue', 'inventory_2', 'Catalogue', admin_nav_active('catalogue')); }
-if ($can('offers.view'))     { $setup[] = $item('offers', 'local_offer', 'Offers', admin_nav_active('offers')); }
-if ($crm && crm_can('team.view'))  { $setup[] = $item('team', 'group', 'Team', admin_nav_active('team')); }
-if ($crm && (crm_can('team.view') || crm_can('bookings.edit'))) { $setup[] = $item('technicians', 'engineering', 'Technicians', admin_nav_active('technicians')); }
-if ($crm && crm_can('roles.view')) { $setup[] = $item('roles', 'admin_panel_settings', 'Roles', admin_nav_active('roles')); }
-if ($can('settings.manage')) { $setup[] = $item('settings', 'settings', 'Settings', admin_nav_active('settings')); }
-?>
-<?php if ($setup): ?>
-<hr class="ymo-admin-nav-div">
-<div class="ymo-admin-nav-label">Setup</div>
-<?= implode("\n", $setup); ?>
-<?php endif; ?>
+// Overview
+$g = array();
+if ($can('dashboard.view')) {
+    $g[] = $item('dashboard', 'today', 'Today', admin_nav_active('dashboard') || admin_nav_active('tasks'));
+} elseif ($crm && crm_can('tasks.view')) {
+    $g[] = $item('tasks', 'task_alt', 'Follow-ups', admin_nav_active('tasks'));
+}
+if ($crm && crm_can('reports.view')) { $g[] = $item('reports', 'analytics', 'Reports', admin_nav_active('reports')); }
+$groups[''] = $g;
 
-<?php if ($crm && crm_can('recruitment.view')): ?>
+// Sales: enquiries coming in, and the customers they become
+$g = array();
+if ($crm && crm_can('leads.view')) {
+    $g[] = '<a href="'.admin_url('inbox').'" class="'.(admin_nav_active('inbox') ? 'active' : '').'"><span class="mi mi-sm mi-leading">forum</span>Inbox<span class="ymo-nav-badge" id="ymo-inbox-badge" hidden></span></a>';
+    $g[] = '<a href="'.admin_url('ymochat').'" class="'.(admin_nav_active('ymochat') ? 'active' : '').'"><span class="mi mi-sm mi-leading">travel_explore</span>YMOChat<span class="ymo-nav-badge ymochat-live-badge" hidden></span></a>';
+    $g[] = $item('leads', 'person_search', 'Leads', admin_nav_active('leads'));
+}
+if ($crm && crm_can('contacts.view')) {
+    $g[] = $item('customers', 'groups', 'Customers', admin_nav_active('customers') || admin_nav_active('online-accounts'));
+} elseif ($can('customers.view')) {
+    $g[] = $item('online-accounts', 'person', 'Customers', admin_nav_active('online-accounts'));
+}
+$groups['Sales'] = $g;
+
+// Workshop: the work itself, and what it is built from
+$g = array();
+if ($can('bookings.view')) {
+    $g[] = $item('bookings', 'event_note', 'Bookings', admin_nav_active('bookings'));
+    $g[] = $item('job-cards', 'assignment', 'Job cards', admin_nav_active('job-cards'));
+}
+if ($crm && (crm_can('team.view') || crm_can('bookings.edit'))) { $g[] = $item('technicians', 'engineering', 'Technicians', admin_nav_active('technicians')); }
+if ($can('packages.view')) {
+    $g[] = $item('catalogue', 'inventory_2', 'Catalogue', admin_nav_active('catalogue'));
+    $g[] = $item('packages', 'build', 'Packages', admin_nav_active('packages'));
+}
+$groups['Workshop'] = $g;
+
+// Marketing: bringing new customers in, and keeping our name good
+$g = array();
+if ($crm && crm_can('campaigns.view')) { $g[] = $item('campaigns', 'campaign', 'Campaigns', admin_nav_active('campaigns') || admin_nav_active('whatsapp-templates')); }
+if ($can('offers.view')) { $g[] = $item('offers', 'local_offer', 'Offers', admin_nav_active('offers')); }
+if ($crm && crm_can('campaigns.view')) { $g[] = $item('google-posts', 'storefront', 'Google posts', admin_nav_active('google-posts')); }
+if ($crm && crm_can('leads.view')) { $g[] = $item('reviews', 'reviews', 'Google reviews', admin_nav_active('reviews')); }
+$groups['Marketing'] = $g;
+
+// Team & settings
+$g = array();
+if ($crm && crm_can('team.view'))        { $g[] = $item('team', 'group', 'Team', admin_nav_active('team')); }
+if ($crm && crm_can('roles.view'))       { $g[] = $item('roles', 'admin_panel_settings', 'Roles', admin_nav_active('roles')); }
+if ($crm && crm_can('recruitment.view')) { $g[] = $item('recruitment', 'badge', 'Recruitment', admin_nav_active('recruitment')); }
+if ($can('settings.manage'))             { $g[] = $item('settings', 'settings', 'Settings', admin_nav_active('settings')); }
+$groups['Team & settings'] = $g;
+?>
+<?php foreach ($groups as $label => $links): if (!$links) { continue; } ?>
+<?php if ($label !== ''): ?>
 <hr class="ymo-admin-nav-div">
-<?= $item('recruitment', 'badge', 'Recruitment', admin_nav_active('recruitment')); ?>
+<div class="ymo-admin-nav-label"><?= html_escape($label); ?></div>
 <?php endif; ?>
+<?= implode("\n", $links); ?>
+<?php endforeach; ?>
 
 <hr class="ymo-admin-nav-div">
 <?php $ci = &get_instance(); ?>
